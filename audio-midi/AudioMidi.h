@@ -6,7 +6,7 @@ namespace Dsp
   {
     namespace Realtime
     {
-      class Api;
+      class Interface;
     }
   }
 }
@@ -16,6 +16,6 @@ namespace AudioMidi
   class AudioMidi
   {
    public:
-    AudioMidi(Dsp::Api::Realtime::Api &dsp);
+    AudioMidi(Dsp::Api::Realtime::Interface &dsp);
   };
 }

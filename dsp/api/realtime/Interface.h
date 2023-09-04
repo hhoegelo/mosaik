@@ -4,7 +4,7 @@
 #include <span>
 #include <functional>
 
-#include "MidiEvent.h"
+#include <MidiEvent.h>
 
 namespace Dsp
 {
@@ -12,10 +12,10 @@ namespace Dsp
   {
     namespace Realtime
     {
-      class Api
+      class Interface
       {
        public:
-        Api() {};
+        Interface() = default;
 
         using Sample = float;
         using StereoFrame = std::pair<Sample, Sample>;

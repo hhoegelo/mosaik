@@ -2,7 +2,7 @@
 
 namespace AudioMidi
 {
-  AudioMidi::AudioMidi(Dsp::Api::Realtime::Api &dsp)
+  AudioMidi::AudioMidi(Dsp::Api::Realtime::Interface &dsp)
   {
   }
 }

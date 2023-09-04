@@ -8,12 +8,10 @@ namespace Dsp
   {
     namespace Display
     {
-      class Api
+      class Interface
       {
        public:
-        Api()
-        {
-        }
+        Interface() = default;
 
         using Position = std::chrono::nanoseconds;
 

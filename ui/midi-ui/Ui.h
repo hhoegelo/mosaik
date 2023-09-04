@@ -2,7 +2,10 @@
 
 namespace Core
 {
-  class Api;
+  namespace Api
+  {
+    class Interface;
+  }
 }
 
 namespace Dsp
@@ -11,7 +14,7 @@ namespace Dsp
   {
     namespace Display
     {
-      class Api;
+      class Interface;
     }
   }
 }
@@ -23,7 +26,7 @@ namespace Ui
     class Ui
     {
      public:
-      Ui(Core::Api &core, Dsp::Api::Display::Api &dsp);
+      Ui(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
     };
   }
 }

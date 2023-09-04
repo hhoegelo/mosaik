@@ -4,30 +4,47 @@
 #include <functional>
 #include <algorithm>
 
-namespace TOOLS
+namespace Tools
 {
-  namespace SIGNALS
+  namespace Signals
   {
-    class Connection
+    namespace Detail
+    {
+      class ConnectionBase
+      {
+       public:
+        virtual ~ConnectionBase() = default;
+      };
+
+      template <typename Signature> class Connection : public ConnectionBase
+      {
+       public:
+        using Callback = std::function<Signature>;
+        Connection(const Callback &cb)
+            : m_cb(cb)
+        {
+        }
+
+        Callback m_cb;
+      };
+    }
+
+    using Connection = std::shared_ptr<Detail::ConnectionBase>;
+
+    template <typename Signature> class Signal
     {
      public:
-     private:
-      std::shared_ptr<void> m_ptr;
-    };
+      using Callback = std::function<Signature>;
 
-    template <typename... Args> class Signal
-    {
      public:
-      using Callback = std::function<void(Args &&...)>;
-
-      void send(Args &&...args)
+      template <typename... Args> void emit(Args &&...args)
       {
         auto newEnd = std::remove_if(m_callbacks.begin(), m_callbacks.end(),
-                                     [&args...](auto &cb)
+                                     [&](auto &cb)
                                      {
                                        if(auto locked = cb.lock())
                                        {
-                                         locked(args...);
+                                         locked->m_cb(args...);
                                          return false;
                                        }
                                        return true;
@@ -37,12 +54,13 @@ namespace TOOLS
 
       Connection connect(const Callback &cb)
       {
-        m_callbacks.push_back(Connection(cb));
-        return m_callbacks.back();
+        auto ptr = std::make_shared<Detail::Connection<Signature>>(cb);
+        m_callbacks.push_back(ptr);
+        return ptr;
       }
 
      private:
-      std::vector<std::weak_ptr<Callback>> m_callbacks;
+      std::vector<std::weak_ptr<Detail::Connection<Signature>>> m_callbacks;
     };
   }
 }

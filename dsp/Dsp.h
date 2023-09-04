@@ -8,15 +8,18 @@ namespace Dsp
   {
     namespace Control
     {
-      class Api;
+      class Interface;
+      class Mosaik;
     }
     namespace Display
     {
-      class Api;
+      class Interface;
+      class Mosaik;
     }
     namespace Realtime
     {
-      class Api;
+      class Interface;
+      class Mosaik;
     }
   }
 
@@ -26,13 +29,20 @@ namespace Dsp
     Dsp();
     ~Dsp();
 
-    Api::Control::Api &getControlApi() const;
-    Api::Realtime::Api &getRealtimeApi() const;
-    Api::Display::Api &getDisplayApi() const;
+    Api::Control::Interface &getControlApi() const;
+    Api::Realtime::Interface &getRealtimeApi() const;
+    Api::Display::Interface &getDisplayApi() const;
 
    private:
-    std::unique_ptr<Api::Control::Api> m_api;
-    std::unique_ptr<Api::Display::Api> m_displayApi;
-    std::unique_ptr<Api::Realtime::Api> m_realtimeApi;
+    struct Impl;
+    std::unique_ptr<Impl> m_impl;
+
+    std::unique_ptr<Api::Control::Interface> m_controlApi;
+    std::unique_ptr<Api::Display::Interface> m_displayApi;
+    std::unique_ptr<Api::Realtime::Interface> m_realtimeApi;
+
+    friend class Api::Control::Mosaik;
+    friend class Api::Display::Mosaik;
+    friend class Api::Realtime::Mosaik;
   };
 }

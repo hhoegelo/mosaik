@@ -8,26 +8,33 @@ namespace Dsp
   {
     namespace Control
     {
-      class Api;
+      class Interface;
     }
   }
 }
 
 namespace Core
 {
-  class Api;
+  struct DataModel;
+
+  namespace Api
+  {
+    class Interface;
+  }
 
   // holds all the data and logic that can be tweaked via UI
   // cares for persistancy,  manages DSP
   class Core
   {
    public:
-    Core(Dsp::Api::Control::Api &dsp);
+    Core(Dsp::Api::Control::Interface &dsp);
     ~Core();
 
-    Api &getApi() const;
+    Api::Interface &getApi() const;
 
    private:
-    std::unique_ptr<Api> m_api;
+    Dsp::Api::Control::Interface &m_dsp;
+    std::unique_ptr<DataModel> m_dataModel;
+    std::unique_ptr<Api::Interface> m_api;
   };
 }
