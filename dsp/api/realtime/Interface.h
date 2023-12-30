@@ -29,7 +29,7 @@ namespace Dsp
 
         using SendMidi = std::function<void(const MidiEvent &)>;
 
-        virtual void doAudio(const std::span<InFrame> &in, std::span<OutFrame> &out, const SendMidi &cb) = 0;
+        virtual void doAudio(const std::span<OutFrame> &out, const SendMidi &cb) = 0;
         virtual void doMidi(const MidiEvent &inEvent) = 0;
       };
     }
