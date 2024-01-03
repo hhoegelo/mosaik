@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SignalSlot.h>
+#include <tools/SignalSlot.h>
 #include <filesystem>
 #include <map>
 #include <functional>

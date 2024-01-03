@@ -1,7 +1,10 @@
 #include "AlsaOut.h"
-#include <api/realtime/Interface.h>
+#include <dsp/MidiEvent.h>
+#include <dsp/api/realtime/Interface.h>
 #include <alsa/asoundlib.h>
+
 #include <iostream>
+#include <span>
 
 #define checkAlsa(A)                                                                                                   \
   if(auto res = A)                                                                                                     \
@@ -9,15 +12,15 @@
 
 constexpr auto c_samplerate = 48000;
 constexpr auto c_channels = 2;
-constexpr auto c_numPeriods = 3;
-constexpr auto c_framesPerPeriod = 192;
+constexpr auto c_numPeriods = 8;
+constexpr auto c_framesPerPeriod = 256;
 constexpr auto c_sampleFormat = SND_PCM_FORMAT_S32_LE;
 constexpr auto c_floatToS32 = static_cast<float>((1 << 30) - 1);
 
 using Sample = int32_t;
 using SampleFrame = std::tuple<Sample, Sample>;
 
-namespace AudioMidi
+namespace Audio
 {
   AlsaOut::AlsaOut(Dsp::Api::Realtime::Interface &dsp, const std::string &device)
   {
@@ -31,12 +34,12 @@ namespace AudioMidi
                        snd_pcm_hw_params_t *hwparams = nullptr;
                        snd_pcm_hw_params_alloca(&hwparams);
 
-                       checkAlsa(snd_pcm_hw_params_any(pcm, hwparams));
+                       snd_pcm_hw_params_any(pcm, hwparams);
                        checkAlsa(snd_pcm_hw_params_set_access(pcm, hwparams, SND_PCM_ACCESS_RW_INTERLEAVED));
                        checkAlsa(snd_pcm_hw_params_set_format(pcm, hwparams, c_sampleFormat));
 
                        checkAlsa(snd_pcm_hw_params_set_channels(pcm, hwparams, c_channels));
-                       checkAlsa(snd_pcm_hw_params_set_rate(pcm, hwparams, c_samplerate, 1));
+                       checkAlsa(snd_pcm_hw_params_set_rate(pcm, hwparams, c_samplerate, 0));
 
                        checkAlsa(snd_pcm_hw_params_set_periods(pcm, hwparams, c_numPeriods, 0));
                        checkAlsa(snd_pcm_hw_params_set_period_size(pcm, hwparams, c_framesPerPeriod, 0));
@@ -49,13 +52,13 @@ namespace AudioMidi
 
                        for(int i = 0; i < c_numPeriods; i++)
                        {
-                         snd_pcm_writei(pcm, buffer, c_framesPerPeriod * c_channels * sizeof(SampleFrame));
+                         snd_pcm_writei(pcm, buffer, c_framesPerPeriod);
                        }
 
                        sched_param p { sched_get_priority_max(SCHED_FIFO) };
                        pthread_setschedparam(pthread_self(), SCHED_FIFO, &p);
 
-                       Dsp::Api::Realtime::Interface::OutFrame samples[c_framesPerPeriod];
+                       Dsp::Api::Realtime::Interface::OutFrame samples[c_framesPerPeriod] = {};
 
                        while(!m_quit)
                        {
@@ -69,7 +72,7 @@ namespace AudioMidi
                                                                  static_cast<Sample>(in.main.first * c_floatToS32));
                                         });
 
-                         snd_pcm_writei(pcm, buffer, c_framesPerPeriod * c_channels * sizeof(SampleFrame));
+                         snd_pcm_writei(pcm, buffer, c_framesPerPeriod);
                        }
 
                        snd_pcm_close(pcm);

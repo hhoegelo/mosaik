@@ -14,7 +14,7 @@ namespace Dsp
   }
 }
 
-namespace AudioMidi
+namespace Audio
 {
 
   class AlsaOut

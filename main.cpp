@@ -1,8 +1,9 @@
 #include "dsp/Dsp.h"
 #include "core/Core.h"
-#include "audio-midi/AudioMidi.h"
+#include "audio/AlsaOut.h"
 #include "ui/midi-ui/Ui.h"
 #include "ui/touch-ui/Ui.h"
+#include "midi/Monitor.h"
 
 #include <cxxopts.hpp>
 #include <iostream>
@@ -28,9 +29,12 @@ int main(int args, char** argv)
 
     Dsp::Dsp dsp;
     Core::Core core(dsp.getControlApi());
-    AudioMidi::AudioMidi audioMidi(dsp.getRealtimeApi(), result["alsa"].as<std::string>());
+    Audio::AlsaOut audioOut(dsp.getRealtimeApi(), result["alsa-out"].as<std::string>());
+
     Ui::Midi::Ui midiUI(core.getApi(), dsp.getDisplayApi());
+
     Ui::Touch::Ui touchUI(core.getApi(), dsp.getDisplayApi());
+    touchUI.run();
 
     return EXIT_SUCCESS;
   }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <gtkmm-4.0/gtkmm.h>
+
 namespace Core
 {
   namespace Api
@@ -23,16 +25,16 @@ namespace Ui
 {
   namespace Touch
   {
-    class Ui
+    class Window : public Gtk::Window
     {
      public:
-      Ui(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
-
-      void run();
+      Window(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
+      ~Window() override;
 
      private:
-      Core::Api::Interface &m_core;
-      Dsp::Api::Display::Interface &m_dsp;
+      Gtk::Box m_box;
+      Gtk::Button m_button1;
+      Gtk::Button m_button2;
     };
   }
 }

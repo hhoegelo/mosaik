@@ -1,7 +1,7 @@
 #include "Core.h"
 #include "api/Interface.h"
 #include "DataModel.h"
-#include <api/control/Interface.h>
+#include <dsp/api/control/Interface.h>
 
 namespace Core
 {

@@ -4,7 +4,7 @@
 #include <span>
 #include <functional>
 
-#include <MidiEvent.h>
+#include <dsp/MidiEvent.h>
 
 namespace Dsp
 {
