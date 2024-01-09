@@ -6,9 +6,7 @@
 
 namespace Midi
 {
-  Monitor::Monitor()
-  {
-  }
+  Monitor::Monitor() = default;
 
   void Monitor::collectPorts(DeviceNames &target, snd_ctl_t *ctl, snd_rawmidi_info_t *info, int card, int device,
                              snd_rawmidi_stream_t stream) const
@@ -75,8 +73,8 @@ namespace Midi
       }
     }
   }
-
-  void Monitor::poll(std::function<void(std::weak_ptr<AlsaIn>)> newDevicesCb)
+  void Monitor::poll(std::function<void(const std::string &)> foundDevices,
+                     std::function<void(const std::string &)> lostDevices)
   {
     DeviceNames ins;
 
@@ -88,22 +86,15 @@ namespace Midi
       std::set_difference(m_knownInputs.begin(), m_knownInputs.end(), ins.begin(), ins.end(),
                           std::back_inserter(missing));
 
-      std::for_each(missing.begin(), missing.end(), [this](auto m) { m_devices.erase(m); });
+      std::for_each(missing.begin(), missing.end(), [&lostDevices](auto m) { lostDevices(m); });
 
       std::vector<std::string> newFound;
       std::set_difference(ins.begin(), ins.end(), m_knownInputs.begin(), m_knownInputs.end(),
                           std::back_inserter(newFound));
 
-      std::for_each(newFound.begin(), newFound.end(),
-                    [this, &newDevicesCb](auto m)
-                    {
-                      auto device = std::make_shared<AlsaIn>(m);
-                      m_devices[m] = device;
-                      newDevicesCb(device);
-                    });
+      std::for_each(newFound.begin(), newFound.end(), [&foundDevices](auto m) { foundDevices(m); });
 
       m_knownInputs = ins;
-      // m_cb(ins);
     }
   }
 }  // Midi

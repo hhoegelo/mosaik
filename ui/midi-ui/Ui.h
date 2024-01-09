@@ -1,13 +1,12 @@
 #pragma once
 
 #include <memory>
+#include <sigc++/trackable.h>
+#include <map>
 
-namespace Core
+namespace Core::Api
 {
-  namespace Api
-  {
-    class Interface;
-  }
+  class Interface;
 }
 
 namespace Midi
@@ -16,29 +15,23 @@ namespace Midi
   class Monitor;
 }
 
-namespace Dsp
+namespace Dsp::Api::Display
 {
-  namespace Api
-  {
-    namespace Display
-    {
-      class Interface;
-    }
-  }
+  class Interface;
 }
 
-namespace Ui
+namespace Ui::Midi
 {
-  namespace Midi
+  class Ui : public sigc::trackable
   {
-    class Ui
-    {
-     public:
-      Ui(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
-      ~Ui();
+   public:
+    Ui(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
+    ~Ui();
 
-     private:
-      std::unique_ptr<::Midi::Monitor> m_monitor;
-    };
-  }
+   private:
+    bool checkForMidiDevices();
+
+    std::unique_ptr<::Midi::Monitor> m_monitor;
+    std::map<std::string, std::unique_ptr<::Midi::AlsaIn>> m_devices;
+  };
 }

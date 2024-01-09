@@ -30,9 +30,7 @@ int main(int args, char** argv)
     Dsp::Dsp dsp;
     Core::Core core(dsp.getControlApi());
     Audio::AlsaOut audioOut(dsp.getRealtimeApi(), result["alsa-out"].as<std::string>());
-
     Ui::Midi::Ui midiUI(core.getApi(), dsp.getDisplayApi());
-
     Ui::Touch::Ui touchUI(core.getApi(), dsp.getDisplayApi());
     touchUI.run();
 

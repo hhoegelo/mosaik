@@ -1,25 +1,22 @@
 #pragma once
 
-#include <memory>
 #include <functional>
 #include <set>
-#include <map>
 #include <string>
 #include <alsa/asoundlib.h>
 
 namespace Midi
 {
-  class AlsaIn;
   class Monitor
   {
    public:
     Monitor();
 
-    void poll(std::function<void(std::weak_ptr<AlsaIn>)> newDevicesCb);
+    void poll(std::function<void(const std::string &)> foundDevices,
+              std::function<void(const std::string &)> lostDevices);
 
    private:
     using DeviceNames = std::set<std::string>;
-    using Devices = std::map<std::string, std::shared_ptr<AlsaIn>>;
 
     void recurseCards(DeviceNames &ins, int card) const;
     void recurseCard(DeviceNames &ins, int card) const;
@@ -29,7 +26,6 @@ namespace Midi
                       snd_rawmidi_stream_t stream) const;
 
     DeviceNames m_knownInputs;
-    Devices m_devices;
   };
 
 }  // Midi

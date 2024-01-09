@@ -8,7 +8,7 @@
 
 #define checkAlsa(A)                                                                                                   \
   if(auto res = A)                                                                                                     \
-  std::cerr << "Alsa Error: " << #A << " throws error: " << snd_strerror(res) << std::endl
+  std::cerr << "Alsa Audio Error: " << #A << " throws error: " << snd_strerror(res) << std::endl
 
 constexpr auto c_samplerate = 48000;
 constexpr auto c_channels = 2;
