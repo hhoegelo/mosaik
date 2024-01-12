@@ -1,28 +1,23 @@
 #pragma once
 
 #include <string>
-#include <functional>
-#include <future>
 #include <alsa/asoundlib.h>
+#include <functional>
 
 namespace Midi
 {
-  class MidiEvent;
-
   class AlsaIn
   {
    public:
-    AlsaIn(const std::string &device, std::function<void(const MidiEvent &)> cb);
+    using MidiEvent = std::array<uint8_t, 3>;
+    using Callback = std::function<void(const MidiEvent &)>;
+
+    AlsaIn(const std::string &device, const Callback &cb);
     ~AlsaIn();
 
    private:
-    void readMidi(snd_rawmidi_t *handle);
-    void processChunk(uint8_t *buffer, size_t length, snd_midi_event_t *encoder, snd_midi_event_t *decoder);
-    size_t fetchChunk(snd_rawmidi_t *handle, uint8_t *buffer, size_t length, int numPollFDs,
-                      pollfd *pollFileDescriptors);
-
-    int m_cancelPipe[2];
-    bool m_quit = false;
-    std::future<void> m_bg;
+    snd_rawmidi_t *m_device = nullptr;
+    unsigned int m_id = -1;
+    Callback m_cb;
   };
 }

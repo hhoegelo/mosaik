@@ -15,10 +15,12 @@ namespace Ui::Midi
   bool Ui::checkForMidiDevices()
   {
     m_monitor->poll([this](auto &foundDevice)
-                    { m_devices[foundDevice] = std::make_unique<::Midi::AlsaIn>(foundDevice); },
+                    { m_devices[foundDevice] = std::make_unique<::Midi::AlsaIn>(foundDevice, [](auto) {}); },
                     [this](auto lostDevice) { m_devices.erase(lostDevice); });
     return true;
   }
 
-  Ui::~Ui() = default;
+  Ui::~Ui()
+  {
+  }
 }

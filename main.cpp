@@ -7,6 +7,7 @@
 
 #include <cxxopts.hpp>
 #include <iostream>
+#include <glibmm/init.h>
 
 int main(int args, char** argv)
 {
@@ -25,8 +26,8 @@ int main(int args, char** argv)
       return EXIT_SUCCESS;
     }
 
-    std::cout << std::endl;
-
+    Glib::init();
+  
     Dsp::Dsp dsp;
     Core::Core core(dsp.getControlApi());
     Audio::AlsaOut audioOut(dsp.getRealtimeApi(), result["alsa-out"].as<std::string>());
