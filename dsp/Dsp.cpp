@@ -2,12 +2,45 @@
 #include "api/control/Interface.h"
 #include "api/display/Interface.h"
 #include "api/realtime/Interface.h"
+#include "PointerExchange.h"
+#include "tools/Tools.h"
+#include <numeric>
+#include <filesystem>
 
 namespace Dsp
 {
+  struct Voice
+  {
+    struct Params
+    {
+      double volume = 1.0;   // 0 ... 1
+      double balance = 0.0;  // -1 ... 1
+    };
+
+    using Sample = float;
+    using Frame = std::tuple<Sample, Sample>;
+    using Buffer = std::vector<StereoFrame>;
+
+    PointerExchange<Params> params { new Params() };
+    PointerExchange<Buffer> buffer { new Buffer() };
+
+    uint64_t framePos = 0;
+
+    StereoFrame doAudio()
+    {
+      auto params = this->params.get();
+      auto buffer = this->buffer.get();
+
+      if(framePos >= buffer->size())
+        return {};
+
+      return (*buffer)[framePos++];
+    }
+  };
+
   struct Dsp::Impl
   {
-    // here  goes all the stuff that you need for processing the audio
+    std::array<Voice, 256> voices;
   };
 
   namespace Api
@@ -25,14 +58,9 @@ namespace Dsp
 
         ~Mosaik() = default;
 
-        void updateSomeChannelParameter(Col col, Row row, float v) override
+        void loadSample(Col col, Row row, const std::filesystem::path &path) override
         {
-          // this fiddles with m_dsp members directly
-        }
-
-        void alsoDoSomethingElseForTheWholeColumn(Col col) override
-        {
-          // this fiddles with m_dsp members directly
+          m_dsp.voices[col + 16 * row].buffer.set(Tools::loadFile(path, m_samplerate));
         }
 
        private:
@@ -65,6 +93,11 @@ namespace Dsp
 
     namespace Realtime
     {
+      StereoFrame operator+(const StereoFrame &a, const StereoFrame &b)
+      {
+        return { a.left + b.left, a.right + b.right };
+      }
+
       class Mosaik : public Interface
       {
        public:
@@ -77,7 +110,11 @@ namespace Dsp
 
         void doAudio(const std::span<OutFrame> &out, const SendMidi &cb) override
         {
-          // here goes the audio loop that iterates m_dsp's members etc
+          for(auto &f : out)
+          {
+            f.main = std::accumulate(m_dsp.voices.begin(), m_dsp.voices.end(), StereoFrame {},
+                                     [](const StereoFrame &a, Voice &v) { return a + v.doAudio(); });
+          }
         }
 
         void doMidi(const MidiEvent &inEvent) override

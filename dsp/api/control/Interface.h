@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string>
 #include <memory>
+#include <filesystem>
 
 namespace Dsp
 {
@@ -18,8 +19,7 @@ namespace Dsp
        public:
         virtual ~Interface() = default;
 
-        virtual void updateSomeChannelParameter(Col col, Row row, float v) = 0;
-        virtual void alsoDoSomethingElseForTheWholeColumn(Col col) = 0;
+        virtual void loadSample(Col col, Row row, const std::filesystem::path& path) = 0;
       };
     }
   }

@@ -58,7 +58,7 @@ namespace Audio
                        sched_param p { sched_get_priority_max(SCHED_FIFO) };
                        pthread_setschedparam(pthread_self(), SCHED_FIFO, &p);
 
-                       Dsp::Api::Realtime::Interface::OutFrame samples[c_framesPerPeriod] = {};
+                       Dsp::OutFrame samples[c_framesPerPeriod] = {};
 
                        while(!m_quit)
                        {
@@ -66,10 +66,10 @@ namespace Audio
                          dsp.doAudio(s, [](const Dsp::MidiEvent &) {});
 
                          std::transform(s.begin(), s.end(), buffer,
-                                        [](const Dsp::Api::Realtime::Interface::OutFrame &in)
+                                        [](const Dsp::OutFrame &in)
                                         {
-                                          return std::make_tuple(static_cast<Sample>(in.main.first * c_floatToS32),
-                                                                 static_cast<Sample>(in.main.first * c_floatToS32));
+                                          return std::make_tuple(static_cast<Sample>(in.main.left * c_floatToS32),
+                                                                 static_cast<Sample>(in.main.right * c_floatToS32));
                                         });
 
                          snd_pcm_writei(pcm, buffer, c_framesPerPeriod);

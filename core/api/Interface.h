@@ -11,9 +11,6 @@ namespace Core
   {
     enum class ParameterId
     {
-      Foo,
-      Bar,
-      Baz,
       Tempo,
       MainVolume
     };

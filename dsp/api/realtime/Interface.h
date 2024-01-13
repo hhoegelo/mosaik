@@ -1,10 +1,11 @@
 #pragma once
 
+#include <dsp/MidiEvent.h>
+#include <dsp/Types.h>
+
 #include <utility>
 #include <span>
 #include <functional>
-
-#include <dsp/MidiEvent.h>
 
 namespace Dsp
 {
@@ -16,16 +17,6 @@ namespace Dsp
       {
        public:
         Interface() = default;
-
-        using Sample = float;
-        using StereoFrame = std::pair<Sample, Sample>;
-        using InFrame = StereoFrame;
-
-        struct OutFrame
-        {
-          StereoFrame main;
-          StereoFrame pre;
-        };
 
         using SendMidi = std::function<void(const MidiEvent &)>;
 

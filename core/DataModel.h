@@ -18,9 +18,6 @@ namespace Core
     struct Channel
     {
       Path sample;
-      ParameterValue foo;
-      ParameterValue bar;
-      ParameterValue baz;
     };
 
     using Column = std::array<Channel, NUM_ROWS>;
