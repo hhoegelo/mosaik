@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gtkmm-4.0/gtkmm.h>
+#include <gtkmm-3.0/gtkmm.h>
 
 namespace Core
 {
@@ -29,12 +29,6 @@ namespace Ui
     {
      public:
       Window(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
-      ~Window() override;
-
-     private:
-      Gtk::Box m_box;
-      Gtk::Button m_button1;
-      Gtk::Button m_button2;
     };
   }
 }

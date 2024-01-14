@@ -58,9 +58,19 @@ namespace Dsp
 
         ~Mosaik() = default;
 
+        inline size_t getIndex(Col col, Row row)
+        {
+          return col * 16 + row;
+        }
+
         void loadSample(Col col, Row row, const std::filesystem::path &path) override
         {
-          m_dsp.voices[col + 16 * row].buffer.set(Tools::loadFile(path, m_samplerate));
+          m_dsp.voices[getIndex(col, row)].buffer.set(new std::vector<StereoFrame>(Tools::loadFile(path)));
+        }
+
+        void trigger(Col col, Row row) override
+        {
+          m_dsp.voices[getIndex(col, row)].framePos = 0;
         }
 
        private:

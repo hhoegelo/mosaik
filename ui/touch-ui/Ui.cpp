@@ -1,6 +1,6 @@
 #include "Ui.h"
 #include "Window.h"
-#include <gtkmm-4.0/gtkmm.h>
+#include <gtkmm-3.0/gtkmm.h>
 
 namespace Ui
 {
@@ -15,7 +15,8 @@ namespace Ui
     void Ui::run()
     {
       auto app = Gtk::Application::create("com.mosaik.v4");
-      app->make_window_and_run<Window>(0, nullptr, m_core, m_dsp);
+      Window win(m_core, m_dsp);
+      app->run(win);
     }
   }
 }

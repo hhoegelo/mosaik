@@ -7,7 +7,23 @@
 
 #include <cxxopts.hpp>
 #include <iostream>
-#include <glibmm/init.h>
+#include <glibmm.h>
+
+class Tester
+{
+ public:
+  Tester()
+      : timer(Glib::signal_timeout().connect_seconds(sigc::mem_fun(*this, &Tester::foo), 1))
+  {
+  }
+
+  bool foo()
+  {
+    return true;
+  }
+
+  sigc::connection timer;
+};
 
 int main(int args, char** argv)
 {
@@ -27,7 +43,7 @@ int main(int args, char** argv)
     }
 
     Glib::init();
-  
+
     Dsp::Dsp dsp;
     Core::Core core(dsp.getControlApi());
     Audio::AlsaOut audioOut(dsp.getRealtimeApi(), result["alsa-out"].as<std::string>());

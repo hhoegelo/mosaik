@@ -20,6 +20,7 @@ namespace Dsp
         virtual ~Interface() = default;
 
         virtual void loadSample(Col col, Row row, const std::filesystem::path& path) = 0;
+        virtual void trigger(Col col, Row row) = 0;
       };
     }
   }

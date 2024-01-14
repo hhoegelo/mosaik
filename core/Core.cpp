@@ -59,6 +59,11 @@ namespace Core
         commit(col, row, path);
       }
 
+      void trigger(Col col, Row row) override
+      {
+        m_dsp.trigger(col, row);
+      }
+
      private:
       DataModel &m_model;
       Dsp::Api::Control::Interface &m_dsp;

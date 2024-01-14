@@ -5,23 +5,40 @@ namespace Ui
 {
   namespace Touch
   {
-    Window::Window(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp)
-        : m_box(Gtk::Orientation::VERTICAL)
-        , m_button1("Btn 1")
-        , m_button2("Btn 2")
+    Window::Window(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp)
     {
       set_title("Mosaik");
-      set_default_size(500, 500);
+      set_border_width(10);
 
-      set_child(m_box);
-      m_box.append(m_button1);
-      m_box.append(m_button2);
+      auto hbox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL, 5));
+      add(*hbox);
 
-      m_button1.signal_clicked().connect([this, &core] {});
-    }
+      auto load = Gtk::manage(new Gtk::Button("Load Sample"));
+      hbox->pack_start(*load, Gtk::PACK_SHRINK);
 
-    Window::~Window()
-    {
+      auto trigger = Gtk::manage(new Gtk::Button("(Re-)Trigger"));
+      hbox->pack_start(*trigger, Gtk::PACK_SHRINK);
+
+      show_all();
+
+      load->signal_clicked().connect(
+          [this, &core]
+          {
+            Gtk::FileChooserDialog dialog(*this, "Select audio file...");
+
+            dialog.set_transient_for(*this);
+            dialog.set_modal(true);
+
+            dialog.add_button("_Cancel", Gtk::RESPONSE_CANCEL);
+            dialog.add_button("_Open", Gtk::RESPONSE_ACCEPT);
+
+            if(dialog.run() == Gtk::RESPONSE_ACCEPT)
+            {
+              core.loadSample(0, 0, dialog.get_filename());
+            }
+          });
+
+      trigger->signal_clicked().connect([this, &core] { core.trigger(0, 0); });
     }
   }
 }

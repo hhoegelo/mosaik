@@ -5,7 +5,7 @@ project(mosaik-dsp)
 set(CMAKE_CXX_STANDARD 20)
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(LIBS REQUIRED IMPORTED_TARGET gstreamer-1.0)
+pkg_check_modules(LIBS REQUIRED IMPORTED_TARGET gstreamermm-1.0)
 
 add_library(${PROJECT_NAME} STATIC
         Dsp.cpp

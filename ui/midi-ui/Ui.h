@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <sigc++/trackable.h>
+#include <sigc++/connection.h>
 #include <map>
 
 namespace Core::Api
@@ -22,7 +22,7 @@ namespace Dsp::Api::Display
 
 namespace Ui::Midi
 {
-  class Ui : public sigc::trackable
+  class Ui
   {
    public:
     Ui(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
@@ -32,6 +32,7 @@ namespace Ui::Midi
     bool checkForMidiDevices();
 
     std::unique_ptr<::Midi::Monitor> m_monitor;
+    sigc::connection m_timer;
     std::map<std::string, std::unique_ptr<::Midi::AlsaIn>> m_devices;
   };
 }

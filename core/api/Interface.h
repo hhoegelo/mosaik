@@ -38,7 +38,9 @@ namespace Core
 
       virtual void setParameter(Col col, Row row, ParameterId id, ParameterValue v) = 0;
       virtual void setParameter(ParameterId id, ParameterValue v) = 0;
+
       virtual void loadSample(Col col, Row row, const Path &path) = 0;
+      virtual void trigger(Col col, Row row) = 0;
 
       [[nodiscard]] Tools::Signals::Connection connect(Col col, Row row, ParameterId id,
                                                        const std::function<void(ParameterValue)> &cb);

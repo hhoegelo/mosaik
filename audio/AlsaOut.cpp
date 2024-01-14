@@ -10,7 +10,6 @@
   if(auto res = A)                                                                                                     \
   std::cerr << "Alsa Audio Error: " << #A << " throws error: " << snd_strerror(res) << std::endl
 
-constexpr auto c_samplerate = 48000;
 constexpr auto c_channels = 2;
 constexpr auto c_numPeriods = 8;
 constexpr auto c_framesPerPeriod = 256;
@@ -18,7 +17,12 @@ constexpr auto c_sampleFormat = SND_PCM_FORMAT_S32_LE;
 constexpr auto c_floatToS32 = static_cast<float>((1 << 30) - 1);
 
 using Sample = int32_t;
-using SampleFrame = std::tuple<Sample, Sample>;
+
+struct StereoFrame
+{
+  Sample left;
+  Sample right;
+};
 
 namespace Audio
 {
@@ -39,14 +43,14 @@ namespace Audio
                        checkAlsa(snd_pcm_hw_params_set_format(pcm, hwparams, c_sampleFormat));
 
                        checkAlsa(snd_pcm_hw_params_set_channels(pcm, hwparams, c_channels));
-                       checkAlsa(snd_pcm_hw_params_set_rate(pcm, hwparams, c_samplerate, 0));
+                       checkAlsa(snd_pcm_hw_params_set_rate(pcm, hwparams, SAMPLERATE, 0));
 
                        checkAlsa(snd_pcm_hw_params_set_periods(pcm, hwparams, c_numPeriods, 0));
                        checkAlsa(snd_pcm_hw_params_set_period_size(pcm, hwparams, c_framesPerPeriod, 0));
 
                        checkAlsa(snd_pcm_hw_params(pcm, hwparams));
 
-                       SampleFrame buffer[c_framesPerPeriod] = {};
+                       StereoFrame buffer[c_framesPerPeriod] = {};
 
                        checkAlsa(snd_pcm_prepare(pcm));
 
@@ -68,8 +72,8 @@ namespace Audio
                          std::transform(s.begin(), s.end(), buffer,
                                         [](const Dsp::OutFrame &in)
                                         {
-                                          return std::make_tuple(static_cast<Sample>(in.main.left * c_floatToS32),
-                                                                 static_cast<Sample>(in.main.right * c_floatToS32));
+                                          return StereoFrame { static_cast<Sample>(in.main.left * c_floatToS32),
+                                                               static_cast<Sample>(in.main.right * c_floatToS32) };
                                         });
 
                          snd_pcm_writei(pcm, buffer, c_framesPerPeriod);
