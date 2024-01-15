@@ -9,6 +9,9 @@ namespace Dsp
   {
     Gst::init();
 
+    if(!exists(path))
+      return {};
+    
     auto desc = std::format("filesrc location=\"{}\" ! decodebin ! audioconvert ! audioresample ! "
                             "audio/x-raw,format=F32LE,channels=2,rate={},layout=interleaved ! appsink name=sink",
                             path.string(), SAMPLERATE);

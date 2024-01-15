@@ -4,6 +4,8 @@
 #include <filesystem>
 #include <map>
 #include <functional>
+#include <variant>
+#include <optional>
 
 namespace Core
 {
@@ -11,14 +13,25 @@ namespace Core
   {
     enum class ParameterId
     {
-      Tempo,
-      MainVolume
+      GlobalTempo,   // float 20..480 bpm
+      GlobalVolume,  // float 0...1
+
+      SampleFile,  // std::filesystem::path
+      Pattern,     // std::array<bool, NUM_STEPS>
+      Balance,     // float -1...1
+      Gain,        // float 0...1
+      Mute,        // bool
+      Reverse,     // bool
     };
 
-    using Col = uint8_t;
-    using Row = uint8_t;
-    using ParameterValue = float;
     using Path = std::filesystem::path;
+    using Pattern = std::array<bool, NUM_STEPS>;
+    using Float = float;
+    using Bool = bool;
+    using ParameterValue = std::variant<Bool, Float, Path, Pattern>;
+    using ChannelId = std::optional<uint32_t>;
+    using Step = uint8_t;
+
     using Connection = Tools::Signals::Connection;
     template <typename S> using Signal = Tools::Signals::Signal<S>;
 
@@ -36,26 +49,16 @@ namespace Core
      public:
       virtual ~Interface() = default;
 
-      virtual void setParameter(Col col, Row row, ParameterId id, ParameterValue v) = 0;
-      virtual void setParameter(ParameterId id, ParameterValue v) = 0;
+      virtual void setParameter(ChannelId channel, ParameterId parameterId, const ParameterValue &value) = 0;
 
-      virtual void loadSample(Col col, Row row, const Path &path) = 0;
-      virtual void trigger(Col col, Row row) = 0;
-
-      [[nodiscard]] Tools::Signals::Connection connect(Col col, Row row, ParameterId id,
-                                                       const std::function<void(ParameterValue)> &cb);
-      [[nodiscard]] Tools::Signals::Connection connect(Col col, Row row, const std::function<void(const Path &)> &cb);
-      [[nodiscard]] Tools::Signals::Connection connect(ParameterId id, const std::function<void(ParameterValue)> &cb);
+      Tools::Signals::Connection connect(ChannelId channel, ParameterId id,
+                                         const std::function<void(const ParameterValue &)> &cb);
 
      protected:
-      void commit(Col col, Row row, ParameterId id, ParameterValue v);
-      void commit(Col col, Row row, const Path &);
-      void commit(ParameterId id, ParameterValue v);
+      void commit(ChannelId channelId, ParameterId parameterId, const ParameterValue &v);
 
      private:
-      std::map<std::tuple<Col, Row, ParameterId>, Detail::SignalingCache<ParameterValue>> m_perChannelParameterCache;
-      std::map<std::tuple<Col, Row>, Detail::SignalingCache<Path>> m_perChannelPathCache;
-      std::map<ParameterId, Detail::SignalingCache<ParameterValue>> m_globalParameterCache;
+      std::map<std::tuple<ChannelId, ParameterId>, Detail::SignalingCache<ParameterValue>> m_parameterCache;
     };
   }
 

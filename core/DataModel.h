@@ -5,27 +5,28 @@
 
 namespace Core
 {
-  using Col = uint8_t;
-  using Row = uint8_t;
-  using ParameterValue = float;
-  using Path = std::filesystem::path;
-
-  static constexpr auto NUM_COLS = 16;
-  static constexpr auto NUM_ROWS = 16;
+  enum class Direction
+  {
+    Forward = 1,
+    Backward = -1
+  };
 
   struct DataModel
   {
     struct Channel
     {
-      Path sample;
+      std::filesystem::path sample {};
+      std::array<bool, NUM_STEPS> pattern {};
+      float gain = 1.f;
+      float balance = 0.f;
+      bool muted = false;
+      Direction playbackDirection;
     };
 
-    using Column = std::array<Channel, NUM_ROWS>;
-    using Matrix = std::array<Column, NUM_COLS>;
-    Matrix matrix;
+    Channel channels[NUM_CHANNELS];
 
-    ParameterValue bpm;
-    ParameterValue mainVolume;
+    float tempo = 120.f;
+    float volume = 1.f;
   };
 
 }

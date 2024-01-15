@@ -38,9 +38,87 @@ namespace Dsp
     }
   };
 
+  static StereoFrame operator+(const StereoFrame &lhs, const StereoFrame &rhs)
+  {
+    return { lhs.left + rhs.left, lhs.right + rhs.right };
+  }
+
+  static StereoFrame operator*(const StereoFrame &lhs, float f)
+  {
+    return { lhs.left * f, lhs.right * f };
+  }
+
   struct Dsp::Impl
   {
-    std::array<Voice, 256> voices;
+    Impl()
+        : audioKernel(new Api::Control::AudioKernel)
+    {
+    }
+
+    uint8_t step = 0;
+    uint32_t framesInCurrentStep = 0;
+    float volume = 1.0f;
+
+    struct Channel
+    {
+      float gainLeft { 1.0f };
+      float gainRight { 1.0f };
+      int64_t framePosition = 0;
+
+      StereoFrame doAudio(Api::Control::AudioKernel::Channel &kernel, uint8_t lastStep, uint8_t currentStep)
+      {
+        if(kernel.audio->empty())
+          return {};
+
+        if(lastStep != currentStep && kernel.pattern[currentStep])
+        {
+          if(kernel.playbackFrameIncrement < 0)
+            framePosition = kernel.audio->size() - 1;
+          else if(kernel.playbackFrameIncrement > 0)
+            framePosition = 0;
+        }
+
+        if(framePosition < 0 || kernel.audio->size() <= framePosition)
+          return {};
+
+        constexpr auto maxVolStep = 1000.0f / SAMPLERATE;
+        gainLeft += std::clamp(kernel.gainLeft - gainLeft, -maxVolStep, maxVolStep);
+        gainRight += std::clamp(kernel.gainRight - gainRight, -maxVolStep, maxVolStep);
+
+        auto r = kernel.audio->operator[](framePosition);
+        r.left *= gainLeft;
+        r.right *= gainRight;
+
+        framePosition += kernel.playbackFrameIncrement;
+        return r;
+      }
+    };
+
+    std::array<Channel, NUM_CHANNELS> channels;
+
+    PointerExchange<Api::Control::AudioKernel> audioKernel;
+
+    StereoFrame doAudio()
+    {
+      constexpr auto maxVolStep = 1000.0f / SAMPLERATE;
+      auto kernel = audioKernel.get();
+
+      auto lastStep = step;
+
+      if(++framesInCurrentStep >= kernel->framesPer16th)
+      {
+        step = (step + 1) % NUM_STEPS;
+        framesInCurrentStep = 0;
+      }
+
+      StereoFrame frame {};
+
+      for(auto c = 0; c < NUM_CHANNELS; c++)
+        frame = frame + channels[c].doAudio(kernel->channels[c], lastStep, step);
+
+      volume += std::clamp(kernel->volume - volume, -maxVolStep, maxVolStep);
+      return frame * volume;
+    }
   };
 
   namespace Api
@@ -58,19 +136,9 @@ namespace Dsp
 
         ~Mosaik() = default;
 
-        inline size_t getIndex(Col col, Row row)
+        void takeAudioKernel(AudioKernel *kernel) override
         {
-          return col * 16 + row;
-        }
-
-        void loadSample(Col col, Row row, const std::filesystem::path &path) override
-        {
-          m_dsp.voices[getIndex(col, row)].buffer.set(new std::vector<StereoFrame>(Tools::loadFile(path)));
-        }
-
-        void trigger(Col col, Row row) override
-        {
-          m_dsp.voices[getIndex(col, row)].framePos = 0;
+          m_dsp.audioKernel.set(kernel);
         }
 
        private:
@@ -122,8 +190,7 @@ namespace Dsp
         {
           for(auto &f : out)
           {
-            f.main = std::accumulate(m_dsp.voices.begin(), m_dsp.voices.end(), StereoFrame {},
-                                     [](const StereoFrame &a, Voice &v) { return a + v.doAudio(); });
+            f.main = m_dsp.doAudio();
           }
         }
 

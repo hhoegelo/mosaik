@@ -15,7 +15,7 @@ template <typename T> class PointerExchange
     if(auto d = next.exchange(nullptr))
       delete d;
 
-    if(auto d = current.exchange(nullptr))
+    if(auto d = current)
       delete d;
 
     if(auto d = doomed.exchange(nullptr))
@@ -39,7 +39,8 @@ template <typename T> class PointerExchange
     {
       if(auto n = next.exchange(nullptr))
       {
-        doomed = current.exchange(n);
+        doomed = current;
+        current = n;
       }
     }
     return current;
@@ -47,6 +48,6 @@ template <typename T> class PointerExchange
 
  private:
   std::atomic<T *> next;
-  std::atomic<T *> current;
+  T *current = nullptr;
   std::atomic<T *> doomed;
 };
