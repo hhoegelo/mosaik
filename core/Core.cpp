@@ -64,7 +64,7 @@ namespace Core
 
           tgt.pattern = src.pattern;
           tgt.audio = loadSample(src.sample);
-          auto unbalancedGain = src.gain * src.muted ? 0.f : 1.f;
+          auto unbalancedGain = src.muted ? 0.f : src.gain;
           tgt.gainLeft
               = data.channels[c].balance < 0 ? unbalancedGain : unbalancedGain * (1.0f - data.channels[c].balance);
           tgt.gainRight
@@ -84,7 +84,7 @@ namespace Core
             break;
 
           case ParameterId::GlobalTempo:
-            m_model.tempo = std::clamp(std::get<Float>(v), 20.f, 480.f);
+            m_model.tempo = std::clamp(std::get<Float>(v), 20.f, 240.f);
             break;
         }
       }

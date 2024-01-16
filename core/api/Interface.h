@@ -13,7 +13,7 @@ namespace Core
   {
     enum class ParameterId
     {
-      GlobalTempo,   // float 20..480 bpm
+      GlobalTempo,   // float 20..240 bpm
       GlobalVolume,  // float 0...1
 
       SampleFile,  // std::filesystem::path
