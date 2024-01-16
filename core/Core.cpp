@@ -3,6 +3,7 @@
 #include "DataModel.h"
 #include <dsp/api/control/Interface.h>
 #include <dsp/tools/Tools.h>
+#include <dsp/AudioKernel.h>
 
 namespace Core
 {
@@ -17,62 +18,72 @@ namespace Core
           : m_model(model)
           , m_dsp(dsp)
       {
-        // populate Cache
-        commit({}, ParameterId::GlobalTempo, m_model.tempo);
-        commit({}, ParameterId::GlobalVolume, m_model.volume);
-
-        for(int i = 0; i < NUM_CHANNELS; i++)
-        {
-          commit(i, ParameterId::SampleFile, m_model.channels[i].sample);
-          commit(i, ParameterId::Pattern, m_model.channels[i].pattern);
-          commit(i, ParameterId::Balance, m_model.channels[i].balance);
-          commit(i, ParameterId::Gain, m_model.channels[i].gain);
-          commit(i, ParameterId::Mute, m_model.channels[i].muted);
-          commit(i, ParameterId::Reverse, m_model.channels[i].reverse);
-        }
-
+        populateCache();
         m_dsp.takeAudioKernel(newDspKernel(m_model));
       }
 
       ~Mosaik() override = default;
 
-      void setParameter(ChannelId channelId, ParameterId parameterId, const ParameterValue &v) override
+      void populateCache()
       {
-        if(!channelId)
-          setGlobalParameter(parameterId, v);
-        else
-          setChannelParameter(m_model.channels[channelId.value()], parameterId, v);
+        commit({}, ParameterId::GlobalTempo, m_model.tempo);
+        commit({}, ParameterId::GlobalVolume, m_model.volume);
 
-        m_dsp.takeAudioKernel(newDspKernel(m_model));
-        commit(channelId, parameterId, v);
+        for(int i = 0; i < NUM_TILES; i++)
+        {
+          auto &src = m_model.tiles[i];
+          commit(i, ParameterId::SampleFile, src.sample);
+          commit(i, ParameterId::Pattern, src.pattern);
+          commit(i, ParameterId::Balance, src.balance);
+          commit(i, ParameterId::Gain, src.gain);
+          commit(i, ParameterId::Mute, src.muted);
+          commit(i, ParameterId::Reverse, src.reverse);
+        }
       }
 
-      Dsp::Api::Control::AudioKernel *newDspKernel(const DataModel &data) const
+      void setParameter(TileId tileId, ParameterId parameterId, const ParameterValue &v) override
       {
-        auto r = std::make_unique<Dsp::Api::Control::AudioKernel>();
-        r->volume = data.volume;
+        if(!tileId)
+          setGlobalParameter(parameterId, v);
+        else
+          setTileParameter(m_model.tiles[tileId.value()], parameterId, v);
 
-        auto numFramesPerMinute = SAMPLERATE * 60;
-        auto num16thPerMinute = data.tempo * 4;
+        m_dsp.takeAudioKernel(newDspKernel(m_model));
+        commit(tileId, parameterId, v);
+      }
 
-        r->framesPer16th = numFramesPerMinute / num16thPerMinute;
+      Dsp::AudioKernel *newDspKernel(const DataModel &dataModel) const
+      {
+        auto r = std::make_unique<Dsp::AudioKernel>();
+        translateGlobals(r, dataModel);
 
-        for(auto c = 0; c < NUM_CHANNELS; c++)
+        for(auto c = 0; c < NUM_TILES; c++)
         {
-          const auto &src = data.channels[c];
-          auto &tgt = r->channels[c];
-
-          tgt.pattern = src.pattern;
-          tgt.audio = loadSample(src.sample);
-          auto unbalancedGain = src.muted ? 0.f : src.gain;
-          tgt.gainLeft
-              = data.channels[c].balance < 0 ? unbalancedGain : unbalancedGain * (1.0f - data.channels[c].balance);
-          tgt.gainRight
-              = data.channels[c].balance > 0 ? unbalancedGain : unbalancedGain * (1.0f + data.channels[c].balance);
-          tgt.playbackFrameIncrement = src.reverse ? -1 : 1;
+          const auto &src = dataModel.tiles[c];
+          auto &tgt = r->tiles[c];
+          translateTile(dataModel, tgt, src);
         }
 
         return r.release();
+      }
+
+      void translateGlobals(auto &target, const auto &source) const
+      {
+        auto numFramesPerMinute = SAMPLERATE * 60;
+        auto num16thPerMinute = source.tempo * 4;
+
+        target->framesPer16th = numFramesPerMinute / num16thPerMinute;
+        target->volume = source.volume;
+      }
+
+      void translateTile(const DataModel &data, auto &tgt, const auto &src) const
+      {
+        tgt.pattern = src.pattern;
+        tgt.audio = loadSample(src.sample);
+        auto unbalancedGain = src.muted ? 0.f : src.gain;
+        tgt.gainLeft = src.balance < 0 ? unbalancedGain : unbalancedGain * (1.0f - src.balance);
+        tgt.gainRight = src.balance > 0 ? unbalancedGain : unbalancedGain * (1.0f + src.balance);
+        tgt.playbackFrameIncrement = src.reverse ? -1 : 1;
       }
 
       void setGlobalParameter(const ParameterId &parameterId, const ParameterValue &v)
@@ -89,32 +100,32 @@ namespace Core
         }
       }
 
-      void setChannelParameter(DataModel::Channel &channel, const ParameterId &parameterId, const ParameterValue &v)
+      void setTileParameter(DataModel::Tile &tile, const ParameterId &parameterId, const ParameterValue &v)
       {
         switch(parameterId)
         {
           case ParameterId::SampleFile:
-            channel.sample = std::get<Path>(v);
+            tile.sample = std::get<Path>(v);
             break;
 
           case ParameterId::Pattern:
-            channel.pattern = std::get<Pattern>(v);
+            tile.pattern = std::get<Pattern>(v);
             break;
 
           case ParameterId::Balance:
-            channel.balance = std::get<Float>(v);
+            tile.balance = std::get<Float>(v);
             break;
 
           case ParameterId::Gain:
-            channel.gain = std::get<Float>(v);
+            tile.gain = std::get<Float>(v);
             break;
 
           case ParameterId::Mute:
-            channel.muted = std::get<Bool>(v);
+            tile.muted = std::get<Bool>(v);
             break;
 
           case ParameterId::Reverse:
-            channel.reverse = std::get<Bool>(v);
+            tile.reverse = std::get<Bool>(v);
             break;
         }
       }

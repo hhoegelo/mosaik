@@ -3,26 +3,14 @@
 #include "api/display/Interface.h"
 #include "api/realtime/Interface.h"
 #include "PointerExchange.h"
-#include "tools/Tools.h"
-#include <numeric>
-#include <filesystem>
+#include <dsp/AudioKernel.h>
 
 namespace Dsp
 {
-  static StereoFrame operator+(const StereoFrame &lhs, const StereoFrame &rhs)
-  {
-    return { lhs.left + rhs.left, lhs.right + rhs.right };
-  }
-
-  static StereoFrame operator*(const StereoFrame &lhs, float f)
-  {
-    return { lhs.left * f, lhs.right * f };
-  }
-
   struct Dsp::Impl
   {
     Impl()
-        : audioKernel(new Api::Control::AudioKernel)
+        : audioKernel(new AudioKernel)
     {
     }
 
@@ -30,14 +18,14 @@ namespace Dsp
     uint32_t framesInCurrentStep = 0;
     float volume = 1.0f;
 
-    struct Channel
+    struct Tile
     {
       float gainLeft { 1.0f };
       float gainRight { 1.0f };
       int64_t framePosition = 0;
       bool virgin = true;
 
-      StereoFrame doAudio(Api::Control::AudioKernel::Channel &kernel, uint8_t lastStep, uint8_t currentStep)
+      StereoFrame doAudio(AudioKernel::Tile &kernel, uint8_t lastStep, uint8_t currentStep)
       {
         if(kernel.audio->empty())
           return {};
@@ -67,9 +55,9 @@ namespace Dsp
       }
     };
 
-    std::array<Channel, NUM_CHANNELS> channels;
+    std::array<Tile, NUM_TILES> tiles;
 
-    PointerExchange<Api::Control::AudioKernel> audioKernel;
+    PointerExchange<AudioKernel> audioKernel;
 
     StereoFrame doAudio()
     {
@@ -86,8 +74,8 @@ namespace Dsp
 
       StereoFrame frame {};
 
-      for(auto c = 0; c < NUM_CHANNELS; c++)
-        frame = frame + channels[c].doAudio(kernel->channels[c], lastStep, step);
+      for(auto c = 0; c < NUM_TILES; c++)
+        frame = frame + tiles[c].doAudio(kernel->tiles[c], lastStep, step);
 
       volume += std::clamp(kernel->volume - volume, -maxVolStep, maxVolStep);
       return frame * volume;
@@ -133,7 +121,6 @@ namespace Dsp
 
         Position getCurrentPosition() const override
         {
-          // get some values from m_dsp
           return Position::zero();
         }
 
@@ -144,11 +131,6 @@ namespace Dsp
 
     namespace Realtime
     {
-      StereoFrame operator+(const StereoFrame &a, const StereoFrame &b)
-      {
-        return { a.left + b.left, a.right + b.right };
-      }
-
       class Mosaik : public Interface
       {
        public:
@@ -162,9 +144,7 @@ namespace Dsp
         void doAudio(const std::span<OutFrame> &out, const SendMidi &cb) override
         {
           for(auto &f : out)
-          {
             f.main = m_dsp.doAudio();
-          }
         }
 
         void doMidi(const MidiEvent &inEvent) override

@@ -7,22 +7,17 @@
 #include <span>
 #include <functional>
 
-namespace Dsp
+namespace Dsp::Api::Realtime
 {
-  namespace Api
+  class Interface
   {
-    namespace Realtime
-    {
-      class Interface
-      {
-       public:
-        Interface() = default;
+   public:
+    Interface() = default;
+    virtual ~Interface() = default;
 
-        using SendMidi = std::function<void(const MidiEvent &)>;
+    using SendMidi = std::function<void(const MidiEvent &)>;
 
-        virtual void doAudio(const std::span<OutFrame> &out, const SendMidi &cb) = 0;
-        virtual void doMidi(const MidiEvent &inEvent) = 0;
-      };
-    }
-  }
+    virtual void doAudio(const std::span<OutFrame> &out, const SendMidi &cb) = 0;
+    virtual void doMidi(const MidiEvent &inEvent) = 0;
+  };
 }

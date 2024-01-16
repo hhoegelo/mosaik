@@ -1,38 +1,26 @@
 #pragma once
 
-namespace Core
+namespace Core::Api
 {
-  namespace Api
-  {
-    class Interface;
-  }
+  class Interface;
 }
 
-namespace Dsp
+namespace Dsp::Api::Display
 {
-  namespace Api
-  {
-    namespace Display
-    {
-      class Interface;
-    }
-  }
+  class Interface;
 }
 
-namespace Ui
+namespace Ui::Touch
 {
-  namespace Touch
+  class Ui
   {
-    class Ui
-    {
-     public:
-      Ui(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
+   public:
+    Ui(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
 
-      void run();
+    void run();
 
-     private:
-      Core::Api::Interface &m_core;
-      Dsp::Api::Display::Interface &m_dsp;
-    };
-  }
+   private:
+    Core::Api::Interface &m_core;
+    Dsp::Api::Display::Interface &m_dsp;
+  };
 }

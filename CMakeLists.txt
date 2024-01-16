@@ -15,7 +15,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_compile_definitions(SAMPLERATE=48000)
 add_compile_definitions(NUM_STEPS=16)
-add_compile_definitions(NUM_CHANNELS=16)
+add_compile_definitions(NUM_TILES=36)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBS REQUIRED IMPORTED_TARGET cxxopts)

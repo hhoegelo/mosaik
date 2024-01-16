@@ -3,20 +3,13 @@
 #include <string>
 #include <future>
 
-namespace Dsp
+namespace Dsp::Api::Realtime
 {
-  namespace Api
-  {
-    namespace Realtime
-    {
-      class Interface;
-    }
-  }
+  class Interface;
 }
 
 namespace Audio
 {
-
   class AlsaOut
   {
    public:

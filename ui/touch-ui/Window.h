@@ -2,33 +2,21 @@
 
 #include <gtkmm-3.0/gtkmm.h>
 
-namespace Core
+namespace Core::Api
 {
-  namespace Api
-  {
-    class Interface;
-  }
+  class Interface;
 }
 
-namespace Dsp
+namespace Dsp::Api::Display
 {
-  namespace Api
-  {
-    namespace Display
-    {
-      class Interface;
-    }
-  }
+  class Interface;
 }
 
-namespace Ui
+namespace Ui::Touch
 {
-  namespace Touch
+  class Window : public Gtk::Window
   {
-    class Window : public Gtk::Window
-    {
-     public:
-      Window(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
-    };
-  }
+   public:
+    Window(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
+  };
 }

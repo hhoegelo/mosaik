@@ -1,22 +1,19 @@
 #include "Interface.h"
 
-namespace Core
+namespace Core::Api
 {
-  namespace Api
+  Tools::Signals::Connection Interface::connect(TileId tileId, ParameterId parameterId,
+                                                const std::function<void(const ParameterValue &)> &cb)
   {
-    Tools::Signals::Connection Interface::connect(ChannelId channelId, ParameterId parameterId,
-                                                  const std::function<void(const ParameterValue &)> &cb)
-    {
-      auto &c = m_parameterCache[std::make_tuple(channelId, parameterId)];
-      cb(c.cache);
-      return c.sig.connect(cb);
-    }
+    auto &c = m_parameterCache[std::make_tuple(tileId, parameterId)];
+    cb(c.cache);
+    return c.sig.connect(cb);
+  }
 
-    void Interface::commit(ChannelId channelId, ParameterId parameterId, const ParameterValue &v)
-    {
-      auto &c = m_parameterCache[std::make_tuple(channelId, parameterId)];
-      c.cache = v;
-      c.sig.emit(v);
-    }
+  void Interface::commit(TileId tileId, ParameterId parameterId, const ParameterValue &v)
+  {
+    auto &c = m_parameterCache[std::make_tuple(tileId, parameterId)];
+    c.cache = v;
+    c.sig.emit(v);
   }
 }

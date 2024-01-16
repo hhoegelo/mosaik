@@ -2,21 +2,16 @@
 
 #include <chrono>
 
-namespace Dsp
+namespace Dsp::Api::Display
 {
-  namespace Api
+  class Interface
   {
-    namespace Display
-    {
-      class Interface
-      {
-       public:
-        Interface() = default;
+   public:
+    Interface() = default;
+    virtual ~Interface() = default;
 
-        using Position = std::chrono::nanoseconds;
+    using Position = std::chrono::nanoseconds;
 
-        virtual Position getCurrentPosition() const = 0;
-      };
-    }
-  }
+    virtual Position getCurrentPosition() const = 0;
+  };
 }

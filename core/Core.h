@@ -2,15 +2,9 @@
 
 #include <memory>
 
-namespace Dsp
+namespace Dsp::Api::Control
 {
-  namespace Api
-  {
-    namespace Control
-    {
-      class Interface;
-    }
-  }
+  class Interface;
 }
 
 namespace Core
@@ -22,8 +16,6 @@ namespace Core
     class Interface;
   }
 
-  // holds all the data and logic that can be tweaked via UI
-  // cares for persistancy,  manages DSP
   class Core
   {
    public:
