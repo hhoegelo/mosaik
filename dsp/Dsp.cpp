@@ -9,35 +9,6 @@
 
 namespace Dsp
 {
-  struct Voice
-  {
-    struct Params
-    {
-      double volume = 1.0;   // 0 ... 1
-      double balance = 0.0;  // -1 ... 1
-    };
-
-    using Sample = float;
-    using Frame = std::tuple<Sample, Sample>;
-    using Buffer = std::vector<StereoFrame>;
-
-    PointerExchange<Params> params { new Params() };
-    PointerExchange<Buffer> buffer { new Buffer() };
-
-    uint64_t framePos = 0;
-
-    StereoFrame doAudio()
-    {
-      auto params = this->params.get();
-      auto buffer = this->buffer.get();
-
-      if(framePos >= buffer->size())
-        return {};
-
-      return (*buffer)[framePos++];
-    }
-  };
-
   static StereoFrame operator+(const StereoFrame &lhs, const StereoFrame &rhs)
   {
     return { lhs.left + rhs.left, lhs.right + rhs.right };
@@ -64,6 +35,7 @@ namespace Dsp
       float gainLeft { 1.0f };
       float gainRight { 1.0f };
       int64_t framePosition = 0;
+      bool virgin = true;
 
       StereoFrame doAudio(Api::Control::AudioKernel::Channel &kernel, uint8_t lastStep, uint8_t currentStep)
       {
@@ -72,13 +44,14 @@ namespace Dsp
 
         if(lastStep != currentStep && kernel.pattern[currentStep])
         {
+          virgin = false;
           if(kernel.playbackFrameIncrement < 0)
             framePosition = kernel.audio->size() - 1;
           else if(kernel.playbackFrameIncrement > 0)
             framePosition = 0;
         }
 
-        if(framePosition < 0 || kernel.audio->size() <= framePosition)
+        if(virgin || framePosition < 0 || kernel.audio->size() <= framePosition)
           return {};
 
         constexpr auto maxVolStep = 1000.0f / SAMPLERATE;

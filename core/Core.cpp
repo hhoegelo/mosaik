@@ -18,18 +18,20 @@ namespace Core
           , m_dsp(dsp)
       {
         // populate Cache
-        setParameter({}, ParameterId::GlobalTempo, 120.0f);
-        setParameter({}, ParameterId::GlobalVolume, 1.0f);
+        commit({}, ParameterId::GlobalTempo, m_model.tempo);
+        commit({}, ParameterId::GlobalVolume, m_model.volume);
 
         for(int i = 0; i < NUM_CHANNELS; i++)
         {
-          setParameter(i, ParameterId::SampleFile, std::filesystem::path {});
-          setParameter(i, ParameterId::Pattern, Pattern {});
-          setParameter(i, ParameterId::Balance, 0.0f);
-          setParameter(i, ParameterId::Gain, 1.0f);
-          setParameter(i, ParameterId::Mute, false);
-          setParameter(i, ParameterId::Reverse, false);
+          commit(i, ParameterId::SampleFile, m_model.channels[i].sample);
+          commit(i, ParameterId::Pattern, m_model.channels[i].pattern);
+          commit(i, ParameterId::Balance, m_model.channels[i].balance);
+          commit(i, ParameterId::Gain, m_model.channels[i].gain);
+          commit(i, ParameterId::Mute, m_model.channels[i].muted);
+          commit(i, ParameterId::Reverse, m_model.channels[i].reverse);
         }
+
+        m_dsp.takeAudioKernel(newDspKernel(m_model));
       }
 
       ~Mosaik() override = default;
@@ -67,7 +69,7 @@ namespace Core
               = data.channels[c].balance < 0 ? unbalancedGain : unbalancedGain * (1.0f - data.channels[c].balance);
           tgt.gainRight
               = data.channels[c].balance > 0 ? unbalancedGain : unbalancedGain * (1.0f + data.channels[c].balance);
-          tgt.playbackFrameIncrement = src.playbackDirection == Direction::Forward ? 1 : -1;
+          tgt.playbackFrameIncrement = src.reverse ? -1 : 1;
         }
 
         return r.release();
@@ -112,7 +114,7 @@ namespace Core
             break;
 
           case ParameterId::Reverse:
-            channel.playbackDirection = std::get<Bool>(v) ? Direction::Backward : Direction::Forward;
+            channel.reverse = std::get<Bool>(v);
             break;
         }
       }
@@ -137,9 +139,15 @@ namespace Core
     };
   }
 
+  static std::filesystem::path getInitFileName()
+  {
+    std::filesystem::path home = getenv("HOME");
+    return home / ".mosaik";
+  }
+
   Core::Core(Dsp::Api::Control::Interface &dsp)
       : m_dsp(dsp)
-      , m_dataModel(std::make_unique<DataModel>())
+      , m_dataModel(std::make_unique<DataModel>(getInitFileName()))
       , m_api(std::make_unique<Api::Mosaik>(*m_dataModel.get(), m_dsp))
   {
   }
@@ -150,5 +158,4 @@ namespace Core
   {
     return *m_api;
   }
-
 }

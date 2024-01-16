@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <filesystem>
+#include <array>
 
 namespace Core
 {
@@ -13,6 +14,9 @@ namespace Core
 
   struct DataModel
   {
+    explicit DataModel(const std::filesystem::path &f);
+    ~DataModel();
+
     struct Channel
     {
       std::filesystem::path sample {};
@@ -20,13 +24,14 @@ namespace Core
       float gain = 1.f;
       float balance = 0.f;
       bool muted = false;
-      Direction playbackDirection;
+      bool reverse = false;
     };
 
-    Channel channels[NUM_CHANNELS];
+    std::array<Channel, NUM_CHANNELS> channels;
 
     float tempo = 120.f;
     float volume = 1.f;
-  };
 
+    std::filesystem::path backing;
+  };
 }

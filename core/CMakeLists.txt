@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 
-add_library(mosaik-core STATIC Core.cpp api/Interface.cpp)
-target_include_directories(mosaik-core PRIVATE ${CMAKE_SOURCE_DIR})
-target_link_libraries(mosaik-core mosaik-dsp mosaik-tools)
+project(mosaik-core)
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBS REQUIRED IMPORTED_TARGET nlohmann_json)
+
+add_library(${PROJECT_NAME} STATIC Core.cpp DataModel.cpp api/Interface.cpp)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR} ${LIBS_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} mosaik-dsp mosaik-tools ${LIBS_LIBRARIES})
 
