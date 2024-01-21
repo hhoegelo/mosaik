@@ -16,7 +16,10 @@ endif ()
 set(CMAKE_CXX_STANDARD 20)
 
 add_compile_definitions(SAMPLERATE=48000)
-add_compile_definitions(NUM_STEPS=16)
+add_compile_definitions(NUM_STEPS=64)
+
+add_compile_definitions(NUM_TILE_COLUMNS=6)
+add_compile_definitions(NUM_TILE_ROWS=6)
 add_compile_definitions(NUM_TILES=36)
 
 find_package(PkgConfig REQUIRED)
@@ -24,8 +27,8 @@ pkg_check_modules(LIBS IMPORTED_TARGET cxxopts alsa glibmm-2.4 giomm-2.4 gtkmm-3
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
+
 if (LIBS_FOUND)
-    add_subdirectory(tools)
     add_subdirectory(core)
     add_subdirectory(dsp)
     add_subdirectory(audio)

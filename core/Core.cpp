@@ -2,7 +2,6 @@
 #include "api/Interface.h"
 #include "DataModel.h"
 #include <dsp/api/control/Interface.h>
-#include <dsp/tools/Tools.h>
 #include <dsp/AudioKernel.h>
 
 namespace Core
@@ -12,8 +11,6 @@ namespace Core
     class Mosaik : public Interface
     {
      public:
-      using SampleBuffer = std::vector<Dsp::StereoFrame>;
-
       Mosaik(DataModel &model, Dsp::Api::Control::Interface &dsp)
           : m_model(model)
           , m_dsp(dsp)
@@ -38,6 +35,7 @@ namespace Core
           commit(i, ParameterId::Gain, src.gain);
           commit(i, ParameterId::Mute, src.muted);
           commit(i, ParameterId::Reverse, src.reverse);
+          commit(i, ParameterId::Selected, src.selected);
         }
       }
 
@@ -50,6 +48,11 @@ namespace Core
 
         m_dsp.takeAudioKernel(newDspKernel(m_model));
         commit(tileId, parameterId, v);
+      }
+
+      Dsp::SharedSampleBuffer getSamples(TileId tileId) const override
+      {
+        return m_dsp.getSamples(get<std::filesystem::path>(getParameter(tileId, ParameterId::SampleFile)));
       }
 
       Dsp::AudioKernel *newDspKernel(const DataModel &dataModel) const
@@ -79,7 +82,7 @@ namespace Core
       void translateTile(const DataModel &data, auto &tgt, const auto &src) const
       {
         tgt.pattern = src.pattern;
-        tgt.audio = loadSample(src.sample);
+        tgt.audio = m_dsp.getSamples(src.sample);
         auto unbalancedGain = src.muted ? 0.f : src.gain;
         tgt.gainLeft = src.balance < 0 ? unbalancedGain : unbalancedGain * (1.0f - src.balance);
         tgt.gainRight = src.balance > 0 ? unbalancedGain : unbalancedGain * (1.0f + src.balance);
@@ -127,26 +130,21 @@ namespace Core
           case ParameterId::Reverse:
             tile.reverse = std::get<Bool>(v);
             break;
+
+          case ParameterId::Selected:
+            for(auto c = 0; c < NUM_TILES; c++)
+            {
+              auto &src = m_model.tiles[c];
+              src.selected = (src.id == tile.id);
+              commit(src.id, ParameterId::Selected, src.selected);
+            }
+            break;
         }
-      }
-
-      std::shared_ptr<SampleBuffer> loadSample(const std::filesystem::path &path) const
-      {
-        auto it = m_sampleFileCache.find(path);
-
-        if(it != m_sampleFileCache.end())
-          return it->second;
-
-        auto ret = std::make_shared<SampleBuffer>(Dsp::Tools::loadFile(path));
-        m_sampleFileCache[path] = ret;
-        return ret;
       }
 
      private:
       DataModel &m_model;
       Dsp::Api::Control::Interface &m_dsp;
-
-      mutable std::map<std::filesystem::path, std::shared_ptr<SampleBuffer>> m_sampleFileCache;
     };
   }
 

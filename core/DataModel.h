@@ -1,8 +1,10 @@
 #pragma once
 
+#include <core/Types.h>
 #include <stdint.h>
 #include <filesystem>
 #include <array>
+#include <set>
 
 namespace Core
 {
@@ -13,12 +15,15 @@ namespace Core
 
     struct Tile
     {
+      TileId id;
+      
       std::filesystem::path sample {};
       std::array<bool, NUM_STEPS> pattern {};
       float gain = 1.f;
       float balance = 0.f;
       bool muted = false;
       bool reverse = false;
+      bool selected = false;
     };
 
     std::array<Tile, NUM_TILES> tiles;

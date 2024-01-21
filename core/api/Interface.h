@@ -1,7 +1,9 @@
 #pragma once
 
 #include <core/Types.h>
-#include <tools/SignalSlot.h>
+#include <dsp/Types.h>
+#include <map>
+#include <sigc++/sigc++.h>
 
 namespace Core::Api
 {
@@ -10,7 +12,7 @@ namespace Core::Api
     template <typename T> struct SignalingCache
     {
       T cache;
-      Tools::Signals::Signal<void(T)> sig;
+      sigc::signal<void(T)> sig;
     };
   }
 
@@ -20,9 +22,11 @@ namespace Core::Api
     virtual ~Interface() = default;
 
     virtual void setParameter(TileId tileId, ParameterId parameterId, const ParameterValue &value) = 0;
+    virtual Dsp::SharedSampleBuffer getSamples(TileId tileId) const = 0;
 
-    Tools::Signals::Connection connect(TileId tileId, ParameterId id,
-                                       const std::function<void(const ParameterValue &)> &cb);
+    ParameterValue getParameter(TileId tileId, ParameterId parameterId) const;
+    sigc::connection connect(TileId tileId, ParameterId id, const std::function<void(const ParameterValue &)> &cb);
+    std::vector<TileId> getSelectedTiles() const;
 
    protected:
     void commit(TileId tileId, ParameterId parameterId, const ParameterValue &v);

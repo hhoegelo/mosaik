@@ -1,5 +1,7 @@
 #pragma once
 
+#include <dsp/Types.h>
+#include <core/Types.h>
 #include <chrono>
 
 namespace Dsp::Api::Display
@@ -10,8 +12,7 @@ namespace Dsp::Api::Display
     Interface() = default;
     virtual ~Interface() = default;
 
-    using Position = std::chrono::nanoseconds;
-
-    virtual Position getCurrentPosition() const = 0;
+    virtual Step getCurrentStep() const = 0;
+    virtual bool isTileCurrentlyPlaying(Core::TileId tileId) const = 0;
   };
 }

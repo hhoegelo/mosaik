@@ -15,7 +15,7 @@ namespace Dsp
 
     struct Tile
     {
-      std::shared_ptr<std::vector<StereoFrame>> audio { std::make_shared<std::vector<StereoFrame>>() };
+      SharedSampleBuffer audio { std::make_shared<SampleBuffer>() };
       std::array<bool, NUM_STEPS> pattern {};
       float gainLeft { 0.0f };
       float gainRight { 0.0f };

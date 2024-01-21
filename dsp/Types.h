@@ -1,8 +1,13 @@
 #pragma once
 
+#include <stdint.h>
+#include <vector>
+#include <memory>
+
 namespace Dsp
 {
   using Sample = float;
+  using Step = uint8_t;
 
   struct StereoFrame
   {
@@ -25,4 +30,7 @@ namespace Dsp
   {
     return { lhs.left * f, lhs.right * f };
   }
+
+  using SampleBuffer = std::vector<StereoFrame>;
+  using SharedSampleBuffer = std::shared_ptr<SampleBuffer>;
 }

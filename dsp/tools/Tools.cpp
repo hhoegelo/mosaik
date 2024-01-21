@@ -9,7 +9,9 @@ namespace Dsp
   {
     Gst::init();
 
-    if(!exists(path))
+    std::error_code ec;
+
+    if(!exists(path, ec) || ec)
       return {};
 
     auto desc = std::format("filesrc location=\"{}\" ! decodebin ! audioconvert ! audioresample ! "

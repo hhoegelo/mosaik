@@ -15,7 +15,7 @@ add_library(${PROJECT_NAME} STATIC
         Types.h
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE mosaik-tools ${LIBS_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS_LIBRARIES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${LIBS_INCLUDE_DIRS})
 
 

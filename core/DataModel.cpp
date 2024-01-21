@@ -1,4 +1,5 @@
 #include "DataModel.h"
+#define JSON_ASSERT(x)
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <iostream>
@@ -10,7 +11,8 @@ namespace nlohmann
     static void to_json(json &j, const Core::DataModel::Tile &v)
     {
       j = { { "sample", v.sample.string() }, { "pattern", v.pattern }, { "gain", v.gain },
-            { "balance", v.balance },        { "muted", v.muted },     { "reverse", v.reverse } };
+            { "balance", v.balance },        { "muted", v.muted },     { "reverse", v.reverse },
+            { "selected", v.selected } };
     }
 
     static void from_json(const json &j, Core::DataModel::Tile &v)
@@ -21,6 +23,7 @@ namespace nlohmann
       v.balance = j["balance"];
       v.muted = j["muted"];
       v.reverse = j["reverse"];
+      v.selected = j["selected"];
     }
   };
 
@@ -54,6 +57,9 @@ namespace Core
         std::cerr << "Could not read initial setup file." << std::endl;
       }
     }
+    
+    for(auto c = 0; c < NUM_TILES; c++)
+      tiles[c].id = c;
   }
 
   DataModel::~DataModel()

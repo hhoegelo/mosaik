@@ -1,13 +1,9 @@
 #pragma once
 
-#pragma once
-
-#include <tools/SignalSlot.h>
 #include <filesystem>
-#include <map>
-#include <functional>
 #include <variant>
 #include <optional>
+#include <vector>
 
 namespace Core
 {
@@ -16,6 +12,7 @@ namespace Core
     GlobalTempo,   // float 20..240 bpm
     GlobalVolume,  // float 0...1
 
+    Selected,    // bool => is the given tile selected?
     SampleFile,  // std::filesystem::path
     Pattern,     // std::array<bool, NUM_STEPS>
     Balance,     // float -1...1
