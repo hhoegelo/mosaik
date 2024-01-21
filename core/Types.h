@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include <tools/SignalSlot.h>
 #include <filesystem>
 #include <map>
 #include <functional>

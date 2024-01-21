@@ -15,6 +15,9 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_compile_definitions(SAMPLERATE=48000)
 add_compile_definitions(NUM_STEPS=16)
+
+add_compile_definitions(NUM_TILE_COLUMNS=6)
+add_compile_definitions(NUM_TILE_ROWS=6)
 add_compile_definitions(NUM_TILES=36)
 
 find_package(PkgConfig REQUIRED)
@@ -22,7 +25,7 @@ pkg_check_modules(LIBS REQUIRED IMPORTED_TARGET cxxopts)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_subdirectory(tools)
+# vadd_subdirectory(tools)
 add_subdirectory(core)
 add_subdirectory(dsp)
 add_subdirectory(audio)

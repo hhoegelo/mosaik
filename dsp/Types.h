@@ -1,8 +1,11 @@
 #pragma once
 
+#include <stdint.h>
+
 namespace Dsp
 {
   using Sample = float;
+  using Step = uint8_t;
 
   struct StereoFrame
   {

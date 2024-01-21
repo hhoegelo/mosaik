@@ -1,7 +1,7 @@
 #pragma once
 
 #include <core/Types.h>
-#include <tools/SignalSlot.h>
+#include <sigc++/sigc++.h>
 
 namespace Core::Api
 {
@@ -10,7 +10,7 @@ namespace Core::Api
     template <typename T> struct SignalingCache
     {
       T cache;
-      Tools::Signals::Signal<void(T)> sig;
+      sigc::signal<void(T)> sig;
     };
   }
 
@@ -20,9 +20,9 @@ namespace Core::Api
     virtual ~Interface() = default;
 
     virtual void setParameter(TileId tileId, ParameterId parameterId, const ParameterValue &value) = 0;
+    ParameterValue getParameter(TileId tileId, ParameterId parameterId) const;
 
-    Tools::Signals::Connection connect(TileId tileId, ParameterId id,
-                                       const std::function<void(const ParameterValue &)> &cb);
+    sigc::connection connect(TileId tileId, ParameterId id, const std::function<void(const ParameterValue &)> &cb);
 
    protected:
     void commit(TileId tileId, ParameterId parameterId, const ParameterValue &v);

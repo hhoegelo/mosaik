@@ -15,8 +15,5 @@ namespace Ui::Touch
    public:
     FloatScaleButton(Core::Api::Interface& core, Core::TileId tileId, Core::ParameterId parameterId, double min,
                      double max, double stepSize, const std::string& img);
-
-   private:
-    Tools::Signals::Connection m_connection;
   };
 }

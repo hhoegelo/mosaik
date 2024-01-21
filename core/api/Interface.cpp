@@ -2,8 +2,8 @@
 
 namespace Core::Api
 {
-  Tools::Signals::Connection Interface::connect(TileId tileId, ParameterId parameterId,
-                                                const std::function<void(const ParameterValue &)> &cb)
+  sigc::connection Interface::connect(TileId tileId, ParameterId parameterId,
+                                      const std::function<void(const ParameterValue &)> &cb)
   {
     auto &c = m_parameterCache[std::make_tuple(tileId, parameterId)];
     cb(c.cache);
@@ -15,5 +15,11 @@ namespace Core::Api
     auto &c = m_parameterCache[std::make_tuple(tileId, parameterId)];
     c.cache = v;
     c.sig.emit(v);
+  }
+
+  ParameterValue Interface::getParameter(TileId tileId, ParameterId parameterId) const
+  {
+    auto c = m_parameterCache.find(std::make_tuple(tileId, parameterId));
+    return c->second.cache;
   }
 }

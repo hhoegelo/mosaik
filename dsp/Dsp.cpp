@@ -3,6 +3,7 @@
 #include "api/display/Interface.h"
 #include "api/realtime/Interface.h"
 #include "PointerExchange.h"
+#include "core/Types.h"
 #include <dsp/AudioKernel.h>
 
 namespace Dsp
@@ -14,7 +15,21 @@ namespace Dsp
     {
     }
 
-    uint8_t step = 0;
+    struct ToUi
+    {
+      Step currentStep = 0;
+
+      struct Tile
+      {
+        bool currentlyPlaying { false };
+      };
+
+      std::array<Tile, NUM_TILES> tiles;
+    };
+
+    ToUi ui;
+
+    Step step { 0 };
     uint32_t framesInCurrentStep = 0;
     float volume = 1.0f;
 
@@ -25,10 +40,13 @@ namespace Dsp
       int64_t framePosition = 0;
       bool virgin = true;
 
-      StereoFrame doAudio(AudioKernel::Tile &kernel, uint8_t lastStep, uint8_t currentStep)
+      StereoFrame doAudio(AudioKernel::Tile &kernel, ToUi::Tile &ui, uint8_t lastStep, uint8_t currentStep)
       {
         if(kernel.audio->empty())
+        {
+          ui.currentlyPlaying = false;
           return {};
+        }
 
         if(lastStep != currentStep && kernel.pattern[currentStep])
         {
@@ -40,7 +58,12 @@ namespace Dsp
         }
 
         if(virgin || framePosition < 0 || kernel.audio->size() <= framePosition)
+        {
+          ui.currentlyPlaying = false;
           return {};
+        }
+
+        ui.currentlyPlaying = true;
 
         constexpr auto maxVolStep = 1000.0f / SAMPLERATE;
         gainLeft += std::clamp(kernel.gainLeft - gainLeft, -maxVolStep, maxVolStep);
@@ -68,16 +91,21 @@ namespace Dsp
 
       if(++framesInCurrentStep >= kernel->framesPer16th)
       {
-        step = (step + 1) % NUM_STEPS;
+        step = (lastStep + 1) % NUM_STEPS;
         framesInCurrentStep = 0;
       }
 
+      // do processing
       StereoFrame frame {};
 
       for(auto c = 0; c < NUM_TILES; c++)
-        frame = frame + tiles[c].doAudio(kernel->tiles[c], lastStep, step);
+        frame = frame + tiles[c].doAudio(kernel->tiles[c], ui.tiles[c], lastStep, step);
 
       volume += std::clamp(kernel->volume - volume, -maxVolStep, maxVolStep);
+
+      // update ui
+      ui.currentStep = step;
+
       return frame * volume;
     }
   };
@@ -119,9 +147,14 @@ namespace Dsp
 
         ~Mosaik() = default;
 
-        Position getCurrentPosition() const override
+        Step getCurrentStep() const override
         {
-          return Position::zero();
+          return m_dsp.ui.currentStep;
+        }
+
+        bool isTileCurrentlyPlaying(Core::TileId tileId) const override
+        {
+          return m_dsp.ui.tiles[tileId.value()].currentlyPlaying;
         }
 
        private:
