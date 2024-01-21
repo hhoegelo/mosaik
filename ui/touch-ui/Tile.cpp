@@ -13,11 +13,12 @@ namespace Ui::Touch
     auto load = Gtk::manage(new Gtk::Button("Load"));
     pack_start(*load, Gtk::PACK_SHRINK);
 
-    pack_start(*Gtk::manage(new FloatScaleButton(core, tile, Core::ParameterId::Gain, 0.0, 1.0, 0.01, "stock_volume")),
-               Gtk::PACK_SHRINK);
+    pack_start(
+        *Gtk::manage(new FloatScaleButton(core, tile, Core::ParameterId::Gain, 0.0, 1.0, 0.01, "audio-speakers")),
+        Gtk::PACK_SHRINK);
 
     pack_start(*Gtk::manage(
-                   new FloatScaleButton(core, tile, Core::ParameterId::Balance, -1.0, 1.0, 0.02, "pan-start-symbolic")),
+                   new FloatScaleButton(core, tile, Core::ParameterId::Balance, -1.0, 1.0, 0.02, "pan-down-symbolic")),
                Gtk::PACK_SHRINK);
 
     pack_start(*Gtk::manage(new Checkbox(core, "Reverse", tile, Core::ParameterId::Reverse)), Gtk::PACK_SHRINK);
