@@ -1,6 +1,6 @@
 use std::{ptr, rc::Rc};
 
-use audio_kernel::AudioKernel;
+pub use audio_kernel::AudioKernel;
 use transfer_ptr::TransferPointer;
 
 mod audio_kernel;

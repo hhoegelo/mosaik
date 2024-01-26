@@ -8,7 +8,10 @@ edition = "2021"
 [dependencies]
 array-init = "2.1.0"
 dsp = { path = "../dsp" }
-fixed = "1.24.0"
+enum-as-inner = "0.6.0"
+float-cmp = "0.9.0"
+serde = { version = "1.0.195", features = ["derive"] }
+serde_json = "1.0.111"
 signals2 = "0.3.3"
 strum = "0.25.0"
 strum_macros = "0.25.3"
