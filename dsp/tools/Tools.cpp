@@ -1,6 +1,5 @@
 #include "Tools.h"
 #include <gstreamermm.h>
-#include <format>
 #include <iostream>
 
 namespace Dsp
@@ -14,11 +13,12 @@ namespace Dsp
     if(!exists(path, ec) || ec)
       return {};
 
-    auto desc = std::format("filesrc location=\"{}\" ! decodebin ! audioconvert ! audioresample ! "
-                            "audio/x-raw,format=F32LE,channels=2,rate={},layout=interleaved ! appsink name=sink",
-                            path.string(), SAMPLERATE);
+    char txt[1024];
+    snprintf(txt, 1024, "filesrc location=\"%s\" ! decodebin ! audioconvert ! audioresample ! "
+                            "audio/x-raw,format=F32LE,channels=2,rate=%d,layout=interleaved ! appsink name=sink",
+                            path.string().c_str(), SAMPLERATE);
 
-    auto pipeline = Glib::RefPtr<Gst::Pipeline>::cast_dynamic(Gst::Parse::launch(desc));
+    auto pipeline = Glib::RefPtr<Gst::Pipeline>::cast_dynamic(Gst::Parse::launch(txt));
     auto sink = Glib::RefPtr<Gst::AppSink>::cast_dynamic(pipeline->get_child("sink"));
     pipeline->use_clock(Glib::RefPtr<Gst::Clock>(nullptr));
 

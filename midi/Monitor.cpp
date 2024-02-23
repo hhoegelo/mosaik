@@ -1,5 +1,4 @@
 
-#include <format>
 #include <algorithm>
 #include "Monitor.h"
 #include "AlsaIn.h"
@@ -21,14 +20,18 @@ namespace Midi
       snd_ctl_rawmidi_info(ctl, info);
       auto sub_name = snd_rawmidi_info_get_subdevice_name(info);
 
+      char txt[1024];
+
       if(sub == 0 && sub_name[0] == '\0')
       {
-        target.insert(std::format("hw:{},{}", card, device));
+        snprintf(txt, 1024, "hw:%d:%d", card, device);
+        target.insert(txt);
         break;
       }
       else
       {
-        target.insert(std::format("hw:{},{},{}", card, device, sub));
+        snprintf(txt, 1024, "hw:%d:%d:%d", card, device, sub);
+        target.insert(txt);
       }
     }
   }

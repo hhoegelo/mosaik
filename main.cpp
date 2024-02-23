@@ -53,7 +53,7 @@ int main(int args, char** argv)
 
     return EXIT_SUCCESS;
   }
-  catch(const cxxopts::exceptions::exception& e)
+  catch(const std::exception& e)
   {
     std::cout << "error parsing options: " << e.what() << std::endl;
     return EXIT_FAILURE;
