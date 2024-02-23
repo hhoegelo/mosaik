@@ -1,3 +1,12 @@
+# TL;DR
+
+* apt install gcc cmake make libcxxopts-dev libasound2-dev libglibmm-2.4-dev libgtkmm-2.4-dev libgtkmm-3.0-dev libgstreamermm-1.0-dev nlohmann-json3-dev
+* mkdir ~/mosaik-build
+* cd ~/mosaik-build
+* cmake path-to-source
+* make -j12
+
+
 # The big picture
 
 The main() function connects 4 logical layers:
