@@ -23,7 +23,9 @@ add_compile_definitions(NUM_TILE_ROWS=6)
 add_compile_definitions(NUM_TILES=36)
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(LIBS IMPORTED_TARGET cxxopts alsa glibmm-2.4 giomm-2.4 gtkmm-3.0 gstreamermm-1.0 nlohmann_json)
+find_package(Boost REQUIRED program_options)
+
+pkg_check_modules(LIBS IMPORTED_TARGET alsa glibmm-2.4 giomm-2.4 gtkmm-3.0 gstreamermm-1.0 nlohmann_json)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -38,7 +40,7 @@ if (LIBS_FOUND)
     add_executable(mosaik main.cpp)
 
     target_include_directories(mosaik PRIVATE ${LIBS_INCLUDE_DIRS})
-    target_link_libraries(mosaik PRIVATE ${LIBS_LIBRARIES} mosaik-core mosaik-dsp mosaik-audio mosaik-midiui mosaik-touchui)
+    target_link_libraries(mosaik PRIVATE ${LIBS_LIBRARIES} mosaik-core mosaik-dsp mosaik-audio mosaik-midiui mosaik-touchui Boost::program_options)
 else ()
     message("Not all required libs were found, but you can still use the dockerized build env, like this:")
     message("    make dockerized-build-mosaik")

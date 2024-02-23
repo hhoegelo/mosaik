@@ -5,40 +5,33 @@
 #include "ui/touch-ui/Ui.h"
 #include "midi/Monitor.h"
 
-#include <cxxopts.hpp>
+#include <boost/program_options.hpp>
 #include <iostream>
 #include <glibmm.h>
-
-class Tester
-{
- public:
-  Tester()
-      : timer(Glib::signal_timeout().connect_seconds(sigc::mem_fun(*this, &Tester::foo), 1))
-  {
-  }
-
-  bool foo()
-  {
-    return true;
-  }
-
-  sigc::connection timer;
-};
 
 int main(int args, char** argv)
 {
   try
   {
-    cxxopts::Options options(argv[0]);
+    using namespace boost::program_options;
+    using namespace std;
 
-    options.set_width(70).set_tab_expansion().allow_unrecognised_options().add_options()(
-        "o,alsa-out", "Alsa Output Device", cxxopts::value<std::string>())("h,help", "Print usage");
+    options_description desc("Allowed options");
+    desc.add_options()("help", "produce help message")("alsa-out", value<std::string>(), "output device");
 
-    auto result = options.parse(args, argv);
+    variables_map vm;
+    store(parse_command_line(args, argv, desc), vm);
+    notify(vm);
 
-    if(result.count("help"))
+    if(vm.count("help"))
     {
-      std::cout << options.help() << std::endl;
+      cout << desc << "\n";
+      return 1;
+    }
+
+    if(!vm.count("alsa-out"))
+    {
+      cout << "alsa-out is missing.\n";
       return EXIT_SUCCESS;
     }
 
@@ -46,7 +39,7 @@ int main(int args, char** argv)
 
     Dsp::Dsp dsp;
     Core::Core core(dsp.getControlApi());
-    Audio::AlsaOut audioOut(dsp.getRealtimeApi(), result["alsa-out"].as<std::string>());
+    Audio::AlsaOut audioOut(dsp.getRealtimeApi(), vm["alsa-out"].as<std::string>());
     Ui::Midi::Ui midiUI(core.getApi(), dsp.getDisplayApi());
     Ui::Touch::Ui touchUI(core.getApi(), dsp.getDisplayApi());
     touchUI.run();
