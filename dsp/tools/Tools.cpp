@@ -1,6 +1,12 @@
 #include "Tools.h"
-#include <gstreamermm.h>
 #include <iostream>
+#include <atomic>
+
+
+// WORKAROUND gstreamermm gcc-13 compilation error
+#define __atomic_load(A, B, C) (*B) = *A
+#include <gstreamermm.h>
+#undef __atomic_load
 
 namespace Dsp
 {
