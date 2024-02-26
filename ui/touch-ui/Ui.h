@@ -1,5 +1,7 @@
 #pragma once
 
+#include <gtkmm-3.0/gtkmm.h>
+
 namespace Core::Api
 {
   class Interface;
@@ -22,5 +24,6 @@ namespace Ui::Touch
    private:
     Core::Api::Interface &m_core;
     Dsp::Api::Display::Interface &m_dsp;
+    Glib::RefPtr<Gtk::Application> m_app;
   };
 }

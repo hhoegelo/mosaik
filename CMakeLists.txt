@@ -40,7 +40,13 @@ if (LIBS_FOUND)
     add_executable(mosaik main.cpp)
 
     target_include_directories(mosaik PRIVATE ${LIBS_INCLUDE_DIRS})
-    target_link_libraries(mosaik PRIVATE ${LIBS_LIBRARIES} mosaik-core mosaik-dsp mosaik-audio mosaik-midiui mosaik-touchui Boost::program_options)
+    target_link_libraries(mosaik PRIVATE ${LIBS_LIBRARIES}
+            mosaik-core
+            mosaik-dsp
+            mosaik-audio
+            mosaik-midiui
+            mosaik-touchui
+            Boost::program_options)
 else ()
     message("Not all required libs were found, but you can still use the dockerized build env, like this:")
     message("    make dockerized-build-mosaik")

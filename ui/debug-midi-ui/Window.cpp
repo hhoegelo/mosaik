@@ -1,10 +1,7 @@
 #include "Window.h"
-#include "ui/touch-ui/tiles/Tiles.h"
-#include "ui/touch-ui/controls/FloatScaleButton.h"
-#include "ui/touch-ui/toolbox/Toolboxes.h"
 #include <gtkmm/grid.h>
 
-namespace Ui::Touch
+namespace Ui::DebugMidi
 {
   auto css = R"(
   .has-steps-indicator {
@@ -56,17 +53,24 @@ namespace Ui::Touch
     styleContext->add_provider_for_screen(Gdk::Screen::get_default(), cssProvider,
                                           GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
-    set_title("Mosaik");
+    set_title("Mosaik Debug UI");
     set_border_width(10);
     auto screen = Gtk::manage(new Gtk::Grid());
 
-    auto tiles = new Tiles(m_core, m_dsp, [](Row r, Col c) { return r * NUM_TILE_COLUMNS + c; });
-    screen->attach(*tiles, 0, 1, 10, 10);
-
-    auto toolboxes = new Toolboxes(m_core);
-    screen->attach(*toolboxes, 10, 0, 5, 11);
+    for(int i = 0; i < 16; i++)
+    {
+      screen->attach(*buildStep(i), i, 0);
+      screen->attach(*buildStep(i + 16), 16, i);
+      screen->attach(*buildStep(i + 32), 16 - i, 16);
+      screen->attach(*buildStep(i + 48), 0, 16 - i);
+    }
 
     add(*screen);
     show_all();
+  }
+
+  Gtk::Widget* Window::buildStep(int i)
+  {
+    return Gtk::manage(new Gtk::Button(std::to_string(1 + i)));
   }
 }
