@@ -8,4 +8,4 @@ pkg_check_modules(LIBS REQUIRED IMPORTED_TARGET alsa)
 add_library(mosaik-audio STATIC AlsaOut.cpp
 )
 target_include_directories(mosaik-audio PRIVATE ${LIBS_INCLUDE_DIRS})
-target_link_libraries(mosaik-audio mosaik-dsp ${LIBS_LIBRARIES})
+target_link_libraries(mosaik-audio mosaik-dsp ${LIBS_LIBRARIES} pthread)
