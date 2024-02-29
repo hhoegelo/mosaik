@@ -42,7 +42,7 @@ add_custom_command(
         -v ${CMAKE_SOURCE_DIR}:/source
         -w /binary
         --security-opt label=type:container_runtime_t
-        --device /dev/snd ${DOCKERNAME} /binary/mosaik -o \${AUDIO_OUT}
+        --device /dev/snd ${DOCKERNAME} /binary/mosaik --alsa-out=\${AUDIO_OUT}
 )
 
 add_custom_target(dockerized-build-mosaik DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/dockerized-bin/mosaik)
