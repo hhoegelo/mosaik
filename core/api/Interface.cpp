@@ -1,6 +1,5 @@
 #include "Interface.h"
 #include "ui/midi-ui/Interface.h"
-#include <ranges>
 
 namespace Core::Api
 {
@@ -43,11 +42,10 @@ namespace Core::Api
   {
     Core::Pattern merged {};
 
-    for(const Core::Pattern &pattern : getSelectedTiles(computation)
-            | std::views::transform([&](const Core::TileId &id)
-                                    { return getParameter(computation, id, Core::ParameterId::Pattern); })
-            | std::views::transform([](auto p) { return std::get<Core::Pattern>(p); }))
+    for(const auto &tile : getSelectedTiles(computation))
     {
+      auto pattern = std::get<Core::Pattern>(getParameter(computation, tile, Core::ParameterId::Pattern));
+
       for(size_t i = 0; i < merged.size(); i++)
         merged[i] |= pattern[i];
     }

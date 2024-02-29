@@ -2,7 +2,6 @@
 #include "Controller.h"
 
 #include <gtkmm/grid.h>
-#include <ranges>
 
 namespace Ui::Midi
 {
@@ -140,11 +139,11 @@ namespace Ui::Midi
     {
       auto widget = dynamic_cast<Gtk::Widget*>(*widgetIt);
       auto style = widget->get_style_context();
-      for(const auto& color :
-          style->list_classes() | std::views::filter([](const auto& c) { return c.find("color-") == 0; }))
+      for(const auto& color : style->list_classes())
       {
-        if(color != cssClass)
-          style->remove_class(color);
+        if(color.find("color-") == 0)
+          if(color != cssClass)
+            style->remove_class(color);
       }
       style->add_class(cssClass);
     }
