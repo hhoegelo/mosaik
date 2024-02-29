@@ -48,7 +48,7 @@ namespace Ui::Touch
         [&core, tileId]
         {
           core.setParameter(tileId, Core::ParameterId::Reverse,
-                            !get<bool>(core.getParameter(tileId, Core::ParameterId::Reverse)));
+                            !get<bool>(core.getParameter(nullptr, tileId, Core::ParameterId::Reverse)));
         });
 
     core.connect(tileId, Core::ParameterId::Reverse,
@@ -109,7 +109,7 @@ namespace Ui::Touch
         {
           ctx->set_line_width(1);
 
-          auto samples = core.getSamples(tileId);
+          auto samples = core.getSamples(nullptr, tileId);
           auto w = wf->get_width();
           auto h = wf->get_height();
           auto adv = std::max<double>(1, samples.get()->size() / static_cast<double>(w));

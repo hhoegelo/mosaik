@@ -6,7 +6,7 @@
 
 namespace Ui::Midi
 {
-  Ui::Ui(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp)
+  Ui::Ui(SharedState &sharedUiState, Core::Api::Interface &core)
       : m_monitor(std::make_unique<::Midi::Monitor>())
       , m_timer(Glib::signal_timeout().connect_seconds(sigc::mem_fun(*this, &Ui::checkForMidiDevices), 1))
   {

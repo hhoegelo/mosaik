@@ -1,5 +1,4 @@
 #include "Toolboxes.h"
-#include "Pattern.h"
 #include "ui/touch-ui/controls/FloatScaleButton.h"
 #include <core/api/Interface.h>
 #include <gtkmm/filechooserwidget.h>
@@ -14,7 +13,6 @@ namespace Ui::Touch
   {
     append_page(*buildGlobals(), "Globals");
     append_page(*buildFileBrowser(), "Browse");
-    append_page(*Gtk::manage(new Pattern(core)), "Pattern");
   }
 
   Gtk::Widget *Toolboxes::buildScale(Core::TileId tile, Core::ParameterId id, double min, double max)
@@ -52,7 +50,7 @@ namespace Ui::Touch
     fileBrowser->signal_file_activated().connect(
         [fileBrowser, this]
         {
-          for(auto tileId : m_core.getSelectedTiles())
+          for(auto tileId : m_core.getSelectedTiles(nullptr))
             m_core.setParameter(tileId, Core::ParameterId::SampleFile, fileBrowser->get_filename());
         });
 

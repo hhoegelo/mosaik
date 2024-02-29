@@ -4,6 +4,8 @@
 #include "ui/midi-ui/Ui.h"
 #include "ui/touch-ui/Ui.h"
 #include "midi/Monitor.h"
+#include "ui/midi-ui/DebugUI.h"
+#include "ui/SharedState.h"
 
 #include <boost/program_options.hpp>
 #include <iostream>
@@ -40,9 +42,13 @@ int main(int args, char** argv)
     Dsp::Dsp dsp;
     Core::Core core(dsp.getControlApi());
     Audio::AlsaOut audioOut(dsp.getRealtimeApi(), vm["alsa-out"].as<std::string>());
-    Ui::Midi::Ui midiUI(core.getApi(), dsp.getDisplayApi());
-    Ui::Touch::Ui touchUI(core.getApi(), dsp.getDisplayApi());
+    Ui::SharedState sharedUiState;
+    Ui::Midi::Ui midiUI(sharedUiState, core.getApi());
+    Ui::Touch::Ui touchUI(sharedUiState, core.getApi(), dsp.getDisplayApi());
 
+    Ui::Midi::DebugUI dbg(sharedUiState, core.getApi());
+    dbg.build();
+    touchUI.attach(dbg);
     touchUI.run();
 
     return EXIT_SUCCESS;

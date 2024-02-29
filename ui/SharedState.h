@@ -1,6 +1,13 @@
 
 #pragma once
 
-class SharedState
+namespace Ui
 {
-};
+  class SharedState
+  {
+    enum class Page
+    {
+      
+    };
+  };
+}

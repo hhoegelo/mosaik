@@ -9,8 +9,6 @@ add_library(mosaik-touchui STATIC
         tiles/Tile.cpp
         toolbox/Toolboxes.h
         toolbox/Toolboxes.cpp
-        toolbox/Pattern.cpp
-        toolbox/Pattern.h
         controls/Checkbox.cpp
         controls/FloatScaleButton.cpp
         controls/StepButton.cpp
@@ -21,5 +19,5 @@ add_library(mosaik-touchui STATIC
 
 target_compile_options(mosaik-touchui PRIVATE -fmodules-ts)
 target_include_directories(mosaik-touchui PRIVATE ${CMAKE_SOURCE_DIR} ${LIBS_INCLUDE_DIRS})
-target_link_libraries(mosaik-touchui mosaik-core ${LIBS_LIBRARIES} mosaik-debug-midiui)
+target_link_libraries(mosaik-touchui mosaik-core ${LIBS_LIBRARIES})
 

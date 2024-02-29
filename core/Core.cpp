@@ -50,9 +50,9 @@ namespace Core
         commit(tileId, parameterId, v);
       }
 
-      Dsp::SharedSampleBuffer getSamples(TileId tileId) const override
+      Dsp::SharedSampleBuffer getSamples(Computation *computation, TileId tileId) const override
       {
-        return m_dsp.getSamples(get<std::filesystem::path>(getParameter(tileId, ParameterId::SampleFile)));
+        return m_dsp.getSamples(get<std::filesystem::path>(getParameter(computation, tileId, ParameterId::SampleFile)));
       }
 
       Dsp::AudioKernel *newDspKernel(const DataModel &dataModel) const

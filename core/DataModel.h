@@ -16,7 +16,7 @@ namespace Core
     struct Tile
     {
       TileId id;
-      
+
       std::filesystem::path sample {};
       std::array<bool, NUM_STEPS> pattern {};
       float gain = 1.f;

@@ -12,18 +12,24 @@ namespace Dsp::Api::Display
   class Interface;
 }
 
-namespace Ui::Touch
+namespace Ui
 {
-  class Ui
+  class SharedState;
+
+  namespace Touch
   {
-   public:
-    Ui(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
+    class Ui
+    {
+     public:
+      Ui(SharedState &sharedUiState, Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
 
-    void run();
+      void attach(Gtk::Window &wnd);
+      void run();
 
-   private:
-    Core::Api::Interface &m_core;
-    Dsp::Api::Display::Interface &m_dsp;
-    Glib::RefPtr<Gtk::Application> m_app;
-  };
+     private:
+      Core::Api::Interface &m_core;
+      Dsp::Api::Display::Interface &m_dsp;
+      Glib::RefPtr<Gtk::Application> m_app;
+    };
+  }
 }
