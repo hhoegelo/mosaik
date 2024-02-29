@@ -4,7 +4,6 @@
 #include <dsp/Types.h>
 
 #include <utility>
-#include <span>
 #include <functional>
 
 namespace Dsp::Api::Realtime
