@@ -1,0 +1,5 @@
+
+#ifndef MOSAIK_INTERFACE_H
+#define MOSAIK_INTERFACE_H
+
+#endif  //MOSAIK_INTERFACE_H

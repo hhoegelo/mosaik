@@ -1,7 +1,7 @@
 FROM docker.io/ubuntu:23.10
 
 RUN apt -y update
-RUN apt -y install libgstreamermm-1.0-dev libgtkmm-3.0-dev libcxxopts-dev cmake make build-essential
+RUN apt -y install libgstreamermm-1.0-dev libgtkmm-3.0-dev libboost-all-dev cmake make build-essential
 RUN apt -y install nlohmann-json3-dev libasound2-dev
 RUN apt -y install alsa-utils dbus-x11
 RUN apt -y install adwaita-icon-theme-full gnome-icon-theme-nuovo tango-icon-theme
