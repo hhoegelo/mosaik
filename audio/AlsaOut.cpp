@@ -12,10 +12,10 @@
 constexpr auto c_channels = 2;
 constexpr auto c_numPeriods = 8;
 constexpr auto c_framesPerPeriod = 256;
-constexpr auto c_sampleFormat = SND_PCM_FORMAT_S32_LE;
-constexpr auto c_floatToS32 = static_cast<float>((1 << 30) - 1);
+constexpr auto c_sampleFormat = SND_PCM_FORMAT_S16_LE;
+constexpr auto c_floatToS16 = static_cast<float>((1 << 14) - 1);
 
-using Sample = int32_t;
+using Sample = int16_t;
 
 struct StereoFrame
 {
@@ -70,8 +70,8 @@ namespace Audio
                          std::transform(samples, samples + c_framesPerPeriod, buffer,
                                         [](const Dsp::OutFrame &in)
                                         {
-                                          return StereoFrame { static_cast<Sample>(in.main.left * c_floatToS32),
-                                                               static_cast<Sample>(in.main.right * c_floatToS32) };
+                                          return StereoFrame { static_cast<Sample>(in.main.left * c_floatToS16),
+                                                               static_cast<Sample>(in.main.right * c_floatToS16) };
                                         });
 
                          snd_pcm_writei(pcm, buffer, c_framesPerPeriod);
