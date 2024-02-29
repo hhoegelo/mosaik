@@ -1,6 +1,6 @@
 #include "DataModel.h"
 #define JSON_ASSERT(x)
-#include <nlohmann/json.hpp>
+#include <tools/json.h>
 #include <fstream>
 #include <iostream>
 

@@ -25,7 +25,7 @@ add_compile_definitions(NUM_TILES=36)
 find_package(PkgConfig REQUIRED)
 find_package(Boost REQUIRED program_options)
 
-pkg_check_modules(LIBS IMPORTED_TARGET alsa glibmm-2.4 giomm-2.4 gtkmm-3.0 gstreamermm-1.0 nlohmann_json)
+pkg_check_modules(LIBS IMPORTED_TARGET alsa glibmm-2.4 giomm-2.4 gtkmm-3.0 gstreamermm-1.0)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
