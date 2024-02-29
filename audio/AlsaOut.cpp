@@ -4,7 +4,6 @@
 #include <alsa/asoundlib.h>
 
 #include <iostream>
-#include <span>
 
 #define checkAlsa(A)                                                                                                   \
   if(auto res = A)                                                                                                     \
@@ -66,10 +65,9 @@ namespace Audio
 
                        while(!m_quit)
                        {
-                         std::span s(samples, c_framesPerPeriod);
-                         dsp.doAudio(s, [](const Dsp::MidiEvent &) {});
+                         dsp.doAudio(samples, c_framesPerPeriod, [](const Dsp::MidiEvent &) {});
 
-                         std::transform(s.begin(), s.end(), buffer,
+                         std::transform(samples, samples + c_framesPerPeriod, buffer,
                                         [](const Dsp::OutFrame &in)
                                         {
                                           return StereoFrame { static_cast<Sample>(in.main.left * c_floatToS32),

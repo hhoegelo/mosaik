@@ -17,7 +17,7 @@ namespace Dsp::Api::Realtime
 
     using SendMidi = std::function<void(const MidiEvent &)>;
 
-    virtual void doAudio(const std::span<OutFrame> &out, const SendMidi &cb) = 0;
+    virtual void doAudio(OutFrame *out, size_t numFrames, const SendMidi &cb) = 0;
     virtual void doMidi(const MidiEvent &inEvent) = 0;
   };
 }

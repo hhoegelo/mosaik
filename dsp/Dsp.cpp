@@ -191,10 +191,10 @@ namespace Dsp
 
         ~Mosaik() = default;
 
-        void doAudio(const std::span<OutFrame> &out, const SendMidi &cb) override
+        void doAudio(OutFrame *out, size_t numFrames, const SendMidi &cb) override
         {
-          for(auto &f : out)
-            f.main = m_dsp.doAudio();
+          for(size_t i = 0; i < numFrames; i++)
+            out[i].main = m_dsp.doAudio();
         }
 
         void doMidi(const MidiEvent &inEvent) override

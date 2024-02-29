@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.16.3)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBS REQUIRED IMPORTED_TARGET gtkmm-3.0)

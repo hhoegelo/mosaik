@@ -1,7 +1,7 @@
 add_subdirectory(midi-ui)
 add_subdirectory(touch-ui)
 
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.16.3)
 
 add_library(mosaik-ui STATIC
         SharedState.cpp
