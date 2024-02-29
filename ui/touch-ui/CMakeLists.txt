@@ -17,7 +17,7 @@ add_library(mosaik-touchui STATIC
         Window.cpp
         Window.h)
 
-target_compile_options(mosaik-touchui PRIVATE -fmodules-ts)
+target_compile_options(mosaik-touchui PRIVATE)
 target_include_directories(mosaik-touchui PRIVATE ${CMAKE_SOURCE_DIR} ${LIBS_INCLUDE_DIRS})
 target_link_libraries(mosaik-touchui mosaik-core ${LIBS_LIBRARIES})
 
