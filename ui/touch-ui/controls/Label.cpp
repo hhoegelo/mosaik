@@ -8,6 +8,6 @@ namespace Ui::Touch
       : Gtk::Label()
       , m_handler(handler)
   {
-    core.connect(tileId, parameterId, [this, &handler](const auto& v) { handler(*this, v); });
+    m_connection = core.connect(tileId, parameterId, [this, &handler](const auto& v) { handler(*this, v); });
   }
 }

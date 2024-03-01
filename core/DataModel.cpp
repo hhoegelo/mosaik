@@ -3,6 +3,7 @@
 #include <tools/json.h>
 #include <fstream>
 #include <iostream>
+#include <utility>
 
 namespace nlohmann
 {
@@ -38,9 +39,11 @@ namespace nlohmann
 
 namespace Core
 {
-  DataModel::DataModel(const std::filesystem::path &f)
-      : backing(f)
+  DataModel::DataModel(std::filesystem::path f)
+      : backing(std::move(f))
   {
+    tiles[0].selected = true;
+
     if(exists(backing))
     {
       try
@@ -57,7 +60,7 @@ namespace Core
         std::cerr << "Could not read initial setup file." << std::endl;
       }
     }
-    
+
     for(auto c = 0; c < NUM_TILES; c++)
       tiles[c].id = c;
   }

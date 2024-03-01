@@ -12,7 +12,7 @@ namespace Dsp::Api::Display
     Interface() = default;
     virtual ~Interface() = default;
 
-    virtual Step getCurrentStep() const = 0;
-    virtual bool isTileCurrentlyPlaying(Core::TileId tileId) const = 0;
+    [[nodiscard]] virtual Step getCurrentStep() const = 0;
+    [[nodiscard]] virtual float getCurrentTileLevel(Core::TileId tileId) = 0;
   };
 }

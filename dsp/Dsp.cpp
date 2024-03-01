@@ -24,13 +24,13 @@ namespace Dsp
 
       struct Tile
       {
-        bool currentlyPlaying { false };
+        float currentLevel { 0.0f };
       };
 
       std::array<Tile, NUM_TILES> tiles;
     };
 
-    ToUi ui;
+    ToUi toUi;
 
     Step step { 0 };
     uint32_t framesInCurrentStep = 0;
@@ -47,7 +47,7 @@ namespace Dsp
       {
         if(kernel.audio->empty())
         {
-          ui.currentlyPlaying = false;
+          ui.currentLevel = 0;
           return {};
         }
 
@@ -62,11 +62,9 @@ namespace Dsp
 
         if(virgin || framePosition < 0 || kernel.audio->size() <= framePosition)
         {
-          ui.currentlyPlaying = false;
+          ui.currentLevel = 0;
           return {};
         }
-
-        ui.currentlyPlaying = true;
 
         constexpr auto maxVolStep = 1000.0f / SAMPLERATE;
         gainLeft += std::clamp(kernel.gainLeft - gainLeft, -maxVolStep, maxVolStep);
@@ -75,6 +73,8 @@ namespace Dsp
         auto r = kernel.audio->operator[](framePosition);
         r.left *= gainLeft;
         r.right *= gainRight;
+
+        ui.currentLevel = std::max({ ui.currentLevel, std::abs(r.left), std::abs(r.right) });
 
         framePosition += kernel.playbackFrameIncrement;
         return r;
@@ -102,12 +102,12 @@ namespace Dsp
       StereoFrame frame {};
 
       for(auto c = 0; c < NUM_TILES; c++)
-        frame = frame + tiles[c].doAudio(kernel->tiles[c], ui.tiles[c], lastStep, step);
+        frame = frame + tiles[c].doAudio(kernel->tiles[c], toUi.tiles[c], lastStep, step);
 
       volume += std::clamp(kernel->volume - volume, -maxVolStep, maxVolStep);
 
       // update ui
-      ui.currentStep = step;
+      toUi.currentStep = step;
 
       return frame * volume;
     }
@@ -121,12 +121,12 @@ namespace Dsp
       class Mosaik : public Interface
       {
        public:
-        Mosaik(Dsp::Impl &dsp)
+        explicit Mosaik(Dsp::Impl &dsp)
             : m_dsp(dsp)
         {
         }
 
-        ~Mosaik() = default;
+        ~Mosaik() override = default;
 
         void takeAudioKernel(AudioKernel *kernel) override
         {
@@ -157,21 +157,21 @@ namespace Dsp
       class Mosaik : public Interface
       {
        public:
-        Mosaik(Dsp::Impl &dsp)
+        explicit Mosaik(Dsp::Impl &dsp)
             : m_dsp(dsp)
         {
         }
 
-        ~Mosaik() = default;
+        ~Mosaik() override = default;
 
-        Step getCurrentStep() const override
+        [[nodiscard]] Step getCurrentStep() const override
         {
-          return m_dsp.ui.currentStep;
+          return m_dsp.toUi.currentStep;
         }
 
-        bool isTileCurrentlyPlaying(Core::TileId tileId) const override
+        [[nodiscard]] float getCurrentTileLevel(Core::TileId tileId) override
         {
-          return m_dsp.ui.tiles[tileId.value()].currentlyPlaying;
+          return std::exchange(m_dsp.toUi.tiles[tileId.value()].currentLevel, 0.f);
         }
 
        private:
@@ -184,12 +184,12 @@ namespace Dsp
       class Mosaik : public Interface
       {
        public:
-        Mosaik(Dsp::Impl &dsp)
+        explicit Mosaik(Dsp::Impl &dsp)
             : m_dsp(dsp)
         {
         }
 
-        ~Mosaik() = default;
+        ~Mosaik() override = default;
 
         void doAudio(OutFrame *out, size_t numFrames, const SendMidi &cb) override
         {
@@ -210,9 +210,9 @@ namespace Dsp
 
   Dsp::Dsp()
       : m_impl(std::make_unique<Impl>())
-      , m_controlApi(std::make_unique<Api::Control::Mosaik>(*m_impl.get()))
-      , m_displayApi(std::make_unique<Api::Display::Mosaik>(*m_impl.get()))
-      , m_realtimeApi(std::make_unique<Api::Realtime::Mosaik>(*m_impl.get()))
+      , m_controlApi(std::make_unique<Api::Control::Mosaik>(*m_impl))
+      , m_displayApi(std::make_unique<Api::Display::Mosaik>(*m_impl))
+      , m_realtimeApi(std::make_unique<Api::Realtime::Mosaik>(*m_impl))
   {
   }
 

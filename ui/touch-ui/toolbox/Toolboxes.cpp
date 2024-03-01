@@ -22,13 +22,13 @@ namespace Ui::Touch
     auto connection = scale->signal_value_changed().connect(
         [this, scale, tile, id]() { m_core.setParameter(tile, id, static_cast<float>(scale->get_value())); });
 
-    m_core.connect(tile, id,
-                   [scale, connection = connection](const Core::ParameterValue &p) mutable
-                   {
-                     connection.block();
-                     scale->set_value(get<float>(p));
-                     connection.unblock();
-                   });
+    m_scaleConnection = m_core.connect(tile, id,
+                                       [scale, connection = connection](const Core::ParameterValue &p) mutable
+                                       {
+                                         connection.block();
+                                         scale->set_value(get<float>(p));
+                                         connection.unblock();
+                                       });
     return scale;
   }
 

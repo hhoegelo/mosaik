@@ -11,7 +11,6 @@ add_library(mosaik-touchui STATIC
         toolbox/Toolboxes.cpp
         controls/Checkbox.cpp
         controls/FloatScaleButton.cpp
-        controls/StepButton.cpp
         controls/Label.cpp
         Ui.cpp
         Window.cpp

@@ -10,12 +10,12 @@ namespace Ui::Touch
     auto connection = signal_value_changed().connect(
         [&core, tileId, parameterId](double v) { core.setParameter(tileId, parameterId, static_cast<float>(v)); });
 
-    core.connect(tileId, parameterId,
-                 [this, connection = std::move(connection)](const Core::ParameterValue& p) mutable
-                 {
-                   connection.block();
-                   set_value(get<float>(p));
-                   connection.unblock();
-                 });
+    m_connection = core.connect(tileId, parameterId,
+                                [this, connection](const Core::ParameterValue& p) mutable
+                                {
+                                  connection.block();
+                                  set_value(get<float>(p));
+                                  connection.unblock();
+                                });
   }
 }

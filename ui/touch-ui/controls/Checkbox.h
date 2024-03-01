@@ -2,6 +2,7 @@
 
 #include <gtkmm/checkbutton.h>
 #include "core/Types.h"
+#include "tools/SignalSlot.h"
 
 namespace Core::Api
 {
@@ -17,6 +18,7 @@ namespace Ui::Touch
     Checkbox(Core::Api::Interface& core, const std::string& name, Core::TileId tileId, Core::ParameterId parameterId);
 
    private:
+    Tools::Signals::Connection m_connection;
     bool m_state = false;
   };
 

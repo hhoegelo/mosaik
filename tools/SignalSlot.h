@@ -20,7 +20,7 @@ namespace Tools
       {
        public:
         using Callback = std::function<Signature>;
-        Connection(const Callback &cb)
+        explicit Connection(const Callback &cb)
             : m_cb(cb)
         {
         }

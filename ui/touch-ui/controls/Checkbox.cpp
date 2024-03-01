@@ -11,13 +11,13 @@ namespace Ui::Touch
     auto connection = signal_toggled().connect([&core, tileId, parameterId, this]
                                                { core.setParameter(tileId, parameterId, !m_state); });
 
-    core.connect(tileId, parameterId,
-                 [this, connection](const Core::ParameterValue& p) mutable
-                 {
-                   connection.block();
-                   m_state = get<bool>(p);
-                   this->set_active(m_state);
-                   connection.unblock();
-                 });
+    m_connection = core.connect(tileId, parameterId,
+                                [this, connection](const Core::ParameterValue& p) mutable
+                                {
+                                  connection.block();
+                                  m_state = get<bool>(p);
+                                  this->set_active(m_state);
+                                  connection.unblock();
+                                });
   }
 }

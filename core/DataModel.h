@@ -10,7 +10,7 @@ namespace Core
 {
   struct DataModel
   {
-    explicit DataModel(const std::filesystem::path &f);
+    explicit DataModel(std::filesystem::path f);
     ~DataModel();
 
     struct Tile

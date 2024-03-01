@@ -40,6 +40,34 @@ namespace Ui::Touch
     border-color: red;
   }
 
+  .is-playing-indicator.level-80db {
+    background: rgba(255, 0, 0, 0);
+  }
+.is-playing-indicator.level-70db {
+    background: rgba(255, 0, 0, 0.3);
+  }
+.is-playing-indicator.level-60db {
+    background: rgba(255, 0, 0, 0.4);
+  }
+.is-playing-indicator.level-50db {
+    background: rgba(255, 0, 0, 0.5);
+  }
+.is-playing-indicator.level-40db {
+    background: rgba(255, 0, 0, 0.6);
+  }
+.is-playing-indicator.level-30db {
+    background: rgba(255, 0, 0, 0.7);
+  }
+.is-playing-indicator.level-20db {
+    background: rgba(255, 0, 0, 0.8);
+  }
+.is-playing-indicator.level-10db {
+    background: rgba(255, 0, 0, 0.9);
+  }
+.is-playing-indicator.level-0db {
+    background: rgba(255, 0, 0, 1.0);
+  }
+
   )";
 
   Window::Window(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp)

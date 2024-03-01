@@ -6,7 +6,21 @@
 namespace Ui::Midi
 {
   auto css = R"(
+    .color-red {
+      color: red;
+    }
 
+    .color-blue {
+      color: blue;
+    }
+
+    .color-green {
+      color: green;
+    }
+
+    .color-white {
+      color: white;
+    }
 
   )";
 

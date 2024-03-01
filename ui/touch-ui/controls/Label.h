@@ -2,6 +2,7 @@
 
 #include <gtkmm/label.h>
 #include "core/Types.h"
+#include "tools/SignalSlot.h"
 #include <functional>
 
 namespace Core::Api
@@ -20,6 +21,7 @@ namespace Ui::Touch
 
    private:
     Handler m_handler;
+    Tools::Signals::Connection m_connection;
   };
 
 }

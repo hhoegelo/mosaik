@@ -3,6 +3,7 @@
 #include <gtkmm/notebook.h>
 #include <optional>
 #include "core/Types.h"
+#include "tools/SignalSlot.h"
 
 namespace Core::Api
 {
@@ -23,5 +24,6 @@ namespace Ui::Touch
 
     Core::Api::Interface &m_core;
     Glib::RefPtr<Gio::File> m_lastSelectedFolder;
+    Tools::Signals::Connection m_scaleConnection;
   };
 }
