@@ -5,6 +5,7 @@
 * cd ~/mosaik-build
 * cmake path-to-source
 * make -j12
+* ./mosaik --alsa-out=hw:0,0
 
 
 # The big picture
