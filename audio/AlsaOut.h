@@ -17,7 +17,7 @@ namespace Audio
     ~AlsaOut();
 
    private:
-    std::atomic_bool m_quit;
+    std::atomic_bool m_quit {};
     std::future<void> m_audioThread;
   };
 }
