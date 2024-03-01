@@ -8,6 +8,11 @@ namespace Core::Api
   class Interface;
 }
 
+namespace Dsp::Api::Display
+{
+  class Interface;
+}
+
 namespace Ui
 {
   class SharedState;
@@ -19,7 +24,8 @@ namespace Ui
     class Controller
     {
      public:
-      Controller(SharedState &sharedUiState, Core::Api::Interface &core, Ui::Midi::Interface &ui);
+      Controller(SharedState &sharedUiState, Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp,
+                 Ui::Midi::Interface &ui);
 
       void kickOff();
 

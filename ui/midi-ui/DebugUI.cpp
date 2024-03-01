@@ -22,11 +22,15 @@ namespace Ui::Midi
       color: white;
     }
 
+    button.current-step {
+      background: orange;
+    }
+
   )";
 
-  DebugUI::DebugUI(SharedState& sharedUiState, Core::Api::Interface& core)
+  DebugUI::DebugUI(SharedState& sharedUiState, Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp)
       : m_core(core)
-      , m_ctrl(std::make_unique<Controller>(sharedUiState, core, *this))
+      , m_ctrl(std::make_unique<Controller>(sharedUiState, core, dsp, *this))
   {
   }
 
@@ -141,17 +145,21 @@ namespace Ui::Midi
     m_onKnobEvent = cb;
   }
 
+  const Gtk::Widget* DebugUI::findChild(const std::string& name)
+  {
+    auto grid = dynamic_cast<const Gtk::Grid*>(get_child());
+    const auto& children = grid->get_children();
+    auto widgetIt
+        = std::find_if(children.begin(), children.end(), [&](const Gtk::Widget* c) { return c->get_name() == name; });
+    return widgetIt != children.end() ? *widgetIt : nullptr;
+  }
+
   void DebugUI::setColor(const std::string& widgetName, Color c)
   {
     auto cssClass = "color-" + getColorName(c);
-    auto grid = dynamic_cast<Gtk::Grid*>(get_child());
-    const auto& children = grid->get_children();
-    auto widgetIt
-        = std::find_if(children.begin(), children.end(), [&](Gtk::Widget* c) { return c->get_name() == widgetName; });
 
-    if(widgetIt != children.end())
+    if(auto widget = findChild(widgetName))
     {
-      auto widget = dynamic_cast<Gtk::Widget*>(*widgetIt);
       auto style = widget->get_style_context();
       for(const auto& color : style->list_classes())
       {
@@ -161,5 +169,14 @@ namespace Ui::Midi
       }
       style->add_class(cssClass);
     }
+  }
+
+  void DebugUI::highlightCurrentStep(Step oldStep, Step newStep)
+  {
+    if(auto widget = findChild("step-" + std::to_string(oldStep)))
+      widget->get_style_context()->remove_class("current-step");
+
+    if(auto widget = findChild("step-" + std::to_string(newStep)))
+      widget->get_style_context()->add_class("current-step");
   }
 }

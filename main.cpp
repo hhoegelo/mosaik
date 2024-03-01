@@ -46,7 +46,7 @@ int main(int args, char** argv)
     Ui::Midi::Ui midiUI(sharedUiState, core.getApi());
     Ui::Touch::Ui touchUI(sharedUiState, core.getApi(), dsp.getDisplayApi());
 
-    Ui::Midi::DebugUI dbg(sharedUiState, core.getApi());
+    Ui::Midi::DebugUI dbg(sharedUiState, core.getApi(), dsp.getDisplayApi());
     dbg.build();
     touchUI.attach(dbg);
     touchUI.run();

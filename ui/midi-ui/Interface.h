@@ -143,5 +143,6 @@ namespace Ui::Midi
     virtual void onSoftButtonEvent(std::function<void(SoftButton, ButtonEvent)> cb) = 0;
     virtual void onStepButtonEvent(std::function<void(Step step, ButtonEvent)> cb) = 0;
     virtual void onKnobEvent(std::function<void(Knob knob, int increments)> cb) = 0;
+    virtual void highlightCurrentStep(Step oldStep, Step newStep) = 0;
   };
 }
