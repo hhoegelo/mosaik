@@ -61,6 +61,8 @@ namespace Audio
                        sched_param p { sched_get_priority_max(SCHED_FIFO) };
                        pthread_setschedparam(pthread_self(), SCHED_FIFO, &p);
 
+                       snd_pcm_start(pcm);
+                       
                        Dsp::OutFrame samples[c_framesPerPeriod] = {};
 
                        while(!m_quit)
