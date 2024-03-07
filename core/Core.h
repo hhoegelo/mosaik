@@ -19,10 +19,10 @@ namespace Core
   class Core
   {
    public:
-    Core(Dsp::Api::Control::Interface &dsp);
+    explicit Core(Dsp::Api::Control::Interface &dsp);
     ~Core();
 
-    Api::Interface &getApi() const;
+    [[nodiscard]] Api::Interface &getApi() const;
 
    private:
     Dsp::Api::Control::Interface &m_dsp;

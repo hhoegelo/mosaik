@@ -1,35 +1,46 @@
 #include "Toolboxes.h"
-#include "ui/touch-ui/controls/FloatScaleButton.h"
+#include <ui/touch-ui/controls/FloatScaleButton.h>
+#include <ui/SharedState.h>
 #include <core/api/Interface.h>
 #include <gtkmm/filechooserwidget.h>
-#include <gtkmm/scale.h>
 #include <iostream>
+#include <gtkmm/levelbar.h>
 
 namespace Ui::Touch
 {
 
-  Toolboxes::Toolboxes(Core::Api::Interface &core)
+  Toolboxes::Toolboxes(SharedState &sharedUiState, Core::Api::Interface &core)
       : m_core(core)
   {
     append_page(*buildGlobals(), "Globals");
-    append_page(*buildFileBrowser(), "Browse");
+    append_page(*buildTileToolbox(), "Tile");
+
+    signal_switch_page().connect(
+        [&sharedUiState](auto, auto idx)
+        {
+          // foo
+          sharedUiState.select(static_cast<Ui::SharedState::Toolboxes>(idx));
+        });
+
+    m_connections.push_back(sharedUiState.connectSelectedToolbox(
+        [this](auto t)
+        {
+          auto n = static_cast<int>(t);
+          if(this->get_current_page() != n)
+            this->set_current_page(n);
+        }));
   }
 
-  Gtk::Widget *Toolboxes::buildScale(Core::TileId tile, Core::ParameterId id, double min, double max)
+  Gtk::Widget *Toolboxes::buildLevel(Core::TileId tile, Core::ParameterId id, double min, double max)
   {
-    auto scale = Gtk::manage(new Gtk::Scale(Gtk::Orientation::ORIENTATION_HORIZONTAL));
-    scale->set_range(min, max);
-    auto connection = scale->signal_value_changed().connect(
-        [this, scale, tile, id]() { m_core.setParameter(tile, id, static_cast<float>(scale->get_value())); });
+    auto level = Gtk::manage(new Gtk::LevelBar());
+    level->set_min_value(min);
+    level->set_max_value(max);
 
-    m_scaleConnection = m_core.connect(tile, id,
-                                       [scale, connection = connection](const Core::ParameterValue &p) mutable
-                                       {
-                                         connection.block();
-                                         scale->set_value(get<float>(p));
-                                         connection.unblock();
-                                       });
-    return scale;
+    m_connections.push_back(
+        m_core.connect(tile, id, [level](const Core::ParameterValue &p) { level->set_value(get<float>(p)); }));
+
+    return level;
   }
 
   Gtk::Widget *Toolboxes::buildGlobals()
@@ -37,15 +48,16 @@ namespace Ui::Touch
     auto globals = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
 
     globals->add(*Gtk::manage(new Gtk::Label("Volume")));
-    globals->add(*buildScale({}, Core::ParameterId::GlobalVolume, 0.0, 1.0));
+    globals->add(*buildLevel({}, Core::ParameterId::GlobalVolume, 0.0, 1.0));
     globals->add(*Gtk::manage(new Gtk::Label("Tempo")));
-    globals->add(*buildScale({}, Core::ParameterId::GlobalTempo, 20, 240));
+    globals->add(*buildLevel({}, Core::ParameterId::GlobalTempo, 20, 240));
 
     return globals;
   }
 
-  Gtk::Widget *Toolboxes::buildFileBrowser()
+  Gtk::Widget *Toolboxes::buildTileToolbox()
   {
+    auto box = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
     auto fileBrowser = Gtk::manage(new Gtk::FileChooserWidget(Gtk::FILE_CHOOSER_ACTION_OPEN));
     fileBrowser->signal_file_activated().connect(
         [fileBrowser, this]
@@ -64,6 +76,30 @@ namespace Ui::Touch
             fileBrowser->set_current_folder_file(m_lastSelectedFolder);
         });
 
-    return fileBrowser;
+    box->pack_start(*fileBrowser);
+
+    auto controlBox = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
+
+    // Tile Gain
+    controlBox->pack_start(*Gtk::manage(new Gtk::Label("Gain")), false, false);
+
+    auto level = Gtk::manage(new Gtk::LevelBar());
+    level->set_min_value(0);
+    level->set_max_value(1);
+    controlBox->pack_start(*level, false, false);
+
+    showTileGain(level);
+
+    box->pack_start(*controlBox);
+
+    return box;
+  }
+
+  void Toolboxes::showTileGain(Gtk::LevelBar *level)
+  {
+    m_tilePageGain = std::make_unique<Core::Api::Computation>();
+    auto v = m_core.getFirstSelectedTileParameter(m_tilePageGain.get(), Core::ParameterId::Gain);
+    level->set_value(std::get<float>(v));
+    m_tilePageGain->refresh([this, level] { showTileGain(level); });
   }
 }

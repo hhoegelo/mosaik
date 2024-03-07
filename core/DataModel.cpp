@@ -28,11 +28,31 @@ namespace nlohmann
     }
   };
 
+  template <> struct adl_serializer<Core::DataModel::Globals>
+  {
+    static void to_json(json &j, const Core::DataModel::Globals &v)
+    {
+      j = { { "volume", v.volume }, { "tempo", v.tempo } };
+    }
+
+    static void from_json(const json &j, Core::DataModel::Globals &v)
+    {
+      v.volume = j["volume"];
+      v.tempo = j["tempo"];
+    }
+  };
+
   template <> struct adl_serializer<Core::DataModel>
   {
     static void to_json(json &j, const Core::DataModel &v)
     {
-      j = { { "volume", v.volume }, { "tempo", v.tempo }, { "tiles", v.tiles } };
+      j = { { "globals", v.globals }, { "tiles", v.tiles } };
+    }
+
+    static void from_json(const json &j, Core::DataModel &v)
+    {
+      v.globals = j["globals"];
+      v.tiles = j["tiles"];
     }
   };
 }
@@ -51,9 +71,7 @@ namespace Core
         std::ifstream i(backing);
         nlohmann::json j;
         i >> j;
-        volume = j["volume"];
-        tempo = j["tempo"];
-        tiles = j["tiles"];
+        nlohmann::adl_serializer<Core::DataModel>::from_json(j, *this);
       }
       catch(...)
       {

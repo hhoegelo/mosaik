@@ -11,7 +11,7 @@
 namespace Core::Api
 {
   using Step = uint8_t;
-  
+
   class Computation
   {
    public:
@@ -25,10 +25,10 @@ namespace Core::Api
       m_cb = std::move(cb);
     }
 
-    template <typename Signature> void add(const Tools::Signals::Signal<void(Signature)> *s)
+    template <typename... Args> void add(const Tools::Signals::Signal<Args...> *s)
     {
-      auto c = const_cast<Tools::Signals::Signal<void(Signature)> *>(s)->connect(
-          [this](Signature)
+      auto c = const_cast<Tools::Signals::Signal<Args...> *>(s)->connectWithoutInit(
+          [this](auto...)
           {
             if(!std::exchange(m_timerScheduled, true))
             {
@@ -53,21 +53,13 @@ namespace Core::Api
     std::function<void()> m_cb;
   };
 
-  namespace Detail
-  {
-    template <typename T> struct SignalingCache
-    {
-      T cache;
-      Tools::Signals::Signal<void(T)> sig;
-    };
-  }
-
   class Interface
   {
    public:
     virtual ~Interface() = default;
 
     virtual void setParameter(TileId tileId, ParameterId parameterId, const ParameterValue &value) = 0;
+    virtual void incParameter(TileId tileId, ParameterId parameterId, int steps) = 0;
     virtual Dsp::SharedSampleBuffer getSamples(Computation *computation, TileId tileId) const = 0;
 
     ParameterValue getParameter(Computation *computation, TileId tileId, ParameterId parameterId) const;
@@ -77,12 +69,16 @@ namespace Core::Api
 
     // Convenience
     Pattern getMergedPattern(Computation *computation) const;
+    ParameterValue getFirstSelectedTileParameter(Computation *computation, ParameterId id) const;
+    void incSelectedTilesParameter(ParameterId parameterId, int steps);
+    void toggleSelectedTilesParameter(ParameterId parameterId);
+
     void setStep(Step step, bool value);
 
    protected:
     void commit(TileId tileId, ParameterId parameterId, const ParameterValue &v);
 
    private:
-    std::map<std::tuple<TileId, ParameterId>, Detail::SignalingCache<ParameterValue>> m_parameterCache;
+    std::map<std::tuple<TileId, ParameterId>, Tools::Signals::Signal<ParameterValue>> m_parameterCache;
   };
 }

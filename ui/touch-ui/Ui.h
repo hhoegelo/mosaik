@@ -27,6 +27,7 @@ namespace Ui
       void run();
 
      private:
+      SharedState &m_sharedUiState;
       Core::Api::Interface &m_core;
       Dsp::Api::Display::Interface &m_dsp;
       Glib::RefPtr<Gtk::Application> m_app;

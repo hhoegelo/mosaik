@@ -1,6 +1,6 @@
 #include "DebugUI.h"
 #include "Controller.h"
-
+#include "Erp.h"
 #include <gtkmm/grid.h>
 
 namespace Ui::Midi
@@ -106,8 +106,9 @@ namespace Ui::Midi
 
   Gtk::Widget* DebugUI::buildKnob(Knob knob)
   {
-    auto w = Gtk::manage(new Gtk::Button("K"));
+    auto w = Gtk::manage(new Erp());
     w->set_name(getKnobName(knob));
+    w->connect([this, knob](auto inc) { m_ctrl->onErpInc(knob, inc); });
     return w;
   }
 
@@ -115,6 +116,8 @@ namespace Ui::Midi
   {
     auto btn = Gtk::manage(new Gtk::Button("B"));
     btn->set_name(getSoftButtonName(button));
+    btn->signal_pressed().connect([this, button] { m_ctrl->onButtonEvent(button, ButtonEvent::Press); });
+    btn->signal_released().connect([this, button] { m_ctrl->onButtonEvent(button, ButtonEvent::Release); });
     return btn;
   }
 

@@ -1,7 +1,9 @@
 #pragma once
 
+#include <core/api/Interface.h>
 #include <tools/SignalSlot.h>
-#include "core/api/Interface.h"
+#include <ui/SharedState.h>
+#include "Interface.h"
 
 namespace Core::Api
 {
@@ -29,13 +31,30 @@ namespace Ui
 
       void kickOff();
 
+      void onErpInc(Knob k, int inc);
+      void onButtonEvent(SoftButton b, ButtonEvent e);
+
      private:
       void showPattern();
 
+      struct Mapping
+      {
+        std::map<Knob, std::function<void(int)>> knobs;
+        std::map<SoftButton, std::function<void(ButtonEvent)>> buttons;
+      };
+
+      Mapping createMapping(Ui::SharedState::Toolboxes t);
+      Mapping buildTileMapping();
+      Mapping buildGlobalMapping();
+
+      SharedState &m_sharedUiState;
       Core::Api::Interface &m_core;
+      Interface &m_ui;
 
       std::unique_ptr<Core::Api::Computation> m_pattern;
-      Interface &m_ui;
+      Tools::Signals::Connection m_selectedTool;
+
+      Mapping m_inputMapping;
     };
   }
 }

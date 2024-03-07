@@ -6,25 +6,21 @@ namespace Core::Api
   Tools::Signals::Connection Interface::connect(TileId tileId, ParameterId parameterId,
                                                 const std::function<void(const ParameterValue &)> &cb)
   {
-    auto &c = m_parameterCache[std::make_tuple(tileId, parameterId)];
-    cb(c.cache);
-    return c.sig.connect(cb);
+    return m_parameterCache[std::make_tuple(tileId, parameterId)].connectWithInit(cb);
   }
 
   void Interface::commit(TileId tileId, ParameterId parameterId, const ParameterValue &v)
   {
-    auto &c = m_parameterCache[std::make_tuple(tileId, parameterId)];
-    c.cache = v;
-    c.sig.emit(v);
+    m_parameterCache[std::make_tuple(tileId, parameterId)].emit(v);
   }
 
   ParameterValue Interface::getParameter(Computation *computation, TileId tileId, ParameterId parameterId) const
   {
     auto c = m_parameterCache.find(std::make_tuple(tileId, parameterId));
     if(computation)
-      computation->add(&c->second.sig);
+      computation->add(&c->second);
 
-    return c->second.cache;
+    return std::get<0>(c->second.getCache());
   }
 
   std::vector<TileId> Interface::getSelectedTiles(Computation *computation) const
@@ -33,7 +29,7 @@ namespace Core::Api
 
     for(auto c = 0; c < NUM_TILES; c++)
       if(get<bool>(getParameter(computation, c, ParameterId::Selected)))
-        ret.push_back(c);
+        ret.emplace_back(c);
 
     return ret;
   }
@@ -53,6 +49,11 @@ namespace Core::Api
     return merged;
   }
 
+  ParameterValue Interface::getFirstSelectedTileParameter(Computation *computation, ParameterId id) const
+  {
+    return getParameter(computation, *getSelectedTiles(computation).begin(), id);
+  }
+
   void Interface::setStep(Step step, bool value)
   {
     for(const auto &tileId : getSelectedTiles(nullptr))
@@ -61,5 +62,17 @@ namespace Core::Api
       old[step] = value;
       setParameter(tileId, ParameterId::Pattern, old);
     }
+  }
+
+  void Interface::incSelectedTilesParameter(ParameterId parameterId, int steps)
+  {
+    for(const auto &tileId : getSelectedTiles(nullptr))
+      incParameter(tileId, parameterId, steps);
+  }
+
+  void Interface::toggleSelectedTilesParameter(ParameterId parameterId)
+  {
+    for(const auto &tileId : getSelectedTiles(nullptr))
+      setParameter(tileId, parameterId, !std::get<bool>(getParameter(nullptr, tileId, parameterId)));
   }
 }

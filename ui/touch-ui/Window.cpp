@@ -70,8 +70,9 @@ namespace Ui::Touch
 
   )";
 
-  Window::Window(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp)
-      : m_core(core)
+  Window::Window(SharedState& sharedUiState, Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp)
+      : m_sharedUiState(sharedUiState)
+      , m_core(core)
       , m_dsp(dsp)
   {
   }
@@ -91,7 +92,7 @@ namespace Ui::Touch
     auto tiles = new Tiles(m_core, m_dsp, [](Row r, Col c) { return r * NUM_TILE_COLUMNS + c; });
     screen->attach(*tiles, 0, 1, 10, 10);
 
-    auto toolboxes = new Toolboxes(m_core);
+    auto toolboxes = new Toolboxes(m_sharedUiState, m_core);
     screen->attach(*toolboxes, 10, 0, 5, 11);
 
     add(*screen);

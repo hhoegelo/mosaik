@@ -12,6 +12,7 @@
 #include <gtkmm/drawingarea.h>
 
 #include <iostream>
+#include <gtkmm/levelbar.h>
 
 namespace Ui::Touch
 {
@@ -78,20 +79,8 @@ namespace Ui::Touch
     auto styles = play->get_style_context();
     styles->add_class("is-playing-indicator");
 
-    auto playPressedConnection = play->signal_clicked().connect(
-        [&core, tileId]
-        {
-          core.setParameter(tileId, Core::ParameterId::Reverse,
-                            !get<bool>(core.getParameter(nullptr, tileId, Core::ParameterId::Reverse)));
-        });
-
-    m_reverseConnection = core.connect(tileId, Core::ParameterId::Reverse,
-                                       [play, playPressedConnection](const Core::ParameterValue& p) mutable
-                                       {
-                                         playPressedConnection.block();
-                                         play->set_label(get<bool>(p) ? "<" : ">");
-                                         playPressedConnection.unblock();
-                                       });
+    m_reverseConnection = core.connect(tileId, Core::ParameterId::Reverse, [play](const Core::ParameterValue& p) mutable
+                                       { play->set_label(get<bool>(p) ? "<" : ">"); });
 
     Glib::signal_timeout().connect(
         [styles, &dsp, tileId, play, oldDB = -80.0]() mutable
@@ -120,29 +109,17 @@ namespace Ui::Touch
 
   Gtk::Widget* Tile::buildVolumeSlider(Core::Api::Interface& core, Core::TileId tileId)
   {
-    auto volume = Gtk::manage(new Gtk::Scale(Gtk::Orientation::ORIENTATION_VERTICAL));
-    volume->set_range(0.0, 1.0);
+    auto volume = Gtk::manage(new Gtk::LevelBar());
+    volume->set_orientation(Gtk::Orientation::ORIENTATION_VERTICAL);
+    volume->set_min_value(0.0);
+    volume->set_max_value(1.0);
     volume->set_inverted(true);
-    volume->set_increments(0.01, 0.05);
-    volume->set_draw_value(false);
 
     auto styles = volume->get_style_context();
     styles->add_class("volume");
 
-    auto volumeChangedConnection = volume->signal_change_value().connect(
-        [&core, volume, tileId](Gtk::ScrollType, double v)
-        {
-          core.setParameter(tileId, Core::ParameterId::Gain, static_cast<float>(v));
-          return true;
-        });
-
-    m_gainConnection = core.connect(tileId, Core::ParameterId::Gain,
-                                    [volume, volumeChangedConnection](const Core::ParameterValue& p) mutable
-                                    {
-                                      volumeChangedConnection.block();
-                                      volume->set_value(get<float>(p));
-                                      volumeChangedConnection.unblock();
-                                    });
+    m_gainConnection = core.connect(tileId, Core::ParameterId::Gain, [volume](const Core::ParameterValue& p) mutable
+                                    { volume->set_value(get<float>(p)); });
 
     return volume;
   }
@@ -150,6 +127,8 @@ namespace Ui::Touch
   Gtk::Widget* Tile::buildWaveformDisplay(Core::Api::Interface& core, Core::TileId tileId)
   {
     auto wf = Gtk::manage(new Gtk::DrawingArea());
+    wf->set_size_request(75, 75);
+
     auto styles = wf->get_style_context();
     styles->add_class("waveform");
     wf->signal_draw().connect(

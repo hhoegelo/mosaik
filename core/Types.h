@@ -9,9 +9,11 @@ namespace Core
 {
   enum class ParameterId
   {
+    // Globals
     GlobalTempo,   // float 20..240 bpm
     GlobalVolume,  // float 0...1
 
+    // Per Tile
     Selected,    // bool => is the given tile selected?
     SampleFile,  // std::filesystem::path
     Pattern,     // std::array<bool, NUM_STEPS>
@@ -20,7 +22,7 @@ namespace Core
     Mute,        // bool
     Reverse,     // bool
   };
-
+  
   using Path = std::filesystem::path;
   using Pattern = std::array<bool, NUM_STEPS>;
   using Float = float;

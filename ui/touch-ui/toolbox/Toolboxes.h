@@ -2,28 +2,38 @@
 
 #include <gtkmm/notebook.h>
 #include <optional>
+#include <gtkmm/levelbar.h>
 #include "core/Types.h"
 #include "tools/SignalSlot.h"
 
 namespace Core::Api
 {
   class Interface;
+  class Computation;
 }
 
-namespace Ui::Touch
+namespace Ui
 {
-  class Toolboxes : public Gtk::Notebook
+  class SharedState;
+
+  namespace Touch
   {
-   public:
-    explicit Toolboxes(Core::Api::Interface &core);
+    class Toolboxes : public Gtk::Notebook
+    {
+     public:
+      explicit Toolboxes(SharedState &sharedUiState, Core::Api::Interface &core);
 
-   private:
-    Widget *buildScale(std::optional<uint32_t> tile, Core::ParameterId id, double min, double max);
-    Widget *buildGlobals();
-    Widget *buildFileBrowser();
+     private:
+      Widget *buildLevel(Core::TileId tile, Core::ParameterId id, double min, double max);
+      Widget *buildGlobals();
+      Widget *buildTileToolbox();
 
-    Core::Api::Interface &m_core;
-    Glib::RefPtr<Gio::File> m_lastSelectedFolder;
-    Tools::Signals::Connection m_scaleConnection;
-  };
+      Core::Api::Interface &m_core;
+      Glib::RefPtr<Gio::File> m_lastSelectedFolder;
+      std::vector<Tools::Signals::Connection> m_connections;
+
+      std::unique_ptr<Core::Api::Computation> m_tilePageGain;
+      void showTileGain(Gtk::LevelBar *pBar);
+    };
+  }
 }

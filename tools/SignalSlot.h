@@ -3,6 +3,7 @@
 #include <memory>
 #include <functional>
 #include <algorithm>
+#include <utility>
 
 namespace Tools
 {
@@ -16,10 +17,10 @@ namespace Tools
         virtual ~ConnectionBase() = default;
       };
 
-      template <typename Signature> class Connection : public ConnectionBase
+      template <typename... Args> class Connection : public ConnectionBase
       {
        public:
-        using Callback = std::function<Signature>;
+        using Callback = std::function<void(Args...)>;
         explicit Connection(const Callback &cb)
             : m_cb(cb)
         {
@@ -31,36 +32,54 @@ namespace Tools
 
     using Connection = std::shared_ptr<Detail::ConnectionBase>;
 
-    template <typename Signature> class Signal
+    template <typename... Args> class Signal
     {
      public:
-      using Callback = std::function<Signature>;
+      using Callback = std::function<void(Args...)>;
 
      public:
-      template <typename... Args> void emit(Args &&...args)
+      void emit(const Args &...args)
       {
-        auto newEnd = std::remove_if(m_callbacks.begin(), m_callbacks.end(),
-                                     [&](auto &cb)
-                                     {
-                                       if(auto locked = cb.lock())
+        auto n = std::make_tuple(args...);
+        if(std::exchange(m_cache, n) != n)
+        {
+          auto newEnd = std::remove_if(m_callbacks.begin(), m_callbacks.end(),
+                                       [&](auto &cb)
                                        {
-                                         locked->m_cb(args...);
-                                         return false;
-                                       }
-                                       return true;
-                                     });
-        m_callbacks.erase(newEnd, m_callbacks.end());
+                                         if(auto locked = cb.lock())
+                                         {
+                                           locked->m_cb(args...);
+                                           return false;
+                                         }
+                                         return true;
+                                       });
+          m_callbacks.erase(newEnd, m_callbacks.end());
+        }
       }
 
-      Connection connect(const Callback &cb)
+      Connection connectWithInit(const Callback &cb)
       {
-        auto ptr = std::make_shared<Detail::Connection<Signature>>(cb);
+        auto ptr = std::make_shared<Detail::Connection<Args...>>(cb);
+        m_callbacks.push_back(ptr);
+        std::apply([&](const auto &...a) { cb(a...); }, m_cache);
+        return ptr;
+      }
+
+      Connection connectWithoutInit(const Callback &cb)
+      {
+        auto ptr = std::make_shared<Detail::Connection<Args...>>(cb);
         m_callbacks.push_back(ptr);
         return ptr;
       }
 
+      const std::tuple<Args...> &getCache() const
+      {
+        return m_cache;
+      }
+
      private:
-      std::vector<std::weak_ptr<Detail::Connection<Signature>>> m_callbacks;
+      std::tuple<Args...> m_cache;
+      std::vector<std::weak_ptr<Detail::Connection<Args...>>> m_callbacks;
     };
   }
 }

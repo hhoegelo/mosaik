@@ -7,7 +7,8 @@ namespace Ui::Midi
 {
   Controller::Controller(SharedState &sharedUiState, Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp,
                          Ui::Midi::Interface &ui)
-      : m_core(core)
+      : m_sharedUiState(sharedUiState)
+      , m_core(core)
       , m_ui(ui)
   {
     Glib::signal_timeout().connect(
@@ -24,6 +25,8 @@ namespace Ui::Midi
           return true;
         },
         16);
+
+    m_selectedTool = sharedUiState.connectSelectedToolbox([this](auto t) { m_inputMapping = createMapping(t); });
   }
 
   void Controller::kickOff()
@@ -40,6 +43,56 @@ namespace Ui::Midi
       m_ui.setStepButtonColor(i, merged[i] ? Ui::Midi::Color::Green : Ui::Midi::Color::White);
 
     m_pattern->refresh([this] { showPattern(); });
+  }
+
+  void Controller::onErpInc(Knob k, int inc)
+  {
+    if(auto it = m_inputMapping.knobs.find(k); it != m_inputMapping.knobs.end())
+      it->second(inc);
+  }
+
+  void Controller::onButtonEvent(SoftButton b, ButtonEvent e)
+  {
+    if(auto it = m_inputMapping.buttons.find(b); it != m_inputMapping.buttons.end())
+      it->second(e);
+  }
+
+  Controller::Mapping Controller::createMapping(Ui::SharedState::Toolboxes t)
+  {
+    switch(t)
+    {
+      case SharedState::Toolboxes::Global:
+        return buildGlobalMapping();
+
+      case SharedState::Toolboxes::Tile:
+        return buildTileMapping();
+    }
+    throw std::runtime_error("unknown toolbox");
+  }
+
+  Controller::Mapping Controller::buildGlobalMapping()
+  {
+    return {
+      .knobs
+      = { { Knob::Center, [this](auto inc) { m_core.incParameter({}, Core::ParameterId::GlobalVolume, inc); } },
+          { Knob::SouthEast, [this](auto inc) { m_core.incParameter({}, Core::ParameterId::GlobalTempo, inc); } } },
+      .buttons = {},
+    };
+  }
+
+  Controller::Mapping Controller::buildTileMapping()
+  {
+    return {
+      .knobs
+      = { { Knob::Center, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Gain, inc); } },
+           },
+      .buttons = {
+          { SoftButton::Right_Center,
+            [this](auto e) {
+              if(e == ButtonEvent::Release)
+              {m_core.toggleSelectedTilesParameter(Core::ParameterId::Reverse);} } }
+      },
+    };
   }
 
 }

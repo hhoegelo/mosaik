@@ -13,10 +13,12 @@ namespace Audio
   class AlsaOut
   {
    public:
-    AlsaOut(Dsp::Api::Realtime::Interface &dsp, const std::string &device);
+    AlsaOut(Dsp::Api::Realtime::Interface &dsp, const std::string &device, int bits);
     ~AlsaOut();
 
    private:
+    template <typename Sample> void audioThread(Dsp::Api::Realtime::Interface &dsp, const std::string &device);
+
     std::atomic_bool m_quit {};
     std::future<void> m_audioThread;
   };

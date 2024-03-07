@@ -1,7 +1,7 @@
 #pragma once
 
 #include <core/Types.h>
-#include <stdint.h>
+#include <cstdint>
 #include <filesystem>
 #include <array>
 #include <set>
@@ -26,10 +26,14 @@ namespace Core
       bool selected = false;
     };
 
-    std::array<Tile, NUM_TILES> tiles;
+    struct Globals
+    {
+      float tempo = 120.f;
+      float volume = 1.f;
+    };
 
-    float tempo = 120.f;
-    float volume = 1.f;
+    Globals globals;
+    std::array<Tile, NUM_TILES> tiles;
 
     std::filesystem::path backing;
   };

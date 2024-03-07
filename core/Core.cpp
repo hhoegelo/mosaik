@@ -23,9 +23,11 @@ namespace Core
 
       void populateCache()
       {
-        commit({}, ParameterId::GlobalTempo, m_model.tempo);
-        commit({}, ParameterId::GlobalVolume, m_model.volume);
+        // Globals
+        commit({}, ParameterId::GlobalTempo, m_model.globals.tempo);
+        commit({}, ParameterId::GlobalVolume, m_model.globals.volume);
 
+        // Tiles
         for(int i = 0; i < NUM_TILES; i++)
         {
           auto &src = m_model.tiles[i];
@@ -42,12 +44,37 @@ namespace Core
       void setParameter(TileId tileId, ParameterId parameterId, const ParameterValue &v) override
       {
         if(!tileId)
-          setGlobalParameter(parameterId, v);
+          commit(tileId, parameterId, setGlobalParameter(parameterId, v));
         else
-          setTileParameter(m_model.tiles[tileId.value()], parameterId, v);
+          commit(tileId, parameterId, setTileParameter(m_model.tiles[tileId.value()], parameterId, v));
 
         m_dsp.takeAudioKernel(newDspKernel(m_model));
-        commit(tileId, parameterId, v);
+      }
+
+      void incParameter(TileId tileId, ParameterId parameterId, int steps) override
+      {
+        switch(parameterId)
+        {
+          case ParameterId::GlobalTempo:
+            setParameter(tileId, parameterId,
+                         std::get<float>(getParameter(nullptr, tileId, parameterId)) + static_cast<float>(steps));
+            break;
+
+          case ParameterId::GlobalVolume:
+          case ParameterId::Gain:
+          case ParameterId::Balance:
+            setParameter(tileId, parameterId,
+                         std::get<float>(getParameter(nullptr, tileId, parameterId))
+                             + static_cast<float>(steps) / 100.0f);
+            break;
+
+          case ParameterId::Selected:
+          case ParameterId::SampleFile:
+          case ParameterId::Pattern:
+          case ParameterId::Mute:
+          case ParameterId::Reverse:
+            break;
+        }
       }
 
       Dsp::SharedSampleBuffer getSamples(Computation *computation, TileId tileId) const override
@@ -55,7 +82,7 @@ namespace Core
         return m_dsp.getSamples(get<std::filesystem::path>(getParameter(computation, tileId, ParameterId::SampleFile)));
       }
 
-      Dsp::AudioKernel *newDspKernel(const DataModel &dataModel) const
+      [[nodiscard]] Dsp::AudioKernel *newDspKernel(const DataModel &dataModel) const
       {
         auto r = std::make_unique<Dsp::AudioKernel>();
         translateGlobals(r, dataModel);
@@ -64,7 +91,7 @@ namespace Core
         {
           const auto &src = dataModel.tiles[c];
           auto &tgt = r->tiles[c];
-          translateTile(dataModel, tgt, src);
+          translateTile(tgt, src);
         }
 
         return r.release();
@@ -73,13 +100,13 @@ namespace Core
       void translateGlobals(auto &target, const auto &source) const
       {
         auto numFramesPerMinute = SAMPLERATE * 60;
-        auto num16thPerMinute = source.tempo * 4;
+        auto num16thPerMinute = source.globals.tempo * 4;
 
         target->framesPer16th = numFramesPerMinute / num16thPerMinute;
-        target->volume = source.volume;
+        target->volume = source.globals.volume;
       }
 
-      void translateTile(const DataModel &data, auto &tgt, const auto &src) const
+      void translateTile(auto &tgt, const auto &src) const
       {
         tgt.pattern = src.pattern;
         tgt.audio = m_dsp.getSamples(src.sample);
@@ -89,47 +116,50 @@ namespace Core
         tgt.playbackFrameIncrement = src.reverse ? -1 : 1;
       }
 
-      void setGlobalParameter(const ParameterId &parameterId, const ParameterValue &v)
+      ParameterValue setGlobalParameter(const ParameterId &parameterId, const ParameterValue &v)
       {
         switch(parameterId)
         {
           case ParameterId::GlobalVolume:
-            m_model.volume = std::clamp(std::get<Float>(v), 0.f, 1.f);
-            break;
+            m_model.globals.volume = std::clamp(std::get<Float>(v), 0.f, 1.f);
+            return m_model.globals.volume;
 
           case ParameterId::GlobalTempo:
-            m_model.tempo = std::clamp(std::get<Float>(v), 20.f, 240.f);
-            break;
+            m_model.globals.tempo = std::clamp(std::get<Float>(v), 20.f, 240.f);
+            return m_model.globals.tempo;
+
+          default:
+            throw std::runtime_error("unhandled global parameter");
         }
       }
 
-      void setTileParameter(DataModel::Tile &tile, const ParameterId &parameterId, const ParameterValue &v)
+      ParameterValue setTileParameter(DataModel::Tile &tile, const ParameterId &parameterId, const ParameterValue &v)
       {
         switch(parameterId)
         {
           case ParameterId::SampleFile:
             tile.sample = std::get<Path>(v);
-            break;
+            return tile.sample;
 
           case ParameterId::Pattern:
             tile.pattern = std::get<Pattern>(v);
-            break;
+            return tile.pattern;
 
           case ParameterId::Balance:
             tile.balance = std::get<Float>(v);
-            break;
+            return tile.balance;
 
           case ParameterId::Gain:
             tile.gain = std::get<Float>(v);
-            break;
+            return tile.gain;
 
           case ParameterId::Mute:
             tile.muted = std::get<Bool>(v);
-            break;
+            return tile.muted;
 
           case ParameterId::Reverse:
             tile.reverse = std::get<Bool>(v);
-            break;
+            return tile.reverse;
 
           case ParameterId::Selected:
             for(auto c = 0; c < NUM_TILES; c++)
@@ -138,7 +168,10 @@ namespace Core
               src.selected = (src.id == tile.id);
               commit(src.id, ParameterId::Selected, src.selected);
             }
-            break;
+            return true;
+
+          default:
+            throw std::runtime_error("unhandled tile parameter");
         }
       }
 
@@ -157,7 +190,7 @@ namespace Core
   Core::Core(Dsp::Api::Control::Interface &dsp)
       : m_dsp(dsp)
       , m_dataModel(std::make_unique<DataModel>(getInitFileName()))
-      , m_api(std::make_unique<Api::Mosaik>(*m_dataModel.get(), m_dsp))
+      , m_api(std::make_unique<Api::Mosaik>(*m_dataModel, m_dsp))
   {
   }
 
