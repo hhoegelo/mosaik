@@ -11,12 +11,13 @@ namespace Dsp
   struct AudioKernel
   {
     float volume = 0.0;
-    uint32_t framesPer16th = 1;
+    FramePos framesPer16th = 1;
+    FramePos framesPerLoop = 1;
 
     struct Tile
     {
       SharedSampleBuffer audio { std::make_shared<SampleBuffer>() };
-      std::array<bool, NUM_STEPS> pattern {};
+      std::vector<uint64_t> triggers;  // sample positions where to (re-)start the sample
       float gainLeft { 0.0f };
       float gainRight { 0.0f };
       int8_t playbackFrameIncrement { 0 };

@@ -68,6 +68,7 @@ namespace Core::Api
     std::vector<TileId> getSelectedTiles(Computation *computation) const;
 
     // Convenience
+    Step loopPositionToStep(Dsp::FramePos pos) const;
     Pattern getMergedPattern(Computation *computation) const;
     ParameterValue getFirstSelectedTileParameter(Computation *computation, ParameterId id) const;
     void incSelectedTilesParameter(ParameterId parameterId, int steps);

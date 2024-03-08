@@ -12,9 +12,10 @@ namespace Ui::Midi
       , m_ui(ui)
   {
     Glib::signal_timeout().connect(
-        [&ui, &dsp, lastStep = -1]() mutable
+        [&ui, &dsp, &core, lastStep = -1]() mutable
         {
-          auto newStep = dsp.getCurrentStep();
+          auto loopPosition = dsp.getCurrentLoopPosition();
+          auto newStep = core.loopPositionToStep(loopPosition);
 
           if(newStep != lastStep)
           {
@@ -75,6 +76,7 @@ namespace Ui::Midi
     return {
       .knobs
       = { { Knob::Center, [this](auto inc) { m_core.incParameter({}, Core::ParameterId::GlobalVolume, inc); } },
+          { Knob::NorthEast, [this](auto inc) { m_core.incParameter({}, Core::ParameterId::GlobalShuffle, inc); } },
           { Knob::SouthEast, [this](auto inc) { m_core.incParameter({}, Core::ParameterId::GlobalTempo, inc); } } },
       .buttons = {},
     };

@@ -3,6 +3,7 @@
 #include "DataModel.h"
 #include <dsp/api/control/Interface.h>
 #include <dsp/AudioKernel.h>
+#include <cmath>
 
 namespace Core
 {
@@ -26,6 +27,7 @@ namespace Core
         // Globals
         commit({}, ParameterId::GlobalTempo, m_model.globals.tempo);
         commit({}, ParameterId::GlobalVolume, m_model.globals.volume);
+        commit({}, ParameterId::GlobalShuffle, m_model.globals.shuffle);
 
         // Tiles
         for(int i = 0; i < NUM_TILES; i++)
@@ -61,6 +63,7 @@ namespace Core
             break;
 
           case ParameterId::GlobalVolume:
+          case ParameterId::GlobalShuffle:
           case ParameterId::Gain:
           case ParameterId::Balance:
             setParameter(tileId, parameterId,
@@ -91,24 +94,49 @@ namespace Core
         {
           const auto &src = dataModel.tiles[c];
           auto &tgt = r->tiles[c];
-          translateTile(tgt, src);
+          translateTile(dataModel, tgt, src);
         }
 
         return r.release();
       }
 
-      void translateGlobals(auto &target, const auto &source) const
+      void translateGlobals(auto &target, const DataModel &source) const
       {
-        auto numFramesPerMinute = SAMPLERATE * 60;
+        auto numFramesPerMinute = SAMPLERATE * 60.0f;
         auto num16thPerMinute = source.globals.tempo * 4;
 
         target->framesPer16th = numFramesPerMinute / num16thPerMinute;
+        target->framesPerLoop = target->framesPer16th * NUM_STEPS;
         target->volume = source.globals.volume;
       }
 
-      void translateTile(auto &tgt, const auto &src) const
+      void translateTile(const DataModel &dataModel, Dsp::AudioKernel::Tile &tgt, const auto &src) const
       {
-        tgt.pattern = src.pattern;
+        auto numFramesPerMinute = SAMPLERATE * 60.0f;
+        auto num16thPerMinute = dataModel.globals.tempo * 4;
+        auto framesPer16th = static_cast<Dsp::FramePos>(numFramesPerMinute / num16thPerMinute);
+
+        Dsp::FramePos pos = 0;
+
+        for(auto s : src.pattern)
+        {
+          if(s)
+          {
+            auto step = pos / framesPer16th;
+            int64_t shuffle = 0;
+
+            if(step % 2)
+            {
+              shuffle
+                  = static_cast<int64_t>(0.5 * static_cast<double>(framesPer16th) * (dataModel.globals.shuffle - 0.5));
+            }
+
+            tgt.triggers.push_back(pos + shuffle);
+          }
+
+          pos += framesPer16th;
+        }
+
         tgt.audio = m_dsp.getSamples(src.sample);
         auto unbalancedGain = src.muted ? 0.f : src.gain;
         tgt.gainLeft = src.balance < 0 ? unbalancedGain : unbalancedGain * (1.0f - src.balance);
@@ -123,6 +151,10 @@ namespace Core
           case ParameterId::GlobalVolume:
             m_model.globals.volume = std::clamp(std::get<Float>(v), 0.f, 1.f);
             return m_model.globals.volume;
+
+          case ParameterId::GlobalShuffle:
+            m_model.globals.shuffle = std::clamp(std::get<Float>(v), 0.f, 1.f);
+            return m_model.globals.shuffle;
 
           case ParameterId::GlobalTempo:
             m_model.globals.tempo = std::clamp(std::get<Float>(v), 20.f, 240.f);

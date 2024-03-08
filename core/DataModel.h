@@ -30,6 +30,7 @@ namespace Core
     {
       float tempo = 120.f;
       float volume = 1.f;
+      float shuffle = 0.5f;
     };
 
     Globals globals;

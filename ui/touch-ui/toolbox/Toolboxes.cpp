@@ -51,6 +51,8 @@ namespace Ui::Touch
     globals->add(*buildLevel({}, Core::ParameterId::GlobalVolume, 0.0, 1.0));
     globals->add(*Gtk::manage(new Gtk::Label("Tempo")));
     globals->add(*buildLevel({}, Core::ParameterId::GlobalTempo, 20, 240));
+    globals->add(*Gtk::manage(new Gtk::Label("Shuffle")));
+    globals->add(*buildLevel({}, Core::ParameterId::GlobalShuffle, 0.0, 1.0));
 
     return globals;
   }

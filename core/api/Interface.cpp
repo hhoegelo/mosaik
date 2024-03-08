@@ -1,3 +1,4 @@
+#include <cmath>
 #include "Interface.h"
 #include "ui/midi-ui/Interface.h"
 
@@ -74,5 +75,13 @@ namespace Core::Api
   {
     for(const auto &tileId : getSelectedTiles(nullptr))
       setParameter(tileId, parameterId, !std::get<bool>(getParameter(nullptr, tileId, parameterId)));
+  }
+
+  Step Interface::loopPositionToStep(Dsp::FramePos pos) const
+  {
+    auto numFramesPerMinute = SAMPLERATE * 60.0;
+    auto num16thPerMinute = std::get<float>(getParameter(nullptr, {}, ParameterId::GlobalTempo)) * 4;
+    auto framesPer16th = numFramesPerMinute / num16thPerMinute;
+    return static_cast<Step>(std::round(static_cast<double>(pos) / framesPer16th));
   }
 }

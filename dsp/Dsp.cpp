@@ -20,7 +20,7 @@ namespace Dsp
 
     struct ToUi
     {
-      Step currentStep = 0;
+      FramePos currentLoopPosition = 0;
 
       struct Tile
       {
@@ -33,123 +33,127 @@ namespace Dsp
     ToUi toUi;
 
     Step step { 0 };
-    uint32_t framesInCurrentStep = 0;
+    FramePos position = 0;
+    FramePos knownFramesPerLoop = 0;
     float volume = 1.0f;
 
     struct Tile
     {
       float gainLeft { 1.0f };
       float gainRight { 1.0f };
-      int64_t framePosition = 0;
-      bool virgin = true;
+      FramePos framePosition = 0;
 
-      StereoFrame doAudio(AudioKernel::Tile &kernel, ToUi::Tile &ui, uint8_t lastStep, uint8_t currentStep)
-      {
-        if(kernel.audio->empty())
-        {
-          ui.currentLevel = 0;
-          return {};
-        }
-
-        if(lastStep != currentStep && kernel.pattern[currentStep])
-        {
-          virgin = false;
-          if(kernel.playbackFrameIncrement < 0)
-            framePosition = kernel.audio->size() - 1;
-          else if(kernel.playbackFrameIncrement > 0)
-            framePosition = 0;
-        }
-
-        if(virgin || framePosition < 0 || kernel.audio->size() <= framePosition)
-        {
-          ui.currentLevel = 0;
-          return {};
-        }
-
-        constexpr auto maxVolStep = 1000.0f / SAMPLERATE;
-        gainLeft += std::clamp(kernel.gainLeft - gainLeft, -maxVolStep, maxVolStep);
-        gainRight += std::clamp(kernel.gainRight - gainRight, -maxVolStep, maxVolStep);
-
-        auto r = kernel.audio->operator[](framePosition);
-        r.left *= gainLeft;
-        r.right *= gainRight;
-
-        ui.currentLevel = std::max({ ui.currentLevel, std::abs(r.left), std::abs(r.right) });
-
-        framePosition += kernel.playbackFrameIncrement;
-        return r;
-      }
+      StereoFrame doAudio(AudioKernel::Tile &kernel, ToUi::Tile &ui, FramePos currentLoopPosition);
     };
 
     std::array<Tile, NUM_TILES> tiles;
 
     PointerExchange<AudioKernel> audioKernel;
 
-    StereoFrame doAudio()
-    {
-      constexpr auto maxVolStep = 1000.0f / SAMPLERATE;
-      auto kernel = audioKernel.get();
-
-      auto lastStep = step;
-
-      if(++framesInCurrentStep >= kernel->framesPer16th)
-      {
-        step = (lastStep + 1) % NUM_STEPS;
-        framesInCurrentStep = 0;
-      }
-
-      // do processing
-      StereoFrame frame {};
-
-      for(auto c = 0; c < NUM_TILES; c++)
-        frame = frame + tiles[c].doAudio(kernel->tiles[c], toUi.tiles[c], lastStep, step);
-
-      volume += std::clamp(kernel->volume - volume, -maxVolStep, maxVolStep);
-
-      // update ui
-      toUi.currentStep = step;
-
-      return frame * volume;
-    }
+    StereoFrame doAudio();
   };
+
+  StereoFrame Dsp::Impl::doAudio()
+  {
+    constexpr auto maxVolStep = 1000.0f / SAMPLERATE;
+    auto kernel = audioKernel.get();
+
+    if(!knownFramesPerLoop)
+      knownFramesPerLoop = kernel->framesPerLoop;
+
+    if(knownFramesPerLoop != kernel->framesPerLoop)
+    {
+      auto oldLoopPositionRel
+          = static_cast<double>(position % knownFramesPerLoop) / static_cast<double>(knownFramesPerLoop);
+
+      position = static_cast<FramePos>(oldLoopPositionRel * kernel->framesPerLoop);
+    }
+
+    knownFramesPerLoop = kernel->framesPerLoop;
+
+    auto currentLoopPosition = (position++ % kernel->framesPerLoop);
+    toUi.currentLoopPosition = currentLoopPosition;
+
+    // do processing
+    StereoFrame frame {};
+
+    for(auto c = 0; c < NUM_TILES; c++)
+      frame = frame + tiles[c].doAudio(kernel->tiles[c], toUi.tiles[c], currentLoopPosition);
+
+    volume += std::clamp(kernel->volume - volume, -maxVolStep, maxVolStep);
+
+    return frame * volume;
+  }
+
+  StereoFrame Dsp::Impl::Tile::doAudio(AudioKernel::Tile &kernel, Dsp::Impl::ToUi::Tile &ui,
+                                       FramePos currentLoopPosition)
+  {
+    const auto &audio = *kernel.audio;
+
+    if(std::binary_search(kernel.triggers.begin(), kernel.triggers.end(), currentLoopPosition))
+      framePosition = 0;
+
+    StereoFrame result = {};
+
+    if(framePosition < audio.size())
+    {
+      if(kernel.playbackFrameIncrement < 0)
+        result = audio[audio.size() - 1 - framePosition];
+      else if(kernel.playbackFrameIncrement > 0)
+        result = audio[framePosition];
+    }
+
+    constexpr auto maxVolStep = 10000.0f / SAMPLERATE;
+    gainLeft += std::clamp(kernel.gainLeft - gainLeft, -maxVolStep, maxVolStep);
+    gainRight += std::clamp(kernel.gainRight - gainRight, -maxVolStep, maxVolStep);
+
+    result.left *= gainLeft;
+    result.right *= gainRight;
+
+    ui.currentLevel = std::max({ ui.currentLevel, std::abs(result.left), std::abs(result.right) });
+    framePosition += kernel.playbackFrameIncrement;
+    return result;
+  }
 
   namespace Api
   {
-
     namespace Control
     {
       class Mosaik : public Interface
       {
        public:
-        explicit Mosaik(Dsp::Impl &dsp)
-            : m_dsp(dsp)
-        {
-        }
-
+        explicit Mosaik(Dsp::Impl &dsp);
         ~Mosaik() override = default;
-
-        void takeAudioKernel(AudioKernel *kernel) override
-        {
-          m_dsp.audioKernel.set(kernel);
-        }
-
-        SharedSampleBuffer getSamples(const std::filesystem::path &path) const override
-        {
-          auto it = m_sampleFileCache.find(path);
-
-          if(it != m_sampleFileCache.end())
-            return it->second;
-
-          auto ret = std::make_shared<SampleBuffer>(Tools::loadFile(path));
-          m_sampleFileCache[path] = ret;
-          return ret;
-        }
+        void takeAudioKernel(AudioKernel *kernel) override;
+        SharedSampleBuffer getSamples(const std::filesystem::path &path) const override;
 
        private:
         Dsp::Impl &m_dsp;
 
         mutable std::map<std::filesystem::path, SharedSampleBuffer> m_sampleFileCache;
       };
+
+      Mosaik::Mosaik(Dsp::Impl &dsp)
+          : m_dsp(dsp)
+      {
+      }
+
+      void Mosaik::takeAudioKernel(AudioKernel *kernel)
+      {
+        m_dsp.audioKernel.set(kernel);
+      }
+
+      SharedSampleBuffer Mosaik::getSamples(const std::filesystem::path &path) const
+      {
+        auto it = m_sampleFileCache.find(path);
+
+        if(it != m_sampleFileCache.end())
+          return it->second;
+
+        auto ret = std::make_shared<SampleBuffer>(Tools::loadFile(path));
+        m_sampleFileCache[path] = ret;
+        return ret;
+      }
     }
 
     namespace Display
@@ -157,26 +161,29 @@ namespace Dsp
       class Mosaik : public Interface
       {
        public:
-        explicit Mosaik(Dsp::Impl &dsp)
-            : m_dsp(dsp)
-        {
-        }
-
+        explicit Mosaik(Dsp::Impl &dsp);
         ~Mosaik() override = default;
-
-        [[nodiscard]] Step getCurrentStep() const override
-        {
-          return m_dsp.toUi.currentStep;
-        }
-
-        [[nodiscard]] float getCurrentTileLevel(Core::TileId tileId) override
-        {
-          return std::exchange(m_dsp.toUi.tiles[tileId.value()].currentLevel, 0.f);
-        }
+        [[nodiscard]] FramePos getCurrentLoopPosition() const override;
+        [[nodiscard]] float getCurrentTileLevel(Core::TileId tileId) override;
 
        private:
         Dsp::Impl &m_dsp;
       };
+
+      Mosaik::Mosaik(Dsp::Impl &dsp)
+          : m_dsp(dsp)
+      {
+      }
+
+      FramePos Mosaik::getCurrentLoopPosition() const
+      {
+        return m_dsp.toUi.currentLoopPosition;
+      }
+
+      float Mosaik::getCurrentTileLevel(Core::TileId tileId)
+      {
+        return std::exchange(m_dsp.toUi.tiles[tileId.value()].currentLevel, 0.f);
+      }
     }
 
     namespace Realtime
@@ -184,27 +191,31 @@ namespace Dsp
       class Mosaik : public Interface
       {
        public:
-        explicit Mosaik(Dsp::Impl &dsp)
-            : m_dsp(dsp)
-        {
-        }
+        explicit Mosaik(Dsp::Impl &dsp);
 
         ~Mosaik() override = default;
-
-        void doAudio(OutFrame *out, size_t numFrames, const SendMidi &cb) override
-        {
-          for(size_t i = 0; i < numFrames; i++)
-            out[i].main = m_dsp.doAudio();
-        }
-
-        void doMidi(const MidiEvent &inEvent) override
-        {
-          // handle midi events here
-        }
+        void doAudio(OutFrame *out, size_t numFrames, const SendMidi &cb) override;
+        void doMidi(const MidiEvent &inEvent) override;
 
        private:
         Dsp::Impl &m_dsp;
       };
+
+      Mosaik::Mosaik(Dsp::Impl &dsp)
+          : m_dsp(dsp)
+      {
+      }
+
+      void Mosaik::doAudio(OutFrame *out, size_t numFrames, const Interface::SendMidi &cb)
+      {
+        for(size_t i = 0; i < numFrames; i++)
+          out[i].main = m_dsp.doAudio();
+      }
+
+      void Mosaik::doMidi(const MidiEvent &inEvent)
+      {
+        // handle midi events here
+      }
     }
   }
 

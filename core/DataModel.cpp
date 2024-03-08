@@ -32,13 +32,14 @@ namespace nlohmann
   {
     static void to_json(json &j, const Core::DataModel::Globals &v)
     {
-      j = { { "volume", v.volume }, { "tempo", v.tempo } };
+      j = { { "volume", v.volume }, { "tempo", v.tempo }, { "shuffle", v.shuffle } };
     }
 
     static void from_json(const json &j, Core::DataModel::Globals &v)
     {
       v.volume = j["volume"];
       v.tempo = j["tempo"];
+      v.shuffle = j["shuffle"];
     }
   };
 
