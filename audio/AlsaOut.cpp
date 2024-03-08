@@ -18,6 +18,31 @@ struct S16
   static constexpr snd_pcm_format_t FORMAT = SND_PCM_FORMAT_S16;
   static constexpr float FLOAT_TO_INT = static_cast<float>((1 << 14) - 1);
   using Sample = int16_t;
+
+  inline static Sample fromFloat(float f)
+  {
+    return static_cast<Sample>(f * FLOAT_TO_INT);
+  }
+};
+
+struct S24
+{
+  static constexpr snd_pcm_format_t FORMAT = SND_PCM_FORMAT_S24_3LE;
+  static constexpr float FLOAT_TO_INT = static_cast<float>((1 << 22) - 1);
+  struct Sample
+  {
+    uint8_t a, b, c;
+  };
+
+  inline static Sample fromFloat(float f)
+  {
+    auto q = static_cast<int32_t>(f * FLOAT_TO_INT);
+    uint8_t a = q & 0xFF;
+    uint8_t b = (q >> 8) & 0xFF;
+    uint8_t c = (q >> 16) & 0xFF;
+
+    return { a, b, c };
+  }
 };
 
 struct S32
@@ -25,6 +50,11 @@ struct S32
   static constexpr snd_pcm_format_t FORMAT = SND_PCM_FORMAT_S32;
   static constexpr float FLOAT_TO_INT = static_cast<float>((1 << 30) - 1);
   using Sample = int32_t;
+
+  inline static Sample fromFloat(float f)
+  {
+    return static_cast<Sample>(f * FLOAT_TO_INT);
+  }
 };
 
 namespace Audio
@@ -37,6 +67,8 @@ namespace Audio
                                {
                                  if(bits == 16)
                                    audioThread<S16>(dsp, device);
+                                 else if(bits == 24)
+                                   audioThread<S24>(dsp, device);
                                  else
                                    audioThread<S32>(dsp, device);
                                });
@@ -95,10 +127,8 @@ namespace Audio
 
       std::transform(
           samples, samples + c_framesPerPeriod, buffer,
-          [](const Dsp::OutFrame &in)
-          {
-            return StereoFrame { static_cast<SampleTrait::Sample>(in.main.left * SampleTrait::FLOAT_TO_INT),
-                                 static_cast<SampleTrait::Sample>(in.main.right * SampleTrait::FLOAT_TO_INT) };
+          [](const Dsp::OutFrame &in) {
+            return StereoFrame { SampleTrait::fromFloat(in.main.left), SampleTrait::fromFloat(in.main.right) };
           });
 
       snd_pcm_writei(pcm, buffer, c_framesPerPeriod);

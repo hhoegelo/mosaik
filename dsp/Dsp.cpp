@@ -66,7 +66,7 @@ namespace Dsp
       auto oldLoopPositionRel
           = static_cast<double>(position % knownFramesPerLoop) / static_cast<double>(knownFramesPerLoop);
 
-      position = static_cast<FramePos>(oldLoopPositionRel * kernel->framesPerLoop);
+      position = static_cast<FramePos>(oldLoopPositionRel * static_cast<double>(kernel->framesPerLoop));
     }
 
     knownFramesPerLoop = kernel->framesPerLoop;
