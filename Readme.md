@@ -7,7 +7,19 @@
 * make -j12
 * ./mosaik --alsa-out=hw:0,0
 
+#### Rpi DT Overlay
 
+	# enable usb hub
+	dtoverlay=dwc2,dr_mode=host
+	# otg_mode=1
+	
+	# enable all uarts
+	dtoverlay=uart0
+	dtoverlay=uart2
+	dtoverlay=uart3
+	dtoverlay=uart4
+	dtoverlay=uart5
+	
 # The big picture
 
 The main() function connects 4 logical layers:
