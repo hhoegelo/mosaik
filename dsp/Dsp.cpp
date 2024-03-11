@@ -8,6 +8,7 @@
 #include "dsp/tools/Tools.h"
 #include <dsp/AudioKernel.h>
 #include <map>
+#include <cmath>
 
 namespace Dsp
 {
@@ -39,11 +40,13 @@ namespace Dsp
 
     struct Tile
     {
+      static constexpr auto invalidFramePosF32 = std::numeric_limits<float>::max();
+      static constexpr auto invalidFramePosU64 = std::numeric_limits<FramePos>::max();
       float gainLeft { 1.0f };
       float gainRight { 1.0f };
-      FramePos framePosition = 0;
-
+      float framePosition = invalidFramePosF32;
       StereoFrame doAudio(AudioKernel::Tile &kernel, ToUi::Tile &ui, FramePos currentLoopPosition);
+      float doEnvelope(AudioKernel::Tile &kernel, FramePos iFramePos) const;
     };
 
     std::array<Tile, NUM_TILES> tiles;
@@ -95,24 +98,44 @@ namespace Dsp
 
     StereoFrame result = {};
 
-    if(framePosition < audio.size())
+    auto iFramePos
+        = invalidFramePosF32 == framePosition ? invalidFramePosU64 : static_cast<FramePos>(std::round(framePosition));
+
+    if(iFramePos < audio.size())
     {
       if(kernel.playbackFrameIncrement < 0)
-        result = audio[audio.size() - 1 - framePosition];
+        result = audio[audio.size() - 1 - iFramePos];
       else if(kernel.playbackFrameIncrement > 0)
-        result = audio[framePosition];
+        result = audio[iFramePos];
     }
 
     constexpr auto maxVolStep = 10000.0f / SAMPLERATE;
     gainLeft += std::clamp(kernel.gainLeft - gainLeft, -maxVolStep, maxVolStep);
     gainRight += std::clamp(kernel.gainRight - gainRight, -maxVolStep, maxVolStep);
 
-    result.left *= gainLeft;
-    result.right *= gainRight;
+    auto env = doEnvelope(kernel, iFramePos);
+
+    result.left *= gainLeft * env;
+    result.right *= gainRight * env;
 
     ui.currentLevel = std::max({ ui.currentLevel, std::abs(result.left), std::abs(result.right) });
-    framePosition += kernel.playbackFrameIncrement;
+    framePosition += framePosition != invalidFramePosF32 ? kernel.playbackFrameIncrement : 0;
     return result;
+  }
+
+  float Dsp::Impl::Tile::doEnvelope(AudioKernel::Tile &kernel, FramePos iFramePos) const
+  {
+    if(iFramePos != invalidFramePosU64)
+    {
+      for(auto &section : kernel.envelope)
+      {
+        if(iFramePos >= section.pos)
+        {
+          return section.b + framePosition * section.m;
+        }
+      }
+    }
+    return 0;
   }
 
   namespace Api

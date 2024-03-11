@@ -7,24 +7,43 @@
 
 namespace nlohmann
 {
+  template <typename T> void loadIfExists(T &t, const json &j, const char *name)
+  {
+    if(j.contains(name))
+      t = j[name];
+  }
+
   template <> struct adl_serializer<Core::DataModel::Tile>
   {
     static void to_json(json &j, const Core::DataModel::Tile &v)
     {
-      j = { { "sample", v.sample.string() }, { "pattern", v.pattern }, { "gain", v.gain },
-            { "balance", v.balance },        { "muted", v.muted },     { "reverse", v.reverse },
-            { "selected", v.selected } };
+      j = { { "sample", v.sample.string() },
+            { "pattern", v.pattern },
+            { "gain", v.gain },
+            { "balance", v.balance },
+            { "muted", v.muted },
+            { "reverse", v.reverse },
+            { "selected", v.selected },
+            { "envelopeFadeInPos", v.envelopeFadeInPos },
+            { "envelopeFadeInLen", v.envelopeFadeInLen },
+            { "envelopeFadeOutPos", v.envelopeFadeOutPos },
+            { "envelopeFadeOutLen", v.envelopeFadeOutLen } };
     }
 
     static void from_json(const json &j, Core::DataModel::Tile &v)
     {
       v.sample = std::filesystem::path((std::string) j["sample"]);
-      v.pattern = j["pattern"];
-      v.gain = j["gain"];
-      v.balance = j["balance"];
-      v.muted = j["muted"];
-      v.reverse = j["reverse"];
-      v.selected = j["selected"];
+      loadIfExists(v.pattern, j, "pattern");
+      loadIfExists(v.gain, j, "gain");
+      loadIfExists(v.balance, j, "balance");
+      loadIfExists(v.muted, j, "muted");
+      loadIfExists(v.reverse, j, "reverse");
+      loadIfExists(v.selected, j, "selected");
+
+      loadIfExists(v.envelopeFadeInPos, j, "envelopeFadeInPos");
+      loadIfExists(v.envelopeFadeInLen, j, "envelopeFadeInLen");
+      loadIfExists(v.envelopeFadeOutPos, j, "envelopeFadeOutPos");
+      loadIfExists(v.envelopeFadeOutLen, j, "envelopeFadeOutLen");
     }
   };
 
@@ -60,6 +79,8 @@ namespace nlohmann
 
 namespace Core
 {
+  DataModel::DataModel() = default;
+
   DataModel::DataModel(std::filesystem::path f)
       : backing(std::move(f))
   {

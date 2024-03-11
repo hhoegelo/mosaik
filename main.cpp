@@ -6,6 +6,7 @@
 #include "midi/Monitor.h"
 #include "ui/midi-ui/DebugUI.h"
 #include "ui/SharedState.h"
+#include "core/DataModel.h"
 
 #include <boost/program_options.hpp>
 #include <iostream>

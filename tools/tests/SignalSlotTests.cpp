@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <SignalSlot.h>
 
 using namespace Tools::Signals;
@@ -8,8 +8,8 @@ TEST_CASE("SignalSlot")
   WHEN("Function is connected to signal")
   {
     bool called = false;
-    Signal<void()> sig;
-    auto connection = sig.connect([&] { called = true; });
+    Signal<> sig;
+    auto connection = sig.connectWithoutInit([&] { called = true; });
 
     THEN("Emitting the signal calls the function")
     {
@@ -46,12 +46,12 @@ TEST_CASE("SignalSlot")
     bool calledFirst = false;
     bool calledSecond = false;
 
-    Signal<void()> sig;
-    auto connection = sig.connect([&] { calledFirst = true; });
+    Signal<> sig;
+    auto connection = sig.connectWithoutInit([&] { calledFirst = true; });
 
     AND_THEN("The connection is used to connect to something else")
     {
-      connection = sig.connect([&] { calledSecond = true; });
+      connection = sig.connectWithInit([&] { calledSecond = true; });
 
       THEN("Emitting the signal calls the second function only")
       {

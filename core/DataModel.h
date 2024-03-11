@@ -11,6 +11,7 @@ namespace Core
   struct DataModel
   {
     explicit DataModel(std::filesystem::path f);
+    DataModel();
     ~DataModel();
 
     struct Tile
@@ -24,6 +25,11 @@ namespace Core
       bool muted = false;
       bool reverse = false;
       bool selected = false;
+
+      FadePos envelopeFadeInPos = 0;
+      FadeLen envelopeFadeInLen = 0;
+      FadePos envelopeFadeOutPos = std::numeric_limits<FadePos>::max();
+      FadeLen envelopeFadeOutLen = 0;
     };
 
     struct Globals

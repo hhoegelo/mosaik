@@ -7,8 +7,15 @@ add_subdirectory(dockerized)
 option(ENABLE_TESTING OFF)
 
 if (ENABLE_TESTING)
-    find_package(Catch2 REQUIRED)
-    list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
+    Include(FetchContent)
+
+    FetchContent_Declare(
+            Catch2
+            GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+            GIT_TAG v3.4.0
+    )
+
+    FetchContent_MakeAvailable(Catch2)
     include(CTest)
     include(Catch)
 endif ()
@@ -36,6 +43,7 @@ if (LIBS_FOUND)
     add_subdirectory(audio)
     add_subdirectory(midi)
     add_subdirectory(ui)
+    add_subdirectory(tools)
 
     add_executable(mosaik main.cpp)
 

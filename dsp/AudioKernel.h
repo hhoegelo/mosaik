@@ -20,7 +20,20 @@ namespace Dsp
       std::vector<uint64_t> triggers;  // sample positions where to (re-)start the sample
       float gainLeft { 0.0f };
       float gainRight { 0.0f };
-      int8_t playbackFrameIncrement { 0 };
+
+      bool reverse = false;
+      float playbackFrameIncrement { 0 };
+
+      // Envelope
+      struct LinearInterpolation
+      {
+        FramePos pos {};
+        float m {};
+        float b {};
+      };
+
+      // envelope section, desc sorted
+      std::array<LinearInterpolation, 5> envelope;  // faded-out, fade-out, faded-in, fade-in, pre fade-in
     };
 
     Tile tiles[NUM_TILES];

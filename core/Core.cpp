@@ -40,6 +40,11 @@ namespace Core
           commit(i, ParameterId::Mute, src.muted);
           commit(i, ParameterId::Reverse, src.reverse);
           commit(i, ParameterId::Selected, src.selected);
+
+          commit(i, ParameterId::EnvelopeFadeInPos, src.envelopeFadeInPos);
+          commit(i, ParameterId::EnvelopeFadeInLen, src.envelopeFadeInLen);
+          commit(i, ParameterId::EnvelopeFadeOutPos, src.envelopeFadeOutPos);
+          commit(i, ParameterId::EnvelopeFadeOutLen, src.envelopeFadeOutLen);
         }
       }
 
@@ -60,6 +65,18 @@ namespace Core
           case ParameterId::GlobalTempo:
             setParameter(tileId, parameterId,
                          std::get<float>(getParameter(nullptr, tileId, parameterId)) + static_cast<float>(steps));
+            break;
+
+          case ParameterId::EnvelopeFadeInPos:
+          case ParameterId::EnvelopeFadeOutPos:
+            setParameter(tileId, parameterId,
+                         std::get<FadePos>(getParameter(nullptr, tileId, parameterId)) + static_cast<FadeLen>(steps));
+            break;
+
+          case ParameterId::EnvelopeFadeInLen:
+          case ParameterId::EnvelopeFadeOutLen:
+            setParameter(tileId, parameterId,
+                         std::get<FadeLen>(getParameter(nullptr, tileId, parameterId)) + static_cast<FadeLen>(steps));
             break;
 
           case ParameterId::GlobalVolume:
@@ -110,7 +127,7 @@ namespace Core
         target->volume = source.globals.volume;
       }
 
-      void translateTile(const DataModel &dataModel, Dsp::AudioKernel::Tile &tgt, const auto &src) const
+      void translateTile(const DataModel &dataModel, Dsp::AudioKernel::Tile &tgt, const DataModel::Tile &src) const
       {
         auto numFramesPerMinute = SAMPLERATE * 60.0f;
         auto num16thPerMinute = dataModel.globals.tempo * 4;
@@ -141,7 +158,30 @@ namespace Core
         auto unbalancedGain = src.muted ? 0.f : src.gain;
         tgt.gainLeft = src.balance < 0 ? unbalancedGain : unbalancedGain * (1.0f - src.balance);
         tgt.gainRight = src.balance > 0 ? unbalancedGain : unbalancedGain * (1.0f + src.balance);
-        tgt.playbackFrameIncrement = src.reverse ? -1 : 1;
+        tgt.playbackFrameIncrement = 1;
+        tgt.reverse = src.reverse;
+
+        auto calcM
+            = [](float startY, float endY, FadeLen l) { return l ? (endY - startY) / static_cast<float>(l) : 0.0f; };
+        auto calcB = [&](float startY, float endY, FadePos p, FadeLen l)
+        { return startY - calcM(startY, endY, l) * static_cast<float>(p); };
+
+        // faded-out section
+        tgt.envelope[0] = { src.envelopeFadeOutPos + src.envelopeFadeOutLen, 0, 0 };
+
+        // fade-out section
+        tgt.envelope[1] = { src.envelopeFadeOutPos, calcM(1.0f, 0.0f, src.envelopeFadeOutLen),
+                            calcB(1.0f, 0.0f, src.envelopeFadeOutPos, src.envelopeFadeOutLen) };
+
+        // faded-in section
+        tgt.envelope[2] = { src.envelopeFadeInPos + src.envelopeFadeInLen, 0.0f, 1.0f };
+
+        // fade-in section
+        tgt.envelope[3] = { src.envelopeFadeInPos, calcM(0.0f, 1.0f, src.envelopeFadeInLen),
+                            calcB(0.0f, 1.0f, src.envelopeFadeInPos, src.envelopeFadeInLen) };
+
+        // pre fade-in section
+        tgt.envelope[4] = { 0, 0, 0 };
       }
 
       ParameterValue setGlobalParameter(const ParameterId &parameterId, const ParameterValue &v)
@@ -202,6 +242,22 @@ namespace Core
             }
             return true;
 
+          case ParameterId::EnvelopeFadeInPos:
+            tile.envelopeFadeInPos = std::get<FadePos>(v);
+            return tile.envelopeFadeInPos;
+
+          case ParameterId::EnvelopeFadeOutPos:
+            tile.envelopeFadeOutPos = std::get<FadePos>(v);
+            return tile.envelopeFadeOutPos;
+
+          case ParameterId::EnvelopeFadeInLen:
+            tile.envelopeFadeInLen = std::get<FadeLen>(v);
+            return tile.envelopeFadeInLen;
+
+          case ParameterId::EnvelopeFadeOutLen:
+            tile.envelopeFadeOutLen = std::get<FadeLen>(v);
+            return tile.envelopeFadeOutLen;
+
           default:
             throw std::runtime_error("unhandled tile parameter");
         }
@@ -219,9 +275,9 @@ namespace Core
     return home / ".mosaik";
   }
 
-  Core::Core(Dsp::Api::Control::Interface &dsp)
+  Core::Core(Dsp::Api::Control::Interface &dsp, std::unique_ptr<DataModel> dataModel)
       : m_dsp(dsp)
-      , m_dataModel(std::make_unique<DataModel>(getInitFileName()))
+      , m_dataModel(dataModel ? std::move(dataModel) : std::make_unique<DataModel>(getInitFileName()))
       , m_api(std::make_unique<Api::Mosaik>(*m_dataModel, m_dsp))
   {
   }

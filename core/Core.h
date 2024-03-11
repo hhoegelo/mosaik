@@ -19,7 +19,7 @@ namespace Core
   class Core
   {
    public:
-    explicit Core(Dsp::Api::Control::Interface &dsp);
+    explicit Core(Dsp::Api::Control::Interface &dsp, std::unique_ptr<DataModel> dataModel = nullptr);
     ~Core();
 
     [[nodiscard]] Api::Interface &getApi() const;
