@@ -15,14 +15,18 @@ namespace Core::Api
   class Computation
   {
    public:
+    Computation() = default;
+    Computation(Computation &&) = delete;
+
+    explicit Computation(std::function<void(Computation *)> cb)
+        : m_cb(std::move(cb))
+    {
+      m_cb(this);
+    }
+
     ~Computation()
     {
       m_timer.disconnect();
-    }
-
-    void refresh(std::function<void()> cb)
-    {
-      m_cb = std::move(cb);
     }
 
     template <typename... Args> void add(const Tools::Signals::Signal<Args...> *s)
@@ -37,7 +41,10 @@ namespace Core::Api
                   {
                     m_timerScheduled = false;
                     if(m_cb)
-                      m_cb();
+                    {
+                      m_connections.clear();
+                      m_cb(this);
+                    }
                     return false;
                   },
                   25);
@@ -50,7 +57,19 @@ namespace Core::Api
     sigc::connection m_timer;
     bool m_timerScheduled = false;
     std::map<void *, Tools::Signals::Connection> m_connections;
-    std::function<void()> m_cb;
+    std::function<void(Computation *)> m_cb;
+  };
+
+  class Computations
+  {
+   public:
+    template <typename T> void add(T &&f)
+    {
+      m_computations.push_back(std::make_unique<Computation>(f));
+    }
+
+   private:
+    std::vector<std::unique_ptr<Computation>> m_computations;
   };
 
   class Interface

@@ -12,7 +12,8 @@ namespace Ui
     enum class Toolboxes
     {
       Global,
-      Tile
+      Tile,
+      Waveform
     };
 
     void select(Toolboxes t);

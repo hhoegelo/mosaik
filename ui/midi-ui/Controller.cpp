@@ -32,18 +32,15 @@ namespace Ui::Midi
 
   void Controller::kickOff()
   {
-    showPattern();
+    m_computations.add([this](auto c) { showPattern(c); });
   }
 
-  void Controller::showPattern()
+  void Controller::showPattern(Core::Api::Computation *c)
   {
-    m_pattern = std::make_unique<Core::Api::Computation>();
-    auto merged = m_core.getMergedPattern(m_pattern.get());
+    auto merged = m_core.getMergedPattern(c);
 
     for(size_t i = 0; i < 64; i++)
       m_ui.setStepButtonColor(i, merged[i] ? Ui::Midi::Color::Green : Ui::Midi::Color::White);
-
-    m_pattern->refresh([this] { showPattern(); });
   }
 
   void Controller::onErpInc(Knob k, int inc)
@@ -67,6 +64,9 @@ namespace Ui::Midi
 
       case SharedState::Toolboxes::Tile:
         return buildTileMapping();
+
+      case SharedState::Toolboxes::Waveform:
+        return buildWaveformMapping();
     }
     throw std::runtime_error("unknown toolbox");
   }
@@ -87,6 +87,13 @@ namespace Ui::Midi
     return {
       .knobs
       = { { Knob::Center, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Gain, inc); } },
+          { Knob::NorthWest, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeInPos, inc); } },
+          { Knob::NorthEast
+            , [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeInLen, inc); } },
+          { Knob::SouthWest, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeOutPos, inc); } },
+          { Knob::SouthEast, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeOutLen, inc); } },
+          { Knob::Rightmost, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Speed, inc); } },
+          { Knob::Leftmost, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Balance, inc); } },
            },
       .buttons = {
           { SoftButton::Right_Center,
@@ -94,6 +101,14 @@ namespace Ui::Midi
               if(e == ButtonEvent::Release)
               {m_core.toggleSelectedTilesParameter(Core::ParameterId::Reverse);} } }
       },
+    };
+  }
+
+  Controller::Mapping Controller::buildWaveformMapping()
+  {
+    return {
+      .knobs = {},
+      .buttons = {},
     };
   }
 

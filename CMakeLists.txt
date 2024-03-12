@@ -18,6 +18,13 @@ if (ENABLE_TESTING)
     FetchContent_MakeAvailable(Catch2)
     include(CTest)
     include(Catch)
+
+    add_executable(mosaik-tests tests/MosaikTests.cpp)
+
+    target_compile_definitions(mosaik-tests PRIVATE SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+    target_include_directories(mosaik-tests PRIVATE ./)
+    target_link_libraries(mosaik-tests PRIVATE Catch2::Catch2WithMain)
+    catch_discover_tests(mosaik-tests)
 endif ()
 
 set(CMAKE_CXX_STANDARD 20)

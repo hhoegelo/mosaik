@@ -9,6 +9,8 @@ namespace Core
 {
   enum class ParameterId
   {
+    Unused,
+
     // Globals
     GlobalTempo,    // float 20..240 bpm
     GlobalVolume,   // float 0...1
@@ -26,6 +28,7 @@ namespace Core
     EnvelopeFadeInLen,   // FadeLen
     EnvelopeFadeOutPos,  // FadePos
     EnvelopeFadeOutLen,  // FadeLen
+    Speed,               // float -1...1
   };
 
   using Path = std::filesystem::path;
@@ -33,8 +36,7 @@ namespace Core
   using Float = float;
   using Bool = bool;
   using TileId = std::optional<uint32_t>;
-  using FadePos = uint64_t;
-  using FadeLen = int64_t;
+  using FramePos = int64_t;
 
-  using ParameterValue = std::variant<Bool, Float, Path, Pattern, FadePos, FadeLen>;
+  using ParameterValue = std::variant<Bool, Float, Path, Pattern, FramePos>;
 }

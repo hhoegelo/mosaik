@@ -27,7 +27,8 @@ namespace nlohmann
             { "envelopeFadeInPos", v.envelopeFadeInPos },
             { "envelopeFadeInLen", v.envelopeFadeInLen },
             { "envelopeFadeOutPos", v.envelopeFadeOutPos },
-            { "envelopeFadeOutLen", v.envelopeFadeOutLen } };
+            { "envelopeFadeOutLen", v.envelopeFadeOutLen },
+            { "speed", v.speed } };
     }
 
     static void from_json(const json &j, Core::DataModel::Tile &v)
@@ -44,6 +45,8 @@ namespace nlohmann
       loadIfExists(v.envelopeFadeInLen, j, "envelopeFadeInLen");
       loadIfExists(v.envelopeFadeOutPos, j, "envelopeFadeOutPos");
       loadIfExists(v.envelopeFadeOutLen, j, "envelopeFadeOutLen");
+
+      loadIfExists(v.speed, j, "speed");
     }
   };
 

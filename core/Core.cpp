@@ -1,6 +1,7 @@
 #include "Core.h"
 #include "api/Interface.h"
 #include "DataModel.h"
+#include "FadeParameterSanitizer.h"
 #include <dsp/api/control/Interface.h>
 #include <dsp/AudioKernel.h>
 #include <cmath>
@@ -24,6 +25,8 @@ namespace Core
 
       void populateCache()
       {
+        commit({}, ParameterId::Unused, 0.0f);
+
         // Globals
         commit({}, ParameterId::GlobalTempo, m_model.globals.tempo);
         commit({}, ParameterId::GlobalVolume, m_model.globals.volume);
@@ -45,6 +48,8 @@ namespace Core
           commit(i, ParameterId::EnvelopeFadeInLen, src.envelopeFadeInLen);
           commit(i, ParameterId::EnvelopeFadeOutPos, src.envelopeFadeOutPos);
           commit(i, ParameterId::EnvelopeFadeOutLen, src.envelopeFadeOutLen);
+
+          commit(i, ParameterId::Speed, src.speed);
         }
       }
 
@@ -62,6 +67,9 @@ namespace Core
       {
         switch(parameterId)
         {
+          case ParameterId::Unused:
+            break;
+
           case ParameterId::GlobalTempo:
             setParameter(tileId, parameterId,
                          std::get<float>(getParameter(nullptr, tileId, parameterId)) + static_cast<float>(steps));
@@ -69,20 +77,17 @@ namespace Core
 
           case ParameterId::EnvelopeFadeInPos:
           case ParameterId::EnvelopeFadeOutPos:
-            setParameter(tileId, parameterId,
-                         std::get<FadePos>(getParameter(nullptr, tileId, parameterId)) + static_cast<FadeLen>(steps));
-            break;
-
           case ParameterId::EnvelopeFadeInLen:
           case ParameterId::EnvelopeFadeOutLen:
             setParameter(tileId, parameterId,
-                         std::get<FadeLen>(getParameter(nullptr, tileId, parameterId)) + static_cast<FadeLen>(steps));
+                         std::get<FramePos>(getParameter(nullptr, tileId, parameterId)) + static_cast<FramePos>(steps));
             break;
 
           case ParameterId::GlobalVolume:
           case ParameterId::GlobalShuffle:
           case ParameterId::Gain:
           case ParameterId::Balance:
+          case ParameterId::Speed:
             setParameter(tileId, parameterId,
                          std::get<float>(getParameter(nullptr, tileId, parameterId))
                              + static_cast<float>(steps) / 100.0f);
@@ -158,12 +163,12 @@ namespace Core
         auto unbalancedGain = src.muted ? 0.f : src.gain;
         tgt.gainLeft = src.balance < 0 ? unbalancedGain : unbalancedGain * (1.0f - src.balance);
         tgt.gainRight = src.balance > 0 ? unbalancedGain : unbalancedGain * (1.0f + src.balance);
-        tgt.playbackFrameIncrement = 1;
+        tgt.playbackFrameIncrement = powf(2.0f, src.speed * 2);
         tgt.reverse = src.reverse;
 
         auto calcM
-            = [](float startY, float endY, FadeLen l) { return l ? (endY - startY) / static_cast<float>(l) : 0.0f; };
-        auto calcB = [&](float startY, float endY, FadePos p, FadeLen l)
+            = [](float startY, float endY, FramePos l) { return l ? (endY - startY) / static_cast<float>(l) : 0.0f; };
+        auto calcB = [&](float startY, float endY, FramePos p, FramePos l)
         { return startY - calcM(startY, endY, l) * static_cast<float>(p); };
 
         // faded-out section
@@ -218,11 +223,11 @@ namespace Core
             return tile.pattern;
 
           case ParameterId::Balance:
-            tile.balance = std::get<Float>(v);
+            tile.balance = std::clamp(std::get<Float>(v), -1.0f, 1.0f);
             return tile.balance;
 
           case ParameterId::Gain:
-            tile.gain = std::get<Float>(v);
+            tile.gain = std::clamp(std::get<Float>(v), 0.0f, 1.0f);
             return tile.gain;
 
           case ParameterId::Mute:
@@ -232,6 +237,10 @@ namespace Core
           case ParameterId::Reverse:
             tile.reverse = std::get<Bool>(v);
             return tile.reverse;
+
+          case ParameterId::Speed:
+            tile.speed = std::clamp(std::get<Float>(v), -1.0f, 1.0f);
+            return tile.speed;
 
           case ParameterId::Selected:
             for(auto c = 0; c < NUM_TILES; c++)
@@ -243,19 +252,32 @@ namespace Core
             return true;
 
           case ParameterId::EnvelopeFadeInPos:
-            tile.envelopeFadeInPos = std::get<FadePos>(v);
+            tile.envelopeFadeInPos = std::get<FramePos>(v);
+            FadeParameterSanitizer::sanitizeFadeInPos(m_dsp.getSamples(tile.sample)->size(), tile.envelopeFadeInPos,
+                                                      tile.envelopeFadeInLen, tile.envelopeFadeOutPos,
+                                                      tile.envelopeFadeOutLen);
             return tile.envelopeFadeInPos;
 
-          case ParameterId::EnvelopeFadeOutPos:
-            tile.envelopeFadeOutPos = std::get<FadePos>(v);
-            return tile.envelopeFadeOutPos;
-
           case ParameterId::EnvelopeFadeInLen:
-            tile.envelopeFadeInLen = std::get<FadeLen>(v);
+            tile.envelopeFadeInLen = std::get<FramePos>(v);
+            FadeParameterSanitizer::sanitizeFadeInLen(m_dsp.getSamples(tile.sample)->size(), tile.envelopeFadeInPos,
+                                                      tile.envelopeFadeInLen, tile.envelopeFadeOutPos,
+                                                      tile.envelopeFadeOutLen);
+
             return tile.envelopeFadeInLen;
 
+          case ParameterId::EnvelopeFadeOutPos:
+            tile.envelopeFadeOutPos = std::get<FramePos>(v);
+            FadeParameterSanitizer::sanitizeFadeOutPos(m_dsp.getSamples(tile.sample)->size(), tile.envelopeFadeInPos,
+                                                       tile.envelopeFadeInLen, tile.envelopeFadeOutPos,
+                                                       tile.envelopeFadeOutLen);
+            return tile.envelopeFadeOutPos;
+
           case ParameterId::EnvelopeFadeOutLen:
-            tile.envelopeFadeOutLen = std::get<FadeLen>(v);
+            tile.envelopeFadeOutLen = std::get<FramePos>(v);
+            FadeParameterSanitizer::sanitizeFadeOutLen(m_dsp.getSamples(tile.sample)->size(), tile.envelopeFadeInPos,
+                                                       tile.envelopeFadeInLen, tile.envelopeFadeOutPos,
+                                                       tile.envelopeFadeOutLen);
             return tile.envelopeFadeOutLen;
 
           default:

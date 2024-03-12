@@ -41,18 +41,24 @@ namespace Tools
       void emit(const Args &...args)
       {
         auto n = std::make_tuple(args...);
-        std::exchange(m_cache, n);
-        auto newEnd = std::remove_if(m_callbacks.begin(), m_callbacks.end(),
-                                     [&](auto &cb)
-                                     {
-                                       if(auto locked = cb.lock())
+        auto changed = std::exchange(m_cache, n) != n;
+
+        auto hasContent = std::tuple_size_v<decltype(m_cache)> > 0;
+
+        if(!hasContent || changed)
+        {
+          auto newEnd = std::remove_if(m_callbacks.begin(), m_callbacks.end(),
+                                       [&](auto &cb)
                                        {
-                                         locked->m_cb(args...);
-                                         return false;
-                                       }
-                                       return true;
-                                     });
-        m_callbacks.erase(newEnd, m_callbacks.end());
+                                         if(auto locked = cb.lock())
+                                         {
+                                           locked->m_cb(args...);
+                                           return false;
+                                         }
+                                         return true;
+                                       });
+          m_callbacks.erase(newEnd, m_callbacks.end());
+        }
       }
 
       Connection connectWithInit(const Callback &cb)

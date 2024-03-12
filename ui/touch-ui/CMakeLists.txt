@@ -14,7 +14,13 @@ add_library(mosaik-touchui STATIC
         controls/Label.cpp
         Ui.cpp
         Window.cpp
-        Window.h)
+        Window.h
+        toolbox/GlobalTools.cpp
+        toolbox/GlobalTools.h
+        toolbox/TileTools.cpp
+        toolbox/TileTools.h
+        toolbox/Waveform.cpp
+        toolbox/Waveform.h)
 
 target_compile_options(mosaik-touchui PRIVATE)
 target_include_directories(mosaik-touchui PRIVATE ${CMAKE_SOURCE_DIR} ${LIBS_INCLUDE_DIRS})

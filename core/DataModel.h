@@ -26,10 +26,12 @@ namespace Core
       bool reverse = false;
       bool selected = false;
 
-      FadePos envelopeFadeInPos = 0;
-      FadeLen envelopeFadeInLen = 0;
-      FadePos envelopeFadeOutPos = std::numeric_limits<FadePos>::max();
-      FadeLen envelopeFadeOutLen = 0;
+      FramePos envelopeFadeInPos = 0;
+      FramePos envelopeFadeInLen = 0;
+      FramePos envelopeFadeOutPos = std::numeric_limits<FramePos>::max();
+      FramePos envelopeFadeOutLen = 0;
+
+      float speed = 0;
     };
 
     struct Globals

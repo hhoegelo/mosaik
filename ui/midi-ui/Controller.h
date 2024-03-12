@@ -35,7 +35,7 @@ namespace Ui
       void onButtonEvent(SoftButton b, ButtonEvent e);
 
      private:
-      void showPattern();
+      void showPattern(Core::Api::Computation *c);
 
       struct Mapping
       {
@@ -51,10 +51,11 @@ namespace Ui
       Core::Api::Interface &m_core;
       Interface &m_ui;
 
-      std::unique_ptr<Core::Api::Computation> m_pattern;
+      Core::Api::Computations m_computations;
       Tools::Signals::Connection m_selectedTool;
 
       Mapping m_inputMapping;
+      Controller::Mapping buildWaveformMapping();
     };
   }
 }

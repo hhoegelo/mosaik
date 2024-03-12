@@ -103,9 +103,9 @@ namespace Dsp
 
     if(iFramePos < audio.size())
     {
-      if(kernel.playbackFrameIncrement < 0)
+      if(kernel.reverse)
         result = audio[audio.size() - 1 - iFramePos];
-      else if(kernel.playbackFrameIncrement > 0)
+      else
         result = audio[iFramePos];
     }
 

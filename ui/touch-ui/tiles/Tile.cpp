@@ -16,112 +16,92 @@
 
 namespace Ui::Touch
 {
+  namespace
+  {
+    double dB(double level)
+    {
+      if(level <= 0)
+        return -80;
+      return 20 * std::log10(level);
+    }
+
+    std::string toCss(double db)
+    {
+      int rounded_dB = std::clamp(static_cast<int>(std::round(db / -10.0) * -10), -80, 0);
+      return "level-" + std::to_string(std::abs(rounded_dB)) + "db";
+    }
+  }
 
   Tile::Tile(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Core::TileId tileId)
       : Gtk::Grid()
   {
     get_style_context()->add_class("tile");
 
-    attach(*buildHasStepsIndicator(core, tileId), 0, 0, 1, 1);
-    attach(*buildPlayIndicator(core, dsp, tileId), 1, 0, 2, 1);
-    attach(*buildVolumeSlider(core, tileId), 3, 0, 1, 4);
-    attach(*buildWaveformDisplay(core, tileId), 0, 1, 3, 3);
-    attach(*buildDurationInSeconds(core, tileId), 0, 4, 2, 1);
-    attach(*buildDurationInSteps(core, tileId), 2, 4, 2, 1);
-
-    m_selectedConnection = core.connect(tileId, Core::ParameterId::Selected,
-                                        [this](const Core::ParameterValue& v)
-                                        {
-                                          if(get<bool>(v))
-                                            get_style_context()->add_class("selected");
-                                          else
-                                            get_style_context()->remove_class("selected");
-                                        });
-  }
-
-  Gtk::Widget* Tile::buildHasStepsIndicator(Core::Api::Interface& core, Core::TileId tileId)
-  {
-    constexpr auto hasStepsClass = "has-steps";
-
     auto hasSteps = Gtk::manage(new Gtk::Label(" [] "));
-    auto styles = hasSteps->get_style_context();
     hasSteps->get_style_context()->add_class("has-steps-indicator");
+    attach(*hasSteps, 0, 0, 1, 1);
 
-    m_patternConnection
-        = core.connect(tileId, Core::ParameterId::Pattern,
-                       [styles](const Core::ParameterValue& in) mutable
-                       {
-                         const auto& p = get<Core::Pattern>(in);
-                         bool anyStepSet = std::any_of(p.begin(), p.end(), [](auto step) { return step; });
-                         anyStepSet ? styles->add_class(hasStepsClass) : styles->remove_class(hasStepsClass);
-                       });
+    auto reverse = Gtk::manage(new Gtk::Label(" > "));
+    reverse->get_style_context()->add_class("is-playing-indicator");
+    attach(*reverse, 1, 0, 2, 1);
 
-    return hasSteps;
-  }
-
-  double dB(double level)
-  {
-    if(level <= 0)
-      return -80;
-    return 20 * std::log10(level);
-  }
-
-  std::string toCss(double db)
-  {
-    int rounded_dB = std::clamp(static_cast<int>(std::round(db / -10.0) * -10), -80, 0);
-    return "level-" + std::to_string(std::abs(rounded_dB)) + "db";
-  }
-
-  Gtk::Widget* Tile::buildPlayIndicator(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp,
-                                        Core::TileId tileId)
-  {
-    auto play = Gtk::manage(new Gtk::Button());
-    auto styles = play->get_style_context();
-    styles->add_class("is-playing-indicator");
-
-    m_reverseConnection = core.connect(tileId, Core::ParameterId::Reverse, [play](const Core::ParameterValue& p) mutable
-                                       { play->set_label(get<bool>(p) ? "<" : ">"); });
-
-    Glib::signal_timeout().connect(
-        [styles, &dsp, tileId, play, oldDB = -80.0]() mutable
-        {
-          auto decay = 0.0;
-          auto db = dB(dsp.getCurrentTileLevel(tileId));
-          db = decay * oldDB + (1.0 - decay) * db;
-          oldDB = db;
-
-          auto cssClass = toCss(db);
-
-          for(const auto& color : styles->list_classes())
-          {
-            if(color.find("level-") == 0)
-              if(color != cssClass)
-                styles->remove_class(color);
-          }
-          styles->add_class(cssClass);
-
-          return true;
-        },
-        16);
-
-    return play;
-  }
-
-  Gtk::Widget* Tile::buildVolumeSlider(Core::Api::Interface& core, Core::TileId tileId)
-  {
     auto volume = Gtk::manage(new Gtk::LevelBar());
     volume->set_orientation(Gtk::Orientation::ORIENTATION_VERTICAL);
     volume->set_min_value(0.0);
     volume->set_max_value(1.0);
     volume->set_inverted(true);
+    volume->get_style_context()->add_class("volume");
+    attach(*volume, 3, 0, 1, 4);
 
-    auto styles = volume->get_style_context();
-    styles->add_class("volume");
+    auto waveform = buildWaveformDisplay(core, tileId);
+    attach(*waveform, 0, 1, 3, 3);
 
-    m_gainConnection = core.connect(tileId, Core::ParameterId::Gain, [volume](const Core::ParameterValue& p) mutable
-                                    { volume->set_value(get<float>(p)); });
+    auto seconds = Gtk::manage(new Gtk::Label("0.0s"));
+    seconds->get_style_context()->add_class("duration");
+    seconds->get_style_context()->add_class("seconds");
+    attach(*seconds, 0, 4, 2, 1);
 
-    return volume;
+    auto steps = Gtk::manage(new Gtk::Label("0.0"));
+    steps->get_style_context()->add_class("duration");
+    steps->get_style_context()->add_class("steps");
+    attach(*steps, 2, 4, 2, 1);
+
+    m_computations.add(
+        [&core, tileId, hasSteps](auto c)
+        {
+          constexpr auto hasStepsClass = "has-steps";
+          auto styles = hasSteps->get_style_context();
+          hasSteps->get_style_context()->add_class("has-steps-indicator");
+          auto pattern = std::get<Core::Pattern>(core.getParameter(c, tileId, Core::ParameterId::Pattern));
+          bool anyStepSet = std::any_of(pattern.begin(), pattern.end(), [](auto step) { return step; });
+          anyStepSet ? styles->add_class(hasStepsClass) : styles->remove_class(hasStepsClass);
+        });
+
+    m_computations.add(
+        [&core, tileId, reverse](auto c) {
+          reverse->set_label(std::get<bool>(core.getParameter(c, tileId, Core::ParameterId::Reverse)) ? " < " : " > ");
+        });
+
+    m_computations.add([&core, tileId, volume](auto c)
+                       { volume->set_value(std::get<float>(core.getParameter(c, tileId, Core::ParameterId::Gain))); });
+
+    m_computations.add(
+        [&core, tileId, this](auto c)
+        {
+          if(std::get<bool>(core.getParameter(c, tileId, Core::ParameterId::Selected)))
+            get_style_context()->add_class("selected");
+          else
+            get_style_context()->remove_class("selected");
+        });
+
+    m_computations.add(
+        [&core, tileId, waveform](auto c)
+        {
+          core.getParameter(c, tileId, Core::ParameterId::SampleFile);
+          waveform->queue_draw();
+        });
+
+    runLevelMeterTimer(dsp, tileId, reverse);
   }
 
   Gtk::Widget* Tile::buildWaveformDisplay(Core::Api::Interface& core, Core::TileId tileId)
@@ -164,9 +144,6 @@ namespace Ui::Touch
           return true;
         });
 
-    m_sampleFileConnection = core.connect(tileId, Core::ParameterId::SampleFile,
-                                          [wf, &core](const Core::ParameterValue& p) mutable { wf->queue_draw(); });
-
     wf->add_events(Gdk::EventMask::BUTTON_PRESS_MASK | Gdk::EventMask::POINTER_MOTION_MASK);
 
     wf->signal_button_press_event().connect(
@@ -179,21 +156,29 @@ namespace Ui::Touch
     return wf;
   }
 
-  Gtk::Widget* Tile::buildDurationInSeconds(Core::Api::Interface& core, Core::TileId tileId)
+  void Tile::runLevelMeterTimer(Dsp::Api::Display::Interface& dsp, Core::TileId tileId, Gtk::Label* reverse)
   {
-    auto wf = Gtk::manage(new Gtk::Label("0.0s"));
-    auto styles = wf->get_style_context();
-    styles->add_class("duration");
-    styles->add_class("seconds");
-    return wf;
-  }
+    Glib::signal_timeout().connect(
+        [&dsp, tileId, reverse, oldDB = -80.0]() mutable
+        {
+          auto styles = reverse->get_style_context();
+          auto decay = 0.0;
+          auto db = dB(dsp.getCurrentTileLevel(tileId));
+          db = decay * oldDB + (1.0 - decay) * db;
+          oldDB = db;
 
-  Gtk::Widget* Tile::buildDurationInSteps(Core::Api::Interface& core, Core::TileId tileId)
-  {
-    auto wf = Gtk::manage(new Gtk::Label("0.0"));
-    auto styles = wf->get_style_context();
-    styles->add_class("duration");
-    styles->add_class("steps");
-    return wf;
+          auto cssClass = toCss(db);
+
+          for(const auto& color : styles->list_classes())
+          {
+            if(color.find("level-") == 0)
+              if(color != cssClass)
+                styles->remove_class(color);
+          }
+          styles->add_class(cssClass);
+
+          return true;
+        },
+        16);
   }
 }

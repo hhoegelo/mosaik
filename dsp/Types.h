@@ -9,7 +9,7 @@ namespace Dsp
   using Sample = float;
   using Step = uint8_t;
 
-  using FramePos = uint64_t;
+  using FramePos = int64_t;
 
   struct StereoFrame
   {

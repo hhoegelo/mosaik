@@ -1,5 +1,5 @@
 #include <catch2/catch_all.hpp>
-#include <SignalSlot.h>
+#include <tools/SignalSlot.h>
 
 using namespace Tools::Signals;
 
