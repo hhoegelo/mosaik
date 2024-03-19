@@ -12,25 +12,18 @@ namespace Ui::Touch
     auto tileTools = new TileTools(core);
     append_page(*(Gtk::manage(new GlobalTools(core))), "Globals");
     append_page(*(Gtk::manage(tileTools)), "Tile");
-    append_page(*(Gtk::manage(new Waveform(core))), "Wave");
+    append_page(*(Gtk::manage(new Waveform(sharedUiState, core))), "Wave");
 
-    signal_switch_page().connect(
-        [&sharedUiState](auto, auto idx)
-        {
-          g_printerr("Selecting page %d\n", idx);
-          sharedUiState.select(static_cast<Ui::SharedState::Toolboxes>(idx));
-          g_printerr("Selected page %d\n", idx);
-        });
+    signal_switch_page().connect([&sharedUiState](auto, auto idx)
+                                 { sharedUiState.select(static_cast<Ui::SharedState::Toolboxes>(idx)); });
 
     m_selectedPageConnection = sharedUiState.connectSelectedToolbox(
         [this](auto t)
         {
-          g_printerr("XXX Selecting page %d\n", t);
           auto n = static_cast<int>(t);
           auto c = this->get_current_page();
           if(c != n)
             this->set_current_page(n);
-          g_printerr("XXX Selected page %d\n", t);
         });
 
     signal_switch_page().connect(

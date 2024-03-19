@@ -1,10 +1,12 @@
 #include "Waveform.h"
+#include <ui/SharedState.h>
 #include <core/api/Interface.h>
 
 namespace Ui::Touch
 {
-  Waveform::Waveform(Core::Api::Interface& core)
-      : m_core(core)
+  Waveform::Waveform(Ui::SharedState& sharedUiState, Core::Api::Interface& core)
+      : m_sharedUiState(sharedUiState)
+      , m_core(core)
   {
     auto styles = get_style_context();
     styles->add_class("waveform");
@@ -19,11 +21,32 @@ namespace Ui::Touch
     ctx->set_line_width(1);
 
     auto tileId = m_core.getSelectedTiles(m_computation.get()).front();
-    auto samples = m_core.getSamples(nullptr, tileId);
+    auto samples = m_core.getSamples(m_computation.get(), tileId);
+    auto numSamples = static_cast<double>(samples.get()->size());
     auto w = get_width();
     auto h = get_height();
-    auto adv = std::max<double>(1, samples.get()->size() / static_cast<double>(w));
-    auto frame = 0.0;
+
+    auto minZoom = 1.0;
+    auto maxZoom = numSamples / w;
+    auto zoom = m_sharedUiState.getWaveformZoom(m_computation.get());
+
+    zoom = std::min(zoom, maxZoom);
+    zoom = std::max(zoom, minZoom);
+
+    m_sharedUiState.fixWaveformZoom(zoom);
+
+    auto adv = std::max<double>(1, numSamples / static_cast<double>(zoom * w));
+
+    auto minScroll = 0.0;
+    auto maxScroll = numSamples - (w * adv);
+    auto scroll = m_sharedUiState.getWaveformScroll(m_computation.get());
+
+    scroll = std::min(scroll, maxScroll);
+    scroll = std::max(scroll, minScroll);
+
+    m_sharedUiState.fixWaveformScroll(scroll);
+
+    auto frame = scroll;
 
     for(size_t i = 0; i < w; i++)
     {

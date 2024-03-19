@@ -101,4 +101,12 @@ namespace Core::Api
    private:
     std::map<std::tuple<TileId, ParameterId>, Tools::Signals::Signal<ParameterValue>> m_parameterCache;
   };
+
+  template <typename... Args>
+  std::tuple_element_t<0, std::tuple<Args...>> connect(Computation *c, const Tools::Signals::Signal<Args...> &s)
+  {
+    if(c)
+      c->add(&s);
+    return std::get<0>(s.getCache());
+  }
 }

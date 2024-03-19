@@ -18,10 +18,7 @@ namespace Core::Api
   ParameterValue Interface::getParameter(Computation *computation, TileId tileId, ParameterId parameterId) const
   {
     auto c = m_parameterCache.find(std::make_tuple(tileId, parameterId));
-    if(computation)
-      computation->add(&c->second);
-
-    return std::get<0>(c->second.getCache());
+    return Core::Api::connect(computation, c->second);
   }
 
   std::vector<TileId> Interface::getSelectedTiles(Computation *computation) const

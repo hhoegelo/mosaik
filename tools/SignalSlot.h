@@ -37,12 +37,15 @@ namespace Tools
      public:
       using Callback = std::function<void(Args...)>;
 
-     public:
-      void emit(const Args &...args)
+      bool setCache(const Args &...args)
       {
         auto n = std::make_tuple(args...);
-        auto changed = std::exchange(m_cache, n) != n;
+        return std::exchange(m_cache, n) != n;
+      }
 
+      void emit(const Args &...args)
+      {
+        auto changed = setCache(args...);
         auto hasContent = std::tuple_size_v<decltype(m_cache)> > 0;
 
         if(!hasContent || changed)

@@ -107,7 +107,11 @@ namespace Ui::Midi
   Controller::Mapping Controller::buildWaveformMapping()
   {
     return {
-      .knobs = {},
+      .knobs = {
+          { Knob::NorthWest, [this](auto inc) { m_sharedUiState.incWaveformZoom(inc); } },
+          { Knob::NorthEast, [this](auto inc) { m_sharedUiState.incWaveformScroll(inc); } },
+
+      },
       .buttons = {},
     };
   }

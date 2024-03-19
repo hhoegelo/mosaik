@@ -8,18 +8,23 @@ namespace Core::Api
   class Computation;
 }
 
-namespace Ui::Touch
+namespace Ui
 {
-  class Waveform : public Gtk::DrawingArea
+  class SharedState;
+
+  namespace Touch
   {
-   public:
-    explicit Waveform(Core::Api::Interface &core);
+    class Waveform : public Gtk::DrawingArea
+    {
+     public:
+      explicit Waveform(Ui::SharedState &sharedUiState, Core::Api::Interface &core);
 
-   private:
-    bool drawWave(const Cairo::RefPtr<Cairo::Context> &ctx);
+     private:
+      bool drawWave(const Cairo::RefPtr<Cairo::Context> &ctx);
 
-    Core::Api::Interface &m_core;
-    std::unique_ptr<Core::Api::Computation> m_computation;
-  };
-
+      SharedState &m_sharedUiState;
+      Core::Api::Interface &m_core;
+      std::unique_ptr<Core::Api::Computation> m_computation;
+    };
+  }
 }
