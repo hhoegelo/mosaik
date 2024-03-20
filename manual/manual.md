@@ -5,21 +5,12 @@ Mosaik is a rhythm instrument, optimized for live beat programming.
 It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJing, dubmixing to always give you full overview and control over your beats.
 
 ## Overview
-- sampling: 
+- sampling
 - stepsequcencing
 - live/jamming: mute, mixer
 - looping
 - DJing: prelisten and crossfade
 - dubmixing: mixer with fx-return on fadern
-
-### Concepts
-- starts with empty tiles and steps and at random speed (60..180)
-- prelisten
-- automatic session recording and live sampling
-- groups (mixer channel, mute, selection, steps?)
-- undo
-- load multiple tiles (no load/save)
-- is normally in playmode (ext. midi?)
 
 ## UI
 - tile grid, toolboxes
@@ -50,15 +41,18 @@ It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJ
 
 ## Toolboxes
 common features: minimize, extend, ...
-- Sample Browser (waveform, load multiple tiles, pathes)
-- Sample Waveform (Envelope, Hitpoint, timeline, barline)
-- Prelisten
-- Snapshot (slots)
-- Mute (unmute all, last, groups, stepmute)
-- Steps (set all, delete all, mirror, invert, rotate, gap, off) 
-- Manual
 
 ![](toolboxes.png)
+
+- Audio Parameter
+- Waveform (Envelope, Hitpoint, timeline, barline)
+- Steps (set all, delete all, mirror, invert, rotate, gap, off) 
+- Mute (unmute all, last, groups, stepmute)
+- Snapshot (slots)
+- Browser (waveform, load multiple tiles, pathes)
+- Prelisten
+- Manual
+
 
 ## Tiles
 - Sample Player
@@ -83,6 +77,14 @@ common features: minimize, extend, ...
 
 #### Delay (Return Fader)
 
+## Concepts
+- starts with empty tiles and steps and at random speed (60..180)
+- prelisten
+- automatic session recording and live sampling
+- groups (mixer channel, mute, selection, steps?)
+- undo
+- load multiple tiles (no load/save)
+- is normally in playmode (ext. midi?)
 
 ## OLD UI Overview
 
