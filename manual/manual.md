@@ -18,40 +18,63 @@ It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJ
 ![](new-ui.png)
 
 
-## Hardware
-- 10inch touch display
-- 64 step sequencer
-- 16 software defined buttons
-- 7 software defined encoder 
+## Toolboxes
 
-![](toppanel.png)
-
-### IO-Panel
-- frontpanel left: Headphones Out, Vol-Poti, USB
-- frontpanel right: Line In, Mic In + Poti
-- backpanel left: Main Out, Phono In, MIDI-Clock (In/Out)
-- backpanel right: Power In, Power Switch, USB (MSD, MIDI, WIFI, BT), Ethernet (Internet, Ableton-Link), HDMI (mirror/extend), DMX out
-
-![](connectors.png)
-
-
-## Toolbox-Rack
+### Rack
 - hosts toolboxes
 - scroll bar
 
-## Toolboxes
+### Toolboxes
 common features: minimize, extend, ...
 
 ![](toolboxes.png)
 
-- Audio Parameter
-- Waveform (Envelope, Hitpoint, timeline, barline)
-- Steps (set all, delete all, mirror, invert, rotate, gap, off) 
-- Mute (unmute all, last, groups, stepmute)
-- Snapshot (slots)
-- Browser (waveform, load multiple tiles, pathes)
-- Prelisten
-- Manual
+#### Audio Parameter
+- Volume
+- Pan
+- Play Direction
+- Pitch
+- 2P HP Filter: cutoff, resonance
+- BP Filter: gain, frequency, bandwidth
+- 2P LP Filter: cutoff, resonace
+- analog distortion (saturator): gain, fold, asymmetry
+- digital distotrion (quantizer): step, offset, frequency
+
+#### Waveform 
+- Envelope: Start, FadeIn, FadeOut, End
+- Hitpoint
+- timeline
+- barline
+
+#### Steps
+- set all
+- clear all
+- mirror
+- invert 
+- wizzard:
+    - rotate
+    - gap
+    - off 
+#### Mute
+- unmute all
+- last selection
+- groups
+- stepmute
+
+#### Snapshot
+- slots: load, save
+
+#### Browser
+- prelisten sample
+- browse sample
+- bookmark samples
+- unload sample from tile
+- waveform
+- load multiple tiles
+- pathes: load/save
+
+#### Prelisten
+#### Manual
 
 
 ## Tiles
@@ -103,6 +126,22 @@ common features: minimize, extend, ...
      sequence again
     - press last mute to go back to the last mute states 
 
+
+## Hardware
+- 10inch touch display
+- 64 step sequencer
+- 16 software defined buttons
+- 7 software defined encoder 
+
+![](toppanel.png)
+
+### IO-Panel
+- frontpanel left: Headphones Out, Vol-Poti, USB
+- frontpanel right: Line In, Mic In + Poti
+- backpanel left: Main Out, Phono In, MIDI-Clock (In/Out)
+- backpanel right: Power In, Power Switch, USB (MSD, MIDI, WIFI, BT), Ethernet (Internet, Ableton-Link), HDMI (mirror/extend), DMX out
+
+![](connectors.png)
 
 
 ## Pages

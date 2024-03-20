@@ -7,19 +7,22 @@
 namespace Ui::Touch
 {
   auto css = R"(
-  .has-steps-indicator {
-  }
+    .has-steps-indicator{
+        background-color: rgb(40,40,40);
+        margin: 3px;
+    }
 
-  .has-steps-indicator.has-steps {
-    background-color: #AA0000;
-  }
+    .has-steps-indicator.has-steps {
+        background-color: rgb(90,90,90);
+    }
 
-  .is-playing-indicator {
-  }
+    .is-playing-indicator {
+        margin: 3px;
+    }
 
-  .is-playing-indicator.is-playing {
-    background: #AA0000;
-  }
+    .is-playing-indicator.is-playing {
+        background-color: rgb(40,40,40);
+    }
 
   .tile .volume {
     min-height: 3cm;
@@ -30,15 +33,15 @@ namespace Ui::Touch
     min-width: 3cm;
   }
 
-  .tile {
-	  border: 1px solid black;
-    border-radius: 2px;
-	  margin: 5px;
-  }
+    .tile {
+        border: 1px solid black;
+        border-radius: 0px;
+        margin: 2px;
+    }
 
-  .tile.selected {
-    border-color: red;
-  }
+    .tile.selected {
+        border-color: rgb(160, 160, 160);
+    }
 
   .is-playing-indicator.level-80db {
     background: rgba(255, 0, 0, 0);
