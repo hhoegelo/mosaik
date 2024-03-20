@@ -78,11 +78,20 @@ common features: minimize, extend, ...
 
 
 ## Tiles
+
 - Sample Player
 - Volume, Pan
 - Envelope, Hitpoint
 - Pitch, Playdirection 
 - FX: Distortion, Filter
+
+![](new-tiles.png)
+- a) tile not playing
+- b) tile triggered
+- c) tile starts playing
+- d) tile is playing
+- e) tile is not playing
+- f) tile with envelope, only envelope is shown, additional time for full sample length
 
 ![](tile-detail.png)
 

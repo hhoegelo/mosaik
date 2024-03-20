@@ -25,7 +25,7 @@ namespace Ui::Touch
     }
 
   .tile .volume {
-    min-height: 3cm;
+    min-height: 2cm;
   }
 
   .waveform {
