@@ -1,13 +1,47 @@
-# TL;DR
+## TL;DR
 
-* apt install gcc cmake make libboost-program-options-dev libasound2-dev libglibmm-2.4-dev libgtkmm-2.4-dev libgtkmm-3.0-dev libgstreamermm-1.0-dev
-* mkdir ~/mosaik-build
-* cd ~/mosaik-build
-* cmake path-to-source
-* make -j12
-* ./mosaik --alsa-out=hw:0,0
+	apt install gcc cmake make libboost-program-options-dev libasound2-dev libglibmm-2.4-dev libgtkmm-2.4-dev libgtkmm-3.0-dev libgstreamermm-1.0-dev
+	
+	mkdir ~/mosaik-build
+	cd ~/mosaik-build
+	cmake path-to-source
+	make
+	./mosaik --alsa-out=plughw:0,0
 
-#### Rpi DT Overlay
+## HWUI debug tools
+	amidi -l
+ 	aseqdump -l
+ 	aseqdump -p 20
+ 	aconnect 24:0 20:0
+ 	aconnect -d 24:0 20:0
+	amidi -p hw:1,0,0 -S '92 25 00'
+
+## RGB commands
+	'90 25 00'
+	color id val
+
+	color:
+	90: red-channel
+	91: green-channel
+	92: blue-channel
+	93: white-channel
+	94: color table
+	95: update
+	96: all leds on
+	97: all leds off  
+
+	# color table (94)       ID color
+	amidi -p hw:1,0,0 -S '94 6A 00'
+	{ 2, 0, 0}, // 0 red	relsub0
+	{ 0, 2, 0}, // 1 green	relsub1
+	{ 0, 0, 2}, // 2 blue	relsub2
+	{ 2, 0, 2}, // 3 purple	relsub3
+	{ 2, 2, 2}, // 4 white	stepled
+	{ 0, 0, 0}, // 5 off  
+	
+
+
+#### Rpi DT Overlay for UARTs
 
 	# enable usb hub
 	dtoverlay=dwc2,dr_mode=host
