@@ -107,7 +107,7 @@ namespace Ui::Touch
   Gtk::Widget* Tile::buildWaveformDisplay(Core::Api::Interface& core, Core::TileId tileId)
   {
     auto wf = Gtk::manage(new Gtk::DrawingArea());
-    wf->set_size_request(75, 75);
+    wf->set_size_request(60, 60);
 
     auto styles = wf->get_style_context();
     styles->add_class("waveform");

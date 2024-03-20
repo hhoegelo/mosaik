@@ -1,0 +1,117 @@
+# Mosaik
+![](logo.png)
+Mosaik is a rhythm instrument, optimized for live beat programming. 
+
+It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJing, dubmixing to always give you full overview and control over your beats.
+
+## Overview
+- sampling: 
+- stepsequcencing
+- live/jamming: mute, mixer
+- looping
+- DJing: prelisten and crossfade
+- dubmixing: mixer with fx-return on fadern
+
+### Concepts
+- starts with empty tiles and steps and at random speed (60..180)
+- prelisten
+- automatic session recording and live sampling
+- groups (mixer channel, mute, selection, steps?)
+- undo
+- load multiple tiles (no load/save)
+- is normally in playmode (ext. midi?)
+
+## UI
+- tile grid, toolboxes
+- dubmixer (channel, main)
+![](new-ui.png)
+
+
+## Hardware
+- 10inch touch display
+- 64 step sequencer
+- 16 software defined buttons
+- 7 software defined encoder 
+
+![](toppanel.png)
+
+### IO-Panel
+- frontpanel left: Headphones Out, Vol-Poti, USB
+- frontpanel right: Line In, Mic In + Poti
+- backpanel left: Main Out, Phono In, MIDI-Clock (In/Out)
+- backpanel right: Power In, Power Switch, USB (MSD, MIDI, WIFI, BT), Ethernet (Internet, Ableton-Link), HDMI (mirror/extend), DMX out
+
+![](connectors.png)
+
+
+## Toolbox-Rack
+- hosts toolboxes
+- scroll bar
+
+## Toolboxes
+common features: minimize, extend, ...
+- Sample Browser (waveform, load multiple tiles, pathes)
+- Sample Waveform (Envelope, Hitpoint, timeline, barline)
+- Prelisten
+- Snapshot (slots)
+- Mute (unmute all, last, groups, stepmute)
+- Steps (set all, delete all, mirror, invert, rotate, gap, off) 
+- Manual
+
+![](toolboxes.png)
+
+## Tiles
+- Sample Player
+- Volume, Pan
+- Envelope, Hitpoint
+- Pitch, Playdirection 
+- FX: Distortion, Filter
+
+![](tile-detail.png)
+
+#### Filter
+- 2P HP: cutoff, resonance
+- BP: gain, frequency, bandwidth 
+- 2P LP: cutoff, resonance
+
+#### Distortion
+- Analog: Gain, Fold, Asymetry
+- Digital: Step, Offset, Frequency
+
+#### Reverb (Return Fader)
+
+
+#### Delay (Return Fader)
+
+
+## OLD UI Overview
+
+![](ui-overview.png)
+
+### Quick Start Guide / Workflow
+- 1) select a tile on the tile grid (4)
+- 2) browse samples (2) via the controller and prelisten via headphones, the waveform will be shown in the Waveform Window (3)
+- 3) load the selected sample to the selected tile via the controller,
+- 4) set steps on the stepsequencer of the controller (the sequence can be prelisten via headphones)
+- 5) use the fadelope to change the sample length (start, fade-in, fade-out, end) (3)
+- 6) repeat the previous steps to get a full beat
+- 7) change to mute overlay via the controller
+    - select the tiles to be muted on the tile grid (4)
+    - press unmute all (controller) to hear the full
+     sequence again
+    - press last mute to go back to the last mute states 
+
+
+
+## Pages
+- Tiles & Toolboxes
+- Dubmixer
+- Sample Editor (toolbox?)
+- Sample Organizer
+- Manual
+
+
+
+
+
+
