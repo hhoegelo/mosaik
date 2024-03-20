@@ -16,7 +16,7 @@
    version="1.1"
    id="svg5"
    inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
-   sodipodi:docname="component_placement.svg">
+   sodipodi:docname="toppanel.svg">
   <metadata
      id="metadata1674">
     <rdf:RDF>
@@ -25,6 +25,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -40,15 +41,15 @@
      showgrid="true"
      inkscape:snap-bbox="true"
      inkscape:bbox-nodes="true"
-     inkscape:zoom="6.7739952"
-     inkscape:cx="1838.1477"
-     inkscape:cy="1128.2808"
+     inkscape:zoom="0.10584368"
+     inkscape:cx="-980.1734"
+     inkscape:cy="840.48995"
      inkscape:window-width="1920"
-     inkscape:window-height="1129"
-     inkscape:window-x="1080"
-     inkscape:window-y="1439"
+     inkscape:window-height="1009"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g1963-4"
+     inkscape:current-layer="layer1"
      inkscape:snap-nodes="true"
      inkscape:snap-bbox-midpoints="true"
      inkscape:snap-others="true"
@@ -68,7 +69,8 @@
        units="mm"
        spacingx="0.2"
        spacingy="0.2"
-       enabled="false" />
+       enabled="false"
+       visible="false" />
     <inkscape:grid
        type="xygrid"
        id="grid826"
@@ -76,7 +78,7 @@
        spacingx="0.99999999"
        spacingy="0.99999999"
        snapvisiblegridlinesonly="true"
-       enabled="true"
+       enabled="false"
        visible="true" />
   </sodipodi:namedview>
   <defs
@@ -2343,7 +2345,7 @@
        rx="8.5000033e-07"
        ry="6.7793917e-06" />
     <rect
-       style="fill:none;fill-opacity:0.99967;stroke:#060606;stroke-width:0.999995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;fill-opacity:0.99967;stroke:none;stroke-width:0.999995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect9452-1-47-5"
        width="81"
        height="91"
@@ -2353,7 +2355,7 @@
        ry="6.7793922e-06"
        transform="scale(-1,1)" />
     <rect
-       style="fill:none;fill-opacity:0.99967;stroke:#0f0f0f;stroke-width:0.999995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;fill-opacity:0.99967;stroke:none;stroke-width:0.999995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect9452-1-47-3-78"
        width="81"
        height="91"
@@ -2363,7 +2365,7 @@
        ry="6.7793922e-06"
        transform="scale(-1,1)" />
     <rect
-       style="fill:none;fill-opacity:0.99967;stroke:#060606;stroke-width:0.999995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;fill-opacity:0.99967;stroke:none;stroke-width:0.999995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect9452-1-47-4-5"
        width="81"
        height="91"
@@ -4832,72 +4834,6 @@
          style="fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-width:0.585107;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          d="m 446.97091,264.52907 v 22.0002 l 10.99984,-11.00037 z" />
     </g>
-    <circle
-       style="fill:#999999;fill-opacity:1;stroke-width:1"
-       id="path1318-5-1"
-       cx="32"
-       cy="32"
-       r="3" />
-    <circle
-       style="fill:#999999;fill-opacity:1;stroke-width:1"
-       id="path1318-5-1-3"
-       cx="160"
-       cy="32"
-       r="3" />
-    <circle
-       style="fill:#999999;fill-opacity:1;stroke-width:1"
-       id="path1318-5-1-3-6"
-       cx="160"
-       cy="9"
-       r="3" />
-    <circle
-       style="fill:#999999;fill-opacity:1;stroke-width:1"
-       id="path1318-5-1-3-8"
-       cx="9"
-       cy="311"
-       r="3" />
-    <circle
-       style="fill:#999999;fill-opacity:1;stroke-width:1"
-       id="path1318-5-1-3-8-0"
-       cx="32"
-       cy="288"
-       r="3" />
-    <circle
-       style="fill:#999999;fill-opacity:1;stroke-width:1"
-       id="path1318-5-1-3-50"
-       cx="160"
-       cy="311"
-       r="3" />
-    <circle
-       style="fill:#999999;fill-opacity:1;stroke-width:1"
-       id="path1318-5-1-3-9"
-       cx="288"
-       cy="288"
-       r="3" />
-    <circle
-       style="fill:#999999;fill-opacity:1;stroke-width:1"
-       id="path1318-5-1-3-0"
-       cx="311"
-       cy="9"
-       r="3" />
-    <circle
-       style="fill:#999999;fill-opacity:1;stroke-width:1"
-       id="path1318-5-1-3-4"
-       cx="288"
-       cy="32"
-       r="3" />
-    <circle
-       style="fill:#999999;fill-opacity:1;stroke-width:1"
-       id="path1318-5-1-3-3"
-       cx="9"
-       cy="9"
-       r="3" />
-    <circle
-       style="fill:#999999;fill-opacity:1;stroke-width:1"
-       id="path1318-5-1-3-5"
-       cx="311"
-       cy="311"
-       r="3" />
     <rect
        style="fill:none;fill-opacity:1;stroke:none;stroke-width:0.199999;stroke-linecap:square;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect20174"
@@ -4908,18 +4844,6 @@
        rx="8.5000039e-07"
        ry="6.7793926e-06"
        transform="scale(-1,1)" />
-    <circle
-       style="fill:#999999;fill-opacity:1;stroke-width:1"
-       id="path1318-5-1-3-8-2"
-       cx="288"
-       cy="160.00002"
-       r="3" />
-    <circle
-       style="fill:#999999;fill-opacity:1;stroke-width:1"
-       id="path1318-5-1-3-8-4"
-       cx="311"
-       cy="160.00002"
-       r="3" />
     <rect
        style="fill:none;fill-opacity:1;stroke:none;stroke-width:0.199999;stroke-linecap:square;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect20174-9"
@@ -4930,30 +4854,6 @@
        rx="8.5000039e-07"
        ry="6.7793926e-06"
        transform="scale(-1,1)" />
-    <circle
-       style="fill:#999999;fill-opacity:1;stroke-width:1"
-       id="path1318-5-1-3-8-9"
-       cx="32"
-       cy="160.00002"
-       r="3" />
-    <circle
-       style="fill:#999999;fill-opacity:1;stroke-width:1"
-       id="path1318-5-1-3-8-01"
-       cx="9"
-       cy="160.00002"
-       r="3" />
-    <circle
-       style="fill:#999999;fill-opacity:1;stroke-width:1"
-       id="path1318-5-1-3-8-20"
-       cx="160"
-       cy="288"
-       r="3" />
-    <circle
-       style="fill:#999999;fill-opacity:1;stroke-width:1"
-       id="path1318-5-1-3-8-06"
-       cx="160"
-       cy="212.99586"
-       r="3" />
     <rect
        transform="scale(1,-1)"
        ry="6.7793917e-06"

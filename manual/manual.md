@@ -29,6 +29,10 @@ common features: minimize, extend, ...
 
 ![](toolboxes.png)
 
+### new toolboxes
+![](hwui-gui.png)
+
+
 #### Audio Parameter
 - Volume
 - Pan
@@ -39,6 +43,7 @@ common features: minimize, extend, ...
 - 2P LP Filter: cutoff, resonace
 - analog distortion (saturator): gain, fold, asymmetry
 - digital distotrion (quantizer): step, offset, frequency
+- filter and distortion curve display 
 
 #### Waveform 
 - Envelope: Start, FadeIn, FadeOut, End
@@ -74,8 +79,18 @@ common features: minimize, extend, ...
 - pathes: load/save
 
 #### Prelisten
-#### Manual
+- x-fade between main and pre
+- headphone split or mixed
 
+#### Manual
+- shows the manual
+- can be full page?
+
+#### Audio Recorder
+- select source: line in, mic in, phono in
+- level
+- save recording to sample collection
+- load recording to tile
 
 ## Tiles
 
