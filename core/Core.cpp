@@ -86,7 +86,6 @@ namespace Core
           : m_model(model)
           , m_dsp(dsp)
       {
-
         m_access
             = { { { TileId {}, ParameterId::GlobalVolume }, buildAccess(m_model.globals.volume, 0.0f, 1.0f, 0.001f) },
                 { { TileId {}, ParameterId::GlobalShuffle }, buildAccess(m_model.globals.shuffle, 0.0f, 1.0f, 0.001f) },
@@ -137,6 +136,8 @@ namespace Core
                                                            src.envelopeFadeOutPos, src.envelopeFadeOutLen);
               });
         }
+
+        m_dsp.takeAudioKernel(newDspKernel(m_model));
       }
 
       ~Mosaik() override = default;

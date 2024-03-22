@@ -11,8 +11,7 @@ namespace Ui::Touch
   {
     auto styles = get_style_context();
     styles->add_class("waveform");
-    styles->add_class("tool");
-
+    set_size_request(0, 250);
     signal_draw().connect([this](const Cairo::RefPtr<Cairo::Context>& ctx) { return drawWave(ctx); });
   }
 
@@ -27,7 +26,7 @@ namespace Ui::Touch
             this->queue_draw();
             return;
           }
-          
+
           ctx->set_line_width(1);
 
           auto tileId = m_core.getSelectedTiles().front();

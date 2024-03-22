@@ -71,24 +71,29 @@ namespace Tools
   }
 
   DeferredComputations::DeferredComputations(Glib::RefPtr<Glib::MainContext> ctx)
-      : m_ctx(ctx)
+      : m_ctx(std::move(ctx))
   {
   }
 
   void DeferredComputations::onComputationInvalidated(Computations::Computation *c)
   {
-    auto cb = std::move(c->m_cb);
+    m_pending.push_back(c->m_cb);
+
     m_computations.erase(
         std::find_if(m_computations.begin(), m_computations.end(), [&](auto &m) { return m.get() == c; }));
 
-    m_timer.disconnect();
-    m_timer = m_ctx->signal_timeout().connect(
-        [this, cb = std::move(cb)]
-        {
-          add(cb);
-          return false;
-        },
-        10);
+    if(m_pending.size() == 1)
+    {
+      m_timer = m_ctx->signal_timeout().connect(
+          [this]
+          {
+            auto c = std::move(m_pending);
+            for(const auto &k : c)
+              add(k);
+            return false;
+          },
+          10);
+    }
   }
 
   DeferredComputations::~DeferredComputations()

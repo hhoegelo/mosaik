@@ -70,6 +70,17 @@ namespace Ui::Touch
     background: rgba(255, 0, 0, 1.0);
   }
 
+.section .header {
+	border: 1px solid black;
+	background: gray;
+	color: white;
+	font-size: xx-large;
+	font-weight: bold;
+}
+
+.waveform {
+	min-height: 200px;
+}
   )";
 
   Window::Window(SharedState& sharedUiState, Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp)
@@ -89,15 +100,15 @@ namespace Ui::Touch
 
     set_title("Mosaik");
     set_border_width(10);
-    auto screen = Gtk::manage(new Gtk::Grid());
+    auto box = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
 
-    auto tiles = new Tiles(m_core, m_dsp, [](Row r, Col c) { return r * NUM_TILE_COLUMNS + c; });
-    screen->attach(*tiles, 0, 1, 10, 10);
+    auto tiles = new Tiles(m_core, m_dsp);
+    box->pack_start(*tiles, false, false);
 
     auto toolboxes = new Toolboxes(m_sharedUiState, m_core);
-    screen->attach(*toolboxes, 10, 0, 5, 11);
+    box->pack_start(*toolboxes, true, true);
 
-    add(*screen);
+    add(*box);
     show_all();
   }
 }

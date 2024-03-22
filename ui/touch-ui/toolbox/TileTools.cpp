@@ -13,7 +13,9 @@ namespace Ui::Touch
       , m_core(core)
       , m_computations(Glib::MainContext::get_default())
   {
+    int f = 50;
     m_fileBrowser = Gtk::manage(new Gtk::FileChooserWidget(Gtk::FILE_CHOOSER_ACTION_OPEN));
+    m_fileBrowser->get_style_context()->add_class("file-browser");
     m_fileBrowser->signal_file_activated().connect(
         [this]
         {
@@ -72,9 +74,9 @@ namespace Ui::Touch
     controls->attach(*fadeOutPos, 1, 3, 1, 1);
     controls->attach(*fadeOutLen, 3, 3, 1, 1);
 
-    m_computations.add([this, gainLevel] { updateTileGain(gainLevel); });
     m_computations.add([this, speedLevel] { updateTileSpeed(speedLevel); });
     m_computations.add([this, balanceLevel] { updateTileBalance(balanceLevel); });
+    m_computations.add([this, gainLevel] { updateTileGain(gainLevel); });
 
     pack_start(*controls);
   }

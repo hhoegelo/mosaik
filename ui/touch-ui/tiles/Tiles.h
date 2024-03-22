@@ -17,7 +17,7 @@ namespace Ui::Touch
   class Tiles : public Gtk::Grid
   {
    public:
-    Tiles(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, std::function<Core::TileId(Row, Col)> map);
+    Tiles(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp);
   };
 
 }

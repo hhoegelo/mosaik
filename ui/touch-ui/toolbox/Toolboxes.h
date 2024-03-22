@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gtkmm/notebook.h>
+#include <gtkmm/scrolledwindow.h>
 
 namespace Core::Api
 {
@@ -13,7 +13,7 @@ namespace Ui
 
   namespace Touch
   {
-    class Toolboxes : public Gtk::Notebook
+    class Toolboxes : public Gtk::ScrolledWindow
     {
      public:
       explicit Toolboxes(SharedState &sharedUiState, Core::Api::Interface &core);

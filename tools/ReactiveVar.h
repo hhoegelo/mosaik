@@ -8,6 +8,7 @@
 #include <set>
 #include <algorithm>
 #include <functional>
+#include <vector>
 
 namespace Tools
 {
@@ -33,7 +34,7 @@ namespace Tools
   class DeferredComputations : public Computations
   {
    public:
-    DeferredComputations(Glib::RefPtr<Glib::MainContext> ctx);
+    explicit DeferredComputations(Glib::RefPtr<Glib::MainContext> ctx);
     ~DeferredComputations() override;
 
    private:
@@ -41,6 +42,7 @@ namespace Tools
 
     Glib::RefPtr<Glib::MainContext> m_ctx;
     sigc::connection m_timer;
+    std::vector<std::function<void()>> m_pending;
   };
 
   class ReactiveVarBase
