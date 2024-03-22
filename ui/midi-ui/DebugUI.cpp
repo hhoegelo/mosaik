@@ -96,7 +96,7 @@ namespace Ui::Midi
     btn->signal_clicked().connect(
         [this, btn, i]
         {
-          auto merged = m_core.getMergedPattern(nullptr);
+          auto merged = m_core.getMergedPattern();
           auto state = merged[i];
           m_core.setStep(i, !state);
         });

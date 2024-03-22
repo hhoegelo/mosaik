@@ -2,10 +2,14 @@
 
 #include <gtkmm/drawingarea.h>
 
+namespace Tools
+{
+  class Computations;
+}
+
 namespace Core::Api
 {
   class Interface;
-  class Computation;
 }
 
 namespace Ui
@@ -24,7 +28,7 @@ namespace Ui
 
       SharedState &m_sharedUiState;
       Core::Api::Interface &m_core;
-      std::unique_ptr<Core::Api::Computation> m_computation;
+      std::unique_ptr<Tools::Computations> m_computations;
     };
   }
 }

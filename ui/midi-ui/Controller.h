@@ -1,9 +1,10 @@
 #pragma once
 
 #include <core/api/Interface.h>
-#include <tools/SignalSlot.h>
 #include <ui/SharedState.h>
-#include "Interface.h"
+#include <ui/midi-ui/Interface.h>
+#include <tools/ReactiveVar.h>
+#include <map>
 
 namespace Core::Api
 {
@@ -35,7 +36,7 @@ namespace Ui
       void onButtonEvent(SoftButton b, ButtonEvent e);
 
      private:
-      void showPattern(Core::Api::Computation *c);
+      void showPattern();
 
       struct Mapping
       {
@@ -51,9 +52,7 @@ namespace Ui
       Core::Api::Interface &m_core;
       Interface &m_ui;
 
-      Core::Api::Computations m_computations;
-      Tools::Signals::Connection m_selectedTool;
-
+      Tools::DeferredComputations m_computations;
       Mapping m_inputMapping;
       Controller::Mapping buildWaveformMapping();
     };

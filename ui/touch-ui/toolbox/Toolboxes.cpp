@@ -16,21 +16,5 @@ namespace Ui::Touch
 
     signal_switch_page().connect([&sharedUiState](auto, auto idx)
                                  { sharedUiState.select(static_cast<Ui::SharedState::Toolboxes>(idx)); });
-
-    m_selectedPageConnection = sharedUiState.connectSelectedToolbox(
-        [this](auto t)
-        {
-          auto n = static_cast<int>(t);
-          auto c = this->get_current_page();
-          if(c != n)
-            this->set_current_page(n);
-        });
-
-    signal_switch_page().connect(
-        [this, tileTools](Widget *w, auto)
-        {
-          if(w == tileTools)
-            tileTools->onToolShown();
-        });
   }
 }

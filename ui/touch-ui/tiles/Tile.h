@@ -1,9 +1,11 @@
 #pragma once
 
+#include <tools/ReactiveVar.h>
+
 #include <core/Types.h>
+#include <core/api/Interface.h>
+
 #include <gtkmm/grid.h>
-#include "tools/SignalSlot.h"
-#include "core/api/Interface.h"
 
 namespace Core::Api
 {
@@ -26,6 +28,6 @@ namespace Ui::Touch
     void runLevelMeterTimer(Dsp::Api::Display::Interface& dsp, Core::TileId tileId, Gtk::Label* reverse);
     Widget* buildWaveformDisplay(Core::Api::Interface& core, Core::TileId tileId);
 
-    Core::Api::Computations m_computations;
+    Tools::DeferredComputations m_computations;
   };
 }

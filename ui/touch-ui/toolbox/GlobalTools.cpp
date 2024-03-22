@@ -11,6 +11,7 @@ namespace Ui::Touch
 
   GlobalTools::GlobalTools(Core::Api::Interface &core)
       : m_core(core)
+      , m_computations(Glib::MainContext::get_default())
   {
     auto volBox = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
     volBox->add(*Gtk::manage(new Gtk::Label("Volume")));
@@ -50,8 +51,8 @@ namespace Ui::Touch
     level->set_min_value(min);
     level->set_max_value(max);
 
-    m_connections.push_back(
-        m_core.connect({}, id, [level](const Core::ParameterValue &p) { level->set_value(get<float>(p)); }));
+    if(id != Core::ParameterId::Unused)
+      m_computations.add([this, id, level] { level->set_value(get<float>(m_core.getParameter({}, id))); });
 
     return level;
   }

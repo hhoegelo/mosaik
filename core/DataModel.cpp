@@ -13,11 +13,19 @@ namespace nlohmann
       t = j[name];
   }
 
+  template <typename T> struct adl_serializer<Tools::ReactiveVar<T>>
+  {
+    static void to_json(json &j, const Tools::ReactiveVar<T> &v)
+    {
+      j = v.get();
+    }
+  };
+
   template <> struct adl_serializer<Core::DataModel::Tile>
   {
     static void to_json(json &j, const Core::DataModel::Tile &v)
     {
-      j = { { "sample", v.sample.string() },
+      j = { { "sample", v.sample.get().string() },
             { "pattern", v.pattern },
             { "gain", v.gain },
             { "balance", v.balance },

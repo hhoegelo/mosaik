@@ -10,7 +10,7 @@ add_library(${PROJECT_NAME} STATIC Types.h Core.cpp DataModel.cpp api/Interface.
         FadeParameterSanitizer.h)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR} ${LIBS_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PUBLIC mosaik-dsp ${LIBS_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PUBLIC mosaik-dsp mosaik-tools ${LIBS_LIBRARIES})
 
 if (ENABLE_TESTING)
     enable_testing()

@@ -5,53 +5,51 @@ namespace Ui
 {
   SharedState::SharedState()
   {
-    m_selection.emit(Toolboxes::Global);
-
-    m_waveformProps.scroll.emit(0);
-    m_waveformProps.zoom.emit(1);
+    m_selection = Toolboxes::Global;
+    m_waveformProps.scroll = 0;
+    m_waveformProps.zoom = 1;
   }
 
   void SharedState::select(SharedState::Toolboxes t)
   {
-    m_selection.emit(t);
-
-    m_waveformProps.scroll.emit(0);
-    m_waveformProps.zoom.emit(1);
+    m_selection = t;
+    m_waveformProps.scroll = 0;
+    m_waveformProps.zoom = 1;
   }
 
-  Tools::Signals::Connection SharedState::connectSelectedToolbox(const std::function<void(Toolboxes)> &cb)
+  SharedState::Toolboxes SharedState::getSelectedToolbox() const
   {
-    return m_selection.connectWithInit(cb);
+    return m_selection;
   }
 
-  double SharedState::getWaveformZoom(Core::Api::Computation *c) const
+  double SharedState::getWaveformZoom() const
   {
-    return Core::Api::connect(c, m_waveformProps.zoom);
+    return m_waveformProps.zoom;
   }
 
   void SharedState::incWaveformZoom(int inc)
   {
-    m_waveformProps.zoom.emit(getWaveformZoom(nullptr) + inc / 50.0);
+    //m_waveformProps.zoom.emit(getWaveformZoom(nullptr) + inc / 50.0);
   }
 
-  double SharedState::getWaveformScroll(Core::Api::Computation *c) const
+  Core::FramePos SharedState::getWaveformScroll() const
   {
-    return Core::Api::connect(c, m_waveformProps.scroll);
+    return m_waveformProps.scroll;
   }
 
   void SharedState::incWaveformScroll(int inc)
   {
-    m_waveformProps.scroll.emit(getWaveformScroll(nullptr) + inc * getWaveformZoom(nullptr));
+    m_waveformProps.scroll = m_waveformProps.scroll + inc * getWaveformZoom();
   }
 
-  void SharedState::fixWaveformScroll(double d)
+  void SharedState::fixWaveformScroll(Core::FramePos d)
   {
-    m_waveformProps.scroll.setCache(d);
+    m_waveformProps.scroll = d;
   }
 
   void SharedState::fixWaveformZoom(double d)
   {
-    m_waveformProps.zoom.setCache(d);
+    m_waveformProps.zoom = d;
   }
 
 }

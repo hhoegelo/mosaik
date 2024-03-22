@@ -1,6 +1,5 @@
 #include "Window.h"
 #include "ui/touch-ui/tiles/Tiles.h"
-#include "ui/touch-ui/controls/FloatScaleButton.h"
 #include "ui/touch-ui/toolbox/Toolboxes.h"
 #include <gtkmm/grid.h>
 

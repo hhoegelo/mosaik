@@ -1,6 +1,6 @@
 #pragma once
 
-#include <tools/SignalSlot.h>
+#include <tools/ReactiveVar.h>
 #include <core/Types.h>
 
 namespace Core::Api
@@ -23,26 +23,24 @@ namespace Ui
     };
 
     void select(Toolboxes t);
-    [[nodiscard]] Tools::Signals::Connection connectSelectedToolbox(const std::function<void(Toolboxes)> &cb);
+    Toolboxes getSelectedToolbox() const;
 
     // waveform properties
-    double getWaveformZoom(Core::Api::Computation *c) const;
+    double getWaveformZoom() const;
     void incWaveformZoom(int inc);
 
-    double getWaveformScroll(Core::Api::Computation *c) const;
+    Core::FramePos getWaveformScroll() const;
     void incWaveformScroll(int inc);
-
     void fixWaveformZoom(double d);
-
-    void fixWaveformScroll(double d);
+    void fixWaveformScroll(Core::FramePos d);
 
    private:
-    Tools::Signals::Signal<Toolboxes> m_selection;
+    Tools::ReactiveVar<Toolboxes> m_selection { Toolboxes::Global };
 
     struct WaveformProps
     {
-      Tools::Signals::Signal<double> zoom;
-      Tools::Signals::Signal<Core::FramePos> scroll;
+      Tools::ReactiveVar<double> zoom { 1.0 };
+      Tools::ReactiveVar<Core::FramePos> scroll { 0 };
     } m_waveformProps;
   };
 }

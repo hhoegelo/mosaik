@@ -9,9 +9,6 @@ add_library(mosaik-touchui STATIC
         tiles/Tile.cpp
         toolbox/Toolboxes.h
         toolbox/Toolboxes.cpp
-        controls/Checkbox.cpp
-        controls/FloatScaleButton.cpp
-        controls/Label.cpp
         Ui.cpp
         Window.cpp
         Window.h
@@ -23,6 +20,6 @@ add_library(mosaik-touchui STATIC
         toolbox/Waveform.h)
 
 target_compile_options(mosaik-touchui PRIVATE)
-target_include_directories(mosaik-touchui PRIVATE ${CMAKE_SOURCE_DIR} ${LIBS_INCLUDE_DIRS})
+target_include_directories(mosaik-touchui PUBLIC ${CMAKE_SOURCE_DIR} ${LIBS_INCLUDE_DIRS})
 target_link_libraries(mosaik-touchui mosaik-core ${LIBS_LIBRARIES})
 

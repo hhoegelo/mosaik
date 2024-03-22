@@ -10,6 +10,7 @@ namespace Ui::Midi
       : m_sharedUiState(sharedUiState)
       , m_core(core)
       , m_ui(ui)
+      , m_computations(Glib::MainContext::get_default())
   {
     Glib::signal_timeout().connect(
         [&ui, &dsp, &core, lastStep = -1]() mutable
@@ -27,17 +28,17 @@ namespace Ui::Midi
         },
         16);
 
-    m_selectedTool = sharedUiState.connectSelectedToolbox([this](auto t) { m_inputMapping = createMapping(t); });
+    m_computations.add([this] { m_inputMapping = createMapping(m_sharedUiState.getSelectedToolbox()); });
   }
 
   void Controller::kickOff()
   {
-    m_computations.add([this](auto c) { showPattern(c); });
+    m_computations.add([this] { showPattern(); });
   }
 
-  void Controller::showPattern(Core::Api::Computation *c)
+  void Controller::showPattern()
   {
-    auto merged = m_core.getMergedPattern(c);
+    auto merged = m_core.getMergedPattern();
 
     for(size_t i = 0; i < 64; i++)
       m_ui.setStepButtonColor(i, merged[i] ? Ui::Midi::Color::Green : Ui::Midi::Color::White);

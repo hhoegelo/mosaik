@@ -5,11 +5,80 @@
 #include <dsp/api/control/Interface.h>
 #include <dsp/AudioKernel.h>
 #include <cmath>
+#include <cassert>
+#include <map>
 
 namespace Core
 {
   namespace Api
   {
+    struct ParamAccess
+    {
+      std::function<void(const ParameterValue &)> set;
+      std::function<ParameterValue()> get;
+      std::function<void(int steps)> inc;
+    };
+
+    ParamAccess buildAccess(Tools::ReactiveVar<float> &target, float min, float max, float stepFactor)
+    {
+      return { .set = [&target, min, max](const auto &v) { target = std::clamp(std::get<float>(v), min, max); },
+               .get = [&target]() -> ParameterValue { return target.get(); },
+               .inc = [&target, stepFactor, min, max](int steps)
+               { target = std::clamp(target.get() + stepFactor * static_cast<float>(steps), min, max); } };
+    }
+
+    ParamAccess buildAccess(Tools::ReactiveVar<bool> &target)
+    {
+      return { .set = [&target](const auto &v) { target = std::get<bool>(v); },
+               .get = [&target]() -> ParameterValue { return target.get(); },
+               .inc = [&target](int steps) { target = !target.get(); } };
+    }
+
+    ParamAccess buildExclusiveAccess(DataModel &model, Tools::ReactiveVar<bool> &target)
+    {
+      return { .set =
+                   [&target, &model](const auto &v)
+               {
+                 for(auto &tile : model.tiles)
+                 {
+                   auto lhs = &tile.selected;
+                   auto rhs = &target;
+                   tile.selected = lhs == rhs;
+                 }
+
+                 assert(std::count_if(model.tiles.begin(), model.tiles.end(), [](auto &t) { return t.selected.get(); })
+                        == 1);
+               },
+               .get = [&target]() -> ParameterValue { return target.get(); },
+               .inc = [&](int) {} };
+    }
+
+    template <typename T> ParamAccess buildAccessGetSet(Tools::ReactiveVar<T> &target)
+    {
+      return { .set = [&target](const auto &v) { target = std::get<T>(v); },
+               .get = [&target]() -> ParameterValue { return target.get(); },
+               .inc = [](int) {} };
+    }
+
+    template <typename Sanitizer>
+    ParamAccess buildAccess(Dsp::Api::Control::Interface &dsp, Tools::ReactiveVar<FramePos> &target,
+                            const Tools::ReactiveVar<std::filesystem::path> &sample, Sanitizer sanitizer)
+    {
+      return { .set =
+                   [&target, &dsp, &sample, sanitizer](const auto &v)
+               {
+                 target = std::get<FramePos>(v);
+                 sanitizer(dsp.getSamples(sample)->size());
+               },
+               .get = [&target]() -> ParameterValue { return target.get(); },
+               .inc =
+                   [&target, &dsp, &sample, sanitizer](int steps)
+               {
+                 target = target.get() + steps / 10;
+                 sanitizer(dsp.getSamples(sample)->size());
+               } };
+    }
+
     class Mosaik : public Interface
     {
      public:
@@ -17,94 +86,81 @@ namespace Core
           : m_model(model)
           , m_dsp(dsp)
       {
-        populateCache();
-        m_dsp.takeAudioKernel(newDspKernel(m_model));
+
+        m_access
+            = { { { TileId {}, ParameterId::GlobalVolume }, buildAccess(m_model.globals.volume, 0.0f, 1.0f, 0.001f) },
+                { { TileId {}, ParameterId::GlobalShuffle }, buildAccess(m_model.globals.shuffle, 0.0f, 1.0f, 0.001f) },
+                { { TileId {}, ParameterId::GlobalTempo }, buildAccess(m_model.globals.tempo, 20.0f, 240.0f, 0.1f) } };
+
+        for(auto c = 0; c < NUM_TILES; c++)
+        {
+          TileId id(c);
+          auto &src = m_model.tiles[id.value()];
+          m_access[{ id, ParameterId::SampleFile }] = buildAccessGetSet(src.sample);
+          m_access[{ id, ParameterId::Pattern }] = buildAccessGetSet(src.pattern);
+          m_access[{ id, ParameterId::Balance }] = buildAccess(src.balance, -1.0f, 1.0f, 0.02);
+          m_access[{ id, ParameterId::Gain }] = buildAccess(src.gain, 0.0f, 1.0f, 0.01);
+          m_access[{ id, ParameterId::Mute }] = buildAccess(src.muted);
+          m_access[{ id, ParameterId::Reverse }] = buildAccess(src.reverse);
+          m_access[{ id, ParameterId::Speed }] = buildAccess(src.speed, -1.0f, 1.0f, 0.02);
+          m_access[{ id, ParameterId::Selected }] = buildExclusiveAccess(m_model, src.selected);
+
+          m_access[{ id, ParameterId::EnvelopeFadeInPos }] = buildAccess(
+              m_dsp, src.envelopeFadeInPos, src.sample,
+              [&src](size_t sampleLength)
+              {
+                FadeParameterSanitizer::sanitizeFadeInPos(sampleLength, src.envelopeFadeInPos, src.envelopeFadeInLen,
+                                                          src.envelopeFadeOutPos, src.envelopeFadeOutLen);
+              });
+
+          m_access[{ id, ParameterId::EnvelopeFadeInLen }] = buildAccess(
+              m_dsp, src.envelopeFadeInLen, src.sample,
+              [&src](size_t sampleLength)
+              {
+                FadeParameterSanitizer::sanitizeFadeInLen(sampleLength, src.envelopeFadeInPos, src.envelopeFadeInLen,
+                                                          src.envelopeFadeOutPos, src.envelopeFadeOutLen);
+              });
+
+          m_access[{ id, ParameterId::EnvelopeFadeOutPos }] = buildAccess(
+              m_dsp, src.envelopeFadeOutPos, src.sample,
+              [&src](size_t sampleLength)
+              {
+                FadeParameterSanitizer::sanitizeFadeOutPos(sampleLength, src.envelopeFadeInPos, src.envelopeFadeInLen,
+                                                           src.envelopeFadeOutPos, src.envelopeFadeOutLen);
+              });
+
+          m_access[{ id, ParameterId::EnvelopeFadeOutLen }] = buildAccess(
+              m_dsp, src.envelopeFadeOutLen, src.sample,
+              [&src](size_t sampleLength)
+              {
+                FadeParameterSanitizer::sanitizeFadeOutLen(sampleLength, src.envelopeFadeInPos, src.envelopeFadeInLen,
+                                                           src.envelopeFadeOutPos, src.envelopeFadeOutLen);
+              });
+        }
       }
 
       ~Mosaik() override = default;
 
-      void populateCache()
-      {
-        commit({}, ParameterId::Unused, 0.0f);
-
-        // Globals
-        commit({}, ParameterId::GlobalTempo, m_model.globals.tempo);
-        commit({}, ParameterId::GlobalVolume, m_model.globals.volume);
-        commit({}, ParameterId::GlobalShuffle, m_model.globals.shuffle);
-
-        // Tiles
-        for(int i = 0; i < NUM_TILES; i++)
-        {
-          auto &src = m_model.tiles[i];
-          commit(i, ParameterId::SampleFile, src.sample);
-          commit(i, ParameterId::Pattern, src.pattern);
-          commit(i, ParameterId::Balance, src.balance);
-          commit(i, ParameterId::Gain, src.gain);
-          commit(i, ParameterId::Mute, src.muted);
-          commit(i, ParameterId::Reverse, src.reverse);
-          commit(i, ParameterId::Selected, src.selected);
-
-          commit(i, ParameterId::EnvelopeFadeInPos, src.envelopeFadeInPos);
-          commit(i, ParameterId::EnvelopeFadeInLen, src.envelopeFadeInLen);
-          commit(i, ParameterId::EnvelopeFadeOutPos, src.envelopeFadeOutPos);
-          commit(i, ParameterId::EnvelopeFadeOutLen, src.envelopeFadeOutLen);
-
-          commit(i, ParameterId::Speed, src.speed);
-        }
-      }
-
       void setParameter(TileId tileId, ParameterId parameterId, const ParameterValue &v) override
       {
-        if(!tileId)
-          commit(tileId, parameterId, setGlobalParameter(parameterId, v));
-        else
-          commit(tileId, parameterId, setTileParameter(m_model.tiles[tileId.value()], parameterId, v));
-
+        m_access.find({ tileId, parameterId })->second.set(v);
         m_dsp.takeAudioKernel(newDspKernel(m_model));
       }
 
       void incParameter(TileId tileId, ParameterId parameterId, int steps) override
       {
-        switch(parameterId)
-        {
-          case ParameterId::Unused:
-            break;
-
-          case ParameterId::GlobalTempo:
-            setParameter(tileId, parameterId,
-                         std::get<float>(getParameter(nullptr, tileId, parameterId)) + static_cast<float>(steps));
-            break;
-
-          case ParameterId::EnvelopeFadeInPos:
-          case ParameterId::EnvelopeFadeOutPos:
-          case ParameterId::EnvelopeFadeInLen:
-          case ParameterId::EnvelopeFadeOutLen:
-            setParameter(tileId, parameterId,
-                         std::get<FramePos>(getParameter(nullptr, tileId, parameterId)) + static_cast<FramePos>(steps));
-            break;
-
-          case ParameterId::GlobalVolume:
-          case ParameterId::GlobalShuffle:
-          case ParameterId::Gain:
-          case ParameterId::Balance:
-          case ParameterId::Speed:
-            setParameter(tileId, parameterId,
-                         std::get<float>(getParameter(nullptr, tileId, parameterId))
-                             + static_cast<float>(steps) / 100.0f);
-            break;
-
-          case ParameterId::Selected:
-          case ParameterId::SampleFile:
-          case ParameterId::Pattern:
-          case ParameterId::Mute:
-          case ParameterId::Reverse:
-            break;
-        }
+        m_access.find({ tileId, parameterId })->second.inc(steps);
+        m_dsp.takeAudioKernel(newDspKernel(m_model));
       }
 
-      Dsp::SharedSampleBuffer getSamples(Computation *computation, TileId tileId) const override
+      [[nodiscard]] ParameterValue getParameter(TileId tileId, ParameterId parameterId) const override
       {
-        return m_dsp.getSamples(get<std::filesystem::path>(getParameter(computation, tileId, ParameterId::SampleFile)));
+        return m_access.find({ tileId, parameterId })->second.get();
+      }
+
+      [[nodiscard]] Dsp::SharedSampleBuffer getSamples(TileId tileId) const override
+      {
+        return m_dsp.getSamples(get<std::filesystem::path>(getParameter(tileId, ParameterId::SampleFile)));
       }
 
       [[nodiscard]] Dsp::AudioKernel *newDspKernel(const DataModel &dataModel) const
@@ -140,7 +196,7 @@ namespace Core
 
         Dsp::FramePos pos = 0;
 
-        for(auto s : src.pattern)
+        for(auto s : src.pattern.get())
         {
           if(s)
           {
@@ -160,7 +216,7 @@ namespace Core
         }
 
         tgt.audio = m_dsp.getSamples(src.sample);
-        auto unbalancedGain = src.muted ? 0.f : src.gain;
+        auto unbalancedGain = src.muted.get() ? 0.f : src.gain;
         tgt.gainLeft = src.balance < 0 ? unbalancedGain : unbalancedGain * (1.0f - src.balance);
         tgt.gainRight = src.balance > 0 ? unbalancedGain : unbalancedGain * (1.0f + src.balance);
         tgt.playbackFrameIncrement = powf(2.0f, src.speed * 2);
@@ -189,104 +245,9 @@ namespace Core
         tgt.envelope[4] = { 0, 0, 0 };
       }
 
-      ParameterValue setGlobalParameter(const ParameterId &parameterId, const ParameterValue &v)
-      {
-        switch(parameterId)
-        {
-          case ParameterId::GlobalVolume:
-            m_model.globals.volume = std::clamp(std::get<Float>(v), 0.f, 1.f);
-            return m_model.globals.volume;
-
-          case ParameterId::GlobalShuffle:
-            m_model.globals.shuffle = std::clamp(std::get<Float>(v), 0.f, 1.f);
-            return m_model.globals.shuffle;
-
-          case ParameterId::GlobalTempo:
-            m_model.globals.tempo = std::clamp(std::get<Float>(v), 20.f, 240.f);
-            return m_model.globals.tempo;
-
-          default:
-            throw std::runtime_error("unhandled global parameter");
-        }
-      }
-
-      ParameterValue setTileParameter(DataModel::Tile &tile, const ParameterId &parameterId, const ParameterValue &v)
-      {
-        switch(parameterId)
-        {
-          case ParameterId::SampleFile:
-            tile.sample = std::get<Path>(v);
-            return tile.sample;
-
-          case ParameterId::Pattern:
-            tile.pattern = std::get<Pattern>(v);
-            return tile.pattern;
-
-          case ParameterId::Balance:
-            tile.balance = std::clamp(std::get<Float>(v), -1.0f, 1.0f);
-            return tile.balance;
-
-          case ParameterId::Gain:
-            tile.gain = std::clamp(std::get<Float>(v), 0.0f, 1.0f);
-            return tile.gain;
-
-          case ParameterId::Mute:
-            tile.muted = std::get<Bool>(v);
-            return tile.muted;
-
-          case ParameterId::Reverse:
-            tile.reverse = std::get<Bool>(v);
-            return tile.reverse;
-
-          case ParameterId::Speed:
-            tile.speed = std::clamp(std::get<Float>(v), -1.0f, 1.0f);
-            return tile.speed;
-
-          case ParameterId::Selected:
-            for(auto c = 0; c < NUM_TILES; c++)
-            {
-              auto &src = m_model.tiles[c];
-              src.selected = (src.id == tile.id);
-              commit(src.id, ParameterId::Selected, src.selected);
-            }
-            return true;
-
-          case ParameterId::EnvelopeFadeInPos:
-            tile.envelopeFadeInPos = std::get<FramePos>(v);
-            FadeParameterSanitizer::sanitizeFadeInPos(m_dsp.getSamples(tile.sample)->size(), tile.envelopeFadeInPos,
-                                                      tile.envelopeFadeInLen, tile.envelopeFadeOutPos,
-                                                      tile.envelopeFadeOutLen);
-            return tile.envelopeFadeInPos;
-
-          case ParameterId::EnvelopeFadeInLen:
-            tile.envelopeFadeInLen = std::get<FramePos>(v);
-            FadeParameterSanitizer::sanitizeFadeInLen(m_dsp.getSamples(tile.sample)->size(), tile.envelopeFadeInPos,
-                                                      tile.envelopeFadeInLen, tile.envelopeFadeOutPos,
-                                                      tile.envelopeFadeOutLen);
-
-            return tile.envelopeFadeInLen;
-
-          case ParameterId::EnvelopeFadeOutPos:
-            tile.envelopeFadeOutPos = std::get<FramePos>(v);
-            FadeParameterSanitizer::sanitizeFadeOutPos(m_dsp.getSamples(tile.sample)->size(), tile.envelopeFadeInPos,
-                                                       tile.envelopeFadeInLen, tile.envelopeFadeOutPos,
-                                                       tile.envelopeFadeOutLen);
-            return tile.envelopeFadeOutPos;
-
-          case ParameterId::EnvelopeFadeOutLen:
-            tile.envelopeFadeOutLen = std::get<FramePos>(v);
-            FadeParameterSanitizer::sanitizeFadeOutLen(m_dsp.getSamples(tile.sample)->size(), tile.envelopeFadeInPos,
-                                                       tile.envelopeFadeInLen, tile.envelopeFadeOutPos,
-                                                       tile.envelopeFadeOutLen);
-            return tile.envelopeFadeOutLen;
-
-          default:
-            throw std::runtime_error("unhandled tile parameter");
-        }
-      }
-
      private:
       DataModel &m_model;
+      std::map<std::tuple<TileId, ParameterId>, ParamAccess> m_access;
       Dsp::Api::Control::Interface &m_dsp;
     };
   }

@@ -1,8 +1,8 @@
 #pragma once
 
+#include <tools/ReactiveVar.h>
 #include <core/Types.h>
 #include <gtkmm/grid.h>
-#include "tools/SignalSlot.h"
 
 namespace Gtk
 {
@@ -26,7 +26,7 @@ namespace Ui::Touch
     Gtk::LevelBar *buildLevel(Core::ParameterId id, double min, double max);
 
     Core::Api::Interface &m_core;
-    std::vector<Tools::Signals::Connection> m_connections;
+    Tools::DeferredComputations m_computations;
   };
 
 }

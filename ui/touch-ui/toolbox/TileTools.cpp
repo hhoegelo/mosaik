@@ -11,12 +11,13 @@ namespace Ui::Touch
   TileTools::TileTools(Core::Api::Interface &core)
       : Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL)
       , m_core(core)
+      , m_computations(Glib::MainContext::get_default())
   {
     m_fileBrowser = Gtk::manage(new Gtk::FileChooserWidget(Gtk::FILE_CHOOSER_ACTION_OPEN));
     m_fileBrowser->signal_file_activated().connect(
         [this]
         {
-          for(auto tileId : m_core.getSelectedTiles(nullptr))
+          for(auto tileId : m_core.getSelectedTiles())
             m_core.setParameter(tileId, Core::ParameterId::SampleFile, m_fileBrowser->get_filename());
         });
 
@@ -71,9 +72,9 @@ namespace Ui::Touch
     controls->attach(*fadeOutPos, 1, 3, 1, 1);
     controls->attach(*fadeOutLen, 3, 3, 1, 1);
 
-    m_computations.add([this, gainLevel](auto p) { updateTileGain(p, gainLevel); });
-    m_computations.add([this, speedLevel](auto p) { updateTileSpeed(p, speedLevel); });
-    m_computations.add([this, balanceLevel](auto p) { updateTileBalance(p, balanceLevel); });
+    m_computations.add([this, gainLevel] { updateTileGain(gainLevel); });
+    m_computations.add([this, speedLevel] { updateTileSpeed(speedLevel); });
+    m_computations.add([this, balanceLevel] { updateTileBalance(balanceLevel); });
 
     pack_start(*controls);
   }
@@ -84,18 +85,18 @@ namespace Ui::Touch
       m_fileBrowser->set_current_folder_uri(m_lastSelectedFolder.value());
   }
 
-  void TileTools::updateTileGain(Core::Api::Computation *c, Gtk::LevelBar *level)
+  void TileTools::updateTileGain(Gtk::LevelBar *level)
   {
-    level->set_value(std::get<float>(m_core.getFirstSelectedTileParameter(c, Core::ParameterId::Gain)));
+    level->set_value(std::get<float>(m_core.getFirstSelectedTileParameter(Core::ParameterId::Gain)));
   }
 
-  void TileTools::updateTileSpeed(Core::Api::Computation *c, Gtk::LevelBar *level)
+  void TileTools::updateTileSpeed(Gtk::LevelBar *level)
   {
-    level->set_value(std::get<float>(m_core.getFirstSelectedTileParameter(c, Core::ParameterId::Speed)));
+    level->set_value(std::get<float>(m_core.getFirstSelectedTileParameter(Core::ParameterId::Speed)));
   }
 
-  void TileTools::updateTileBalance(Core::Api::Computation *c, Gtk::LevelBar *level)
+  void TileTools::updateTileBalance(Gtk::LevelBar *level)
   {
-    level->set_value(std::get<float>(m_core.getFirstSelectedTileParameter(c, Core::ParameterId::Balance)));
+    level->set_value(std::get<float>(m_core.getFirstSelectedTileParameter(Core::ParameterId::Balance)));
   }
 }

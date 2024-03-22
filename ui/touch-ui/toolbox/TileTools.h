@@ -1,8 +1,7 @@
 #pragma once
 
-#include "tools/SignalSlot.h"
-#include "core/api/Interface.h"
-
+#include <core/api/Interface.h>
+#include <tools/ReactiveVar.h>
 #include <gtkmm/box.h>
 #include <optional>
 
@@ -27,14 +26,14 @@ namespace Ui::Touch
     void onToolShown();
 
    private:
-    void updateTileGain(Core::Api::Computation *c, Gtk::LevelBar *level);
-    void updateTileSpeed(Core::Api::Computation *c, Gtk::LevelBar *level);
-    void updateTileBalance(Core::Api::Computation *c, Gtk::LevelBar *level);
+    void updateTileGain(Gtk::LevelBar *level);
+    void updateTileSpeed(Gtk::LevelBar *level);
+    void updateTileBalance(Gtk::LevelBar *level);
 
     Core::Api::Interface &m_core;
 
     Gtk::FileChooserWidget *m_fileBrowser;
     std::optional<std::string> m_lastSelectedFolder;
-    Core::Api::Computations m_computations;
+    Tools::DeferredComputations m_computations;
   };
 }

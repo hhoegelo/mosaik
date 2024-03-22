@@ -1,7 +1,6 @@
 #pragma once
 
 #include <gtkmm/notebook.h>
-#include "tools/SignalSlot.h"
 
 namespace Core::Api
 {
@@ -21,7 +20,6 @@ namespace Ui
 
      private:
       Core::Api::Interface &m_core;
-      Tools::Signals::Connection m_selectedPageConnection;
     };
   }
 }

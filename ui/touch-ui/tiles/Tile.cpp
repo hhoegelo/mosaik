@@ -1,12 +1,10 @@
 #include "Tile.h"
 #include "core/api/Interface.h"
 #include "dsp/api/display/Interface.h"
-#include "ui/touch-ui/controls/FloatScaleButton.h"
-#include "ui/touch-ui/controls/Checkbox.h"
-#include "ui/touch-ui/controls/Label.h"
 #include "dsp/api/control/Interface.h"
 #include <gtkmm/filechooserdialog.h>
 #include <gtkmm/grid.h>
+#include <gtkmm/label.h>
 #include <glibmm/main.h>
 #include <gtkmm/scale.h>
 #include <gtkmm/drawingarea.h>
@@ -34,6 +32,7 @@ namespace Ui::Touch
 
   Tile::Tile(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Core::TileId tileId)
       : Gtk::Grid()
+      , m_computations(Glib::MainContext::get_default())
   {
     get_style_context()->add_class("tile");
 
@@ -67,37 +66,36 @@ namespace Ui::Touch
     attach(*steps, 2, 4, 2, 1);
 
     m_computations.add(
-        [&core, tileId, hasSteps](auto c)
+        [&core, tileId, hasSteps]()
         {
           constexpr auto hasStepsClass = "has-steps";
           auto styles = hasSteps->get_style_context();
           hasSteps->get_style_context()->add_class("has-steps-indicator");
-          auto pattern = std::get<Core::Pattern>(core.getParameter(c, tileId, Core::ParameterId::Pattern));
+          auto pattern = std::get<Core::Pattern>(core.getParameter(tileId, Core::ParameterId::Pattern));
           bool anyStepSet = std::any_of(pattern.begin(), pattern.end(), [](auto step) { return step; });
           anyStepSet ? styles->add_class(hasStepsClass) : styles->remove_class(hasStepsClass);
         });
 
     m_computations.add(
-        [&core, tileId, reverse](auto c) {
-          reverse->set_label(std::get<bool>(core.getParameter(c, tileId, Core::ParameterId::Reverse)) ? " < " : " > ");
-        });
+        [&core, tileId, reverse]()
+        { reverse->set_label(std::get<bool>(core.getParameter(tileId, Core::ParameterId::Reverse)) ? " < " : " > "); });
 
-    m_computations.add([&core, tileId, volume](auto c)
-                       { volume->set_value(std::get<float>(core.getParameter(c, tileId, Core::ParameterId::Gain))); });
+    m_computations.add([&core, tileId, volume]()
+                       { volume->set_value(std::get<float>(core.getParameter(tileId, Core::ParameterId::Gain))); });
 
     m_computations.add(
-        [&core, tileId, this](auto c)
+        [&core, tileId, this]()
         {
-          if(std::get<bool>(core.getParameter(c, tileId, Core::ParameterId::Selected)))
+          if(std::get<bool>(core.getParameter(tileId, Core::ParameterId::Selected)))
             get_style_context()->add_class("selected");
           else
             get_style_context()->remove_class("selected");
         });
 
     m_computations.add(
-        [&core, tileId, waveform](auto c)
+        [&core, tileId, waveform]()
         {
-          core.getParameter(c, tileId, Core::ParameterId::SampleFile);
+          core.getParameter(tileId, Core::ParameterId::SampleFile);
           waveform->queue_draw();
         });
 
@@ -116,7 +114,7 @@ namespace Ui::Touch
         {
           ctx->set_line_width(1);
 
-          auto samples = core.getSamples(nullptr, tileId);
+          auto samples = core.getSamples(tileId);
           auto w = wf->get_width();
           auto h = wf->get_height();
           auto adv = std::max<double>(1, samples.get()->size() / static_cast<double>(w));
