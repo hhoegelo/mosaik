@@ -9,7 +9,10 @@ add_library(mosaik-midiui STATIC Ui.cpp DebugUI.cpp
         Controller.h
         Interface.cpp
         Erp.cpp
-        Erp.h)
+        Erp.h
+        Types.h
+        MidiEventDispatcher.cpp
+        MidiEventDispatcher.h)
 
 target_include_directories(mosaik-midiui PRIVATE ${CMAKE_SOURCE_DIR} ${LIBS_INCLUDE_DIRS})
 target_link_libraries(mosaik-midiui mosaik-core mosaik-midi ${LIBS_LIBRARIES})

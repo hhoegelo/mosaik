@@ -1,7 +1,7 @@
 
 #include <algorithm>
 #include "Monitor.h"
-#include "AlsaIn.h"
+#include "Alsa.h"
 
 namespace Midi
 {
@@ -24,13 +24,13 @@ namespace Midi
 
       if(sub == 0 && sub_name[0] == '\0')
       {
-        snprintf(txt, 1024, "hw:%d:%d", card, device);
+        snprintf(txt, 1024, "hw:%d,%d", card, device);
         target.insert(txt);
         break;
       }
       else
       {
-        snprintf(txt, 1024, "hw:%d:%d:%d", card, device, sub);
+        snprintf(txt, 1024, "hw:%d,%d,%d", card, device, sub);
         target.insert(txt);
       }
     }

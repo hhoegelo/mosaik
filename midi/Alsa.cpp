@@ -1,6 +1,7 @@
-#include "AlsaIn.h"
+#include "Alsa.h"
 #include <alsa/asoundlib.h>
 #include <iostream>
+#include <utility>
 #include <glibmm/main.h>
 #include <giomm/unixinputstream.h>
 
@@ -11,13 +12,13 @@
 namespace Midi
 {
 
-  AlsaIn::AlsaIn(const std::string &device, const Callback &cb)
-      : m_cb(cb)
+  Alsa::Alsa(const std::string &device, Callback cb)
+      : m_cb(std::move(cb))
   {
-    checkAlsa(snd_rawmidi_open(&m_device, nullptr, device.c_str(), SND_RAWMIDI_NONBLOCK));
+    checkAlsa(snd_rawmidi_open(&m_input, &m_output, device.c_str(), SND_RAWMIDI_NONBLOCK));
 
     pollfd polls[1];
-    snd_rawmidi_poll_descriptors(m_device, polls, 1);
+    snd_rawmidi_poll_descriptors(m_input, polls, 1);
 
     auto channel = g_io_channel_unix_new(polls[0].fd);
 
@@ -27,10 +28,10 @@ namespace Midi
         {
           if(condition & G_IO_IN)
           {
-            auto pThis = static_cast<AlsaIn *>(data);
+            auto pThis = static_cast<Alsa *>(data);
             MidiEvent event;
 
-            if(snd_rawmidi_read(pThis->m_device, event.begin(), event.size()) == 3)
+            if(snd_rawmidi_read(pThis->m_input, event.begin(), event.size()) == 3)
               pThis->m_cb(event);
           }
 
@@ -40,10 +41,19 @@ namespace Midi
     g_io_channel_unref(channel);
   }
 
-  AlsaIn::~AlsaIn()
+  Alsa::~Alsa()
   {
     g_source_remove(m_id);
-    snd_rawmidi_close(m_device);
+    snd_rawmidi_close(m_input);
+    snd_rawmidi_close(m_output);
+  }
+
+  void Alsa::send(const Alsa::MidiEvent &event)
+  {
+    if(m_output)
+    {
+      snd_rawmidi_write(m_output, event.data(), event.size());
+    }
   }
 
 }

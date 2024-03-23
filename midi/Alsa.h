@@ -6,17 +6,20 @@
 
 namespace Midi
 {
-  class AlsaIn
+  class Alsa
   {
    public:
     using MidiEvent = std::array<uint8_t, 3>;
     using Callback = std::function<void(const MidiEvent &)>;
 
-    AlsaIn(const std::string &device, const Callback &cb);
-    ~AlsaIn();
+    Alsa(const std::string &device, Callback cb);
+    ~Alsa();
+
+    void send(const MidiEvent &event);
 
    private:
-    snd_rawmidi_t *m_device = nullptr;
+    snd_rawmidi_t *m_input = nullptr;
+    snd_rawmidi_t *m_output = nullptr;
     unsigned int m_id = -1;
     Callback m_cb;
   };

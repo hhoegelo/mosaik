@@ -94,11 +94,10 @@ namespace Ui::Midi
     btn->set_name("step-" + std::to_string(i));
 
     btn->signal_clicked().connect(
-        [this, btn, i]
+        [this, i]
         {
-          auto merged = m_core.getMergedPattern();
-          auto state = merged[i];
-          m_core.setStep(i, !state);
+          m_ctrl->onStepButtonEvent(i, ButtonEvent::Press);
+          m_ctrl->onStepButtonEvent(i, ButtonEvent::Release);
         });
 
     return btn;
@@ -116,8 +115,8 @@ namespace Ui::Midi
   {
     auto btn = Gtk::manage(new Gtk::Button("B"));
     btn->set_name(getSoftButtonName(button));
-    btn->signal_pressed().connect([this, button] { m_ctrl->onButtonEvent(button, ButtonEvent::Press); });
-    btn->signal_released().connect([this, button] { m_ctrl->onButtonEvent(button, ButtonEvent::Release); });
+    btn->signal_pressed().connect([this, button] { m_ctrl->onSoftButtonEvent(button, ButtonEvent::Press); });
+    btn->signal_released().connect([this, button] { m_ctrl->onSoftButtonEvent(button, ButtonEvent::Release); });
     return btn;
   }
 
@@ -131,21 +130,6 @@ namespace Ui::Midi
   {
     auto name = "step-" + std::to_string(step);
     setColor(name, c);
-  }
-
-  void DebugUI::onSoftButtonEvent(std::function<void(SoftButton, ButtonEvent)> cb)
-  {
-    m_onSoftButtonEvent = cb;
-  }
-
-  void DebugUI::onStepButtonEvent(std::function<void(Step, ButtonEvent)> cb)
-  {
-    m_onStepButtonEvent = cb;
-  }
-
-  void DebugUI::onKnobEvent(std::function<void(Knob, int)> cb)
-  {
-    m_onKnobEvent = cb;
   }
 
   const Gtk::Widget* DebugUI::findChild(const std::string& name)

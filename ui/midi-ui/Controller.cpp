@@ -50,7 +50,7 @@ namespace Ui::Midi
       it->second(inc);
   }
 
-  void Controller::onButtonEvent(SoftButton b, ButtonEvent e)
+  void Controller::onSoftButtonEvent(SoftButton b, ButtonEvent e)
   {
     if(auto it = m_inputMapping.buttons.find(b); it != m_inputMapping.buttons.end())
       it->second(e);
@@ -115,6 +115,16 @@ namespace Ui::Midi
       },
       .buttons = {},
     };
+  }
+
+  void Controller::onStepButtonEvent(Step b, ButtonEvent e)
+  {
+    if(e == ButtonEvent::Press)
+    {
+      auto merged = m_core.getMergedPattern();
+      auto state = merged[b];
+      m_core.setStep(b, !state);
+    }
   }
 
 }

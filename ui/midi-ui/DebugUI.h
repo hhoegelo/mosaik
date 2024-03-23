@@ -32,9 +32,6 @@ namespace Ui
      private:
       void setSoftButtonColor(SoftButton button, Color c) override;
       void setStepButtonColor(Step step, Color c) override;
-      void onSoftButtonEvent(std::function<void(SoftButton, ButtonEvent)> cb) override;
-      void onStepButtonEvent(std::function<void(Step step, ButtonEvent)> cb) override;
-      void onKnobEvent(std::function<void(Knob knob, int increments)> cb) override;
       void highlightCurrentStep(Step oldStep, Step newStep) override;
 
       void setColor(const std::string &widgetName, Color c);
@@ -46,9 +43,6 @@ namespace Ui
       Core::Api::Interface &m_core;
       std::unique_ptr<Controller> m_ctrl;
 
-      std::function<void(SoftButton, ButtonEvent)> m_onSoftButtonEvent;
-      std::function<void(Step, ButtonEvent)> m_onStepButtonEvent;
-      std::function<void(Knob, int)> m_onKnobEvent;
       const Widget *findChild(const std::string &name);
     };
   }

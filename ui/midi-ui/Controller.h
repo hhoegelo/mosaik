@@ -33,7 +33,8 @@ namespace Ui
       void kickOff();
 
       void onErpInc(Knob k, int inc);
-      void onButtonEvent(SoftButton b, ButtonEvent e);
+      void onSoftButtonEvent(SoftButton b, ButtonEvent e);
+      void onStepButtonEvent(Step b, ButtonEvent e);
 
      private:
       void showPattern();
