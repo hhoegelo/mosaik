@@ -8,23 +8,23 @@ namespace Ui::Midi
   enum class SoftButton
   {
     // have to agree on numbers here for the translation from midi events to work properly
-    Left_NorthWest,
-    Left_North,
-    Left_East,
+    Left_NorthWest = 64,
+    Left_North = 65,
+    Left_East = 68,
     Left_South = 70,
     Left_SouthEast = 71,
-    Left_SouthWest,
-    Left_West,
-    Left_Center,
+    Left_SouthWest = 69,
+    Left_West = 66,
+    Left_Center = 67,
 
-    Right_North,
-    Right_NorthEast,
-    Right_East,
-    Right_SouthEast,
-    Right_South,
+    Right_North = 96,
+    Right_NorthEast = 97,
+    Right_East = 100,
+    Right_SouthEast = 103,
+    Right_South = 102,
     Right_SouthWest = 101,
-    Right_West = 102,
-    Right_Center,
+    Right_West = 98,
+    Right_Center = 99,
 
     // Knobs are Buttons, too
     Leftmost = 88,
