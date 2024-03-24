@@ -35,6 +35,9 @@ namespace Ui::Midi
 
   Ui::~Ui()
   {
+    for(auto &a : m_inputDevices)
+      a.second->send({ 0x97, 0, 0 });
+
     m_timer.disconnect();
   }
 

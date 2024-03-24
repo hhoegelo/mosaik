@@ -1,6 +1,7 @@
 
 #include "GlobalTools.h"
 #include <core/api/Interface.h>
+#include <core/Types.h>
 
 #include <gtkmm/box.h>
 #include <gtkmm/label.h>
@@ -15,7 +16,7 @@ namespace Ui::Touch
   {
     auto volBox = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
     volBox->add(*Gtk::manage(new Gtk::Label("Volume")));
-    volBox->add(*buildLevel(Core::ParameterId::GlobalVolume, 0.0, 1.0));
+    volBox->add(*buildLevel(Core::ParameterId::GlobalVolume, Core::c_silenceDB, Core::c_maxDB));
 
     auto tempoBox = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
     tempoBox->add(*Gtk::manage(new Gtk::Label("Tempo")));
@@ -48,11 +49,11 @@ namespace Ui::Touch
   Gtk::LevelBar *GlobalTools::buildLevel(Core::ParameterId id, double min, double max)
   {
     auto level = Gtk::manage(new Gtk::LevelBar());
-    level->set_min_value(min);
-    level->set_max_value(max);
+    level->set_min_value(0);
+    level->set_max_value(max - min);
 
     if(id != Core::ParameterId::Unused)
-      m_computations.add([this, id, level] { level->set_value(get<float>(m_core.getParameter({}, id))); });
+      m_computations.add([this, id, level, min] { level->set_value(get<float>(m_core.getParameter({}, id)) - min); });
 
     return level;
   }

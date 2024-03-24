@@ -16,6 +16,6 @@ add_library(${PROJECT_NAME} STATIC
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS_LIBRARIES})
-target_include_directories(${PROJECT_NAME} PRIVATE ${LIBS_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PRIVATE mosaik-tools ${LIBS_INCLUDE_DIRS})
 
 

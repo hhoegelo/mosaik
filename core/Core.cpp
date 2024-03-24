@@ -87,7 +87,8 @@ namespace Core
           , m_dsp(dsp)
       {
         m_access
-            = { { { TileId {}, ParameterId::GlobalVolume }, buildAccess(m_model.globals.volume, 0.0f, 1.0f, 0.001f) },
+            = { { { TileId {}, ParameterId::GlobalVolume },
+                  buildAccess(m_model.globals.volume, c_silenceDB, c_maxDB, 1.f) },
                 { { TileId {}, ParameterId::GlobalShuffle }, buildAccess(m_model.globals.shuffle, 0.0f, 1.0f, 0.001f) },
                 { { TileId {}, ParameterId::GlobalTempo }, buildAccess(m_model.globals.tempo, 20.0f, 240.0f, 0.1f) } };
 
@@ -98,7 +99,7 @@ namespace Core
           m_access[{ id, ParameterId::SampleFile }] = buildAccessGetSet(src.sample);
           m_access[{ id, ParameterId::Pattern }] = buildAccessGetSet(src.pattern);
           m_access[{ id, ParameterId::Balance }] = buildAccess(src.balance, -1.0f, 1.0f, 0.02);
-          m_access[{ id, ParameterId::Gain }] = buildAccess(src.gain, 0.0f, 1.0f, 0.01);
+          m_access[{ id, ParameterId::Gain }] = buildAccess(src.gain, c_silenceDB, c_maxDB, 1.f);
           m_access[{ id, ParameterId::Mute }] = buildAccess(src.muted);
           m_access[{ id, ParameterId::Reverse }] = buildAccess(src.reverse);
           m_access[{ id, ParameterId::Speed }] = buildAccess(src.speed, -1.0f, 1.0f, 0.02);
@@ -186,7 +187,7 @@ namespace Core
 
         target->framesPer16th = numFramesPerMinute / num16thPerMinute;
         target->framesPerLoop = target->framesPer16th * NUM_STEPS;
-        target->volume = source.globals.volume;
+        target->volume_dB = source.globals.volume;
       }
 
       void translateTile(const DataModel &dataModel, Dsp::AudioKernel::Tile &tgt, const DataModel::Tile &src) const
@@ -217,9 +218,9 @@ namespace Core
         }
 
         tgt.audio = m_dsp.getSamples(src.sample);
-        auto unbalancedGain = src.muted.get() ? 0.f : src.gain;
-        tgt.gainLeft = src.balance < 0 ? unbalancedGain : unbalancedGain * (1.0f - src.balance);
-        tgt.gainRight = src.balance > 0 ? unbalancedGain : unbalancedGain * (1.0f + src.balance);
+        tgt.mute = src.muted;
+        tgt.balance = src.balance;
+        tgt.gain_dB = src.gain;
         tgt.playbackFrameIncrement = powf(2.0f, src.speed * 2);
         tgt.reverse = src.reverse;
 
@@ -229,21 +230,21 @@ namespace Core
         { return startY - calcM(startY, endY, l) * static_cast<float>(p); };
 
         // faded-out section
-        tgt.envelope[0] = { src.envelopeFadeOutPos + src.envelopeFadeOutLen, 0, 0 };
+        tgt.envelope[0] = { src.envelopeFadeOutPos + src.envelopeFadeOutLen, c_zeroDB, c_silenceDB };
 
         // fade-out section
-        tgt.envelope[1] = { src.envelopeFadeOutPos, calcM(1.0f, 0.0f, src.envelopeFadeOutLen),
-                            calcB(1.0f, 0.0f, src.envelopeFadeOutPos, src.envelopeFadeOutLen) };
+        tgt.envelope[1] = { src.envelopeFadeOutPos, calcM(c_zeroDB, c_silenceDB, src.envelopeFadeOutLen),
+                            calcB(c_zeroDB, c_silenceDB, src.envelopeFadeOutPos, src.envelopeFadeOutLen) };
 
         // faded-in section
-        tgt.envelope[2] = { src.envelopeFadeInPos + src.envelopeFadeInLen, 0.0f, 1.0f };
+        tgt.envelope[2] = { src.envelopeFadeInPos + src.envelopeFadeInLen, 0.0f, c_zeroDB };
 
         // fade-in section
-        tgt.envelope[3] = { src.envelopeFadeInPos, calcM(0.0f, 1.0f, src.envelopeFadeInLen),
-                            calcB(0.0f, 1.0f, src.envelopeFadeInPos, src.envelopeFadeInLen) };
+        tgt.envelope[3] = { src.envelopeFadeInPos, calcM(c_silenceDB, c_zeroDB, src.envelopeFadeInLen),
+                            calcB(c_silenceDB, c_zeroDB, src.envelopeFadeInPos, src.envelopeFadeInLen) };
 
         // pre fade-in section
-        tgt.envelope[4] = { 0, 0, 0 };
+        tgt.envelope[4] = { 0, 0, c_silenceDB };
       }
 
      private:

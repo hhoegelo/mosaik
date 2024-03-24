@@ -10,7 +10,7 @@ namespace Dsp
 {
   struct AudioKernel
   {
-    float volume = 0.0;
+    float volume_dB = 0.0;
     FramePos framesPer16th = 1;
     FramePos framesPerLoop = 1;
 
@@ -18,8 +18,10 @@ namespace Dsp
     {
       SharedSampleBuffer audio { std::make_shared<SampleBuffer>() };
       std::vector<uint64_t> triggers;  // sample positions where to (re-)start the sample
-      float gainLeft { 0.0f };
-      float gainRight { 0.0f };
+
+      float balance;  // -1 ... 1
+      float gain_dB;
+      bool mute;
 
       bool reverse = false;
       float playbackFrameIncrement { 0 };

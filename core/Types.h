@@ -1,5 +1,6 @@
 #pragma once
 
+#include <dsp/Types.h>
 #include <filesystem>
 #include <variant>
 #include <optional>
@@ -7,6 +8,10 @@
 
 namespace Core
 {
+  constexpr auto c_silenceDB = Dsp::c_silenceDB;
+  constexpr auto c_zeroDB = Dsp::c_zeroDB;
+  constexpr auto c_maxDB = Dsp::c_maxDB;
+
   enum class ParameterId
   {
     Unused,

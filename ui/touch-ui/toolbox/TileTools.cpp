@@ -1,5 +1,6 @@
 #include "TileTools.h"
 #include <core/api/Interface.h>
+#include <core/Types.h>
 
 #include <gtkmm/filechooserwidget.h>
 #include <gtkmm/grid.h>
@@ -34,7 +35,7 @@ namespace Ui::Touch
     gain->add(*Gtk::manage(new Gtk::Label("Gain")));
     auto gainLevel = Gtk::manage(new Gtk::LevelBar());
     gainLevel->set_min_value(0);
-    gainLevel->set_max_value(1.0);
+    gainLevel->set_max_value(Core::c_maxDB - Core::c_silenceDB);
     gain->add(*gainLevel);
 
     auto speed = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
@@ -67,7 +68,8 @@ namespace Ui::Touch
 
   void TileTools::updateTileGain(Gtk::LevelBar *level)
   {
-    level->set_value(std::get<float>(m_core.getFirstSelectedTileParameter(Core::ParameterId::Gain)));
+    level->set_value(std::get<float>(m_core.getFirstSelectedTileParameter(Core::ParameterId::Gain))
+                     - Core::c_silenceDB);
   }
 
   void TileTools::updateTileSpeed(Gtk::LevelBar *level)

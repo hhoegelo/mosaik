@@ -1,5 +1,6 @@
 #include "Dsp.h"
 #include <dsp/Types.h>
+#include <tools/Math.h>
 #include "api/control/Interface.h"
 #include "api/display/Interface.h"
 #include "api/realtime/Interface.h"
@@ -12,6 +13,7 @@
 
 namespace Dsp
 {
+
   struct Dsp::Impl
   {
     Impl()
@@ -83,9 +85,11 @@ namespace Dsp
     for(auto c = 0; c < NUM_TILES; c++)
       frame = frame + tiles[c].doAudio(kernel->tiles[c], toUi.tiles[c], currentLoopPosition);
 
-    volume += std::clamp(kernel->volume - volume, -maxVolStep, maxVolStep);
+    volume
+        += std::clamp(::Tools::dBToFactor<c_silenceDB, c_maxDB>(kernel->volume_dB) - volume, -maxVolStep, maxVolStep);
 
-    return frame * volume;
+    auto shape = [&](float in) { return 1 / 1.6f * std::atan(1 * in * volume); };
+    return { shape(frame.left), shape(frame.right) };
   }
 
   StereoFrame Dsp::Impl::Tile::doAudio(AudioKernel::Tile &kernel, Dsp::Impl::ToUi::Tile &ui,
@@ -110,13 +114,17 @@ namespace Dsp
     }
 
     constexpr auto maxVolStep = 10000.0f / SAMPLERATE;
-    gainLeft += std::clamp(kernel.gainLeft - gainLeft, -maxVolStep, maxVolStep);
-    gainRight += std::clamp(kernel.gainRight - gainRight, -maxVolStep, maxVolStep);
 
-    auto env = doEnvelope(kernel, iFramePos);
+    auto target_dB = kernel.mute ? c_silenceDB : kernel.gain_dB + doEnvelope(kernel, iFramePos);
+    auto targetGain = ::Tools::dBToFactor<c_silenceDB, c_maxDB>(target_dB);
+    auto targetGainLeft = (kernel.balance < 0) ? targetGain : targetGain * (1.0f - kernel.balance);
+    auto targetGainRight = (kernel.balance > 0) ? targetGain : targetGain * (1.0f + kernel.balance);
 
-    result.left *= gainLeft * env;
-    result.right *= gainRight * env;
+    gainLeft += std::clamp(targetGainLeft - gainLeft, -maxVolStep, maxVolStep);
+    gainRight += std::clamp(targetGainRight - gainRight, -maxVolStep, maxVolStep);
+
+    result.left *= gainLeft;
+    result.right *= gainRight;
 
     ui.currentLevel = std::max({ ui.currentLevel, std::abs(result.left), std::abs(result.right) });
     framePosition += framePosition != invalidFramePosF32 ? kernel.playbackFrameIncrement : 0;
@@ -135,7 +143,7 @@ namespace Dsp
         }
       }
     }
-    return 0;
+    return c_silenceDB;
   }
 
   namespace Api

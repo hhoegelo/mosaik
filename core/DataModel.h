@@ -1,7 +1,6 @@
 #pragma once
 
 #include <tools/ReactiveVar.h>
-
 #include <core/Types.h>
 #include <cstdint>
 #include <filesystem>
@@ -10,6 +9,7 @@
 
 namespace Core
 {
+
   struct DataModel
   {
     explicit DataModel(std::filesystem::path f);
@@ -22,7 +22,7 @@ namespace Core
 
       Tools::ReactiveVar<std::filesystem::path> sample { "" };
       Tools::ReactiveVar<std::array<bool, NUM_STEPS>> pattern { {} };
-      Tools::ReactiveVar<float> gain { 1.f };
+      Tools::ReactiveVar<float> gain { 0.f };  // c_silenceDB dB .. c_maxDB dB
       Tools::ReactiveVar<float> balance { 0.f };
       Tools::ReactiveVar<bool> muted { false };
       Tools::ReactiveVar<bool> reverse { false };
@@ -39,7 +39,7 @@ namespace Core
     struct Globals
     {
       Tools::ReactiveVar<float> tempo { 120.f };
-      Tools::ReactiveVar<float> volume { 1.f };
+      Tools::ReactiveVar<float> volume { 0 };  // c_silenceDB dB .. c_maxDB dB
       Tools::ReactiveVar<float> shuffle { 0.5f };
     };
 
