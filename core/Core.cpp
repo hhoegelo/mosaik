@@ -74,7 +74,7 @@ namespace Core
                .inc =
                    [&target, &dsp, &sample, sanitizer](int steps)
                {
-                 target = target.get() + steps / 10;
+                 target = target.get() + steps;
                  sanitizer(dsp.getSamples(sample)->size());
                } };
     }
