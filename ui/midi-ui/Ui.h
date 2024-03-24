@@ -24,20 +24,21 @@ namespace Dsp::Api::Display
 
 namespace Ui
 {
-  class SharedState;
+  namespace Touch
+  {
+    class Interface;
+  }
 
   namespace Midi
   {
     class Ui : public Interface
     {
      public:
-      Ui(SharedState &sharedUiState, std::string midiDevice, Core::Api::Interface &core,
-         Dsp::Api::Display::Interface &dsp);
+      Ui(std::string midiDevice, Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp,
+         ::Ui::Touch::Interface &touchUi);
       ~Ui() override;
 
-      void setSoftButtonColor(SoftButton button, Color c) override;
-      void setStepButtonColor(Step step, Color c) override;
-      void highlightCurrentStep(Step oldStep, Step newStep) override;
+      void setLed(Midi::Led l, Midi::Color c) override;
 
      private:
       bool checkForMidiDevices();

@@ -15,6 +15,6 @@ add_library(mosaik-midiui STATIC Ui.cpp DebugUI.cpp
         MidiEventDispatcher.h)
 
 target_include_directories(mosaik-midiui PRIVATE ${CMAKE_SOURCE_DIR} ${LIBS_INCLUDE_DIRS})
-target_link_libraries(mosaik-midiui mosaik-core mosaik-midi ${LIBS_LIBRARIES})
+target_link_libraries(mosaik-midiui mosaik-core mosaik-midi mosaik-touchui ${LIBS_LIBRARIES})
 
 

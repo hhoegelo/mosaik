@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ui/touch-ui/Interface.h>
 #include <gtkmm-3.0/gtkmm.h>
 
 namespace Core::Api
@@ -12,22 +13,29 @@ namespace Dsp::Api::Display
   class Interface;
 }
 
-namespace Ui
+namespace Ui::Touch
 {
-  class SharedState;
+  class Tiles;
+  class Toolboxes;
 
-  namespace Touch
+  class Window : public Gtk::Window, public Interface
   {
-    class Window : public Gtk::Window
-    {
-     public:
-      Window(SharedState &sharedUiState, Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
-      void build();
+   public:
+    Window(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
+    ~Window() override;
 
-     private:
-      SharedState &m_sharedUiState;
-      Core::Api::Interface &m_core;
-      Dsp::Api::Display::Interface &m_dsp;
-    };
-  }
+    void incWaveformZoom(int inc) override;
+    void incWaveformScroll(int inc) override;
+    ::Ui::Toolboxes getSelectedToolbox() const override;
+    double getWaveformFramesPerPixel() const override;
+
+   private:
+    void build();
+
+    Core::Api::Interface &m_core;
+    Dsp::Api::Display::Interface &m_dsp;
+
+    Tiles *m_tiles = nullptr;
+    Toolboxes *m_toolboxes = nullptr;
+  };
 }

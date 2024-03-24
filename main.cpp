@@ -5,7 +5,6 @@
 #include "ui/touch-ui/Ui.h"
 #include "midi/Monitor.h"
 #include "ui/midi-ui/DebugUI.h"
-#include "ui/SharedState.h"
 #include "core/DataModel.h"
 
 #include <boost/program_options.hpp>
@@ -50,12 +49,10 @@ int main(int args, char** argv)
   Dsp::Dsp dsp;
   Core::Core core(dsp.getControlApi());
   Audio::AlsaOut audioOut(dsp.getRealtimeApi(), alsaOut, bits);
-  Ui::SharedState sharedUiState;
-  Ui::Midi::Ui midiUI(sharedUiState, midiUi, core.getApi(), dsp.getDisplayApi());
-  Ui::Touch::Ui touchUI(sharedUiState, core.getApi(), dsp.getDisplayApi());
+  Ui::Touch::Ui touchUI(core.getApi(), dsp.getDisplayApi());
+  Ui::Midi::Ui midiUI(midiUi, core.getApi(), dsp.getDisplayApi(), touchUI.getApi());
+  Ui::Midi::DebugUI dbg(core.getApi(), dsp.getDisplayApi(), touchUI.getApi());
 
-  Ui::Midi::DebugUI dbg(sharedUiState, core.getApi(), dsp.getDisplayApi());
-  dbg.build();
   touchUI.attach(dbg);
   touchUI.run();
 

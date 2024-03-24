@@ -1,15 +1,16 @@
 #include "Toolboxes.h"
+#include <ui/Types.h>
 #include "GlobalTools.h"
 #include "TileTools.h"
 #include "Waveform.h"
-#include <ui/SharedState.h>
 #include <gtkmm/label.h>
 #include <gtkmm/eventbox.h>
 
 namespace Ui::Touch
 {
-  static void addToolbox(SharedState &sharedUiState, SharedState::Toolboxes s, Gtk::Box *box, const std::string &title,
-                         Gtk::Widget *child)
+  template <typename T>
+  static T *addToolbox(Tools::ReactiveVar<::Ui::Toolboxes> &var, Ui::Toolboxes s, Gtk::Box *box,
+                       const std::string &title, T *child)
   {
     child = Gtk::manage(child);
 
@@ -27,24 +28,44 @@ namespace Ui::Touch
     events->add_events(Gdk::BUTTON_PRESS_MASK);
 
     events->signal_button_press_event().connect(
-        [&sharedUiState, s](GdkEventButton *event)
+        [&var, s](GdkEventButton *event)
         {
-          sharedUiState.select(s);
+          var = s;
           return false;
         });
+
+    return child;
   }
 
-  Toolboxes::Toolboxes(SharedState &sharedUiState, Core::Api::Interface &core)
+  Toolboxes::Toolboxes(Core::Api::Interface &core)
       : m_core(core)
+      , m_box(*Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL)))
+      , m_globalTools(*addToolbox(m_selectedToolbox, Ui::Toolboxes::Global, &m_box, "Global", new GlobalTools(core)))
+      , m_tileTools(*addToolbox(m_selectedToolbox, Ui::Toolboxes::Tile, &m_box, "Tile", new TileTools(core)))
+      , m_waveform(*addToolbox(m_selectedToolbox, Ui::Toolboxes::Waveform, &m_box, "Wave", new Waveform(core)))
   {
     get_style_context()->add_class("toolboxes");
-
-    auto box = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL));
-
-    addToolbox(sharedUiState, SharedState::Toolboxes::Global, box, "Global", new GlobalTools(core));
-    addToolbox(sharedUiState, SharedState::Toolboxes::Tile, box, "Tile", new TileTools(core));
-    addToolbox(sharedUiState, SharedState::Toolboxes::Waveform, box, "Wave", new Waveform(sharedUiState, core));
-
-    this->add(*box);
+    Gtk::ScrolledWindow::add(m_box);
   }
+
+  void Toolboxes::incZoom(int inc)
+  {
+    m_waveform.incZoom(inc);
+  }
+
+  void Toolboxes::incScroll(int inc)
+  {
+    m_waveform.incScroll(inc);
+  }
+
+  Ui::Toolboxes Toolboxes::getSelectedToolbox() const
+  {
+    return m_selectedToolbox;
+  }
+
+  double Toolboxes::getWaveformFramesPerPixel() const
+  {
+    return m_waveform.getFramesPerPixel();
+  }
+
 }

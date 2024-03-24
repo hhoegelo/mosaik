@@ -1,6 +1,8 @@
 #pragma once
 
 #include <gtkmm/drawingarea.h>
+#include "core/Types.h"
+#include "tools/ReactiveVar.h"
 
 namespace Tools
 {
@@ -14,21 +16,31 @@ namespace Core::Api
 
 namespace Ui
 {
-  class SharedState;
 
   namespace Touch
   {
     class Waveform : public Gtk::DrawingArea
     {
      public:
-      explicit Waveform(Ui::SharedState &sharedUiState, Core::Api::Interface &core);
+      explicit Waveform(Core::Api::Interface &core);
+
+      void incZoom(int inc);
+      void incScroll(int inc);
+
+      double getFramesPerPixel() const;
 
      private:
       bool drawWave(const Cairo::RefPtr<Cairo::Context> &ctx);
+      double getSanitizedZoom() const;
+      Core::FramePos getSanitizedScroll() const;
 
-      SharedState &m_sharedUiState;
       Core::Api::Interface &m_core;
       std::unique_ptr<Tools::Computations> m_computations;
+
+      Tools::DeferredComputations m_staticComputations;
+
+      Tools::ReactiveVar<Core::FramePos> m_scrollPos;
+      Tools::ReactiveVar<double> m_zoom { 1.0 };
     };
   }
 }

@@ -2,37 +2,31 @@
 #include <core/api/Interface.h>
 #include <ui/midi-ui/Interface.h>
 #include <dsp/api/display/Interface.h>
+#include <ui/touch-ui/Interface.h>
 
 namespace Ui::Midi
 {
-  Controller::Controller(SharedState &sharedUiState, Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp,
-                         Ui::Midi::Interface &ui)
-      : m_sharedUiState(sharedUiState)
-      , m_core(core)
-      , m_ui(ui)
+  static Led stepToLed(Step s)
+  {
+    return static_cast<Led>(s);
+  }
+
+  Controller::Controller(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp, Ui::Touch::Interface &touchUi,
+                         Ui::Midi::Interface &midiUi)
+      : m_core(core)
+      , m_midiUi(midiUi)
+      , m_touchUi(touchUi)
       , m_computations(Glib::MainContext::get_default())
   {
     Glib::signal_timeout().connect(
-        [&ui, &dsp, &core, lastStep = -1]() mutable
+        [this, &dsp, &core]() mutable
         {
-          auto loopPosition = dsp.getCurrentLoopPosition();
-          auto newStep = core.loopPositionToStep(loopPosition);
-
-          if(newStep != lastStep)
-          {
-            ui.highlightCurrentStep(lastStep, newStep);
-            lastStep = newStep;
-          }
-
+          m_currentStep = core.loopPositionToStep(dsp.getCurrentLoopPosition());
           return true;
         },
         16);
 
-    m_computations.add([this] { m_inputMapping = createMapping(m_sharedUiState.getSelectedToolbox()); });
-  }
-
-  void Controller::kickOff()
-  {
+    m_computations.add([this] { m_inputMapping = createMapping(m_touchUi.getSelectedToolbox()); });
     m_computations.add([this] { showPattern(); });
   }
 
@@ -41,7 +35,11 @@ namespace Ui::Midi
     auto merged = m_core.getMergedPattern();
 
     for(size_t i = 0; i < 64; i++)
-      m_ui.setStepButtonColor(i, merged[i] ? Ui::Midi::Color::Green : Ui::Midi::Color::White);
+    {
+      auto isCurrentStep = m_currentStep == i;
+      auto isProgrammed = merged[i];
+      setLed(stepToLed(i), isCurrentStep ? Color::White : isProgrammed ? Color::Green : Color::Off);
+    }
   }
 
   void Controller::onErpInc(Knob k, int inc)
@@ -56,17 +54,17 @@ namespace Ui::Midi
       it->second(e);
   }
 
-  Controller::Mapping Controller::createMapping(Ui::SharedState::Toolboxes t)
+  Controller::Mapping Controller::createMapping(Ui::Toolboxes t)
   {
     switch(t)
     {
-      case SharedState::Toolboxes::Global:
+      case Ui::Toolboxes::Global:
         return buildGlobalMapping();
 
-      case SharedState::Toolboxes::Tile:
+      case Ui::Toolboxes::Tile:
         return buildTileMapping();
 
-      case SharedState::Toolboxes::Waveform:
+      case Ui::Toolboxes::Waveform:
         return buildWaveformMapping();
     }
     throw std::runtime_error("unknown toolbox");
@@ -88,11 +86,6 @@ namespace Ui::Midi
     return {
       .knobs
       = { { Knob::Center, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Gain, inc); } },
-          { Knob::NorthWest, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeInPos, inc); } },
-          { Knob::NorthEast
-            , [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeInLen, inc); } },
-          { Knob::SouthWest, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeOutPos, inc); } },
-          { Knob::SouthEast, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeOutLen, inc); } },
           { Knob::Rightmost, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Speed, inc); } },
           { Knob::Leftmost, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Balance, inc); } },
            },
@@ -109,8 +102,18 @@ namespace Ui::Midi
   {
     return {
       .knobs = {
-          { Knob::NorthWest, [this](auto inc) { m_sharedUiState.incWaveformZoom(inc); } },
-          { Knob::NorthEast, [this](auto inc) { m_sharedUiState.incWaveformScroll(inc); } },
+          { Knob::Leftmost, [this](auto inc) { m_touchUi.incWaveformZoom(inc); } },
+          { Knob::Rightmost, [this](auto inc) { m_touchUi.incWaveformScroll(inc); } },
+          { Knob::NorthWest, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeInPos, inc * m_touchUi
+                                               .getWaveformFramesPerPixel()); } },
+          { Knob::NorthEast
+            , [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeInLen, inc * m_touchUi
+                                                                                               .getWaveformFramesPerPixel()); } },
+          { Knob::SouthWest, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeOutPos, inc * m_touchUi
+                                                                                                .getWaveformFramesPerPixel()); } },
+          { Knob::SouthEast, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeOutLen, inc * m_touchUi
+                                                                                                .getWaveformFramesPerPixel()); } },
+
 
       },
       .buttons = {},
@@ -127,4 +130,13 @@ namespace Ui::Midi
     }
   }
 
+  void Controller::setLed(Led led, Color color)
+  {
+    auto idx = static_cast<size_t>(led);
+
+    if(std::exchange(m_ledLatch[idx], color) != color)
+    {
+      m_midiUi.setLed(led, color);
+    }
+  }
 }

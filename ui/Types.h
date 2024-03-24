@@ -7,4 +7,10 @@ namespace Ui
   using Row = uint8_t;
   using Col = uint8_t;
 
+  enum class Toolboxes
+  {
+    Global,
+    Tile,
+    Waveform
+  };
 }

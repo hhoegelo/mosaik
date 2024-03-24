@@ -15,7 +15,10 @@ namespace Dsp::Api::Display
 
 namespace Ui
 {
-  class SharedState;
+  namespace Touch
+  {
+    class Interface;
+  }
 
   namespace Midi
   {
@@ -24,16 +27,12 @@ namespace Ui
     class DebugUI : public Gtk::Window, public Interface
     {
      public:
-      explicit DebugUI(SharedState &sharedUiState, Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
+      explicit DebugUI(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp, ::Ui::Touch::Interface &touchUi);
       ~DebugUI() override;
 
-      void build();
-
      private:
-      void setSoftButtonColor(SoftButton button, Color c) override;
-      void setStepButtonColor(Step step, Color c) override;
-      void highlightCurrentStep(Step oldStep, Step newStep) override;
-
+      void build();
+      void setLed(Midi::Led l, Midi::Color c) override;
       void setColor(const std::string &widgetName, Color c);
 
       Widget *buildStep(Step step);

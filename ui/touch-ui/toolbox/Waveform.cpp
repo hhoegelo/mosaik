@@ -1,17 +1,26 @@
 #include "Waveform.h"
-#include <ui/SharedState.h>
 #include <core/api/Interface.h>
 #include <tools/ReactiveVar.h>
 
 namespace Ui::Touch
 {
-  Waveform::Waveform(Ui::SharedState& sharedUiState, Core::Api::Interface& core)
-      : m_sharedUiState(sharedUiState)
-      , m_core(core)
+  Waveform::Waveform(Core::Api::Interface& core)
+      : m_core(core)
+      , m_staticComputations(Glib::MainContext::get_default())
   {
     auto styles = get_style_context();
     styles->add_class("waveform");
     set_size_request(0, 250);
+
+    m_staticComputations.add(
+        [this]
+        {
+          auto tileId = m_core.getSelectedTiles().front();
+          auto samples = *m_core.getSamples(tileId);
+          m_scrollPos = 0;
+          m_zoom = 1.0;
+        });
+
     signal_draw().connect([this](const Cairo::RefPtr<Cairo::Context>& ctx) { return drawWave(ctx); });
   }
 
@@ -30,54 +39,116 @@ namespace Ui::Touch
           ctx->set_line_width(1);
 
           auto tileId = m_core.getSelectedTiles().front();
-          auto samples = m_core.getSamples(tileId);
-          auto numSamples = static_cast<double>(samples.get()->size());
-          auto w = get_width();
-          auto h = get_height();
+          auto samples = *m_core.getSamples(tileId);
+          auto numFrames = static_cast<double>(samples.size());
+          auto w = static_cast<double>(get_width());
+          auto h = static_cast<double>(get_height());
 
-          auto minZoom = 1.0;
-          auto maxZoom = numSamples / w;
-          auto zoom = m_sharedUiState.getWaveformZoom();
+          auto zoom = getSanitizedZoom();
 
-          zoom = std::min(zoom, maxZoom);
-          zoom = std::max(zoom, minZoom);
+          auto numPixels = static_cast<double>(zoom * w);
+          auto numFramesPerPixel = std::max<double>(1, numFrames / numPixels);
+          auto scrollPos = static_cast<double>(getSanitizedScroll());
 
-          m_sharedUiState.fixWaveformZoom(zoom);
+          auto fadeInPos = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadeInPos));
+          auto fadeInLen = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadeInLen));
+          auto fadeOutPos
+              = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadeOutPos));
+          auto fadeOutLen
+              = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadeOutLen));
 
-          auto adv = std::max<double>(1, numSamples / static_cast<double>(zoom * w));
-
-          auto minScroll = 0.0;
-          auto maxScroll = numSamples - (w * adv);
-          auto scroll = static_cast<double>(m_sharedUiState.getWaveformScroll());
-
-          scroll = std::min(scroll, maxScroll);
-          scroll = std::max(scroll, minScroll);
-
-          m_sharedUiState.fixWaveformScroll(scroll);
-
-          auto frame = scroll;
-
-          for(size_t i = 0; i < w; i++)
+          for(size_t i = 0; i < get_width(); i++)
           {
             float v = 0;
+            ctx->begin_new_path();
 
-            for(size_t a = 0; a < static_cast<size_t>(adv); a++)
+            auto frame = scrollPos + std::round(static_cast<double>(i) * numFramesPerPixel);
+            auto gray = 1.0;
+            if(frame < fadeInPos)
+              gray = 1.0;
+            else if(frame < fadeInPos + fadeInLen)
+              gray = 1.0 - (frame - fadeInPos) / std::max<Core::FramePos>(1, fadeInLen);
+            else if(frame < fadeOutPos)
+              gray = 0.0;
+            else if(frame < fadeOutPos + fadeOutLen)
+              gray = ((frame - fadeOutPos) / std::max<Core::FramePos>(1, fadeOutLen));
+            else
+              gray = 1.0;
+
+            ctx->set_source_rgb(gray, gray, gray);
+
+            for(size_t a = 0; a < static_cast<size_t>(numFramesPerPixel); a++)
             {
-              auto idx = static_cast<size_t>(std::round(frame + a));
-              if(idx < samples->size())
+              auto idx = static_cast<size_t>(frame) + a;
+
+              if(idx < samples.size())
               {
-                v = std::max(v, std::abs(std::max(samples->data()[idx].left, samples->data()[idx].right)));
+                v = std::max(v, std::abs(std::max(samples[idx].left, samples[idx].right)));
               }
             }
 
-            ctx->move_to(i, h / 2 + v * h / 2);
-            ctx->line_to(i, h / 2 - v * h / 2);
-            frame += adv;
+            ctx->move_to(static_cast<double>(i), h / 2 + v * h / 2);
+            ctx->line_to(static_cast<double>(i), h / 2 - v * h / 2);
+            ctx->stroke();
           }
 
+          ctx->begin_new_path();
+          ctx->set_source_rgb(0, 0, 0);
+          ctx->move_to((fadeInPos - scrollPos) / numFramesPerPixel, h);
+          ctx->line_to((fadeInPos + fadeInLen - scrollPos) / numFramesPerPixel, 0);
+          ctx->line_to((fadeOutPos - scrollPos) / numFramesPerPixel, 0);
+          ctx->line_to((fadeOutPos + fadeOutLen - scrollPos) / numFramesPerPixel, h);
           ctx->stroke();
         });
     return true;
+  }
+
+  void Waveform::incScroll(int inc)
+  {
+    auto numFramesPerPixel = getFramesPerPixel();
+    m_scrollPos = getSanitizedScroll() + static_cast<Core::FramePos>(inc * numFramesPerPixel);
+  }
+
+  void Waveform::incZoom(int inc)
+  {
+    m_zoom = getSanitizedZoom() + inc / 10.0;
+  }
+
+  double Waveform::getSanitizedZoom() const
+  {
+    auto tileId = m_core.getSelectedTiles().front();
+    auto samples = *m_core.getSamples(tileId);
+    auto numFrames = static_cast<double>(samples.size());
+    auto width = static_cast<double>(get_width());
+
+    double minZoom = 1.0;
+    double maxZoom = numFrames / width;
+
+    return std::clamp(m_zoom.get(), minZoom, maxZoom);
+  }
+
+  Core::FramePos Waveform::getSanitizedScroll() const
+  {
+    auto tileId = m_core.getSelectedTiles().front();
+    auto samples = *m_core.getSamples(tileId);
+    auto numFrames = static_cast<double>(samples.size());
+    auto width = static_cast<double>(get_width());
+
+    auto numFramesPerPixel = getFramesPerPixel();
+    auto max = numFrames - width * numFramesPerPixel;
+    return std::clamp<Core::FramePos>(m_scrollPos.get(), 0, static_cast<Core::FramePos>(max));
+  }
+
+  double Waveform::getFramesPerPixel() const
+  {
+    auto tileId = m_core.getSelectedTiles().front();
+    auto samples = *m_core.getSamples(tileId);
+    auto numFrames = static_cast<double>(samples.size());
+    auto zoom = getSanitizedZoom();
+    auto width = static_cast<double>(get_width());
+    auto numPixels = static_cast<double>(zoom * width);
+
+    return std::max<double>(1, numFrames / numPixels);
   }
 
 }

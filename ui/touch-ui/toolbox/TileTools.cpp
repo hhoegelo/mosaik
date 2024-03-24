@@ -37,22 +37,6 @@ namespace Ui::Touch
     gainLevel->set_max_value(1.0);
     gain->add(*gainLevel);
 
-    auto fadeInPos = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
-    fadeInPos->add(*Gtk::manage(new Gtk::Label("InPos")));
-    fadeInPos->add(*Gtk::manage(new Gtk::LevelBar()));
-
-    auto fadeInLen = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
-    fadeInLen->add(*Gtk::manage(new Gtk::Label("InLen")));
-    fadeInLen->add(*Gtk::manage(new Gtk::LevelBar()));
-
-    auto fadeOutPos = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
-    fadeOutPos->add(*Gtk::manage(new Gtk::Label("OutPos")));
-    fadeOutPos->add(*Gtk::manage(new Gtk::LevelBar()));
-
-    auto fadeOutLen = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
-    fadeOutLen->add(*Gtk::manage(new Gtk::Label("OutLen")));
-    fadeOutLen->add(*Gtk::manage(new Gtk::LevelBar()));
-
     auto speed = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
     speed->add(*Gtk::manage(new Gtk::Label("Speed")));
     auto speedLevel = Gtk::manage(new Gtk::LevelBar());
@@ -66,13 +50,7 @@ namespace Ui::Touch
     controls->attach(*balance, 0, 0, 1, 1);
     controls->attach(*speed, 4, 0, 1, 1);
 
-    controls->attach(*fadeInPos, 1, 1, 1, 1);
-    controls->attach(*fadeInLen, 3, 1, 1, 1);
-
     controls->attach(*gain, 2, 2, 1, 1);
-
-    controls->attach(*fadeOutPos, 1, 3, 1, 1);
-    controls->attach(*fadeOutLen, 3, 3, 1, 1);
 
     m_computations.add([this, speedLevel] { updateTileSpeed(speedLevel); });
     m_computations.add([this, balanceLevel] { updateTileBalance(balanceLevel); });

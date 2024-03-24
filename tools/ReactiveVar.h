@@ -61,7 +61,7 @@ namespace Tools
   template <typename T> class ReactiveVar : public ReactiveVarBase
   {
    public:
-    explicit ReactiveVar(const T& init)
+    explicit ReactiveVar(const T& init = {})
         : m_value(init)
     {
     }

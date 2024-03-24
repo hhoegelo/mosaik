@@ -59,7 +59,8 @@ if (LIBS_FOUND)
             mosaik-core
             mosaik-dsp
             mosaik-audio
-            mosaik-ui
+            mosaik-touchui
+            mosaik-midiui
             Boost::program_options)
 else ()
     message("Not all required libs were found, but you can still use the dockerized build env, like this:")

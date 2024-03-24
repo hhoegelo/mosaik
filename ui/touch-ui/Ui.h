@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ui/Types.h>
 #include <gtkmm-3.0/gtkmm.h>
 
 namespace Core::Api
@@ -14,23 +15,28 @@ namespace Dsp::Api::Display
 
 namespace Ui
 {
-  class SharedState;
-
   namespace Touch
   {
+    class Interface;
+    class Window;
+
     class Ui
     {
      public:
-      Ui(SharedState &sharedUiState, Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
+      Ui(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
+      ~Ui();
 
       void attach(Gtk::Window &wnd);
       void run();
 
+      Interface &getApi();
+
      private:
-      SharedState &m_sharedUiState;
       Core::Api::Interface &m_core;
       Dsp::Api::Display::Interface &m_dsp;
       Glib::RefPtr<Gtk::Application> m_app;
+
+      std::unique_ptr<Window> m_window;
     };
   }
 }

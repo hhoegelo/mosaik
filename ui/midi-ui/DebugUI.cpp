@@ -28,10 +28,11 @@ namespace Ui::Midi
 
   )";
 
-  DebugUI::DebugUI(SharedState& sharedUiState, Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp)
+  DebugUI::DebugUI(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, ::Ui::Touch::Interface& touchUi)
       : m_core(core)
-      , m_ctrl(std::make_unique<Controller>(sharedUiState, core, dsp, *this))
   {
+    build();
+    m_ctrl = std::make_unique<Controller>(core, dsp, touchUi, *this);
   }
 
   DebugUI::~DebugUI() = default;
@@ -84,8 +85,6 @@ namespace Ui::Midi
 
     add(*screen);
     show_all();
-
-    m_ctrl->kickOff();
   }
 
   Gtk::Widget* DebugUI::buildStep(Step i)
@@ -120,18 +119,6 @@ namespace Ui::Midi
     return btn;
   }
 
-  void DebugUI::setSoftButtonColor(SoftButton button, Color c)
-  {
-    auto name = getSoftButtonName(button);
-    setColor(name, c);
-  }
-
-  void DebugUI::setStepButtonColor(Step step, Color c)
-  {
-    auto name = "step-" + std::to_string(step);
-    setColor(name, c);
-  }
-
   const Gtk::Widget* DebugUI::findChild(const std::string& name)
   {
     auto grid = dynamic_cast<const Gtk::Grid*>(get_child());
@@ -158,12 +145,12 @@ namespace Ui::Midi
     }
   }
 
-  void DebugUI::highlightCurrentStep(Step oldStep, Step newStep)
+  void DebugUI::setLed(Midi::Led l, Midi::Color c)
   {
-    if(auto widget = findChild("step-" + std::to_string(oldStep)))
-      widget->get_style_context()->remove_class("current-step");
-
-    if(auto widget = findChild("step-" + std::to_string(newStep)))
-      widget->get_style_context()->add_class("current-step");
+    if(l <= Midi::Led::Step_63)
+    {
+      setColor("step-" + std::to_string(static_cast<int>(l)), c);
+    }
   }
+
 }

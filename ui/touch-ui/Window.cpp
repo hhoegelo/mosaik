@@ -83,12 +83,14 @@ namespace Ui::Touch
 }
   )";
 
-  Window::Window(SharedState& sharedUiState, Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp)
-      : m_sharedUiState(sharedUiState)
-      , m_core(core)
+  Window::Window(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp)
+      : m_core(core)
       , m_dsp(dsp)
   {
+    build();
   }
+
+  Window::~Window() = default;
 
   void Window::build()
   {
@@ -102,13 +104,34 @@ namespace Ui::Touch
     set_border_width(10);
     auto box = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
 
-    auto tiles = new Tiles(m_core, m_dsp);
-    box->pack_start(*tiles, false, false);
+    m_tiles = new Tiles(m_core, m_dsp);
+    box->pack_start(*m_tiles, false, false);
 
-    auto toolboxes = new Toolboxes(m_sharedUiState, m_core);
-    box->pack_start(*toolboxes, true, true);
+    m_toolboxes = new Toolboxes(m_core);
+    box->pack_start(*m_toolboxes, true, true);
 
     add(*box);
     show_all();
   }
+
+  void Window::incWaveformZoom(int inc)
+  {
+    m_toolboxes->incZoom(inc);
+  }
+
+  void Window::incWaveformScroll(int inc)
+  {
+    m_toolboxes->incScroll(inc);
+  }
+
+  ::Ui::Toolboxes Window::getSelectedToolbox() const
+  {
+    return m_toolboxes->getSelectedToolbox();
+  }
+
+  double Window::getWaveformFramesPerPixel() const
+  {
+    return m_toolboxes->getWaveformFramesPerPixel();
+  }
+
 }

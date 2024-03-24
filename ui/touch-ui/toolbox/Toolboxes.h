@@ -1,25 +1,38 @@
 #pragma once
 
 #include <gtkmm/scrolledwindow.h>
+#include <gtkmm/box.h>
+#include "tools/ReactiveVar.h"
+#include <ui/Types.h>
 
 namespace Core::Api
 {
   class Interface;
 }
 
-namespace Ui
+namespace Ui::Touch
 {
-  class SharedState;
+  class Waveform;
+  class GlobalTools;
+  class TileTools;
 
-  namespace Touch
+  class Toolboxes : public Gtk::ScrolledWindow
   {
-    class Toolboxes : public Gtk::ScrolledWindow
-    {
-     public:
-      explicit Toolboxes(SharedState &sharedUiState, Core::Api::Interface &core);
+   public:
+    explicit Toolboxes(Core::Api::Interface &core);
 
-     private:
-      Core::Api::Interface &m_core;
-    };
-  }
+    void incZoom(int inc);
+    void incScroll(int inc);
+    ::Ui::Toolboxes getSelectedToolbox() const;
+    double getWaveformFramesPerPixel() const;
+
+   private:
+    Core::Api::Interface &m_core;
+
+    Tools::ReactiveVar<::Ui::Toolboxes> m_selectedToolbox;
+    Gtk::Box &m_box;
+    GlobalTools &m_globalTools;
+    TileTools &m_tileTools;
+    Waveform &m_waveform;
+  };
 }

@@ -25,7 +25,7 @@ namespace Core
                                                   const FramePos &fadeInLen, Tools::ReactiveVar<FramePos> &fadeOutPos,
                                                   Tools::ReactiveVar<FramePos> &fadeOutLen)
   {
-    fadeOutPos = std::clamp<FramePos>(fadeOutPos, fadeInPos - fadeInLen, static_cast<FramePos>(sampleLength));
+    fadeOutPos = std::clamp<FramePos>(fadeOutPos, fadeInPos + fadeInLen, static_cast<FramePos>(sampleLength));
     sanitizeFadeOutLen(sampleLength, fadeInPos, fadeInLen, fadeOutPos, fadeOutLen);
   }
 

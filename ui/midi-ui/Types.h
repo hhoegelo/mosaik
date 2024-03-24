@@ -7,53 +7,118 @@ namespace Ui::Midi
 {
   enum class SoftButton
   {
-    // have to agree on numbers here for the translation from midi events to work properly
+    // Left hand side buttons
     Left_NorthWest = 64,
     Left_North = 65,
-    Left_East = 68,
-    Left_South = 70,
-    Left_SouthEast = 71,
-    Left_SouthWest = 69,
     Left_West = 66,
     Left_Center = 67,
+    Left_East = 68,
+    Left_SouthWest = 69,
+    Left_South = 70,
+    Left_SouthEast = 71,
 
+    // Right hand side buttons
     Right_North = 96,
     Right_NorthEast = 97,
-    Right_East = 100,
-    Right_SouthEast = 103,
-    Right_South = 102,
-    Right_SouthWest = 101,
     Right_West = 98,
     Right_Center = 99,
+    Right_East = 100,
+    Right_SouthWest = 101,
+    Right_South = 102,
+    Right_SouthEast = 103,
 
     // Knobs are Buttons, too
-    Leftmost = 88,
-    Rightmost = 94,
-    NorthWest = 89,
-    NorthEast = 93,
-    SouthWest = 90,
-    SouthEast = 92,
-    Center = 91
+    Center_Leftmost = 88,
+    Center_NorthWest = 89,
+    Center_SouthWest = 90,
+    Center_Center = 91,
+    Center_SouthEast = 92,
+    Center_NorthEast = 93,
+    Center_Rightmost = 94,
   };
 
   enum class Knob
   {
     Leftmost = 0,
-    Rightmost = 6,
     NorthWest = 1,
-    NorthEast = 5,
     SouthWest = 2,
+    Center = 3,
     SouthEast = 4,
-    Center = 3
+    NorthEast = 5,
+    Rightmost = 6,
+  };
+
+  enum class Led
+  {
+    // Steps
+    Step_0 = 0,
+    Step_63 = 63,
+
+    // Soft Buttons
+    Left_NorthWest = 64,
+    Left_North = 65,
+    Left_West = 66,
+    Left_Center = 67,
+    Left_East = 68,
+    Left_SouthWest = 69,
+    Left_South = 70,
+    Left_SouthEast = 71,
+
+    Center_Leftmost_North = 72,
+    Center_Leftmost_East = 73,
+    Center_Leftmost_South = 74,
+    Center_Leftmost_West = 75,
+
+    Center_NorthWest_North = 76,
+    Center_NorthWest_East = 77,
+    Center_NorthWest_South = 78,
+    Center_NorthWest_West = 79,
+
+    Center_SouthWest_North = 80,
+    Center_SouthWest_East = 81,
+    Center_SouthWest_South = 82,
+    Center_SouthWest_West = 83,
+
+    Center_Center_North = 84,
+    Center_Center_East = 85,
+    Center_Center_South = 86,
+    Center_Center_West = 87,
+
+    Center_SouthEast_North = 88,
+    Center_SouthEast_East = 89,
+    Center_SouthEast_South = 90,
+    Center_SouthEast_West = 91,
+
+    Center_NorthEast_North = 92,
+    Center_NorthEast_East = 93,
+    Center_NorthEast_South = 94,
+    Center_NorthEast_West = 95,
+
+    Center_Rightmost_North = 96,
+    Center_Rightmost_East = 97,
+    Center_Rightmost_South = 98,
+    Center_Rightmost_West = 99,
+
+    Right_North = 100,
+    Right_NorthEast = 101,
+    Right_West = 102,
+    Right_Center = 103,
+    Right_East = 104,
+    Right_SouthWest = 105,
+    Right_South = 106,
+    Right_SouthEast = 107,
+
+    NUM_LEDS = 108
   };
 
   enum class Color
   {
-    None = 0,
-    Red = 1,
+    Red = 0,
+    Blue = 1,
     Green = 2,
-    Blue = 3,
-    White = 4
+    White = 3,
+    Purple = 4,
+    Off = 5,
   };
 
   enum class ButtonEvent
@@ -76,8 +141,12 @@ namespace Ui::Midi
         return "green";
       case Color::White:
         return "white";
+      case Color::Purple:
+        return "purple";
+      case Color::Off:
+        return "off";
     }
-    return "none";
+    return "off";
   }
 
   static inline std::string getKnobName(Knob c)
@@ -140,20 +209,20 @@ namespace Ui::Midi
       case SoftButton::Right_Center:
         return "Right_Center";
 
-      case SoftButton::Leftmost:
-        return "LeftMost";
-      case SoftButton::Rightmost:
-        return "RightMost";
-      case SoftButton::NorthWest:
-        return "NorthWest";
-      case SoftButton::NorthEast:
-        return "NorthEast";
-      case SoftButton::SouthWest:
-        return "SouthWest";
-      case SoftButton::SouthEast:
-        return "SouthEast";
-      case SoftButton::Center:
-        return "Center";
+      case SoftButton::Center_Leftmost:
+        return "Center_LeftMost";
+      case SoftButton::Center_Rightmost:
+        return "Center_RightMost";
+      case SoftButton::Center_NorthWest:
+        return "Center_NorthWest";
+      case SoftButton::Center_NorthEast:
+        return "Center_NorthEast";
+      case SoftButton::Center_SouthWest:
+        return "Center_SouthWest";
+      case SoftButton::Center_SouthEast:
+        return "Center_SouthEast";
+      case SoftButton::Center_Center:
+        return "Center_Center";
     }
     return "none";
   }
