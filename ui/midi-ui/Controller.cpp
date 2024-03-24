@@ -85,7 +85,7 @@ namespace Ui::Midi
   {
     return {
       .knobs
-      = { { Knob::Center, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Gain, inc); } },
+      = {
           { Knob::Rightmost, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Speed, inc); } },
           { Knob::Leftmost, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Balance, inc); } },
            },
@@ -102,16 +102,17 @@ namespace Ui::Midi
   {
     return {
       .knobs = {
+          { Knob::Center, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Gain, inc); } },
           { Knob::Leftmost, [this](auto inc) { m_touchUi.incWaveformZoom(inc); } },
           { Knob::Rightmost, [this](auto inc) { m_touchUi.incWaveformScroll(inc); } },
-          { Knob::NorthWest, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeInPos, inc * m_touchUi
+          { Knob::SouthWest, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeInPos, inc * m_touchUi
                                                .getWaveformFramesPerPixel()); } },
-          { Knob::NorthEast
+          { Knob::NorthWest
             , [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeInLen, inc * m_touchUi
                                                                                                .getWaveformFramesPerPixel()); } },
-          { Knob::SouthWest, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeOutPos, inc * m_touchUi
+          { Knob::SouthEast, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeOutPos, inc * m_touchUi
                                                                                                 .getWaveformFramesPerPixel()); } },
-          { Knob::SouthEast, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeOutLen, inc * m_touchUi
+          { Knob::NorthEast, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeOutLen, inc * m_touchUi
                                                                                                 .getWaveformFramesPerPixel()); } },
 
 
