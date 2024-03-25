@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <glibmm/main.h>
+#include <cassert>
 
 namespace Tools
 {
@@ -41,15 +42,23 @@ namespace Tools
   void ReactiveVarBase::registerCurrentComputation() const
   {
     if(tl_currentComputation)
-      m_listeners.insert(tl_currentComputation);
+      m_computations.insert(tl_currentComputation);
+
+    for(auto it = m_computations.begin(); it != m_computations.end();)
+    {
+      if(!it->lock())
+        it = m_computations.erase(it);
+      else
+        it++;
+    }
   }
 
   void ReactiveVarBase::invalidate()
   {
-    auto m = std::move(m_listeners);
+    auto computations = std::move(m_computations);
 
-    for(auto &listener : m)
-      if(auto c = listener.lock())
+    for(auto &computation : computations)
+      if(auto c = computation.lock())
         c->invalidate();
   }
 

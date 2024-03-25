@@ -29,10 +29,11 @@ namespace Core
     Gain,                // float 0...1
     Mute,                // bool
     Reverse,             // bool
-    EnvelopeFadeInPos,   // FadePos
-    EnvelopeFadeInLen,   // FadeLen
-    EnvelopeFadeOutPos,  // FadePos
-    EnvelopeFadeOutLen,  // FadeLen
+    EnvelopeFadeInPos,   // FramePos
+    EnvelopeFadeInLen,   // FramePos
+    EnvelopeFadeOutPos,  // FramePos
+    EnvelopeFadeOutLen,  // FramePos
+    TriggerFrame,        // FramePos
     Speed,               // float -1...1
   };
 

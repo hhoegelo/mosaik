@@ -50,6 +50,7 @@ namespace Ui::Touch
           auto numFramesPerPixel = std::max<double>(1, numFrames / numPixels);
           auto scrollPos = static_cast<double>(getSanitizedScroll());
 
+          auto triggerPos = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::TriggerFrame));
           auto fadeInPos = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadeInPos));
           auto fadeInLen = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadeInLen));
           auto fadeOutPos
@@ -98,6 +99,12 @@ namespace Ui::Touch
           ctx->line_to((fadeInPos + fadeInLen - scrollPos) / numFramesPerPixel, 0);
           ctx->line_to((fadeOutPos - scrollPos) / numFramesPerPixel, 0);
           ctx->line_to((fadeOutPos + fadeOutLen - scrollPos) / numFramesPerPixel, h);
+          ctx->stroke();
+
+          ctx->begin_new_path();
+          ctx->set_source_rgb(1.0, 0, 0);
+          ctx->move_to((triggerPos - scrollPos) / numFramesPerPixel, h);
+          ctx->line_to((triggerPos - scrollPos) / numFramesPerPixel, 0);
           ctx->stroke();
         });
     return true;

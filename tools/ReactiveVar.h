@@ -55,7 +55,7 @@ namespace Tools
     void registerCurrentComputation() const;
     void invalidate();
 
-    mutable std::set<std::weak_ptr<Computations::Computation>, std::owner_less<>> m_listeners;
+    mutable std::set<std::weak_ptr<Computations::Computation>, std::owner_less<>> m_computations;
   };
 
   template <typename T> class ReactiveVar : public ReactiveVarBase

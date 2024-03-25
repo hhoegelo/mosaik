@@ -86,6 +86,7 @@ namespace Ui::Midi
     return {
       .knobs
       = {
+          { Knob::Center, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Gain, inc); } },
           { Knob::Rightmost, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Speed, inc); } },
           { Knob::Leftmost, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Balance, inc); } },
            },
@@ -102,7 +103,8 @@ namespace Ui::Midi
   {
     return {
       .knobs = {
-          { Knob::Center, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Gain, inc); } },
+          { Knob::Center, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::TriggerFrame, inc * m_touchUi
+                                                                                          .getWaveformFramesPerPixel()); } },
           { Knob::Leftmost, [this](auto inc) { m_touchUi.incWaveformZoom(inc); } },
           { Knob::Rightmost, [this](auto inc) { m_touchUi.incWaveformScroll(inc); } },
           { Knob::SouthWest, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeInPos, inc * m_touchUi

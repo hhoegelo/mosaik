@@ -136,6 +136,10 @@ namespace Core
                 FadeParameterSanitizer::sanitizeFadeOutLen(sampleLength, src.envelopeFadeInPos, src.envelopeFadeInLen,
                                                            src.envelopeFadeOutPos, src.envelopeFadeOutLen);
               });
+
+          m_access[{ id, ParameterId::TriggerFrame }]
+              = buildAccess(m_dsp, src.triggerFrame, src.sample, [&src](FramePos sampleLength)
+                            { src.triggerFrame = std::clamp<FramePos>(src.triggerFrame.get(), 0, sampleLength); });
         }
 
         m_dsp.takeAudioKernel(newDspKernel(m_model));
@@ -195,6 +199,7 @@ namespace Core
         auto numFramesPerMinute = SAMPLERATE * 60.0f;
         auto num16thPerMinute = dataModel.globals.tempo * 4;
         auto framesPer16th = static_cast<Dsp::FramePos>(numFramesPerMinute / num16thPerMinute);
+        auto framePerLoop = framesPer16th * 64;
 
         Dsp::FramePos pos = 0;
 
@@ -211,8 +216,17 @@ namespace Core
                   = static_cast<int64_t>(0.5 * static_cast<double>(framesPer16th) * (dataModel.globals.shuffle - 0.5));
             }
 
-            tgt.triggers.push_back(pos + shuffle);
+            auto finalPos = pos + shuffle - src.triggerFrame;
+
+            while(finalPos < 0)
+              finalPos += framePerLoop;
+
+            finalPos = finalPos % framePerLoop;
+
+            tgt.triggers.push_back(finalPos);
           }
+
+          std::sort(tgt.triggers.begin(), tgt.triggers.end());
 
           pos += framesPer16th;
         }

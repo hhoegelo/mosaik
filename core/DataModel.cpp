@@ -36,6 +36,7 @@ namespace nlohmann
             { "envelopeFadeInLen", v.envelopeFadeInLen },
             { "envelopeFadeOutPos", v.envelopeFadeOutPos },
             { "envelopeFadeOutLen", v.envelopeFadeOutLen },
+            { "triggerFrame", v.triggerFrame },
             { "speed", v.speed } };
     }
 
@@ -53,6 +54,7 @@ namespace nlohmann
       loadIfExists(v.envelopeFadeInLen, j, "envelopeFadeInLen");
       loadIfExists(v.envelopeFadeOutPos, j, "envelopeFadeOutPos");
       loadIfExists(v.envelopeFadeOutLen, j, "envelopeFadeOutLen");
+      loadIfExists(v.triggerFrame, j, "triggerFrame");
 
       loadIfExists(v.speed, j, "speed");
     }

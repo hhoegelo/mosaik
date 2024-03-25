@@ -32,6 +32,7 @@ namespace Core
       Tools::ReactiveVar<FramePos> envelopeFadeInLen { 0 };
       Tools::ReactiveVar<FramePos> envelopeFadeOutPos { std::numeric_limits<FramePos>::max() };
       Tools::ReactiveVar<FramePos> envelopeFadeOutLen { 0 };
+      Tools::ReactiveVar<FramePos> triggerFrame { 0 };
 
       Tools::ReactiveVar<float> speed { 0 };
     };
