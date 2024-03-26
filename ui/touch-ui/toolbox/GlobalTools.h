@@ -23,7 +23,7 @@ namespace Ui::Touch
     explicit GlobalTools(Core::Api::Interface &core);
 
    private:
-    Gtk::LevelBar *buildLevel(Core::ParameterId id, double min, double max);
+    Gtk::Label *buildLevel(Core::ParameterId id);
 
     Core::Api::Interface &m_core;
     Tools::DeferredComputations m_computations;

@@ -52,11 +52,13 @@ namespace Ui::Touch
 
           auto triggerPos = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::TriggerFrame));
           auto fadeInPos = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadeInPos));
-          auto fadeInLen = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadeInLen));
+          auto fadedInPos
+              = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadedInPos));
           auto fadeOutPos
               = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadeOutPos));
-          auto fadeOutLen
-              = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadeOutLen));
+          auto fadedOutPos
+              = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadedOutPos));
+          auto reverse = std::get<bool>(m_core.getParameter(tileId, Core::ParameterId::Reverse));
 
           for(size_t i = 0; i < get_width(); i++)
           {
@@ -67,12 +69,12 @@ namespace Ui::Touch
             auto gray = 1.0;
             if(frame < fadeInPos)
               gray = 1.0;
-            else if(frame < fadeInPos + fadeInLen)
-              gray = 1.0 - (frame - fadeInPos) / std::max<Core::FramePos>(1, fadeInLen);
+            else if(frame < fadedInPos)
+              gray = 1.0 - (frame - fadeInPos) / std::max<Core::FramePos>(1, fadedInPos - fadeInPos);
             else if(frame < fadeOutPos)
               gray = 0.0;
-            else if(frame < fadeOutPos + fadeOutLen)
-              gray = ((frame - fadeOutPos) / std::max<Core::FramePos>(1, fadeOutLen));
+            else if(frame < fadedOutPos)
+              gray = ((frame - fadeOutPos) / std::max<Core::FramePos>(1, fadedOutPos - fadeOutPos));
             else
               gray = 1.0;
 
@@ -84,7 +86,9 @@ namespace Ui::Touch
 
               if(idx < samples.size())
               {
-                v = std::max(v, std::abs(std::max(samples[idx].left, samples[idx].right)));
+                auto i = reverse ? samples.size() - 1 - idx : idx;
+
+                v = std::max(v, std::abs(std::max(samples[i].left, samples[i].right)));
               }
             }
 
@@ -96,9 +100,9 @@ namespace Ui::Touch
           ctx->begin_new_path();
           ctx->set_source_rgb(0, 0, 0);
           ctx->move_to((fadeInPos - scrollPos) / numFramesPerPixel, h);
-          ctx->line_to((fadeInPos + fadeInLen - scrollPos) / numFramesPerPixel, 0);
+          ctx->line_to((fadedInPos - scrollPos) / numFramesPerPixel, 0);
           ctx->line_to((fadeOutPos - scrollPos) / numFramesPerPixel, 0);
-          ctx->line_to((fadeOutPos + fadeOutLen - scrollPos) / numFramesPerPixel, h);
+          ctx->line_to((fadedOutPos - scrollPos) / numFramesPerPixel, h);
           ctx->stroke();
 
           ctx->begin_new_path();

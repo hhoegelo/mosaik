@@ -1,83 +1,156 @@
 #include "Core.h"
 #include "api/Interface.h"
 #include "DataModel.h"
-#include "FadeParameterSanitizer.h"
 #include <dsp/api/control/Interface.h>
 #include <dsp/AudioKernel.h>
 #include <cmath>
-#include <cassert>
 #include <map>
 
 namespace Core
 {
+  static std::filesystem::path getInitFileName()
+  {
+    std::filesystem::path home = getenv("HOME");
+    return home / ".mosaik";
+  }
+
   namespace Api
   {
+    using IDsp = Dsp::Api::Control::Interface;
+    using ICore = Interface;
+
     struct ParamAccess
     {
       std::function<void(const ParameterValue &)> set;
+      std::function<void(const ParameterValue &)> load;
       std::function<ParameterValue()> get;
       std::function<void(int steps)> inc;
+      std::function<std::string(const ParameterValue &)> display;
     };
 
-    ParamAccess buildAccess(Tools::ReactiveVar<float> &target, float min, float max, float stepFactor)
+    template <ParameterId id, typename V> struct Binder
     {
-      return { .set = [&target, min, max](const auto &v) { target = std::clamp(std::get<float>(v), min, max); },
-               .get = [&target]() -> ParameterValue { return target.get(); },
-               .inc = [&target, stepFactor, min, max](int steps)
-               { target = std::clamp(target.get() + stepFactor * static_cast<float>(steps), min, max); } };
-    }
+      static ParamAccess bind(ICore &, IDsp &, TileId, Tools::ReactiveVar<V> &target)
+      {
+        using T = ParameterDescription<id>;
+        return { .set = [&target](const auto &v) { target = std::get<V>(v); },
+                 .load = [&target](const auto &v) { target = std::get<V>(v); },
+                 .get = [&target]() -> ParameterValue { return target.get(); },
+                 .inc = [](int) {},
+                 .display = [](const ParameterValue &v) { return T::format(std::get<V>(v)); }
 
-    ParamAccess buildAccess(Tools::ReactiveVar<bool> &target)
-    {
-      return { .set = [&target](const auto &v) { target = std::get<bool>(v); },
-               .get = [&target]() -> ParameterValue { return target.get(); },
-               .inc = [&target](int steps) { target = !target.get(); } };
-    }
+        };
+      }
+    };
 
-    ParamAccess buildExclusiveAccess(DataModel &model, Tools::ReactiveVar<bool> &target)
+    template <ParameterId id> struct Binder<id, float>
     {
-      return { .set =
-                   [&target, &model](const auto &v)
-               {
-                 for(auto &tile : model.tiles)
+      static ParamAccess bind(ICore &, IDsp &, TileId, Tools::ReactiveVar<float> &target)
+      {
+        using T = ParameterDescription<id>;
+        return { .set = [&target](const auto &v) { target = std::clamp(std::get<float>(v), T::min, T::max); },
+                 .load = [&target](const auto &v) { target = std::get<float>(v); },
+                 .get = [&target]() -> ParameterValue { return target.get(); },
+                 .inc = [&target](int steps)
+                 { target = std::clamp(target.get() + T::coarse * static_cast<float>(steps), T::min, T::max); },
+                 .display = [](const ParameterValue &v) { return T::format(std::get<float>(v)); } };
+      }
+    };
+
+    template <ParameterId id> struct Binder<id, bool>
+    {
+      static ParamAccess bind(ICore &, IDsp &, TileId, Tools::ReactiveVar<bool> &target)
+      {
+        using T = ParameterDescription<id>;
+        return { .set = [&target](const auto &v) { target = std::get<bool>(v); },
+                 .load = [&target](const auto &v) { target = std::get<bool>(v); },
+                 .get = [&target]() -> ParameterValue { return target.get(); },
+                 .inc =
+                     [&target](int steps)
                  {
-                   auto lhs = &tile.selected;
-                   auto rhs = &target;
-                   tile.selected = lhs == rhs;
-                 }
+                   if(steps % 1)
+                     target = !target.get();
+                 },
+                 .display = [](const ParameterValue &v) { return T::format(std::get<bool>(v)); } };
+      }
+    };
 
-                 assert(std::count_if(model.tiles.begin(), model.tiles.end(), [](auto &t) { return t.selected.get(); })
-                        == 1);
-               },
-               .get = [&target]() -> ParameterValue { return target.get(); },
-               .inc = [&](int) {} };
-    }
-
-    template <typename T> ParamAccess buildAccessGetSet(Tools::ReactiveVar<T> &target)
+    template <> struct Binder<ParameterId::Selected, bool>
     {
-      return { .set = [&target](const auto &v) { target = std::get<T>(v); },
-               .get = [&target]() -> ParameterValue { return target.get(); },
-               .inc = [](int) {} };
+      static ParamAccess bind(ICore &core, IDsp &, TileId tileId, Tools::ReactiveVar<bool> &target)
+      {
+        using T = ParameterDescription<ParameterId::Selected>;
+        return { .set =
+                     [&target, &core, tileId](const auto &v)
+                 {
+                   target = std::get<bool>(v);
+                   if(target.get())
+                   {
+                     for(uint8_t t = 0; t < NUM_TILES; t++)
+                     {
+                       if(t != tileId && std::get<bool>(core.getParameter(t, ParameterId::Selected)))
+                       {
+                         core.setParameter(t, ParameterId::Selected, false);
+                       }
+                     }
+                   }
+                 },
+                 .load = [&target](const auto &v) { target = std::get<bool>(v); },
+                 .get = [&target]() -> ParameterValue { return target.get(); },
+                 .inc = [](int) {},
+                 .display = [](const ParameterValue &v) { return T::format(std::get<bool>(v)); } };
+      }
+    };
+
+    template <ParameterId id> void sanitizeLeft(FramePos desired, ICore &core, IDsp &dsp, TileId tileId)
+    {
+      using T = ParameterDescription<id>;
+      auto v = std::get<FramePos>(core.getParameter(tileId, id));
+      if(v > desired)
+        core.setParameter(tileId, id, desired);
     }
 
-    template <typename Sanitizer>
-    ParamAccess buildAccess(Dsp::Api::Control::Interface &dsp, Tools::ReactiveVar<FramePos> &target,
-                            const Tools::ReactiveVar<std::filesystem::path> &sample, Sanitizer sanitizer)
+    template <> void sanitizeLeft<ParameterId::SampleFile>(FramePos desired, ICore &core, IDsp &dsp, TileId tileId)
     {
-      return { .set =
-                   [&target, &dsp, &sample, sanitizer](const auto &v)
-               {
-                 target = std::get<FramePos>(v);
-                 sanitizer(dsp.getSamples(sample)->size());
-               },
-               .get = [&target]() -> ParameterValue { return target.get(); },
-               .inc =
-                   [&target, &dsp, &sample, sanitizer](int steps)
-               {
-                 target = target.get() + steps;
-                 sanitizer(dsp.getSamples(sample)->size());
-               } };
     }
+
+    template <ParameterId id> void sanitizeRight(FramePos desired, ICore &core, IDsp &dsp, TileId tileId)
+    {
+      using T = ParameterDescription<id>;
+      auto v = std::get<FramePos>(core.getParameter(tileId, id));
+      if(v < desired)
+        core.setParameter(tileId, id, desired);
+    }
+
+    template <> void sanitizeRight<ParameterId::SampleFile>(FramePos desired, ICore &core, IDsp &dsp, TileId tileId)
+    {
+    }
+
+    template <ParameterId id> struct Binder<id, FramePos>
+    {
+      static ParamAccess bind(ICore &core, IDsp &dsp, TileId tileId, Tools::ReactiveVar<FramePos> &target)
+      {
+        using T = ParameterDescription<id>;
+
+        auto set = [&target, &core, &dsp, tileId](const ParameterValue &v)
+        {
+          auto oldValue = std::get<FramePos>(core.getParameter(tileId, id));
+          auto sample = std::get<Path>(core.getParameter(tileId, ParameterId::SampleFile));
+          auto numFrames = static_cast<FramePos>(dsp.getSamples(sample)->size());
+          target = std::min<FramePos>(std::get<FramePos>(v), numFrames);
+
+          if(oldValue > target)
+            sanitizeLeft<T::left>(target.get(), core, dsp, tileId);
+          else if(oldValue < target)
+            sanitizeRight<T::right>(target.get(), core, dsp, tileId);
+        };
+
+        return { .set = set,
+                 .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
+                 .get = [&target]() -> ParameterValue { return target.get(); },
+                 .inc = [&target, set](int steps) { set(target.get() + steps); } };
+      }
+    };
 
     class Mosaik : public Interface
     {
@@ -86,66 +159,26 @@ namespace Core
           : m_model(model)
           , m_dsp(dsp)
       {
-        m_access
-            = { { { TileId {}, ParameterId::GlobalVolume },
-                  buildAccess(m_model.globals.volume, c_silenceDB, c_maxDB, 1.f) },
-                { { TileId {}, ParameterId::GlobalShuffle }, buildAccess(m_model.globals.shuffle, 0.0f, 1.0f, 0.001f) },
-                { { TileId {}, ParameterId::GlobalTempo }, buildAccess(m_model.globals.tempo, 20.0f, 240.0f, 0.1f) } };
+        bindParameters<GlobalParameters>(TileId {}, m_model.globals.tempo, m_model.globals.volume,
+                                         m_model.globals.shuffle);
 
         for(auto c = 0; c < NUM_TILES; c++)
         {
-          TileId id(c);
-          auto &src = m_model.tiles[id.value()];
-          m_access[{ id, ParameterId::SampleFile }] = buildAccessGetSet(src.sample);
-          m_access[{ id, ParameterId::Pattern }] = buildAccessGetSet(src.pattern);
-          m_access[{ id, ParameterId::Balance }] = buildAccess(src.balance, -1.0f, 1.0f, 0.02);
-          m_access[{ id, ParameterId::Gain }] = buildAccess(src.gain, c_silenceDB, c_maxDB, 1.f);
-          m_access[{ id, ParameterId::Mute }] = buildAccess(src.muted);
-          m_access[{ id, ParameterId::Reverse }] = buildAccess(src.reverse);
-          m_access[{ id, ParameterId::Speed }] = buildAccess(src.speed, -1.0f, 1.0f, 0.02);
-          m_access[{ id, ParameterId::Selected }] = buildExclusiveAccess(m_model, src.selected);
-
-          m_access[{ id, ParameterId::EnvelopeFadeInPos }] = buildAccess(
-              m_dsp, src.envelopeFadeInPos, src.sample,
-              [&src](size_t sampleLength)
-              {
-                FadeParameterSanitizer::sanitizeFadeInPos(sampleLength, src.envelopeFadeInPos, src.envelopeFadeInLen,
-                                                          src.envelopeFadeOutPos, src.envelopeFadeOutLen);
-              });
-
-          m_access[{ id, ParameterId::EnvelopeFadeInLen }] = buildAccess(
-              m_dsp, src.envelopeFadeInLen, src.sample,
-              [&src](size_t sampleLength)
-              {
-                FadeParameterSanitizer::sanitizeFadeInLen(sampleLength, src.envelopeFadeInPos, src.envelopeFadeInLen,
-                                                          src.envelopeFadeOutPos, src.envelopeFadeOutLen);
-              });
-
-          m_access[{ id, ParameterId::EnvelopeFadeOutPos }] = buildAccess(
-              m_dsp, src.envelopeFadeOutPos, src.sample,
-              [&src](size_t sampleLength)
-              {
-                FadeParameterSanitizer::sanitizeFadeOutPos(sampleLength, src.envelopeFadeInPos, src.envelopeFadeInLen,
-                                                           src.envelopeFadeOutPos, src.envelopeFadeOutLen);
-              });
-
-          m_access[{ id, ParameterId::EnvelopeFadeOutLen }] = buildAccess(
-              m_dsp, src.envelopeFadeOutLen, src.sample,
-              [&src](size_t sampleLength)
-              {
-                FadeParameterSanitizer::sanitizeFadeOutLen(sampleLength, src.envelopeFadeInPos, src.envelopeFadeInLen,
-                                                           src.envelopeFadeOutPos, src.envelopeFadeOutLen);
-              });
-
-          m_access[{ id, ParameterId::TriggerFrame }]
-              = buildAccess(m_dsp, src.triggerFrame, src.sample, [&src](FramePos sampleLength)
-                            { src.triggerFrame = std::clamp<FramePos>(src.triggerFrame.get(), 0, sampleLength); });
+          auto &src = m_model.tiles[c];
+          bindParameters<TileParameters>(c, src.selected, src.sample, src.reverse, src.pattern, src.balance, src.gain,
+                                         src.muted, src.speed, src.envelopeFadeInPos, src.envelopeFadedInPos,
+                                         src.envelopeFadeOutPos, src.envelopeFadedOutPos, src.triggerFrame);
         }
+
+        load(getInitFileName());
 
         m_dsp.takeAudioKernel(newDspKernel(m_model));
       }
 
-      ~Mosaik() override = default;
+      ~Mosaik() override
+      {
+        save(getInitFileName());
+      }
 
       void setParameter(TileId tileId, ParameterId parameterId, const ParameterValue &v) override
       {
@@ -164,9 +197,40 @@ namespace Core
         return m_access.find({ tileId, parameterId })->second.get();
       }
 
+      [[nodiscard]] std::string getParameterDisplay(TileId tileId, ParameterId parameterId) const override
+      {
+        const auto &a = m_access.find({ tileId, parameterId })->second;
+        return a.display(a.get());
+      }
+
       [[nodiscard]] Dsp::SharedSampleBuffer getSamples(TileId tileId) const override
       {
         return m_dsp.getSamples(get<std::filesystem::path>(getParameter(tileId, ParameterId::SampleFile)));
+      }
+
+     private:
+      template <typename Parameters, typename... Args> void bindParameters(TileId tileId, Args &...target)
+      {
+        using Indizes = std::make_index_sequence<std::tuple_size_v<typename Parameters::Descriptors>>;
+        bindParameters<Parameters>(Indizes {}, tileId, std::make_tuple(std::ref(target)...));
+      }
+
+      template <typename Parameters, typename Targets, size_t... idx>
+      void bindParameters(std::integer_sequence<size_t, idx...> int_seq, TileId tileId, Targets targets)
+      {
+        (bindParameter<Parameters, Targets, idx>(tileId, targets), ...);
+      }
+
+      template <typename Parameters, typename Targets, size_t idx> void bindParameter(TileId tileId, Targets targets)
+      {
+        using D = typename std::tuple_element_t<idx, typename Parameters::Descriptors>;
+        bindParameter<D::id>(tileId, std::get<idx>(targets));
+      }
+
+      template <ParameterId id, typename T = ParameterDescription<id>::Type>
+      void bindParameter(TileId tileId, Tools::ReactiveVar<T> &target)
+      {
+        m_access[{ tileId, id }] = Binder<id, T>::bind(*this, m_dsp, tileId, target);
       }
 
       [[nodiscard]] Dsp::AudioKernel *newDspKernel(const DataModel &dataModel) const
@@ -243,19 +307,25 @@ namespace Core
         auto calcB = [&](float startY, float endY, FramePos p, FramePos l)
         { return startY - calcM(startY, endY, l) * static_cast<float>(p); };
 
+        constexpr int c_silenceDB = -60;
+        constexpr int c_zeroDB = 0.f;
+
         // faded-out section
-        tgt.envelope[0] = { src.envelopeFadeOutPos + src.envelopeFadeOutLen, c_zeroDB, c_silenceDB };
+        tgt.envelope[0] = { src.envelopeFadedOutPos, c_zeroDB, c_silenceDB };
 
         // fade-out section
-        tgt.envelope[1] = { src.envelopeFadeOutPos, calcM(c_zeroDB, c_silenceDB, src.envelopeFadeOutLen),
-                            calcB(c_zeroDB, c_silenceDB, src.envelopeFadeOutPos, src.envelopeFadeOutLen) };
+        tgt.envelope[1]
+            = { src.envelopeFadeOutPos, calcM(c_zeroDB, c_silenceDB, src.envelopeFadedOutPos - src.envelopeFadeOutPos),
+                calcB(c_zeroDB, c_silenceDB, src.envelopeFadeOutPos,
+                      src.envelopeFadedOutPos - src.envelopeFadeOutPos) };
 
         // faded-in section
-        tgt.envelope[2] = { src.envelopeFadeInPos + src.envelopeFadeInLen, 0.0f, c_zeroDB };
+        tgt.envelope[2] = { src.envelopeFadedInPos, 0.0f, c_zeroDB };
 
         // fade-in section
-        tgt.envelope[3] = { src.envelopeFadeInPos, calcM(c_silenceDB, c_zeroDB, src.envelopeFadeInLen),
-                            calcB(c_silenceDB, c_zeroDB, src.envelopeFadeInPos, src.envelopeFadeInLen) };
+        tgt.envelope[3]
+            = { src.envelopeFadeInPos, calcM(c_silenceDB, c_zeroDB, src.envelopeFadedInPos - src.envelopeFadeInPos),
+                calcB(c_silenceDB, c_zeroDB, src.envelopeFadeInPos, src.envelopeFadedInPos - src.envelopeFadeInPos) };
 
         // pre fade-in section
         tgt.envelope[4] = { 0, 0, c_silenceDB };
@@ -268,15 +338,9 @@ namespace Core
     };
   }
 
-  static std::filesystem::path getInitFileName()
-  {
-    std::filesystem::path home = getenv("HOME");
-    return home / ".mosaik";
-  }
-
   Core::Core(Dsp::Api::Control::Interface &dsp, std::unique_ptr<DataModel> dataModel)
       : m_dsp(dsp)
-      , m_dataModel(dataModel ? std::move(dataModel) : std::make_unique<DataModel>(getInitFileName()))
+      , m_dataModel(dataModel ? std::move(dataModel) : std::make_unique<DataModel>())
       , m_api(std::make_unique<Api::Mosaik>(*m_dataModel, m_dsp))
   {
   }

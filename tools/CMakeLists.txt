@@ -6,7 +6,9 @@ pkg_check_modules(LIBS REQUIRED IMPORTED_TARGET glibmm-2.4)
 add_library(mosaik-tools
         ReactiveVar.h
         ReactiveVar.cpp
-        Math.h)
+        Math.h
+        Format.cpp
+        Format.h)
 
 target_include_directories(mosaik-tools PRIVATE ${LIBS_INCLUDE_DIRS})
 target_link_libraries(mosaik-tools ${LIBS_LIBRARIES})

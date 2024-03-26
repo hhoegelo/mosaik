@@ -2,8 +2,59 @@
 #include "Interface.h"
 #include "ui/midi-ui/Interface.h"
 
+#define JSON_ASSERT(x)
+#include <tools/json.h>
+#include <fstream>
+#include <iostream>
+
 namespace Core::Api
 {
+  void Interface::load(const Path &path)
+  {
+    if(exists(path))
+    {
+      try
+      {
+        nlohmann::json j;
+        std::ifstream(path) >> j;
+
+        auto loadParameter = [&](auto json, TileId id, auto p)
+        {
+          if(json.contains(p.name))
+            setParameter(id, p.id, static_cast<typename decltype(p)::Type>(json[p.name]));
+        };
+
+        if(j.contains("globals"))
+          std::apply([&](auto... a) { (loadParameter(j["globals"], {}, a), ...); }, GlobalParameters::Descriptors {});
+
+        if(j.contains("tiles"))
+          for(uint8_t i = 0; i < NUM_TILES; i++)
+            std::apply([&](auto... a) { (loadParameter(j["tiles"][i], TileId { i }, a), ...); },
+                       TileParameters::Descriptors {});
+      }
+      catch(...)
+      {
+        std::cerr << "Could not read initial setup file." << std::endl;
+      }
+    }
+  }
+
+  void Interface::save(const Path &path)
+  {
+    nlohmann::json j;
+
+    auto saveParameter = [&](auto &json, TileId id, auto p)
+    { json[p.name] = std::get<typename decltype(p)::Type>(getParameter(id, p.id)); };
+
+    std::apply([&](auto... a) { (saveParameter(j["globals"], {}, a), ...); }, GlobalParameters::Descriptors {});
+
+    for(uint8_t i = 0; i < NUM_TILES; i++)
+      std::apply([&](auto... a) { (saveParameter(j["tiles"][i], TileId { i }, a), ...); },
+                 TileParameters::Descriptors {});
+
+    std::ofstream(path) << j;
+  }
+
   std::vector<TileId> Interface::getSelectedTiles() const
   {
     std::vector<TileId> ret;
@@ -60,8 +111,9 @@ namespace Core::Api
     return static_cast<Step>(std::round(static_cast<double>(pos) / framesPer16th));
   }
 
-  ParameterValue Interface::getFirstSelectedTileParameter(ParameterId parameterId) const
+  std::string Interface::getFirstSelectedTileParameterDisplay(ParameterId parameterId) const
   {
-    return getParameter(getSelectedTiles().front(), parameterId);
+    return getParameterDisplay(getSelectedTiles().front(), parameterId);
   }
+
 }

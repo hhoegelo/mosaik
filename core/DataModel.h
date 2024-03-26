@@ -12,9 +12,13 @@ namespace Core
 
   struct DataModel
   {
-    explicit DataModel(std::filesystem::path f);
-    DataModel();
-    ~DataModel();
+    DataModel()
+    {
+      for(auto c = 0; c < NUM_TILES; c++)
+        tiles[c].id = c;
+
+      tiles[0].selected = true;
+    }
 
     struct Tile
     {
@@ -29,9 +33,9 @@ namespace Core
       Tools::ReactiveVar<bool> selected { false };
 
       Tools::ReactiveVar<FramePos> envelopeFadeInPos { 0 };
-      Tools::ReactiveVar<FramePos> envelopeFadeInLen { 0 };
+      Tools::ReactiveVar<FramePos> envelopeFadedInPos { 0 };
       Tools::ReactiveVar<FramePos> envelopeFadeOutPos { std::numeric_limits<FramePos>::max() };
-      Tools::ReactiveVar<FramePos> envelopeFadeOutLen { 0 };
+      Tools::ReactiveVar<FramePos> envelopeFadedOutPos { std::numeric_limits<FramePos>::max() };
       Tools::ReactiveVar<FramePos> triggerFrame { 0 };
 
       Tools::ReactiveVar<float> speed { 0 };
@@ -46,7 +50,5 @@ namespace Core
 
     Globals globals;
     std::array<Tile, NUM_TILES> tiles;
-
-    std::filesystem::path backing;
   };
 }

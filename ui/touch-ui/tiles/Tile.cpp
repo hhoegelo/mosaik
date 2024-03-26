@@ -44,10 +44,12 @@ namespace Ui::Touch
     reverse->get_style_context()->add_class("is-playing-indicator");
     attach(*reverse, 1, 0, 2, 1);
 
+    using GainDesc = Core::ParameterDescription<Core::ParameterId::Gain>;
+
     auto volume = Gtk::manage(new Gtk::LevelBar());
     volume->set_orientation(Gtk::Orientation::ORIENTATION_VERTICAL);
     volume->set_min_value(0.0);
-    volume->set_max_value(1.0);
+    volume->set_max_value(GainDesc::max - GainDesc::min);
     volume->set_inverted(true);
     volume->get_style_context()->add_class("volume");
     attach(*volume, 3, 0, 1, 4);
@@ -80,8 +82,9 @@ namespace Ui::Touch
         [&core, tileId, reverse]()
         { reverse->set_label(std::get<bool>(core.getParameter(tileId, Core::ParameterId::Reverse)) ? " < " : " > "); });
 
-    m_computations.add([&core, tileId, volume]()
-                       { volume->set_value(std::get<float>(core.getParameter(tileId, Core::ParameterId::Gain))); });
+    m_computations.add(
+        [&core, tileId, volume]()
+        { volume->set_value(std::get<float>(core.getParameter(tileId, Core::ParameterId::Gain)) - GainDesc::min); });
 
     m_computations.add(
         [&core, tileId, this]()
@@ -95,7 +98,7 @@ namespace Ui::Touch
     m_computations.add(
         [&core, tileId, waveform]()
         {
-          core.getParameter(tileId, Core::ParameterId::SampleFile);
+          auto _ = core.getParameter(tileId, Core::ParameterId::SampleFile);
           waveform->queue_draw();
         });
 

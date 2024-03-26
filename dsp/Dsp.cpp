@@ -13,6 +13,8 @@
 
 namespace Dsp
 {
+  constexpr int c_silenceDB = -60;
+  constexpr int c_maxDB = 12;
 
   struct Dsp::Impl
   {

@@ -16,21 +16,21 @@ namespace Ui::Touch
   {
     auto volBox = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
     volBox->add(*Gtk::manage(new Gtk::Label("Volume")));
-    volBox->add(*buildLevel(Core::ParameterId::GlobalVolume, Core::c_silenceDB, Core::c_maxDB));
+    volBox->add(*buildLevel(Core::ParameterId::GlobalVolume));
 
     auto tempoBox = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
     tempoBox->add(*Gtk::manage(new Gtk::Label("Tempo")));
-    tempoBox->add(*buildLevel(Core::ParameterId::GlobalTempo, 20, 240));
+    tempoBox->add(*buildLevel(Core::ParameterId::GlobalTempo));
 
     auto shuffleBox = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
     shuffleBox->add(*Gtk::manage(new Gtk::Label("Shuffle")));
-    shuffleBox->add(*buildLevel(Core::ParameterId::GlobalShuffle, 0.0, 1.0));
+    shuffleBox->add(*buildLevel(Core::ParameterId::GlobalShuffle));
 
     auto buildEmptyBox = [&]
     {
       auto emptyBox = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
       emptyBox->add(*Gtk::manage(new Gtk::Label("unused")));
-      emptyBox->add(*buildLevel(Core::ParameterId::Unused, 0.0, 1.0));
+
       return emptyBox;
     };
 
@@ -46,15 +46,10 @@ namespace Ui::Touch
     attach(*tempoBox, 3, 3, 1, 1);
   }
 
-  Gtk::LevelBar *GlobalTools::buildLevel(Core::ParameterId id, double min, double max)
+  Gtk::Label *GlobalTools::buildLevel(Core::ParameterId id)
   {
-    auto level = Gtk::manage(new Gtk::LevelBar());
-    level->set_min_value(0);
-    level->set_max_value(max - min);
-
-    if(id != Core::ParameterId::Unused)
-      m_computations.add([this, id, level, min] { level->set_value(get<float>(m_core.getParameter({}, id)) - min); });
-
+    auto level = Gtk::manage(new Gtk::Label());
+    m_computations.add([this, id, level] { level->set_label(m_core.getParameterDisplay({}, id)); });
     return level;
   }
 

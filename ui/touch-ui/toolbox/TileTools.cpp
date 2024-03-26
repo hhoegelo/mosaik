@@ -33,19 +33,17 @@ namespace Ui::Touch
 
     auto gain = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
     gain->add(*Gtk::manage(new Gtk::Label("Gain")));
-    auto gainLevel = Gtk::manage(new Gtk::LevelBar());
-    gainLevel->set_min_value(0);
-    gainLevel->set_max_value(Core::c_maxDB - Core::c_silenceDB);
+    auto gainLevel = Gtk::manage(new Gtk::Label());
     gain->add(*gainLevel);
 
     auto speed = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
     speed->add(*Gtk::manage(new Gtk::Label("Speed")));
-    auto speedLevel = Gtk::manage(new Gtk::LevelBar());
+    auto speedLevel = Gtk::manage(new Gtk::Label());
     speed->add(*speedLevel);
 
     auto balance = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
     balance->add(*Gtk::manage(new Gtk::Label("Balance")));
-    auto balanceLevel = Gtk::manage(new Gtk::LevelBar());
+    auto balanceLevel = Gtk::manage(new Gtk::Label());
     balance->add(*balanceLevel);
 
     controls->attach(*balance, 0, 0, 1, 1);
@@ -66,19 +64,18 @@ namespace Ui::Touch
       m_fileBrowser->set_current_folder_uri(m_lastSelectedFolder.value());
   }
 
-  void TileTools::updateTileGain(Gtk::LevelBar *level)
+  void TileTools::updateTileGain(Gtk::Label *level)
   {
-    level->set_value(std::get<float>(m_core.getFirstSelectedTileParameter(Core::ParameterId::Gain))
-                     - Core::c_silenceDB);
+    level->set_label(m_core.getFirstSelectedTileParameterDisplay(Core::ParameterId::Gain));
   }
 
-  void TileTools::updateTileSpeed(Gtk::LevelBar *level)
+  void TileTools::updateTileSpeed(Gtk::Label *level)
   {
-    level->set_value(std::get<float>(m_core.getFirstSelectedTileParameter(Core::ParameterId::Speed)));
+    level->set_label(m_core.getFirstSelectedTileParameterDisplay(Core::ParameterId::Speed));
   }
 
-  void TileTools::updateTileBalance(Gtk::LevelBar *level)
+  void TileTools::updateTileBalance(Gtk::Label *level)
   {
-    level->set_value(std::get<float>(m_core.getFirstSelectedTileParameter(Core::ParameterId::Balance)));
+    level->set_label(m_core.getFirstSelectedTileParameterDisplay(Core::ParameterId::Balance));
   }
 }

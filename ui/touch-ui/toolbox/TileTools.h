@@ -26,9 +26,9 @@ namespace Ui::Touch
     void onToolShown();
 
    private:
-    void updateTileGain(Gtk::LevelBar *level);
-    void updateTileSpeed(Gtk::LevelBar *level);
-    void updateTileBalance(Gtk::LevelBar *level);
+    void updateTileGain(Gtk::Label *level);
+    void updateTileSpeed(Gtk::Label *level);
+    void updateTileBalance(Gtk::Label *level);
 
     Core::Api::Interface &m_core;
 

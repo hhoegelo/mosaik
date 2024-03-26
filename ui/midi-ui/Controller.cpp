@@ -110,11 +110,11 @@ namespace Ui::Midi
           { Knob::SouthWest, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeInPos, inc * m_touchUi
                                                .getWaveformFramesPerPixel()); } },
           { Knob::NorthWest
-            , [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeInLen, inc * m_touchUi
+            , [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadedInPos, inc * m_touchUi
                                                                                                .getWaveformFramesPerPixel()); } },
           { Knob::SouthEast, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeOutPos, inc * m_touchUi
                                                                                                 .getWaveformFramesPerPixel()); } },
-          { Knob::NorthEast, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeOutLen, inc * m_touchUi
+          { Knob::NorthEast, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadedOutPos, inc * m_touchUi
                                                                                                 .getWaveformFramesPerPixel()); } },
 
 

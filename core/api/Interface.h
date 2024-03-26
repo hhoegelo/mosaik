@@ -12,15 +12,19 @@ namespace Core::Api
    public:
     virtual ~Interface() = default;
 
+    void load(const Path &path);
+    void save(const Path &path);
+
     virtual void setParameter(TileId tileId, ParameterId parameterId, const ParameterValue &value) = 0;
     virtual void incParameter(TileId tileId, ParameterId parameterId, int steps) = 0;
     [[nodiscard]] virtual ParameterValue getParameter(TileId tileId, ParameterId parameterId) const = 0;
+    [[nodiscard]] virtual std::string getParameterDisplay(TileId tileId, ParameterId parameterId) const = 0;
 
     [[nodiscard]] virtual Dsp::SharedSampleBuffer getSamples(TileId tileId) const = 0;
     [[nodiscard]] std::vector<TileId> getSelectedTiles() const;
 
     // Convenience
-    ParameterValue getFirstSelectedTileParameter(ParameterId parameterId) const;
+    [[nodiscard]] std::string getFirstSelectedTileParameterDisplay(ParameterId parameterId) const;
     [[nodiscard]] Step loopPositionToStep(Dsp::FramePos pos) const;
     [[nodiscard]] Pattern getMergedPattern() const;
     void incSelectedTilesParameter(ParameterId parameterId, int steps);
