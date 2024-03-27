@@ -137,7 +137,7 @@ namespace Core
           auto oldValue = std::get<FramePos>(core.getParameter(tileId, id));
           auto sample = std::get<Path>(core.getParameter(tileId, ParameterId::SampleFile));
           auto numFrames = static_cast<FramePos>(dsp.getSamples(sample)->size());
-          target = std::min<FramePos>(std::get<FramePos>(v), numFrames);
+          target = std::clamp<FramePos>(std::get<FramePos>(v), 0, numFrames);
 
           if(oldValue > target)
             sanitizeLeft<T::left>(target.get(), core, dsp, tileId);
