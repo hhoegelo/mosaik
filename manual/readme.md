@@ -28,6 +28,8 @@ It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJ
 ### new toolboxes
 ![](hwui-gui.png)
 
+![](hwui-midi.png)
+
 
 #### Audio Parameter
 - Volume

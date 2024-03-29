@@ -55,7 +55,7 @@ namespace Ui::Touch
     attach(*volume, 3, 0, 1, 4);
 
     auto waveform = buildWaveformDisplay(core, tileId);
-    attach(*waveform, 0, 1, 3, 3);
+    attach(*waveform, 0, 1, 12, 3);
 
     auto seconds = Gtk::manage(new Gtk::Label("0.0s"));
     seconds->get_style_context()->add_class("duration");

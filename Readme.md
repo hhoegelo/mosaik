@@ -6,7 +6,8 @@
 	cd ~/mosaik-build
 	cmake path-to-source
 	make
-	./mosaik --alsa-out=plughw:0,0
+	./mosaik --alsa-out=plughw:0,0 --bits=24 --midi-ui hw:2,0,0
+
 
 ## HWUI debug tools
 	amidi -l
@@ -17,18 +18,37 @@
 	amidi -p hw:1,0,0 -S '92 25 00'
 
 ## RGB commands
-	'90 25 00'
-	color id val
+'90 25 00'
+cmd id val
 
-	color:
-	90: red-channel
-	91: green-channel
-	92: blue-channel
-	93: white-channel
-	94: color table
-	95: update
-	96: all leds on
-	97: all leds off  
+commands:
+90: red-channel
+91: green-channel
+92: blue-channel
+93: white-channel
+94: color table
+95: update
+96: all leds on
+97: all leds off  
+
+### RGB channel examples:
+	
+turn on red-channel of led 1 with brightness 5:
+
+	amidi -p hw:1,0,0 -S '90 01 05'
+	
+turn on green-channel of led 1 with brightness 6:
+
+	amidi -p hw:1,0,0 -S '91 01 06'
+
+led 1 is yellow now, to show green, turn off the red channel:
+
+	amidi -p hw:1,0,0 -S '90 01 00'
+	
+led 1 lights green now
+ 
+
+### color map examples:
 
 	# color table (94)       ID color
 	amidi -p hw:1,0,0 -S '94 6A 00'
