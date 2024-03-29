@@ -22,14 +22,10 @@ It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJ
 
 
 ## Toolboxes
-
 ![](toolboxes.png)
 
 ### new toolboxes
 ![](hwui-gui.png)
-
-![](hwui-midi.png)
-
 
 #### Audio Parameter
 - Volume
@@ -43,18 +39,23 @@ It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJ
 - distotrion (digital, quantizer): step, offset, frequency
 - filter and distortion curve display 
 
-#### Waveform 
+#### Waveform / Envelope
 - Envelope: Start, FadeIn, FadeOut, End
 - Hitpoint
 - timeline
 - barline
+![](envelope.png)
 
-#### Steps
+#### StepWizzard
 - set all
 - clear all
 - mirror
 - invert 
 - wizzard: rotate, gap, off 
+
+![](step-wizzard.png)
+
+
 
 #### Mute
 - unmute all
@@ -96,6 +97,8 @@ It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJ
 - Rootnote
 - MIDI Clock: internal, external
 
+![](midi-assignment.png)
+
 #### DMX
 - Tile to DMX channel
 - color
@@ -106,8 +109,7 @@ It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJ
 - VU meter
 - Envelope, Hitpoint
 - Pitch, Playdirection 
-~~~~- FX: Distortion, Filter
-
+FX: Distortion, Filter
 
 ![](new-tiles.png)
 - a) tile not playing
@@ -116,8 +118,6 @@ It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJ
 - d) tile is playing
 - e) tile is not playing
 - f) tile with envelope, only envelope is shown, additional time for full sample length
-
-![](tile-detail.png)
 
 #### Filter
 - 2P HP: cutoff, resonance
