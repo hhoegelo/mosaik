@@ -1,11 +1,13 @@
 # Mosaik Manual
-![](logo.png)
+![](mosaik-logo.png)
 Mosaik is a rhythm instrument, optimized for live beat programming. 
 
 It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJing, dubmixing to always give you full overview and control over your beats.
 
 - sample sequence instrument
 - made for stage
+
+![](mosaik-venn.png)
 
 ## Overview
 - sampling
@@ -24,7 +26,7 @@ It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJ
 ![](toppanel.png)
 
 ## UI Overview (obsolete)
-
+x
 ![](ui-overview.png)
 
 ### Quick Start Guide / Workflow
@@ -45,6 +47,9 @@ It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJ
 - dubmixer (channel, main)
 ![](new-ui.png)
 
+## selection frames
+
+![](selection-frames.png)
 
 ## Toolboxes
 a conceptional overview of the toolboxes (obsolete)
@@ -55,21 +60,56 @@ a conceptional overview of the toolboxes (obsolete)
 
 ![](hwui-gui.png)
 
-#### Audio Parameter
+### Audio Parameter
 - Volume
 - Pan
 - Play Direction
 - Pitch
-- 2P HP Filter: cutoff, resonance
-- BP Filter: gain, frequency, bandwidth
-- 2P LP Filter: cutoff, resonace
-- distortion (analog, saturator): gain, fold, asymmetry
-- distotrion (digital, quantizer): step, offset, frequency
 - filter and distortion curve display 
 
 ![](audio-dia.png)
 
-#### Waveform / Envelope
+### FX: Filter 
+#### 2P HiPass
+- cutoff
+- resonance
+
+#### Peak EQ (BP)
+- gain
+- frequency
+- bandwidth 
+
+#### 2P LoPass
+- cutoff
+- resonance
+
+
+### FX: Distortion
+#### C15 Shaper (Analog)
+- Gain
+- Fold
+- Asymetry
+#### Quantize Down Sample (Digital)
+- Step
+- Offset
+- Frequency/Sample Rate
+
+### FX: Reverb
+Return Fader
+- Size
+- Color
+- Pre Delay
+- Chorus
+
+### FX: Delay 
+Return Fader
+- Time
+- Stereo
+- Feedback
+- Hi Cut
+- Cross FB
+
+### Waveform / Envelope
 - Envelope: Start, FadeIn, FadeOut, End
 - move envelope
 - Hitpoint
@@ -77,7 +117,7 @@ a conceptional overview of the toolboxes (obsolete)
 - barline
 ![](envelope.png)
 
-#### StepWizzard
+### StepWizzard
 - set all
 - clear all
 - mirror
@@ -88,7 +128,7 @@ a conceptional overview of the toolboxes (obsolete)
 
 
 
-#### Mute
+### Mute
 - unmute all
 - last selection
 - groups
@@ -96,10 +136,11 @@ a conceptional overview of the toolboxes (obsolete)
 
 ![](mute-view.png)
 
-#### Snapshot
+### Snapshot
 - slots: load, save
+![](tb-snapshots.png)
 
-#### Browser
+### Browser
 - prelisten sample
 - browse sample
 - bookmark samples
@@ -110,35 +151,35 @@ a conceptional overview of the toolboxes (obsolete)
 
 ![](swd-hwui.png)
 
-#### Prelisten
+### Prelisten
 - headphones volume
 - split or mixed
 - swap left/right channel
 - x-fade between main and pre
 
-#### Audio Recorder
+### Audio Recorder
 - select source: line in, mic in
 - level
 - save recording to sample collection
 - load recording to tile
 
-#### MIDI
+### MIDI
 - Key/Pad (Rootnote for tiles)
 - Controller: (Motor) Fader, Potis
 - MIDI Clock: internal, external
 
 ![](midi-assignment.png)
 
-#### DMX
+### DMX
 - visualize beat/bar (counter)
 - link led-spots to tiles (trigger, color)
 - show multiple tiles/sequneces on led-matrix
 
-#### Manual
+### Manual
 - shows the manual
 - can be full page?
 
-#### Beat Book
+### Beat Book
 - a way to store/learn rhythm pattern
 
 ## Tiles
@@ -157,19 +198,6 @@ a conceptional overview of the toolboxes (obsolete)
 - e) tile is not playing
 - f) tile with envelope, only envelope is shown, additional time for full sample length
 
-#### Filter
-- 2P HP: cutoff, resonance
-- BP: gain, frequency, bandwidth 
-- 2P LP: cutoff, resonance
-
-#### Distortion
-- Analog: Gain, Fold, Asymetry
-- Digital: Step, Offset, Frequency
-
-#### Reverb (Return Fader)
-
-
-#### Delay (Return Fader)
 
 ## Concepts
 - starts with empty tiles and steps and at random speed (60..180)
