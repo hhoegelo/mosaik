@@ -1,11 +1,12 @@
 # Mosaik Manual
+
 ![](mosaik-logo.png)
-Mosaik is a rhythm instrument, optimized for live beat programming. 
 
-It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJing, dubmixing to always give you full overview and control over your beats.
+Mosaik combines techniques from sampling, stepsequcencing, live/jamming, looping, DJing and dubmixing to always give you full overview and control over your beats.
 
+- Mosaik - made for stage
+- Mosaik is a rhythm instrument, optimized for live beat programming. 
 - sample sequence instrument
-- made for stage
 
 ![](mosaik-venn.png)
 
@@ -55,6 +56,7 @@ It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJ
 ## GUI
 - tile grid, toolboxes
 - dubmixer (channel, main)
+
 ![](new-ui.png)
 
 ## selection frames
@@ -70,6 +72,7 @@ It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJ
 - FX: Distortion, Filter
 
 ![](new-tiles.png)
+
 - a) tile not playing
 - b) tile triggered
 - c) tile starts playing
@@ -101,6 +104,7 @@ a conceptional overview of the toolboxes (obsolete)
 - Hitpoint
 - timeline
 - barline
+
 ![](envelope.png)
 
 ## FX: Filter 
@@ -134,6 +138,7 @@ Return Fader
 - Color
 - Pre Delay
 - Chorus
+
 ![](reverb.png)
 
 ## FX: Delay 
@@ -143,6 +148,7 @@ Return Fader
 - Feedback
 - Hi Cut
 - Cross FB
+
 ![](delay.png)
 
 ## StepWizzard
@@ -165,6 +171,7 @@ Return Fader
 
 ## Snapshot
 - slots: load, save
+
 ![](tb-snapshots.png)
 
 ## Browser
