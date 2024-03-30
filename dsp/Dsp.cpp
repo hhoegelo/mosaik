@@ -90,8 +90,7 @@ namespace Dsp
     volume
         += std::clamp(::Tools::dBToFactor<c_silenceDB, c_maxDB>(kernel->volume_dB) - volume, -maxVolStep, maxVolStep);
 
-    auto shape = [&](float in) { return 1 / 1.6f * std::atan(1 * in * volume); };
-    return { shape(frame.left), shape(frame.right) };
+    return frame;
   }
 
   StereoFrame Dsp::Impl::Tile::doAudio(AudioKernel::Tile &kernel, Dsp::Impl::ToUi::Tile &ui,

@@ -12,8 +12,8 @@ namespace Core::Api
    public:
     virtual ~Interface() = default;
 
-    void load(const Path &path);
-    void save(const Path &path);
+    virtual void load(const Path &path);
+    virtual void save(const Path &path);
 
     virtual void setParameter(TileId tileId, ParameterId parameterId, const ParameterValue &value) = 0;
     virtual void incParameter(TileId tileId, ParameterId parameterId, int steps) = 0;

@@ -79,8 +79,11 @@ namespace Tools
     add(cb);
   }
 
-  DeferredComputations::DeferredComputations(Glib::RefPtr<Glib::MainContext> ctx)
+  uint32_t DeferredComputations::s_numDeferredComputationsScheduled = 0;
+
+  DeferredComputations::DeferredComputations(Glib::RefPtr<Glib::MainContext> ctx, uint32_t timeout)
       : m_ctx(std::move(ctx))
+      , m_timeout(timeout)
   {
   }
 
@@ -93,21 +96,30 @@ namespace Tools
 
     if(m_pending.size() == 1)
     {
+      s_numDeferredComputationsScheduled++;
+
       m_timer = m_ctx->signal_timeout().connect(
           [this]
           {
             auto c = std::move(m_pending);
             for(const auto &k : c)
               add(k);
+            s_numDeferredComputationsScheduled--;
             return false;
           },
-          10);
+          m_timeout);
     }
   }
 
   DeferredComputations::~DeferredComputations()
   {
     m_timer.disconnect();
+  }
+
+  void DeferredComputations::waitForAllScheduledComputationsDone()
+  {
+    while(s_numDeferredComputationsScheduled > 0)
+      Glib::MainContext::get_default()->iteration(true);
   }
 
 }

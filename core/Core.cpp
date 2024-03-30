@@ -5,15 +5,10 @@
 #include <dsp/AudioKernel.h>
 #include <cmath>
 #include <map>
+#include <utility>
 
 namespace Core
 {
-  static std::filesystem::path getInitFileName()
-  {
-    std::filesystem::path home = getenv("HOME");
-    return home / ".mosaik";
-  }
-
   namespace Api
   {
     using IDsp = Dsp::Api::Control::Interface;
@@ -154,10 +149,13 @@ namespace Core
 
     class Mosaik : public Interface
     {
+      Tools::DeferredComputations m_kernelUpdate;
+
      public:
-      Mosaik(DataModel &model, Dsp::Api::Control::Interface &dsp)
+      Mosaik(Glib::RefPtr<Glib::MainContext> ctx, DataModel &model, Dsp::Api::Control::Interface &dsp)
           : m_model(model)
           , m_dsp(dsp)
+          , m_kernelUpdate(std::move(ctx), 0)
       {
         bindParameters<GlobalParameters>(TileId {}, m_model.globals.tempo, m_model.globals.volume,
                                          m_model.globals.shuffle);
@@ -170,26 +168,24 @@ namespace Core
                                          src.envelopeFadeOutPos, src.envelopeFadedOutPos, src.triggerFrame);
         }
 
-        load(getInitFileName());
-
-        m_dsp.takeAudioKernel(newDspKernel(m_model));
+        m_kernelUpdate.add([this] { m_dsp.takeAudioKernel(newDspKernel(m_model)); });
       }
 
-      ~Mosaik() override
+      ~Mosaik() override = default;
+
+      void load(const Path &path) override
       {
-        save(getInitFileName());
+        Interface::load(path);
       }
 
       void setParameter(TileId tileId, ParameterId parameterId, const ParameterValue &v) override
       {
         m_access.find({ tileId, parameterId })->second.set(v);
-        m_dsp.takeAudioKernel(newDspKernel(m_model));
       }
 
       void incParameter(TileId tileId, ParameterId parameterId, int steps) override
       {
         m_access.find({ tileId, parameterId })->second.inc(steps);
-        m_dsp.takeAudioKernel(newDspKernel(m_model));
       }
 
       [[nodiscard]] ParameterValue getParameter(TileId tileId, ParameterId parameterId) const override
@@ -285,9 +281,7 @@ namespace Core
             while(finalPos < 0)
               finalPos += framePerLoop;
 
-            finalPos = finalPos % framePerLoop;
-
-            tgt.triggers.push_back(finalPos);
+            tgt.triggers.push_back(finalPos % framePerLoop);
           }
 
           std::sort(tgt.triggers.begin(), tgt.triggers.end());
@@ -310,25 +304,25 @@ namespace Core
         constexpr int c_silenceDB = -60;
         constexpr int c_zeroDB = 0.f;
 
-        // faded-out section
-        tgt.envelope[0] = { src.envelopeFadedOutPos, c_zeroDB, c_silenceDB };
+        auto &fadedOutSection = tgt.envelope[0];
+        auto &fadeOutSection = tgt.envelope[1];
+        auto &fadedInSection = tgt.envelope[2];
+        auto &fadeInSection = tgt.envelope[3];
+        auto &preFadeInSection = tgt.envelope[4];
 
-        // fade-out section
-        tgt.envelope[1]
-            = { src.envelopeFadeOutPos, calcM(c_zeroDB, c_silenceDB, src.envelopeFadedOutPos - src.envelopeFadeOutPos),
-                calcB(c_zeroDB, c_silenceDB, src.envelopeFadeOutPos,
-                      src.envelopeFadedOutPos - src.envelopeFadeOutPos) };
+        fadedOutSection = { src.envelopeFadedOutPos, c_zeroDB, c_silenceDB };
 
-        // faded-in section
-        tgt.envelope[2] = { src.envelopeFadedInPos, 0.0f, c_zeroDB };
+        const auto fadeOutLen = src.envelopeFadedOutPos - src.envelopeFadeOutPos;
+        fadeOutSection = { src.envelopeFadeOutPos, calcM(c_zeroDB, c_silenceDB, fadeOutLen),
+                           calcB(c_zeroDB, c_silenceDB, src.envelopeFadeOutPos, fadeOutLen) };
 
-        // fade-in section
-        tgt.envelope[3]
-            = { src.envelopeFadeInPos, calcM(c_silenceDB, c_zeroDB, src.envelopeFadedInPos - src.envelopeFadeInPos),
-                calcB(c_silenceDB, c_zeroDB, src.envelopeFadeInPos, src.envelopeFadedInPos - src.envelopeFadeInPos) };
+        fadedInSection = { src.envelopeFadedInPos, 0.0f, c_zeroDB };
 
-        // pre fade-in section
-        tgt.envelope[4] = { 0, 0, c_silenceDB };
+        const auto fadeInLen = src.envelopeFadedInPos - src.envelopeFadeInPos;
+        fadeInSection = { src.envelopeFadeInPos, calcM(c_silenceDB, c_zeroDB, fadeInLen),
+                          calcB(c_silenceDB, c_zeroDB, src.envelopeFadeInPos, fadeInLen) };
+
+        preFadeInSection = { 0, 0, c_silenceDB };
       }
 
      private:
@@ -338,10 +332,11 @@ namespace Core
     };
   }
 
-  Core::Core(Dsp::Api::Control::Interface &dsp, std::unique_ptr<DataModel> dataModel)
+  Core::Core(Dsp::Api::Control::Interface &dsp, const Glib::RefPtr<Glib::MainContext> &ctx,
+             std::unique_ptr<DataModel> dataModel)
       : m_dsp(dsp)
       , m_dataModel(dataModel ? std::move(dataModel) : std::make_unique<DataModel>())
-      , m_api(std::make_unique<Api::Mosaik>(*m_dataModel, m_dsp))
+      , m_api(std::make_unique<Api::Mosaik>(ctx, *m_dataModel, m_dsp))
   {
   }
 
@@ -351,4 +346,5 @@ namespace Core
   {
     return *m_api;
   }
+
 }

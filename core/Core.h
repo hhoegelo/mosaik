@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <glibmm/refptr.h>
+#include <glibmm/main.h>
 
 namespace Dsp::Api::Control
 {
@@ -19,7 +21,8 @@ namespace Core
   class Core
   {
    public:
-    explicit Core(Dsp::Api::Control::Interface &dsp, std::unique_ptr<DataModel> dataModel = nullptr);
+    Core(Dsp::Api::Control::Interface &dsp, const Glib::RefPtr<Glib::MainContext> &ctx,
+         std::unique_ptr<DataModel> dataModel = nullptr);
     ~Core();
 
     [[nodiscard]] Api::Interface &getApi() const;
