@@ -94,6 +94,8 @@ a conceptional overview of the toolboxes (obsolete)
 - groups
 - stepmute
 
+![](mute-view.png)
+
 #### Snapshot
 - slots: load, save
 
