@@ -98,6 +98,10 @@ a conceptional overview of the toolboxes (obsolete)
 
 ![](audio-dia.png)
 
+## Audio Signal Flow
+
+![](audio-fx.png)
+
 ## Waveform / Envelope
 - Envelope: Start, FadeIn, FadeOut, End
 - move envelope
