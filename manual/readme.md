@@ -22,9 +22,12 @@ It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJ
 
 
 ## Toolboxes
+a conceptional overview of the toolboxes (obsolete)
+
 ![](toolboxes.png)
 
-### new toolboxes
+### Software Defined HWUI
+
 ![](hwui-gui.png)
 
 #### Audio Parameter
@@ -41,6 +44,7 @@ It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJ
 
 #### Waveform / Envelope
 - Envelope: Start, FadeIn, FadeOut, End
+- move envelope
 - Hitpoint
 - timeline
 - barline
@@ -75,15 +79,13 @@ It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJ
 - load multiple tiles
 - pathes: load/save
 
+![](swd-hwui.png)
+
 #### Prelisten
 - headphones volume
 - split or mixed
 - swap left/right channel
 - x-fade between main and pre
-
-#### Manual
-- shows the manual
-- can be full page?
 
 #### Audio Recorder
 - select source: line in, mic in
@@ -92,16 +94,23 @@ It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJ
 - load recording to tile
 
 #### MIDI
-- Key/Pad
+- Key/Pad (Rootnote for tiles)
 - Controller: (Motor) Fader, Potis
-- Rootnote
 - MIDI Clock: internal, external
 
 ![](midi-assignment.png)
 
 #### DMX
-- Tile to DMX channel
-- color
+- visualize beat/bar (counter)
+- link led-spots to tiles (trigger, color)
+- show multiple tiles/sequneces on led-matrix
+
+#### Manual
+- shows the manual
+- can be full page?
+
+#### Beat Book
+- a way to store/learn rhythm pattern
 
 ## Tiles
 - Sample Player
@@ -109,7 +118,7 @@ It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJ
 - VU meter
 - Envelope, Hitpoint
 - Pitch, Playdirection 
-FX: Distortion, Filter
+- FX: Distortion, Filter
 
 ![](new-tiles.png)
 - a) tile not playing
@@ -169,13 +178,13 @@ FX: Distortion, Filter
 ![](toppanel.png)
 
 ### IO-Panel
+
+![](connectors.png)
+
 - frontpanel left: Headphones Out, Vol-Poti, USB
 - frontpanel right: Line In, Mic In + Poti
 - backpanel left: Main Out, Phono In, MIDI-Clock (In/Out)
 - backpanel right: Power In, Power Switch, USB (MSD, MIDI, WIFI, BT), Ethernet (Internet, Ableton-Link), HDMI (mirror/extend), DMX out
-
-![](connectors.png)
-
 
 ## Pages
 - Main
