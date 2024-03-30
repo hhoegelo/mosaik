@@ -17,6 +17,16 @@ It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJ
 - DJing: prelisten and crossfade
 - dubmixing: mixer with fx-return on fadern
 
+## Concepts
+- starts with empty tiles and steps and at random speed (60..180)
+- prelisten
+- automatic session recording and live sampling
+- groups (mixer channel, mute, selection, steps?)
+- undo
+- load multiple tiles (no load/save)
+- is normally in playmode (ext. midi?)
+
+
 ## Hardware
 - 10inch touch display
 - 64 step sequencer
@@ -26,7 +36,7 @@ It combines techniques from sampling, stepsequcencing, live/jamming, looping, DJ
 ![](toppanel.png)
 
 ## UI Overview (obsolete)
-x
+
 ![](ui-overview.png)
 
 ### Quick Start Guide / Workflow
@@ -42,7 +52,7 @@ x
      sequence again
     - press last mute to go back to the last mute states 
 
-## UI - mockup
+## GUI
 - tile grid, toolboxes
 - dubmixer (channel, main)
 ![](new-ui.png)
@@ -50,137 +60,6 @@ x
 ## selection frames
 
 ![](selection-frames.png)
-
-## Toolboxes
-a conceptional overview of the toolboxes (obsolete)
-
-![](toolboxes.png)
-
-### Software Defined HWUI
-
-![](hwui-gui.png)
-
-### Audio Parameter
-- Volume
-- Pan
-- Play Direction
-- Pitch
-- filter and distortion curve display 
-
-![](audio-dia.png)
-
-### FX: Filter 
-#### 2P HiPass
-- cutoff
-- resonance
-
-#### Peak EQ (BP)
-- gain
-- frequency
-- bandwidth 
-
-#### 2P LoPass
-- cutoff
-- resonance
-
-
-### FX: Distortion
-#### C15 Shaper (Analog)
-- Gain
-- Fold
-- Asymetry
-#### Quantize Down Sample (Digital)
-- Step
-- Offset
-- Frequency/Sample Rate
-
-### FX: Reverb
-Return Fader
-- Size
-- Color
-- Pre Delay
-- Chorus
-
-### FX: Delay 
-Return Fader
-- Time
-- Stereo
-- Feedback
-- Hi Cut
-- Cross FB
-
-### Waveform / Envelope
-- Envelope: Start, FadeIn, FadeOut, End
-- move envelope
-- Hitpoint
-- timeline
-- barline
-![](envelope.png)
-
-### StepWizzard
-- set all
-- clear all
-- mirror
-- invert 
-- wizzard: rotate, gap, off 
-
-![](step-wizzard.png)
-
-
-
-### Mute
-- unmute all
-- last selection
-- groups
-- stepmute
-
-![](mute-view.png)
-
-### Snapshot
-- slots: load, save
-![](tb-snapshots.png)
-
-### Browser
-- prelisten sample
-- browse sample
-- bookmark samples
-- unload sample from tile
-- waveform
-- load multiple tiles
-- pathes: load/save
-
-![](swd-hwui.png)
-
-### Prelisten
-- headphones volume
-- split or mixed
-- swap left/right channel
-- x-fade between main and pre
-
-### Audio Recorder
-- select source: line in, mic in
-- level
-- save recording to sample collection
-- load recording to tile
-
-### MIDI
-- Key/Pad (Rootnote for tiles)
-- Controller: (Motor) Fader, Potis
-- MIDI Clock: internal, external
-
-![](midi-assignment.png)
-
-### DMX
-- visualize beat/bar (counter)
-- link led-spots to tiles (trigger, color)
-- show multiple tiles/sequneces on led-matrix
-
-### Manual
-- shows the manual
-- can be full page?
-
-### Beat Book
-- a way to store/learn rhythm pattern
 
 ## Tiles
 - Sample Player
@@ -198,25 +77,151 @@ Return Fader
 - e) tile is not playing
 - f) tile with envelope, only envelope is shown, additional time for full sample length
 
+## Toolboxes
+a conceptional overview of the toolboxes (obsolete)
 
-## Concepts
-- starts with empty tiles and steps and at random speed (60..180)
-- prelisten
-- automatic session recording and live sampling
-- groups (mixer channel, mute, selection, steps?)
-- undo
-- load multiple tiles (no load/save)
-- is normally in playmode (ext. midi?)
+![](toolboxes.png)
+
+## Software Defined HWUI
+
+![](hwui-gui.png)
+
+## Audio Parameter
+- Volume
+- Pan
+- Play Direction
+- Pitch
+- filter and distortion curve display 
+
+![](audio-dia.png)
+
+## Waveform / Envelope
+- Envelope: Start, FadeIn, FadeOut, End
+- move envelope
+- Hitpoint
+- timeline
+- barline
+![](envelope.png)
+
+## FX: Filter 
+### 2P HiPass
+- cutoff
+- resonance
+
+### Peak EQ (BP)
+- gain
+- frequency
+- bandwidth 
+
+### 2P LoPass
+- cutoff
+- resonance
+
+
+## FX: Distortion
+### C15 Shaper (Analog)
+- Gain
+- Fold
+- Asymetry
+### Quantize Down Sample (Digital)
+- Step
+- Offset
+- Frequency/Sample Rate
+
+## FX: Reverb
+Return Fader
+- Size
+- Color
+- Pre Delay
+- Chorus
+![](reverb.png)
+
+## FX: Delay 
+Return Fader
+- Time
+- Stereo
+- Feedback
+- Hi Cut
+- Cross FB
+![](delay.png)
+
+## StepWizzard
+- set all
+- clear all
+- mirror
+- invert 
+- wizzard: rotate, gap, off 
+
+![](step-wizzard.png)
+
+
+## Mute
+- unmute all
+- last selection
+- groups
+- stepmute
+
+![](mute.png)
+
+## Snapshot
+- slots: load, save
+![](tb-snapshots.png)
+
+## Browser
+- prelisten sample
+- browse sample
+- bookmark samples
+- unload sample from tile
+- waveform
+- load multiple tiles
+- pathes: load/save
+
+![](swd-hwui.png)
+
+## Prelisten
+- headphones volume
+- split or mixed
+- swap left/right channel
+- x-fade between main and pre
+
+## Audio Recorder
+- select source: line in, mic in
+- level
+- save recording to sample collection
+- load recording to tile
+
+## MIDI
+- Key/Pad (Rootnote for tiles)
+- Controller: (Motor) Fader, Potis
+- MIDI Clock: internal, external
+- MIDI learn/assign mode/overlay
+
+![](midi-assignment.png)
+
+![](midi-setup.png)
+
+## DMX
+- metronom
+- visualize beat/bar (counter)
+- link led-spots to tiles (trigger, color)
+- show multiple tiles/sequneces on led-matrix
+
+![](dmx.png)
+
+## Manual
+- shows the manual
+- can be full page?
+
+## Beat Book
+- a way to store/learn rhythm pattern
 
 ## IO-Panel
-
-![](connectors.png)
-
 - frontpanel left: Headphones Out, Vol-Poti, USB
 - frontpanel right: Line In, Mic In + Poti
 - backpanel left: Main Out, Phono In, MIDI-Clock (In/Out)
 - backpanel right: Power In, Power Switch, USB (MSD, MIDI, WIFI, BT), Ethernet (Internet, Ableton-Link), HDMI (mirror/extend), DMX out
 
+![](connectors.png)
 
 
 
