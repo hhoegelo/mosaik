@@ -34,15 +34,19 @@ namespace Tools
   class DeferredComputations : public Computations
   {
    public:
-    explicit DeferredComputations(Glib::RefPtr<Glib::MainContext> ctx);
+    explicit DeferredComputations(Glib::RefPtr<Glib::MainContext> ctx, uint32_t timeout = 10);
     ~DeferredComputations() override;
+
+    static void waitForAllScheduledComputationsDone();
 
    private:
     void onComputationInvalidated(Computation* c) override;
 
     Glib::RefPtr<Glib::MainContext> m_ctx;
+    uint32_t m_timeout;
     sigc::connection m_timer;
     std::vector<std::function<void()>> m_pending;
+    static uint32_t s_numDeferredComputationsScheduled;
   };
 
   class ReactiveVarBase

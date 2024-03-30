@@ -47,14 +47,18 @@ int main(int args, char** argv)
   Glib::init();
 
   Dsp::Dsp dsp;
-  Core::Core core(dsp.getControlApi());
+  Core::Core core(dsp.getControlApi(), Glib::MainContext::get_default());
   Audio::AlsaOut audioOut(dsp.getRealtimeApi(), alsaOut, bits);
   Ui::Touch::Ui touchUI(core.getApi(), dsp.getDisplayApi());
   Ui::Midi::Ui midiUI(midiUi, core.getApi(), dsp.getDisplayApi(), touchUI.getApi());
   Ui::Midi::DebugUI dbg(core.getApi(), dsp.getDisplayApi(), touchUI.getApi());
 
+  std::filesystem::path home = getenv("HOME");
+  auto storage = home / ".mosaik";
+
+  core.getApi().load(storage);
   touchUI.attach(dbg);
   touchUI.run();
-
+  core.getApi().save(storage);
   return EXIT_SUCCESS;
 }
