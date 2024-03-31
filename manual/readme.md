@@ -250,7 +250,9 @@ Return Fader
 
 ![](connectors.png)
 
+## Electronics
 
+![](electronics.jpeg)
 
 ## Pages
 - Main
