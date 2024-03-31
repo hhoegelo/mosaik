@@ -96,24 +96,27 @@ a conceptional overview of the toolboxes (obsolete)
 - Pitch
 - filter and distortion curve display 
 
-![](audio-reaktor.png)
+![](reaktor.png)
+
+### Parameter Table
+
+![](parameter-table.png)
 
 ## Audio Signal Flow
 
-### tiles
+### Tiles
 
 ![](audio-tiles.png)
 
-### main
+### Mixer
 
 ![](audio-main.png)
 
-## Waveform / Envelope
+## Envelope
 - Envelope: Start, FadeIn, FadeOut, End
 - move envelope
 - Hitpoint
-- timeline
-- barline
+- timeline/barline
 
 ![](envelope.png)
 
@@ -187,7 +190,7 @@ Return Fader
 ## Snapshot
 - slots: load, save
 
-![](tb-snapshots.png)
+![](snapshots.png)
 
 ## Browser
 - prelisten sample

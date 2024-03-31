@@ -74,6 +74,11 @@ led 1 lights green now
 	dtoverlay=uart4
 	dtoverlay=uart5
 	
+#### MIDI/DMX
+
+- ttyMIDI
+- openDMX
+	
 # The big picture
 
 The main() function connects 4 logical layers:
