@@ -96,7 +96,7 @@ a conceptional overview of the toolboxes (obsolete)
 - Pitch
 - filter and distortion curve display 
 
-![](audio-dia.png)
+![](audio-reaktor.png)
 
 ## Audio Signal Flow
 
