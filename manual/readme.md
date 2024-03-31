@@ -100,7 +100,13 @@ a conceptional overview of the toolboxes (obsolete)
 
 ## Audio Signal Flow
 
-![](audio-fx.png)
+### tiles
+
+![](audio-tiles.png)
+
+### main
+
+![](audio-main.png)
 
 ## Waveform / Envelope
 - Envelope: Start, FadeIn, FadeOut, End
