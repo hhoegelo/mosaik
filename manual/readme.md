@@ -118,6 +118,9 @@ a conceptional overview of the toolboxes (obsolete)
 ![](envelope.png)
 
 ## FX: Filter 
+
+![](filter.png)
+
 ### 2P HiPass
 - cutoff
 - resonance
@@ -131,8 +134,10 @@ a conceptional overview of the toolboxes (obsolete)
 - cutoff
 - resonance
 
-
 ## FX: Distortion
+
+![](distortion.png)
+
 ### C15 Shaper (Analog)
 - Gain
 - Fold
@@ -193,13 +198,15 @@ Return Fader
 - load multiple tiles
 - pathes: load/save
 
-![](swd-hwui.png)
+![](browser.png)
 
 ## Prelisten
 - headphones volume
 - split or mixed
 - swap left/right channel
 - x-fade between main and pre
+
+![](prelisten.png)
 
 ## Audio Recorder
 - select source: line in, mic in
