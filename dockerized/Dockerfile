@@ -1,4 +1,4 @@
-FROM docker.io/ubuntu:23.10
+FROM docker.io/arm64v8/ubuntu:23.10
 
 RUN apt -y update
 RUN apt -y install libgstreamermm-1.0-dev libgtkmm-3.0-dev libboost-all-dev cmake make build-essential

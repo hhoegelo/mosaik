@@ -19,8 +19,8 @@ add_custom_command(
         DEPENDS ${SOURCE_FILES}
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/dockerized-bin/mosaik
         COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/dockerized-bin
-        COMMAND docker run --rm -v ${CMAKE_CURRENT_BINARY_DIR}/dockerized-bin:/binary -v ${CMAKE_SOURCE_DIR}:/source -w /binary ${DOCKERNAME} cmake /source
-        COMMAND docker run --rm -v ${CMAKE_CURRENT_BINARY_DIR}/dockerized-bin:/binary -v ${CMAKE_SOURCE_DIR}:/source -w /binary ${DOCKERNAME} make mosaik
+        COMMAND docker run --platform linux/arm64 --rm -v ${CMAKE_CURRENT_BINARY_DIR}/dockerized-bin:/binary -v ${CMAKE_SOURCE_DIR}:/source -w /binary ${DOCKERNAME} cmake /source
+        COMMAND docker run --platform linux/arm64 --rm -v ${CMAKE_CURRENT_BINARY_DIR}/dockerized-bin:/binary -v ${CMAKE_SOURCE_DIR}:/source -w /binary ${DOCKERNAME} make mosaik
 )
 
 add_custom_command(
