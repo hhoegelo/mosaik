@@ -152,10 +152,10 @@ a conceptional overview of the toolboxes (obsolete)
 
 ## FX: Reverb
 Return Fader
-- Size
-- Color
-- Pre Delay
-- Chorus
+- **Size**: room size
+- **Color**: xxx
+- **Pre Delay**: xxx
+- **Chorus**: xxx
 
 ![](reverb.png)
 
@@ -180,15 +180,18 @@ Return Fader
 
 
 ## Mute
-- unmute all
-- last selection
-- groups
-- stepmute
+- **unmute all**: saves mute selection to 'last selection' and unmutes all tiles
+- **last selection**: recalls the last mute tile selection
+- **groups**: mute groups are stored in slots
+- **stepmute**: mutes all the trigger for the selected steps
 
 ![](mute.png)
 
 ## Snapshot
-- slots: load, save
+a snapshot includes all parameter and states of mosaik. snapshots can be stored in and recalled from slots.
+- **take**: saves a snapshot to the selected slot
+- **recall**: opens a snapshot from the selected slot 
+- **1..6**: slots
 
 ![](snapshots.png)
 
