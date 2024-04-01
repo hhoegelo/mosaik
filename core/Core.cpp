@@ -293,7 +293,7 @@ namespace Core
         tgt.mute = src.muted;
         tgt.balance = src.balance;
         tgt.gain_dB = src.gain;
-        tgt.playbackFrameIncrement = powf(2.0f, src.speed * 2);
+        tgt.playbackFrameIncrement = powf(2.0f, src.speed / 100.0f);
         tgt.reverse = src.reverse;
 
         auto calcM
