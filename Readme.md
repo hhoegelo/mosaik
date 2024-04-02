@@ -1,21 +1,26 @@
 ## TL;DR
 
+requirements:
+
 	apt install gcc cmake make libboost-program-options-dev libasound2-dev libglibmm-2.4-dev libgtkmm-2.4-dev libgtkmm-3.0-dev libgstreamermm-1.0-dev
+
+setup and build:
 	
 	mkdir ~/mosaik-build
 	cd ~/mosaik-build
 	cmake path-to-source
 	make
+
+start the app:
+
 	./mosaik --alsa-out=plughw:0,0 --bits=24 --midi-ui hw:2,0,0
 
 
 ## HWUI debug tools
-	amidi -l
- 	aseqdump -l
- 	aseqdump -p 20
- 	aconnect 24:0 20:0
- 	aconnect -d 24:0 20:0
-	amidi -p hw:1,0,0 -S '92 25 00'
+- aplay
+- amidi
+- aseqdump
+- aconnect
 
 ## RGB commands
 '90 25 00'
@@ -62,6 +67,7 @@ led 1 lights green now
 
 
 #### Rpi DT Overlay for UARTs
+bootfs/config.txt
 
 	# enable usb hub
 	dtoverlay=dwc2,dr_mode=host

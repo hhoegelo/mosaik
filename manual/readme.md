@@ -59,7 +59,7 @@ Mosaik combines techniques from sampling, stepsequcencing, live/jamming, looping
 
 ![](new-ui.png)
 
-## selection frames
+## Selection Frames
 
 ![](selection-frames.png)
 
@@ -111,6 +111,14 @@ a conceptional overview of the toolboxes (obsolete)
 ### Mixer
 
 ![](audio-main.png)
+
+## Main/Mixer/Prelisten
+- headphones volume
+- split or mixed
+- swap left/right channel
+- x-fade between main and pre
+
+![](prelisten.png)
 
 ## Envelope
 - Envelope: Start, FadeIn, FadeOut, End
@@ -205,14 +213,6 @@ a snapshot includes all parameter and states of mosaik. snapshots can be stored 
 - pathes: load/save
 
 ![](browser.png)
-
-## Prelisten
-- headphones volume
-- split or mixed
-- swap left/right channel
-- x-fade between main and pre
-
-![](prelisten.png)
 
 ## Audio Recorder
 - select source: line in, mic in
