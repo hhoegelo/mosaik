@@ -22,19 +22,42 @@ start the app:
 - aseqdump
 - aconnect
 
+## New Serial Protocol
+
+brightness?
+
+- **S**: stepsequencer buttons
+- **M**: menu buttons
+- **B**: encoder buttons
+- **E**: encoder
+- **L**: rgb(w) leds
+
+set LED 102 to full green:
+	
+	L102:0:255:0
+	
+stepsequencer button 12 pressed:
+
+	S12:1
+	
+stepsequencer button 12 released:
+
+	S12:0
+
+
 ## RGB commands
 '90 25 00'
 cmd id val
 
 commands:
-90: red-channel
-91: green-channel
-92: blue-channel
-93: white-channel
-94: color table
-95: update
+90: red-channel (green and blue channels are uneffected)
+91: green-channel (red and blue channels are uneffected)
+92: blue-channel (red and green channels are uneffected)
+93: white-channel (set rgb channels to the same value)
+94: color table (choose from predefined colors)
+95: update (initially leds where not set until an update cmd occured)
 96: all leds on
-97: all leds off  
+97: all leds off (reset)
 
 ### RGB channel examples:
 	
