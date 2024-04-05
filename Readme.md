@@ -11,6 +11,13 @@ setup and build:
 	cmake path-to-source
 	make
 
+for release builds do:
+	
+ 	mkdir ~/mosaik-build-release
+	cd ~/mosaik-build-release
+	cmake -DCMAKE_BUILD_TYPE=Release path-to-source
+	make
+
 start the app:
 
 	./mosaik --alsa-out=plughw:0,0 --bits=24 --midi-ui hw:2,0,0
