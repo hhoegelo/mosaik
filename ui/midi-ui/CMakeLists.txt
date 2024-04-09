@@ -10,7 +10,6 @@ add_library(mosaik-midiui STATIC Ui.cpp DebugUI.cpp
         Interface.cpp
         Erp.cpp
         Erp.h
-        Types.h
         MidiEventDispatcher.cpp
         MidiEventDispatcher.h)
 

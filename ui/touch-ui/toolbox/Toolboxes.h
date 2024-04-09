@@ -4,6 +4,7 @@
 #include <gtkmm/box.h>
 #include "tools/ReactiveVar.h"
 #include <ui/Types.h>
+#include <ui/touch-ui/Interface.h>
 
 namespace Core::Api
 {
@@ -21,10 +22,10 @@ namespace Ui::Touch
    public:
     explicit Toolboxes(Core::Api::Interface &core);
 
-    void incZoom(int inc);
-    void incScroll(int inc);
+    Ui::Touch::Interface::Waveform &getWaveform() const;
+    Ui::Touch::Interface::FileBrowser &getFileBrowser() const;
+
     ::Ui::Toolboxes getSelectedToolbox() const;
-    double getWaveformFramesPerPixel() const;
 
    private:
     Core::Api::Interface &m_core;

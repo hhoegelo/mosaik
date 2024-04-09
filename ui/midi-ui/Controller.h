@@ -24,8 +24,6 @@ namespace Ui
     class Interface;
   }
 
-  class SharedState;
-
   namespace Midi
   {
     class Interface;
@@ -48,6 +46,8 @@ namespace Ui
       {
         std::map<Knob, std::function<void(int)>> knobs;
         std::map<SoftButton, std::function<void(ButtonEvent)>> buttons;
+        std::map<SoftButton, std::function<void()>> buttonPresses;
+        std::map<SoftButton, std::function<void()>> buttonReleases;
       };
 
       Mapping createMapping(Ui::Toolboxes t);

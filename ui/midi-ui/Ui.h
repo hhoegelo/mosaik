@@ -38,7 +38,7 @@ namespace Ui
          ::Ui::Touch::Interface &touchUi);
       ~Ui() override;
 
-      void setLed(Midi::Led l, Midi::Color c) override;
+      void setLed(Led l, Color c) override;
 
      private:
       bool checkForMidiDevices();

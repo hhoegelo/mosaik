@@ -3,6 +3,7 @@
 #include <gtkmm/drawingarea.h>
 #include "core/Types.h"
 #include "tools/ReactiveVar.h"
+#include <ui/touch-ui/Interface.h>
 
 namespace Tools
 {
@@ -16,18 +17,16 @@ namespace Core::Api
 
 namespace Ui
 {
-
   namespace Touch
   {
-    class Waveform : public Gtk::DrawingArea
+    class Waveform : public Gtk::DrawingArea, public Interface::Waveform
     {
      public:
       explicit Waveform(Core::Api::Interface &core);
 
-      void incZoom(int inc);
-      void incScroll(int inc);
-
-      double getFramesPerPixel() const;
+      void incZoom(int inc) override;
+      void incScroll(int inc) override;
+      double getFramesPerPixel() const override;
 
      private:
       bool drawWave(const Cairo::RefPtr<Cairo::Context> &ctx);

@@ -32,7 +32,7 @@ namespace Ui
 
      private:
       void build();
-      void setLed(Midi::Led l, Midi::Color c) override;
+      void setLed(Led l, Color c) override;
       void setColor(const std::string &widgetName, Color c);
 
       Widget *buildStep(Step step);

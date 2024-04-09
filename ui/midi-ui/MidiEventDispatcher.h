@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ui/midi-ui/Types.h>
+#include <ui/Types.h>
 #include <functional>
 #include <midi/Alsa.h>
 

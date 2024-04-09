@@ -41,7 +41,7 @@ namespace Ui::Midi
     m_timer.disconnect();
   }
 
-  void Ui::setLed(Midi::Led l, Midi::Color c)
+  void Ui::setLed(Led l, Color c)
   {
     for(auto &a : m_inputDevices)
       a.second->send({ 0x94, static_cast<uint8_t>(l), static_cast<uint8_t>(c) });

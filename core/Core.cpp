@@ -32,9 +32,7 @@ namespace Core
                  .load = [&target](const auto &v) { target = std::get<V>(v); },
                  .get = [&target]() -> ParameterValue { return target.get(); },
                  .inc = [](int) {},
-                 .display = [](const ParameterValue &v) { return T::format(std::get<V>(v)); }
-
-        };
+                 .display = [](const ParameterValue &v) { return T::format(std::get<V>(v)); } };
       }
     };
 

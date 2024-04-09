@@ -72,7 +72,7 @@ namespace Ui::Midi
     screen->attach(*buildButton(SoftButton::Right_Center), 13, 12);
     screen->attach(*buildButton(SoftButton::Right_East), 14, 12);
     screen->attach(*buildButton(SoftButton::Right_SouthWest), 12, 14);
-    screen->attach(*buildButton(SoftButton::Right_West), 13, 14);
+    screen->attach(*buildButton(SoftButton::Right_South), 13, 14);
     screen->attach(*buildButton(SoftButton::Right_SouthEast), 14, 14);
 
     screen->attach(*buildKnob(Knob::Leftmost), 5, 9);
@@ -148,9 +148,9 @@ namespace Ui::Midi
     }
   }
 
-  void DebugUI::setLed(Midi::Led l, Midi::Color c)
+  void DebugUI::setLed(Led l, Color c)
   {
-    if(l <= Midi::Led::Step_63)
+    if(l <= Led::Step_63)
     {
       setColor("step-" + std::to_string(static_cast<int>(l)), c);
     }

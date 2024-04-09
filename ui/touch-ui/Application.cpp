@@ -1,9 +1,9 @@
-#include "Ui.h"
+#include "Application.h"
 #include "Window.h"
 
 namespace Ui::Touch
 {
-  Ui::Ui(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp)
+  Application::Application(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp)
       : m_core(core)
       , m_dsp(dsp)
       , m_app(Gtk::Application::create("com.mosaik.v4"))
@@ -11,19 +11,19 @@ namespace Ui::Touch
   {
   }
 
-  Ui::~Ui() = default;
+  Application::~Application() = default;
 
-  void Ui::run()
+  void Application::run()
   {
     m_app->run(*m_window);
   }
 
-  void Ui::attach(Gtk::Window &wnd)
+  void Application::attach(Gtk::Window &wnd)
   {
     m_app->signal_activate().connect([&] { m_app->add_window(wnd); });
   }
 
-  Interface &Ui::getApi()
+  Interface &Application::getApi()
   {
     return *m_window;
   }

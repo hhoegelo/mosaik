@@ -20,11 +20,11 @@ namespace Ui
     class Interface;
     class Window;
 
-    class Ui
+    class Application
     {
      public:
-      Ui(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
-      ~Ui();
+      Application(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
+      ~Application();
 
       void attach(Gtk::Window &wnd);
       void run();

@@ -114,24 +114,19 @@ namespace Ui::Touch
     show_all();
   }
 
-  void Window::incWaveformZoom(int inc)
-  {
-    m_toolboxes->incZoom(inc);
-  }
-
-  void Window::incWaveformScroll(int inc)
-  {
-    m_toolboxes->incScroll(inc);
-  }
-
-  ::Ui::Toolboxes Window::getSelectedToolbox() const
+  Ui::Toolboxes Window::getSelectedToolbox() const
   {
     return m_toolboxes->getSelectedToolbox();
   }
 
-  double Window::getWaveformFramesPerPixel() const
+  Touch::Interface::Waveform& Window::getWaveform() const
   {
-    return m_toolboxes->getWaveformFramesPerPixel();
+    return m_toolboxes->getWaveform();
+  }
+
+  Touch::Interface::FileBrowser& Window::getFileBrowser() const
+  {
+    return m_toolboxes->getFileBrowser();
   }
 
 }

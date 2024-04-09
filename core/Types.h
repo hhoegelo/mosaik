@@ -48,6 +48,7 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::GlobalTempo;
     constexpr static auto name = "tempo";
+    constexpr static const char* title[] = { "Tempo", "Tmp" };
     using Type = Float;
     constexpr static auto min = 20.0f;
     constexpr static auto max = 240.0f;
@@ -65,6 +66,7 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::GlobalVolume;
     constexpr static auto name = "volume";
+    constexpr static const char* title[] = { "Master Volume", "Volume", "Vol" };
     using Type = Float;
     constexpr static auto min = -72.0f;
     constexpr static auto max = 0.0f;
@@ -82,6 +84,7 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::GlobalShuffle;
     constexpr static auto name = "shuffle";
+    constexpr static const char* title[] = { "Shuffle", "Shuf" };
     using Type = Float;
     constexpr static auto min = -1.0f;
     constexpr static auto max = 1.0f;
@@ -100,6 +103,7 @@ namespace Core
     constexpr static ParameterId id = ParameterId::Selected;
     using Type = Bool;
     constexpr static auto name = "selected";
+    constexpr static const char* title[] = { "Selected", "Sel" };
 
     static std::string format(Type t)
     {
@@ -112,6 +116,7 @@ namespace Core
     constexpr static ParameterId id = ParameterId::Reverse;
     using Type = Bool;
     constexpr static auto name = "reverse";
+    constexpr static const char* title[] = { "Reverse", "Rev" };
 
     static std::string format(Type t)
     {
@@ -124,8 +129,9 @@ namespace Core
     constexpr static ParameterId id = ParameterId::SampleFile;
     using Type = Path;
     constexpr static auto name = "sample";
+    constexpr static const char* title[] = { "Sample" };
 
-    static std::string format(const Type &t)
+    static std::string format(const Type& t)
     {
       return t.string();
     }
@@ -136,8 +142,9 @@ namespace Core
     constexpr static ParameterId id = ParameterId::Pattern;
     using Type = Pattern;
     constexpr static auto name = "pattern";
+    constexpr static const char* title[] = { "Pattern" };
 
-    static std::string format(const Type &t)
+    static std::string format(const Type& t)
     {
       return "n/a";
     }
@@ -148,8 +155,9 @@ namespace Core
     constexpr static ParameterId id = ParameterId::Mute;
     using Type = Bool;
     constexpr static auto name = "mute";
+    constexpr static const char* title[] = { "Mute" };
 
-    static std::string format(const Type &t)
+    static std::string format(const Type& t)
     {
       return Tools::format("%s", t ? "muted" : "unmuted");
     }
@@ -159,6 +167,7 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::Balance;
     constexpr static auto name = "balance";
+    constexpr static const char* title[] = { "Balance", "Bal" };
     using Type = Float;
     constexpr static auto min = -1.0f;
     constexpr static auto max = 1.0f;
@@ -176,6 +185,7 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::Gain;
     constexpr static auto name = "gain";
+    constexpr static const char* title[] = { "Gain" };
     using Type = Float;
     constexpr static auto min = -48.0f;
     constexpr static auto max = 6.0f;
@@ -193,6 +203,7 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::Speed;
     constexpr static auto name = "speed";
+    constexpr static const char* title[] = { "Speed", "Spd" };
     using Type = Float;
     constexpr static auto min = 50.0f;
     constexpr static auto max = 200.0f;
@@ -210,6 +221,7 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::EnvelopeFadeInPos;
     constexpr static auto name = "envelopeFadeInPos";
+    constexpr static const char* title[] = { "FadeIn Position", "FadeIn Pos", "FadeIn" };
     using Type = FramePos;
 
     constexpr static ParameterId left = ParameterId::SampleFile;
@@ -225,6 +237,7 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::EnvelopeFadedInPos;
     constexpr static auto name = "envelopeFadedInPos";
+    constexpr static const char* title[] = { "FadedIn Position", "FadedIn Pos", "FadedIn" };
     using Type = FramePos;
 
     constexpr static ParameterId left = ParameterId::EnvelopeFadeInPos;
@@ -240,6 +253,7 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::EnvelopeFadeOutPos;
     constexpr static auto name = "envelopeFadeOutPos";
+    constexpr static const char* title[] = { "FadeOut Position", "FadeOut Pos", "FadeOut" };
     using Type = FramePos;
 
     constexpr static ParameterId left = ParameterId::EnvelopeFadedInPos;
@@ -255,6 +269,7 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::EnvelopeFadedOutPos;
     constexpr static auto name = "envelopeFadedOutPos";
+    constexpr static const char* title[] = { "FadedOut Position", "FadedOut Pos", "FadedOut" };
     using Type = FramePos;
 
     constexpr static ParameterId left = ParameterId::EnvelopeFadeOutPos;
@@ -270,6 +285,7 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::TriggerFrame;
     constexpr static auto name = "triggerFrame";
+    constexpr static const char* title[] = { "Hit Point", "Hit" };
     using Type = FramePos;
 
     constexpr static ParameterId left = ParameterId::SampleFile;

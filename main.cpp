@@ -2,7 +2,7 @@
 #include "core/Core.h"
 #include "audio/AlsaOut.h"
 #include "ui/midi-ui/Ui.h"
-#include "ui/touch-ui/Ui.h"
+#include "ui/touch-ui/Application.h"
 #include "midi/Monitor.h"
 #include "ui/midi-ui/DebugUI.h"
 #include "core/DataModel.h"
@@ -49,7 +49,7 @@ int main(int args, char** argv)
   Dsp::Dsp dsp;
   Core::Core core(dsp.getControlApi(), Glib::MainContext::get_default());
   Audio::AlsaOut audioOut(dsp.getRealtimeApi(), alsaOut, bits);
-  Ui::Touch::Ui touchUI(core.getApi(), dsp.getDisplayApi());
+  Ui::Touch::Application touchUI(core.getApi(), dsp.getDisplayApi());
   Ui::Midi::Ui midiUI(midiUi, core.getApi(), dsp.getDisplayApi(), touchUI.getApi());
   Ui::Midi::DebugUI dbg(core.getApi(), dsp.getDisplayApi(), touchUI.getApi());
 

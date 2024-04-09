@@ -9,7 +9,7 @@ add_library(mosaik-touchui STATIC
         tiles/Tile.cpp
         toolbox/Toolboxes.h
         toolbox/Toolboxes.cpp
-        Ui.cpp
+        Application.cpp
         Window.cpp
         Window.h
         toolbox/GlobalTools.cpp

@@ -6,15 +6,32 @@
 #include <gtkmm/grid.h>
 #include <gtkmm/label.h>
 #include <gtkmm/levelbar.h>
+#include <gtkmm/eventbox.h>
+#include <gdkmm/seat.h>
+#include <gtkmm/treeview.h>
 
 namespace Ui::Touch
 {
+  template <typename T> T *findChildWidget(Gtk::Widget *p)
+  {
+    if(auto found = dynamic_cast<T *>(p))
+      return found;
+
+    if(auto c = dynamic_cast<Gtk::Container *>(p))
+      for(auto child : c->get_children())
+        if(auto found = findChildWidget<T>(child))
+          return found;
+
+    return nullptr;
+  }
+
   TileTools::TileTools(Core::Api::Interface &core)
       : Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL)
       , m_core(core)
       , m_computations(Glib::MainContext::get_default())
   {
     int f = 50;
+
     m_fileBrowser = Gtk::manage(new Gtk::FileChooserWidget(Gtk::FILE_CHOOSER_ACTION_OPEN));
     m_fileBrowser->get_style_context()->add_class("file-browser");
     m_fileBrowser->signal_file_activated().connect(
@@ -48,7 +65,6 @@ namespace Ui::Touch
 
     controls->attach(*balance, 0, 0, 1, 1);
     controls->attach(*speed, 4, 0, 1, 1);
-
     controls->attach(*gain, 2, 2, 1, 1);
 
     m_computations.add([this, speedLevel] { updateTileSpeed(speedLevel); });
@@ -56,12 +72,6 @@ namespace Ui::Touch
     m_computations.add([this, gainLevel] { updateTileGain(gainLevel); });
 
     pack_start(*controls);
-  }
-
-  void TileTools::onToolShown()
-  {
-    if(m_lastSelectedFolder)
-      m_fileBrowser->set_current_folder_uri(m_lastSelectedFolder.value());
   }
 
   void TileTools::updateTileGain(Gtk::Label *level)
@@ -77,5 +87,45 @@ namespace Ui::Touch
   void TileTools::updateTileBalance(Gtk::Label *level)
   {
     level->set_label(m_core.getFirstSelectedTileParameterDisplay(Core::ParameterId::Balance));
+  }
+
+  void TileTools::up()
+  {
+    if(auto f = m_fileBrowser->get_file())
+      m_fileBrowser->set_file(f->get_parent());
+  }
+
+  void TileTools::down()
+  {
+    if(auto f = m_fileBrowser->get_file())
+      m_fileBrowser->set_current_folder_file(f);
+  }
+
+  void TileTools::inc()
+  {
+    navigate([](auto &p) { p.next(); });
+  }
+
+  void TileTools::dec()
+  {
+    navigate([](auto &p) { p.prev(); });
+  }
+
+  void TileTools::load()
+  {
+  }
+
+  void TileTools::navigate(const std::function<void(Gtk::TreePath &)> &cb)
+  {
+    auto tree = findChildWidget<Gtk::TreeView>(m_fileBrowser);
+    auto selection = tree->get_selection();
+    auto selectedRows = selection->get_selected_rows();
+    if(!selectedRows.empty())
+    {
+      auto p = selectedRows[0];
+      cb(p);
+      selection->select(p);
+      tree->scroll_to_row(p);
+    }
   }
 }

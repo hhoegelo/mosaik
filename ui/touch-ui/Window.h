@@ -24,10 +24,9 @@ namespace Ui::Touch
     Window(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
     ~Window() override;
 
-    void incWaveformZoom(int inc) override;
-    void incWaveformScroll(int inc) override;
-    ::Ui::Toolboxes getSelectedToolbox() const override;
-    double getWaveformFramesPerPixel() const override;
+    Touch::Interface::Waveform &getWaveform() const override;
+    Touch::Interface::FileBrowser &getFileBrowser() const override;
+    Ui::Toolboxes getSelectedToolbox() const override;
 
    private:
     void build();

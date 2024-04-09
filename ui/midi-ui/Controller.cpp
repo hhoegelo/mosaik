@@ -52,6 +52,14 @@ namespace Ui::Midi
   {
     if(auto it = m_inputMapping.buttons.find(b); it != m_inputMapping.buttons.end())
       it->second(e);
+
+    if(e == ButtonEvent::Press)
+      if(auto it = m_inputMapping.buttonPresses.find(b); it != m_inputMapping.buttonPresses.end())
+        it->second();
+
+    if(e == ButtonEvent::Release)
+      if(auto it = m_inputMapping.buttonReleases.find(b); it != m_inputMapping.buttonReleases.end())
+        it->second();
   }
 
   Controller::Mapping Controller::createMapping(Ui::Toolboxes t)
@@ -90,11 +98,13 @@ namespace Ui::Midi
           { Knob::Rightmost, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Speed, inc); } },
           { Knob::Leftmost, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Balance, inc); } },
            },
-      .buttons = {
-          { SoftButton::Right_Center,
-            [this](auto e) {
-              if(e == ButtonEvent::Release)
-              {m_core.toggleSelectedTilesParameter(Core::ParameterId::Reverse);} } }
+      .buttonReleases = {
+          { SoftButton::Left_Center, [this] { m_core.toggleSelectedTilesParameter(Core::ParameterId::Reverse); } },
+          { SoftButton::Right_North, [this] {m_touchUi.getFileBrowser().dec(); } },
+          { SoftButton::Right_Center, [this] {m_touchUi.getFileBrowser().load(); } },
+          { SoftButton::Right_South, [this] {m_touchUi.getFileBrowser().inc(); } },
+          { SoftButton::Right_West, [this] {m_touchUi.getFileBrowser().up(); } },
+          { SoftButton::Right_East, [this] {m_touchUi.getFileBrowser().down(); } },
       },
     };
   }
@@ -102,23 +112,40 @@ namespace Ui::Midi
   Controller::Mapping Controller::buildWaveformMapping()
   {
     return {
-      .knobs = {
-          { Knob::Center, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::TriggerFrame, inc * m_touchUi
-                                                                                          .getWaveformFramesPerPixel()); } },
-          { Knob::Leftmost, [this](auto inc) { m_touchUi.incWaveformZoom(inc); } },
-          { Knob::Rightmost, [this](auto inc) { m_touchUi.incWaveformScroll(inc); } },
-          { Knob::SouthWest, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeInPos, inc * m_touchUi
-                                               .getWaveformFramesPerPixel()); } },
-          { Knob::NorthWest
-            , [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadedInPos, inc * m_touchUi
-                                                                                               .getWaveformFramesPerPixel()); } },
-          { Knob::SouthEast, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeOutPos, inc * m_touchUi
-                                                                                                .getWaveformFramesPerPixel()); } },
-          { Knob::NorthEast, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadedOutPos, inc * m_touchUi
-                                                                                                .getWaveformFramesPerPixel()); } },
-
-
-      },
+      .knobs = { { Knob::Center,
+                   [this](auto inc)
+                   {
+                     auto fpp = m_touchUi.getWaveform().getFramesPerPixel();
+                     m_core.incSelectedTilesParameter(Core::ParameterId::TriggerFrame, inc * fpp);
+                   } },
+                 { Knob::Leftmost, [this](auto inc) { m_touchUi.getWaveform().incZoom(inc); } },
+                 { Knob::Rightmost, [this](auto inc) { m_touchUi.getWaveform().incScroll(inc); } },
+                 { Knob::SouthWest,
+                   [this](auto inc)
+                   {
+                     auto fpp = m_touchUi.getWaveform().getFramesPerPixel();
+                     m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeInPos, inc * fpp);
+                     m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadedInPos, inc * fpp);
+                   } },
+                 { Knob::NorthWest,
+                   [this](auto inc)
+                   {
+                     auto fpp = m_touchUi.getWaveform().getFramesPerPixel();
+                     m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadedInPos, inc * fpp);
+                   } },
+                 { Knob::NorthEast,
+                   [this](auto inc)
+                   {
+                     auto fpp = m_touchUi.getWaveform().getFramesPerPixel();
+                     m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeOutPos, inc * fpp);
+                   } },
+                 { Knob::SouthEast,
+                   [this](auto inc)
+                   {
+                     auto fpp = m_touchUi.getWaveform().getFramesPerPixel();
+                     m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeOutPos, inc * fpp);
+                     m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadedOutPos, inc * fpp);
+                   } } },
       .buttons = {},
     };
   }

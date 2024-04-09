@@ -46,16 +46,8 @@ namespace Ui::Touch
   {
     get_style_context()->add_class("toolboxes");
     Gtk::ScrolledWindow::add(m_box);
-  }
 
-  void Toolboxes::incZoom(int inc)
-  {
-    m_waveform.incZoom(inc);
-  }
-
-  void Toolboxes::incScroll(int inc)
-  {
-    m_waveform.incScroll(inc);
+    set_size_request(350, 150);
   }
 
   Ui::Toolboxes Toolboxes::getSelectedToolbox() const
@@ -63,9 +55,14 @@ namespace Ui::Touch
     return m_selectedToolbox;
   }
 
-  double Toolboxes::getWaveformFramesPerPixel() const
+  Ui::Touch::Interface::Waveform &Toolboxes::getWaveform() const
   {
-    return m_waveform.getFramesPerPixel();
+    return m_waveform;
+  }
+
+  Ui::Touch::Interface::FileBrowser &Toolboxes::getFileBrowser() const
+  {
+    return m_tileTools;
   }
 
 }
