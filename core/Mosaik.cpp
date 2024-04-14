@@ -170,6 +170,26 @@ namespace Core::Api
     }
   };
 
+  template <> struct Binder<ParameterId::TriggerFrame, FramePos>
+  {
+    static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, TileId tileId, Tools::ReactiveVar<FramePos> &target)
+    {
+      using T = ParameterDescription<ParameterId::TriggerFrame>;
+
+      return { .set = [](const ParameterValue &) { throw std::runtime_error("should not be called"); },
+               .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
+               .get = [&target]() -> ParameterValue { return target.get(); },
+               .inc =
+                   [&target, &core, &dsp, tileId](int steps)
+               {
+                 const FramePos min = 0;
+                 const auto sample = std::get<Path>(core.getParameter(tileId, ParameterId::SampleFile));
+                 const auto max = static_cast<FramePos>(dsp.getSamples(sample)->size());
+                 target = std::clamp(target + steps, min, max);
+               } };
+    }
+  };
+
   Mosaik::Mosaik(Glib::RefPtr<Glib::MainContext> ctx, DataModel &model, Dsp::Api::Control::Interface &dsp)
       : m_model(model)
       , m_dsp(dsp)
@@ -247,7 +267,7 @@ namespace Core::Api
         int64_t shuffle
             = (step % 2) ? shuffle = static_cast<int64_t>(0.5 * static_cast<double>(framesPer16th) * src.shuffle) : 0;
 
-        auto finalPos = pos + shuffle - src.triggerFrame;
+        auto finalPos = pos + shuffle - static_cast<FramePos>(src.triggerFrame / std::pow(2, src.speed));
 
         while(finalPos < 0)
           finalPos += framePerLoop;
@@ -264,7 +284,7 @@ namespace Core::Api
     tgt.mute = src.muted;
     tgt.balance = src.balance;
     tgt.gain_dB = src.gain;
-    tgt.playbackFrameIncrement = powf(2.0f, src.speed / 100.0f);
+    tgt.playbackFrameIncrement = powf(2.0f, src.speed);
     tgt.reverse = src.reverse;
 
     auto calcM

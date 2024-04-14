@@ -6,7 +6,7 @@
 #include <variant>
 #include <optional>
 #include <vector>
-//#include <format>
+#include <math.h>
 
 namespace Core
 {
@@ -51,7 +51,7 @@ namespace Core
     constexpr static const char* title[] = { "Tempo", "Tmp" };
     using Type = Float;
     constexpr static auto min = 20.0f;
-    constexpr static auto max = 240.0f;
+    constexpr static auto max = 400.0f;
     constexpr static auto coarse = 1.0f;
     constexpr static auto fine = 0.1f;
     constexpr static auto unit = "bpm";
@@ -187,15 +187,15 @@ namespace Core
     constexpr static auto name = "speed";
     constexpr static const char* title[] = { "Speed", "Spd" };
     using Type = Float;
-    constexpr static auto min = 50.0f;
-    constexpr static auto max = 200.0f;
-    constexpr static auto coarse = 1.f;
-    constexpr static auto fine = 0.1f;
+    constexpr static auto min = -4.0f;
+    constexpr static auto max = 4.0f;
+    constexpr static auto coarse = 0.01f;
+    constexpr static auto fine = 0.001f;
     constexpr static auto unit = "%";
 
     static std::string format(Type t)
     {
-      return Tools::format("%3.2f %s", t, unit);
+      return Tools::format("%3.2f %s", 100.0f * std::pow(2.0f, t), unit);
     }
   };
 
