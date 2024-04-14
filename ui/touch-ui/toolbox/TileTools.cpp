@@ -41,52 +41,26 @@ namespace Ui::Touch
             m_core.setParameter(tileId, Core::ParameterId::SampleFile, m_fileBrowser->get_filename());
         });
 
-    m_fileBrowser->signal_current_folder_changed().connect(
-        [this] { m_lastSelectedFolder = m_fileBrowser->get_current_folder_uri(); });
-
     pack_start(*m_fileBrowser);
 
     auto controls = Gtk::manage(new Gtk::Grid());
 
-    auto gain = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
-    gain->add(*Gtk::manage(new Gtk::Label("Gain")));
-    auto gainLevel = Gtk::manage(new Gtk::Label());
-    gain->add(*gainLevel);
+    auto addParameter = [&](const char *title, Core::ParameterId id, int x, int y)
+    {
+      auto box = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
+      box->add(*Gtk::manage(new Gtk::Label(title)));
+      auto level = Gtk::manage(new Gtk::Label());
+      box->add(*level);
+      controls->attach(*box, x, y, 1, 1);
+      m_computations.add([this, level, id] { level->set_label(m_core.getFirstSelectedTileParameterDisplay(id)); });
+    };
 
-    auto speed = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
-    speed->add(*Gtk::manage(new Gtk::Label("Speed")));
-    auto speedLevel = Gtk::manage(new Gtk::Label());
-    speed->add(*speedLevel);
-
-    auto balance = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
-    balance->add(*Gtk::manage(new Gtk::Label("Balance")));
-    auto balanceLevel = Gtk::manage(new Gtk::Label());
-    balance->add(*balanceLevel);
-
-    controls->attach(*balance, 0, 0, 1, 1);
-    controls->attach(*speed, 4, 0, 1, 1);
-    controls->attach(*gain, 2, 2, 1, 1);
-
-    m_computations.add([this, speedLevel] { updateTileSpeed(speedLevel); });
-    m_computations.add([this, balanceLevel] { updateTileBalance(balanceLevel); });
-    m_computations.add([this, gainLevel] { updateTileGain(gainLevel); });
+    addParameter("Gain", Core::ParameterId::Gain, 2, 2);
+    addParameter("Speed", Core::ParameterId::Speed, 4, 0);
+    addParameter("Balance", Core::ParameterId::Balance, 0, 0);
+    addParameter("Shuffle", Core::ParameterId::Shuffle, 0, 3);
 
     pack_start(*controls);
-  }
-
-  void TileTools::updateTileGain(Gtk::Label *level)
-  {
-    level->set_label(m_core.getFirstSelectedTileParameterDisplay(Core::ParameterId::Gain));
-  }
-
-  void TileTools::updateTileSpeed(Gtk::Label *level)
-  {
-    level->set_label(m_core.getFirstSelectedTileParameterDisplay(Core::ParameterId::Speed));
-  }
-
-  void TileTools::updateTileBalance(Gtk::Label *level)
-  {
-    level->set_label(m_core.getFirstSelectedTileParameterDisplay(Core::ParameterId::Balance));
   }
 
   void TileTools::up()
@@ -113,6 +87,13 @@ namespace Ui::Touch
 
   void TileTools::load()
   {
+    m_core.setParameter(m_core.getSelectedTiles().front(), Core::ParameterId::SampleFile,
+                        Core::Path(m_fileBrowser->get_filename()));
+  }
+
+  void TileTools::prelisten()
+  {
+    m_core.setPrelistenSample(m_fileBrowser->get_filename());
   }
 
   void TileTools::navigate(const std::function<void(Gtk::TreePath &)> &cb)

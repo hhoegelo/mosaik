@@ -30,18 +30,14 @@ namespace Ui::Touch
     void inc() override;
     void dec() override;
     void load() override;
+    void prelisten() override;
 
    private:
-    void updateTileGain(Gtk::Label *level);
-    void updateTileSpeed(Gtk::Label *level);
-    void updateTileBalance(Gtk::Label *level);
-
     void navigate(const std::function<void(Gtk::TreePath &)> &cb);
 
     Core::Api::Interface &m_core;
 
     Gtk::FileChooserWidget *m_fileBrowser;
-    std::optional<std::string> m_lastSelectedFolder;
     Tools::DeferredComputations m_computations;
   };
 }

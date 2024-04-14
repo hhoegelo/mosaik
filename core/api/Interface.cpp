@@ -21,7 +21,7 @@ namespace Core::Api
         auto loadParameter = [&](auto json, TileId id, auto p)
         {
           if(json.contains(p.name))
-            setParameter(id, p.id, static_cast<typename decltype(p)::Type>(json[p.name]));
+            this->loadParameter(id, p.id, static_cast<typename decltype(p)::Type>(json[p.name]));
         };
 
         if(j.contains("globals"))
@@ -115,5 +115,4 @@ namespace Core::Api
   {
     return getParameterDisplay(getSelectedTiles().front(), parameterId);
   }
-
 }

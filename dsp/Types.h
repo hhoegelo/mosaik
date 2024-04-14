@@ -33,6 +33,15 @@ namespace Dsp
     return { lhs.left * f, lhs.right * f };
   }
 
+  inline OutFrame operator*(const OutFrame &lhs, float f)
+  {
+    return { lhs.main * f, lhs.pre * f };
+  }
+
   using SampleBuffer = std::vector<StereoFrame>;
   using SharedSampleBuffer = std::shared_ptr<SampleBuffer>;
+
+  constexpr auto c_maxVolStep = 500.0f / SAMPLERATE;
+  constexpr int c_silenceDB = -60;
+  constexpr int c_maxDB = 12;
 }

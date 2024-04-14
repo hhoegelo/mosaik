@@ -4,6 +4,8 @@
 
 namespace Dsp
 {
+  class Mosaik;
+
   namespace Api
   {
     namespace Control
@@ -34,8 +36,7 @@ namespace Dsp
     Api::Display::Interface &getDisplayApi() const;
 
    private:
-    struct Impl;
-    std::unique_ptr<Impl> m_impl;
+    std::unique_ptr<Mosaik> m_impl;
 
     std::unique_ptr<Api::Control::Interface> m_controlApi;
     std::unique_ptr<Api::Display::Interface> m_displayApi;

@@ -21,9 +21,12 @@ int main(int args, char** argv)
   try
   {
     options_description desc("Allowed options");
-    desc.add_options()("help", "produce help message")("alsa-out", value<std::string>(), "output device")(
-        "bits", value<int>(), "16 or 32 bit")("midi-ui", value<std::string>(),
-                                              "alsa midi device for the mosaik hardware UI");
+    auto o = desc.add_options();
+    o = o("help", "produce help message");
+    o = o("alsa-out", value<std::string>(), "output device");
+    o = o("bits", value<int>(), "16 or 32 bit");
+    o = o("midi-ui", value<std::string>(), "alsa midi device for the mosaik hardware UI");
+    o = o("channels", value<int>(), "number of audio channel: 2 or 4");
 
     store(parse_command_line(args, argv, desc), vm);
     notify(vm);
@@ -43,12 +46,13 @@ int main(int args, char** argv)
   std::string alsaOut = vm.count("alsa-out") ? vm["alsa-out"].as<std::string>() : "pulse";
   std::string midiUi = vm.count("midi-ui") ? vm["midi-ui"].as<std::string>() : "";
   int bits = vm.count("bits") ? vm["bits"].as<int>() : 16;
+  int channels = vm.count("channels") ? vm["channels"].as<int>() : 2;
 
   Glib::init();
 
   Dsp::Dsp dsp;
   Core::Core core(dsp.getControlApi(), Glib::MainContext::get_default());
-  Audio::AlsaOut audioOut(dsp.getRealtimeApi(), alsaOut, bits);
+  Audio::AlsaOut audioOut(dsp.getRealtimeApi(), alsaOut, bits, channels);
   Ui::Touch::Application touchUI(core.getApi(), dsp.getDisplayApi());
   Ui::Midi::Ui midiUI(midiUi, core.getApi(), dsp.getDisplayApi(), touchUI.getApi());
   Ui::Midi::DebugUI dbg(core.getApi(), dsp.getDisplayApi(), touchUI.getApi());

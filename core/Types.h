@@ -15,11 +15,11 @@ namespace Core
     // Globals
     GlobalTempo,
     GlobalVolume,
-    GlobalShuffle,
 
     // Per Tile
     Selected,
     SampleFile,
+    Shuffle,
     Pattern,
     Balance,
     Gain,
@@ -77,24 +77,6 @@ namespace Core
     static std::string format(Type t)
     {
       return Tools::format("%2.1f %s", t, unit);
-    }
-  };
-
-  template <> struct ParameterDescription<ParameterId::GlobalShuffle>
-  {
-    constexpr static ParameterId id = ParameterId::GlobalShuffle;
-    constexpr static auto name = "shuffle";
-    constexpr static const char* title[] = { "Shuffle", "Shuf" };
-    using Type = Float;
-    constexpr static auto min = -1.0f;
-    constexpr static auto max = 1.0f;
-    constexpr static auto coarse = 0.01f;
-    constexpr static auto fine = 0.005f;
-    constexpr static auto unit = "%";
-
-    static std::string format(Type t)
-    {
-      return Tools::format("%3.2f %s", 100 * t, unit);
     }
   };
 
@@ -224,9 +206,6 @@ namespace Core
     constexpr static const char* title[] = { "FadeIn Position", "FadeIn Pos", "FadeIn" };
     using Type = FramePos;
 
-    constexpr static ParameterId left = ParameterId::SampleFile;
-    constexpr static ParameterId right = ParameterId::EnvelopeFadedInPos;
-
     static std::string format(Type t)
     {
       return Tools::format("%zu", t);
@@ -239,9 +218,6 @@ namespace Core
     constexpr static auto name = "envelopeFadedInPos";
     constexpr static const char* title[] = { "FadedIn Position", "FadedIn Pos", "FadedIn" };
     using Type = FramePos;
-
-    constexpr static ParameterId left = ParameterId::EnvelopeFadeInPos;
-    constexpr static ParameterId right = ParameterId::EnvelopeFadeOutPos;
 
     static std::string format(Type t)
     {
@@ -256,9 +232,6 @@ namespace Core
     constexpr static const char* title[] = { "FadeOut Position", "FadeOut Pos", "FadeOut" };
     using Type = FramePos;
 
-    constexpr static ParameterId left = ParameterId::EnvelopeFadedInPos;
-    constexpr static ParameterId right = ParameterId::EnvelopeFadedOutPos;
-
     static std::string format(Type t)
     {
       return Tools::format("%zu", t);
@@ -271,9 +244,6 @@ namespace Core
     constexpr static auto name = "envelopeFadedOutPos";
     constexpr static const char* title[] = { "FadedOut Position", "FadedOut Pos", "FadedOut" };
     using Type = FramePos;
-
-    constexpr static ParameterId left = ParameterId::EnvelopeFadeOutPos;
-    constexpr static ParameterId right = ParameterId::SampleFile;
 
     static std::string format(Type t)
     {
@@ -288,25 +258,45 @@ namespace Core
     constexpr static const char* title[] = { "Hit Point", "Hit" };
     using Type = FramePos;
 
-    constexpr static ParameterId left = ParameterId::SampleFile;
-    constexpr static ParameterId right = ParameterId::SampleFile;
-
     static std::string format(Type t)
     {
       return Tools::format("%zu", t);
     }
   };
 
+  template <> struct ParameterDescription<ParameterId::Shuffle>
+  {
+    constexpr static ParameterId id = ParameterId::Shuffle;
+    constexpr static auto name = "shuffle";
+    constexpr static const char* title[] = { "Shuffle", "Shuf" };
+    using Type = Float;
+    constexpr static auto min = -1.0f;
+    constexpr static auto max = 1.0f;
+    constexpr static auto coarse = 0.01f;
+    constexpr static auto fine = 0.005f;
+    constexpr static auto unit = "%";
+
+    static std::string format(Type t)
+    {
+      return Tools::format("%3.2f %s", 100 * t, unit);
+    }
+  };
+
   template <ParameterId... ids> struct Parameters
   {
     using Descriptors = std::tuple<ParameterDescription<ids>...>;
+
+    static bool contains(ParameterId id)
+    {
+      return ((ids == id) || ...);
+    }
   };
 
-  using GlobalParameters = Parameters<ParameterId::GlobalTempo, ParameterId::GlobalVolume, ParameterId::GlobalShuffle>;
+  using GlobalParameters = Parameters<ParameterId::GlobalTempo, ParameterId::GlobalVolume>;
 
   using TileParameters
       = Parameters<ParameterId::Selected, ParameterId::SampleFile, ParameterId::Reverse, ParameterId::Pattern,
                    ParameterId::Balance, ParameterId::Gain, ParameterId::Mute, ParameterId::Speed,
                    ParameterId::EnvelopeFadeInPos, ParameterId::EnvelopeFadedInPos, ParameterId::EnvelopeFadeOutPos,
-                   ParameterId::EnvelopeFadedOutPos, ParameterId::TriggerFrame>;
+                   ParameterId::EnvelopeFadedOutPos, ParameterId::TriggerFrame, ParameterId::Shuffle>;
 }
