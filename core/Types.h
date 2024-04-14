@@ -187,8 +187,8 @@ namespace Core
     constexpr static auto name = "speed";
     constexpr static const char* title[] = { "Speed", "Spd" };
     using Type = Float;
-    constexpr static auto min = -4.0f;
-    constexpr static auto max = 4.0f;
+    constexpr static auto min = -3.0f;
+    constexpr static auto max = 3.0f;
     constexpr static auto coarse = 0.01f;
     constexpr static auto fine = 0.001f;
     constexpr static auto unit = "%";
