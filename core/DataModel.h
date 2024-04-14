@@ -24,10 +24,11 @@ namespace Core
     {
       TileId id;
 
-      Tools::ReactiveVar<std::filesystem::path> sample { "" };
+      Tools::ReactiveVar<Path> sample { "" };
       Tools::ReactiveVar<std::array<bool, NUM_STEPS>> pattern { {} };
-      Tools::ReactiveVar<float> gain { 0.f };  // c_silenceDB dB .. c_maxDB dB
+      Tools::ReactiveVar<float> gain { 0.f };
       Tools::ReactiveVar<float> balance { 0.f };
+      Tools::ReactiveVar<float> shuffle { 0.f };
       Tools::ReactiveVar<bool> muted { false };
       Tools::ReactiveVar<bool> reverse { false };
       Tools::ReactiveVar<bool> selected { false };
@@ -44,11 +45,12 @@ namespace Core
     struct Globals
     {
       Tools::ReactiveVar<float> tempo { 120.f };
-      Tools::ReactiveVar<float> volume { 0 };  // c_silenceDB dB .. c_maxDB dB
-      Tools::ReactiveVar<float> shuffle { 0.5f };
+      Tools::ReactiveVar<float> volume { 0 };
     };
 
     Globals globals;
     std::array<Tile, NUM_TILES> tiles;
+    Tools::ReactiveVar<Path> prelistenSample { "" };
+    Tools::ReactiveVar<uint8_t> prelistenInteractionCounter { 0 };
   };
 }

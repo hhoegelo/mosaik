@@ -22,10 +22,6 @@ namespace Ui::Touch
     tempoBox->add(*Gtk::manage(new Gtk::Label("Tempo")));
     tempoBox->add(*buildLevel(Core::ParameterId::GlobalTempo));
 
-    auto shuffleBox = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
-    shuffleBox->add(*Gtk::manage(new Gtk::Label("Shuffle")));
-    shuffleBox->add(*buildLevel(Core::ParameterId::GlobalShuffle));
-
     auto buildEmptyBox = [&]
     {
       auto emptyBox = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
@@ -38,7 +34,7 @@ namespace Ui::Touch
     attach(*buildEmptyBox(), 4, 0, 1, 1);
 
     attach(*buildEmptyBox(), 1, 1, 1, 1);
-    attach(*shuffleBox, 3, 1, 1, 1);
+    attach(*buildEmptyBox(), 3, 1, 1, 1);
 
     attach(*volBox, 2, 2, 1, 1);
 

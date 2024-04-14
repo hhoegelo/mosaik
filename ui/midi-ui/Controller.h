@@ -42,6 +42,10 @@ namespace Ui
       void setLed(Led led, Color color);
       void showPattern();
 
+      std::pair<Knob, std::function<void(int)>> standardBind(Knob k, Core::ParameterId p);
+      std::pair<SoftButton, std::function<void()>> standardBindRelease(SoftButton k, Core::ParameterId p);
+      std::pair<Knob, std::function<void(int)>> standardZoomedBind(Knob k, Core::ParameterId p);
+
       struct Mapping
       {
         std::map<Knob, std::function<void(int)>> knobs;

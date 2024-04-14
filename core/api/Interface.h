@@ -16,7 +16,10 @@ namespace Core::Api
     virtual void save(const Path &path);
 
     virtual void setParameter(TileId tileId, ParameterId parameterId, const ParameterValue &value) = 0;
+    virtual void loadParameter(TileId tileId, ParameterId parameterId, const ParameterValue &value) = 0;
     virtual void incParameter(TileId tileId, ParameterId parameterId, int steps) = 0;
+    virtual void setPrelistenSample(const Path &path) = 0;
+
     [[nodiscard]] virtual ParameterValue getParameter(TileId tileId, ParameterId parameterId) const = 0;
     [[nodiscard]] virtual std::string getParameterDisplay(TileId tileId, ParameterId parameterId) const = 0;
 

@@ -10,9 +10,13 @@ pkg_check_modules(LIBS REQUIRED IMPORTED_TARGET gstreamermm-1.0)
 add_library(${PROJECT_NAME} STATIC
         Dsp.cpp
         PointerExchange.h
-        tools/Tools.cpp
-        tools/Tools.h
+        tools/AudioFileDecoder.cpp
+        tools/AudioFileDecoder.h
         Types.h
+        Mosaik.cpp
+        Mosaik.h
+        Tile.cpp
+        Tile.h
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS_LIBRARIES})

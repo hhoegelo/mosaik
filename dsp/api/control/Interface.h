@@ -18,6 +18,7 @@ namespace Dsp
 
         virtual void takeAudioKernel(AudioKernel *kernel) = 0;
         virtual SharedSampleBuffer getSamples(const std::filesystem::path &path) const = 0;
+        virtual void cleanupCache(std::vector<std::filesystem::path> &&paths) = 0;
       };
     }
   }

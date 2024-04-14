@@ -24,6 +24,7 @@ namespace Ui::Touch
       virtual ~FileBrowser() = default;
       virtual void inc() = 0;
       virtual void dec() = 0;
+      virtual void prelisten() = 0;
       virtual void load() = 0;
       virtual void up() = 0;
       virtual void down() = 0;
@@ -33,7 +34,7 @@ namespace Ui::Touch
 
     virtual Waveform &getWaveform() const = 0;
     virtual FileBrowser &getFileBrowser() const = 0;
-    
+
     [[nodiscard]] virtual ::Ui::Toolboxes getSelectedToolbox() const = 0;
   };
 }

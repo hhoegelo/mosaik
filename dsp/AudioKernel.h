@@ -14,6 +14,9 @@ namespace Dsp
     FramePos framesPer16th = 1;
     FramePos framesPerLoop = 1;
 
+    SharedSampleBuffer prelistenSample { std::make_shared<SampleBuffer>() };
+    uint8_t prelistenInteractionCounter = 0;
+
     struct Tile
     {
       SharedSampleBuffer audio { std::make_shared<SampleBuffer>() };

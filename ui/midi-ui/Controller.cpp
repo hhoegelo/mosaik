@@ -1,4 +1,5 @@
 #include "Controller.h"
+#include <ui/Types.h>
 #include <core/api/Interface.h>
 #include <ui/midi-ui/Interface.h>
 #include <dsp/api/display/Interface.h>
@@ -62,6 +63,33 @@ namespace Ui::Midi
         it->second();
   }
 
+  std::pair<Knob, std::function<void(int)>> Controller::standardBind(Knob k, Core::ParameterId p)
+  {
+    auto r = [this, p](int inc)
+    {
+      auto tile = Core::GlobalParameters ::contains(p) ? Core::TileId {} : m_core.getSelectedTiles().front();
+      m_core.incParameter(tile, p, inc);
+    };
+    return std::make_pair(k, r);
+  };
+
+  std::pair<SoftButton, std::function<void()>> Controller::standardBindRelease(SoftButton k, Core::ParameterId p)
+  {
+    auto r = [this, p] { m_core.toggleSelectedTilesParameter(p); };
+    return std::make_pair(k, r);
+  }
+
+  std::pair<Knob, std::function<void(int)>> Controller::standardZoomedBind(Knob k, Core::ParameterId p)
+  {
+    auto r = [this, p](int inc)
+    {
+      auto tile = Core::GlobalParameters::contains(p) ? Core::TileId {} : m_core.getSelectedTiles().front();
+      auto fpp = m_touchUi.getWaveform().getFramesPerPixel();
+      m_core.incParameter(tile, p, inc * fpp);
+    };
+    return std::make_pair(k, r);
+  };
+
   Controller::Mapping Controller::createMapping(Ui::Toolboxes t)
   {
     switch(t)
@@ -80,11 +108,10 @@ namespace Ui::Midi
 
   Controller::Mapping Controller::buildGlobalMapping()
   {
+
     return {
-      .knobs
-      = { { Knob::Center, [this](auto inc) { m_core.incParameter({}, Core::ParameterId::GlobalVolume, inc); } },
-          { Knob::NorthEast, [this](auto inc) { m_core.incParameter({}, Core::ParameterId::GlobalShuffle, inc); } },
-          { Knob::SouthEast, [this](auto inc) { m_core.incParameter({}, Core::ParameterId::GlobalTempo, inc); } } },
+      .knobs = { { standardBind(Knob::Center, Core::ParameterId::GlobalVolume) },
+                 { standardBind(Knob::SouthEast, Core::ParameterId::GlobalTempo) } },
       .buttons = {},
     };
   }
@@ -94,17 +121,25 @@ namespace Ui::Midi
     return {
       .knobs
       = {
-          { Knob::Center, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Gain, inc); } },
-          { Knob::Rightmost, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Speed, inc); } },
-          { Knob::Leftmost, [this](auto inc) { m_core.incSelectedTilesParameter(Core::ParameterId::Balance, inc); } },
+          { standardBind(Knob::Center,Core::ParameterId::Gain) },
+          { standardBind(Knob::Rightmost,Core::ParameterId::Speed) },
+          { standardBind(Knob::Leftmost,Core::ParameterId::Balance)},
+          { standardBind(Knob::SouthWest,Core::ParameterId::Shuffle)},
            },
       .buttonReleases = {
-          { SoftButton::Left_Center, [this] { m_core.toggleSelectedTilesParameter(Core::ParameterId::Reverse); } },
-          { SoftButton::Right_North, [this] {m_touchUi.getFileBrowser().dec(); } },
-          { SoftButton::Right_Center, [this] {m_touchUi.getFileBrowser().load(); } },
-          { SoftButton::Right_South, [this] {m_touchUi.getFileBrowser().inc(); } },
-          { SoftButton::Right_West, [this] {m_touchUi.getFileBrowser().up(); } },
-          { SoftButton::Right_East, [this] {m_touchUi.getFileBrowser().down(); } },
+          { standardBindRelease(SoftButton::Left_Center,Core::ParameterId::Reverse)},
+          { SoftButton::Right_North, [this] {
+      m_touchUi.getFileBrowser().dec(); } },
+          { SoftButton::Right_Center, [this] {
+      m_touchUi.getFileBrowser().load(); } },
+          { SoftButton::Right_South, [this] {
+      m_touchUi.getFileBrowser().inc(); } },
+          { SoftButton::Right_West, [this] {
+      m_touchUi.getFileBrowser().up(); } },
+          { SoftButton::Right_East, [this] {
+      m_touchUi.getFileBrowser().down(); } },
+          { SoftButton::Right_NorthEast, [this] {
+              m_touchUi.getFileBrowser().prelisten(); } },
       },
     };
   }
@@ -112,40 +147,13 @@ namespace Ui::Midi
   Controller::Mapping Controller::buildWaveformMapping()
   {
     return {
-      .knobs = { { Knob::Center,
-                   [this](auto inc)
-                   {
-                     auto fpp = m_touchUi.getWaveform().getFramesPerPixel();
-                     m_core.incSelectedTilesParameter(Core::ParameterId::TriggerFrame, inc * fpp);
-                   } },
+      .knobs = { { standardZoomedBind(Knob::Center, Core::ParameterId::TriggerFrame) },
                  { Knob::Leftmost, [this](auto inc) { m_touchUi.getWaveform().incZoom(inc); } },
                  { Knob::Rightmost, [this](auto inc) { m_touchUi.getWaveform().incScroll(inc); } },
-                 { Knob::SouthWest,
-                   [this](auto inc)
-                   {
-                     auto fpp = m_touchUi.getWaveform().getFramesPerPixel();
-                     m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeInPos, inc * fpp);
-                     m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadedInPos, inc * fpp);
-                   } },
-                 { Knob::NorthWest,
-                   [this](auto inc)
-                   {
-                     auto fpp = m_touchUi.getWaveform().getFramesPerPixel();
-                     m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadedInPos, inc * fpp);
-                   } },
-                 { Knob::NorthEast,
-                   [this](auto inc)
-                   {
-                     auto fpp = m_touchUi.getWaveform().getFramesPerPixel();
-                     m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeOutPos, inc * fpp);
-                   } },
-                 { Knob::SouthEast,
-                   [this](auto inc)
-                   {
-                     auto fpp = m_touchUi.getWaveform().getFramesPerPixel();
-                     m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadeOutPos, inc * fpp);
-                     m_core.incSelectedTilesParameter(Core::ParameterId::EnvelopeFadedOutPos, inc * fpp);
-                   } } },
+                 { standardZoomedBind(Knob::SouthWest, Core::ParameterId::EnvelopeFadeInPos) },
+                 { standardZoomedBind(Knob::NorthWest, Core::ParameterId::EnvelopeFadedInPos) },
+                 { standardZoomedBind(Knob::NorthEast, Core::ParameterId::EnvelopeFadeOutPos) },
+                 { standardZoomedBind(Knob::SouthEast, Core::ParameterId::EnvelopeFadedOutPos) } },
       .buttons = {},
     };
   }
@@ -169,4 +177,5 @@ namespace Ui::Midi
       m_midiUi.setLed(led, color);
     }
   }
+
 }

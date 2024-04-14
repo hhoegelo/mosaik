@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <core/Types.h>
 
 namespace Ui
 {
@@ -236,5 +237,4 @@ namespace Ui
     }
     return "none";
   }
-
 }
