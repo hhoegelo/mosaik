@@ -7,19 +7,19 @@ namespace Ui::Midi
 {
   auto css = R"(
     .color-red {
-      color: red;
+      background: red;
     }
 
     .color-blue {
-      color: blue;
+      background: blue;
     }
 
     .color-green {
-      color: green;
+      background: green;
     }
 
     .color-white {
-      color: white;
+      background: white;
     }
 
     button.current-step {

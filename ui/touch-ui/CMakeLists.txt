@@ -20,6 +20,8 @@ add_library(mosaik-touchui STATIC
         toolbox/Waveform.h
         Interface.h
         Types.h
+        toolbox/Steps.cpp
+        toolbox/Steps.h
 )
 
 target_compile_options(mosaik-touchui PRIVATE)

@@ -13,7 +13,8 @@ namespace Ui
   {
     Global,
     Tile,
-    Waveform
+    Waveform,
+    Steps
   };
 
   enum class SoftButton

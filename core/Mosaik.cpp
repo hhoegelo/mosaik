@@ -1,4 +1,5 @@
 #include "Mosaik.h"
+#include "StepWizard.h"
 #include <dsp/api/control/Interface.h>
 #include <cmath>
 
@@ -202,7 +203,8 @@ namespace Core::Api
       auto &src = m_model.tiles[c];
       bindParameters<TileParameters>(c, src.selected, src.sample, src.reverse, src.pattern, src.balance, src.gain,
                                      src.muted, src.speed, src.envelopeFadeInPos, src.envelopeFadedInPos,
-                                     src.envelopeFadeOutPos, src.envelopeFadedOutPos, src.triggerFrame, src.shuffle);
+                                     src.envelopeFadeOutPos, src.envelopeFadedOutPos, src.triggerFrame, src.shuffle,
+                                     src.wizard.mode, src.wizard.rotate, src.wizard.ons, src.wizard.offs);
     }
 
     m_kernelUpdate.add(
@@ -259,7 +261,12 @@ namespace Core::Api
 
     Dsp::FramePos pos = 0;
 
-    for(auto s : src.pattern.get())
+    auto processedPattern = processWizard(src.pattern, static_cast<Core::WizardMode>(src.wizard.mode.get()),
+                                          static_cast<int8_t>(std::round(src.wizard.rotate)),
+                                          static_cast<int8_t>(std::round(src.wizard.ons)),
+                                          static_cast<int8_t>(std::round(src.wizard.offs)));
+
+    for(auto s : processedPattern)
     {
       if(s)
       {

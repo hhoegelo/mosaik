@@ -40,6 +40,15 @@ namespace Core
       Tools::ReactiveVar<FramePos> triggerFrame { 0 };
 
       Tools::ReactiveVar<float> speed { 0 };
+
+      struct Wizard
+      {
+
+        Tools::ReactiveVar<uint8_t> mode { WizardMode::Or };
+        Tools::ReactiveVar<float> rotate { 0 };
+        Tools::ReactiveVar<float> ons { 1 };
+        Tools::ReactiveVar<float> offs { 3 };
+      } wizard;
     };
 
     struct Globals

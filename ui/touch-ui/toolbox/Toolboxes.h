@@ -16,6 +16,7 @@ namespace Ui::Touch
   class Waveform;
   class GlobalTools;
   class TileTools;
+  class Steps;
 
   class Toolboxes : public Gtk::ScrolledWindow
   {
@@ -35,5 +36,6 @@ namespace Ui::Touch
     GlobalTools &m_globalTools;
     TileTools &m_tileTools;
     Waveform &m_waveform;
+    Steps &m_steps;
   };
 }

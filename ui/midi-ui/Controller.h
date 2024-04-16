@@ -56,6 +56,7 @@ namespace Ui
 
       Mapping createMapping(Ui::Toolboxes t);
       Mapping buildTileMapping();
+      Mapping buildStepMapping();
       Mapping buildGlobalMapping();
       Controller::Mapping buildWaveformMapping();
 

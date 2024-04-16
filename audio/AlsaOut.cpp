@@ -11,9 +11,8 @@
 
 namespace
 {
-
-  constexpr auto c_numPeriods = 3;
-  constexpr auto c_framesPerPeriod = 512;
+  constexpr auto c_numPeriods = 8;
+  constexpr auto c_framesPerPeriod = 128;
 
   struct S16
   {

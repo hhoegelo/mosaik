@@ -1,4 +1,5 @@
 #include "Controller.h"
+#include "core/StepWizard.h"
 #include <ui/Types.h>
 #include <core/api/Interface.h>
 #include <ui/midi-ui/Interface.h>
@@ -33,7 +34,16 @@ namespace Ui::Midi
 
   void Controller::showPattern()
   {
+    auto tile = m_core.getSelectedTiles().front();
+
     auto merged = m_core.getMergedPattern();
+
+    merged = Core::processWizard(
+        merged,
+        static_cast<Core::WizardMode>(std::get<uint8_t>(m_core.getParameter(tile, Core::ParameterId::WizardMode))),
+        static_cast<int8_t>(std::round(std::get<float>(m_core.getParameter(tile, Core::ParameterId::WizardRotate)))),
+        static_cast<uint8_t>(std::round(std::get<float>(m_core.getParameter(tile, Core::ParameterId::WizardOns)))),
+        static_cast<uint8_t>(std::round(std::get<float>(m_core.getParameter(tile, Core::ParameterId::WizardOffs)))));
 
     for(size_t i = 0; i < 64; i++)
     {
@@ -102,18 +112,88 @@ namespace Ui::Midi
 
       case Ui::Toolboxes::Waveform:
         return buildWaveformMapping();
+
+      case Ui::Toolboxes::Steps:
+        return buildStepMapping();
     }
     throw std::runtime_error("unknown toolbox");
   }
 
   Controller::Mapping Controller::buildGlobalMapping()
   {
-
     return {
       .knobs = { { standardBind(Knob::Center, Core::ParameterId::GlobalVolume) },
                  { standardBind(Knob::SouthEast, Core::ParameterId::GlobalTempo) } },
       .buttons = {},
     };
+  }
+
+  Controller::Mapping Controller::buildStepMapping()
+  {
+    auto reset = [this]
+    {
+      auto sel = m_core.getSelectedTiles().front();
+      m_core.setParameter(sel, Core::ParameterId::WizardMode, static_cast<uint8_t>(Core::WizardMode::Or));
+      m_core.setParameter(sel, Core::ParameterId::WizardRotate, 0.0f);
+      m_core.setParameter(sel, Core::ParameterId::WizardOns, 0.0f);
+      m_core.setParameter(sel, Core::ParameterId::WizardOffs, 0.0f);
+    };
+
+    return { .knobs = { { standardBind(Knob::Rightmost, Core::ParameterId::WizardRotate) },
+                        { standardBind(Knob::NorthEast, Core::ParameterId::WizardOns) },
+                        { standardBind(Knob::Center, Core::ParameterId::WizardOffs) } },
+             .buttonPresses = {
+                 { SoftButton::Right_SouthWest,
+                   [this]
+                   {
+                     m_core.setParameter(m_core.getSelectedTiles().front(), Core::ParameterId::WizardMode,
+                                         static_cast<uint8_t>(Core::WizardMode::Or));
+                   } },
+
+                 { SoftButton::Right_South,
+                   [this]
+                   {
+                     m_core.setParameter(m_core.getSelectedTiles().front(), Core::ParameterId::WizardMode,
+                                         static_cast<uint8_t>(Core::WizardMode::And));
+                   } },
+
+                 { SoftButton::Right_SouthEast,
+                   [this]
+                   {
+                     m_core.setParameter(m_core.getSelectedTiles().front(), Core::ParameterId::WizardMode,
+                                         static_cast<uint8_t>(Core::WizardMode::Replace));
+                   } },
+
+                 { SoftButton::Right_East,
+                   [this]
+                   {
+                     m_core.setParameter(m_core.getSelectedTiles().front(), Core::ParameterId::WizardMode,
+                                         static_cast<uint8_t>(Core::WizardMode::Not));
+                   } },
+
+                 { SoftButton::Right_West, [reset] { reset(); } },
+
+                 { SoftButton::Right_Center,
+                   [this, reset]
+                   {
+                     auto tile = m_core.getSelectedTiles().front();
+                     auto p = std::get<Core::Pattern>(m_core.getParameter(tile, Core::ParameterId::Pattern));
+
+                     p = Core::processWizard(
+                         p,
+                         static_cast<Core::WizardMode>(
+                             std::get<uint8_t>(m_core.getParameter(tile, Core::ParameterId::WizardMode))),
+                         static_cast<int8_t>(
+                             std::round(std::get<float>(m_core.getParameter(tile, Core::ParameterId::WizardRotate)))),
+                         static_cast<uint8_t>(
+                             std::round(std::get<float>(m_core.getParameter(tile, Core::ParameterId::WizardOns)))),
+                         static_cast<uint8_t>(
+                             std::round(std::get<float>(m_core.getParameter(tile, Core::ParameterId::WizardOffs)))));
+
+                     m_core.setParameter(tile, Core::ParameterId::Pattern, p);
+                     reset();
+                   } },
+             } };
   }
 
   Controller::Mapping Controller::buildTileMapping()
@@ -177,5 +257,4 @@ namespace Ui::Midi
       m_midiUi.setLed(led, color);
     }
   }
-
 }

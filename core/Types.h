@@ -6,10 +6,18 @@
 #include <variant>
 #include <optional>
 #include <vector>
-#include <math.h>
+#include <cmath>
 
 namespace Core
 {
+  enum WizardMode
+  {
+    Or = 0,
+    And = 1,
+    Replace = 2,
+    Not = 3
+
+  };
   enum class ParameterId
   {
     // Globals
@@ -31,6 +39,12 @@ namespace Core
     EnvelopeFadedOutPos,
     TriggerFrame,
     Speed,
+
+    // Wizard
+    WizardMode,
+    WizardRotate,
+    WizardOns,
+    WizardOffs,
   };
 
   using Path = std::filesystem::path;
@@ -40,7 +54,7 @@ namespace Core
   using TileId = std::optional<uint32_t>;
   using FramePos = int64_t;
 
-  using ParameterValue = std::variant<Bool, Float, Path, Pattern, FramePos>;
+  using ParameterValue = std::variant<Bool, Float, Path, Pattern, FramePos, uint8_t>;
 
   template <ParameterId id> struct ParameterDescription;
 
@@ -48,12 +62,10 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::GlobalTempo;
     constexpr static auto name = "tempo";
-    constexpr static const char* title[] = { "Tempo", "Tmp" };
     using Type = Float;
-    constexpr static auto min = 20.0f;
-    constexpr static auto max = 400.0f;
-    constexpr static auto coarse = 1.0f;
-    constexpr static auto fine = 0.1f;
+    constexpr static Type min = 20.0f;
+    constexpr static Type max = 400.0f;
+    constexpr static Type coarse = 1.0f;
     constexpr static auto unit = "bpm";
 
     static std::string format(Type t)
@@ -66,12 +78,10 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::GlobalVolume;
     constexpr static auto name = "volume";
-    constexpr static const char* title[] = { "Master Volume", "Volume", "Vol" };
     using Type = Float;
-    constexpr static auto min = -72.0f;
-    constexpr static auto max = 0.0f;
-    constexpr static auto coarse = 0.5f;
-    constexpr static auto fine = 0.1f;
+    constexpr static Type min = -72.0f;
+    constexpr static Type max = 0.0f;
+    constexpr static Type coarse = 0.5f;
     constexpr static auto unit = "dB";
 
     static std::string format(Type t)
@@ -85,7 +95,6 @@ namespace Core
     constexpr static ParameterId id = ParameterId::Selected;
     using Type = Bool;
     constexpr static auto name = "selected";
-    constexpr static const char* title[] = { "Selected", "Sel" };
 
     static std::string format(Type t)
     {
@@ -98,7 +107,6 @@ namespace Core
     constexpr static ParameterId id = ParameterId::Reverse;
     using Type = Bool;
     constexpr static auto name = "reverse";
-    constexpr static const char* title[] = { "Reverse", "Rev" };
 
     static std::string format(Type t)
     {
@@ -111,7 +119,6 @@ namespace Core
     constexpr static ParameterId id = ParameterId::SampleFile;
     using Type = Path;
     constexpr static auto name = "sample";
-    constexpr static const char* title[] = { "Sample" };
 
     static std::string format(const Type& t)
     {
@@ -124,7 +131,6 @@ namespace Core
     constexpr static ParameterId id = ParameterId::Pattern;
     using Type = Pattern;
     constexpr static auto name = "pattern";
-    constexpr static const char* title[] = { "Pattern" };
 
     static std::string format(const Type& t)
     {
@@ -137,7 +143,6 @@ namespace Core
     constexpr static ParameterId id = ParameterId::Mute;
     using Type = Bool;
     constexpr static auto name = "mute";
-    constexpr static const char* title[] = { "Mute" };
 
     static std::string format(const Type& t)
     {
@@ -149,12 +154,10 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::Balance;
     constexpr static auto name = "balance";
-    constexpr static const char* title[] = { "Balance", "Bal" };
     using Type = Float;
-    constexpr static auto min = -1.0f;
-    constexpr static auto max = 1.0f;
-    constexpr static auto coarse = 0.01f;
-    constexpr static auto fine = 0.005f;
+    constexpr static Type min = -1.0f;
+    constexpr static Type max = 1.0f;
+    constexpr static Type coarse = 0.01f;
     constexpr static auto unit = "%";
 
     static std::string format(Type t)
@@ -167,12 +170,10 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::Gain;
     constexpr static auto name = "gain";
-    constexpr static const char* title[] = { "Gain" };
     using Type = Float;
-    constexpr static auto min = -48.0f;
-    constexpr static auto max = 6.0f;
-    constexpr static auto coarse = 0.1f;
-    constexpr static auto fine = 0.01f;
+    constexpr static Type min = -48.0f;
+    constexpr static Type max = 6.0f;
+    constexpr static Type coarse = 0.1f;
     constexpr static auto unit = "dB";
 
     static std::string format(Type t)
@@ -185,12 +186,10 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::Speed;
     constexpr static auto name = "speed";
-    constexpr static const char* title[] = { "Speed", "Spd" };
     using Type = Float;
-    constexpr static auto min = -3.0f;
-    constexpr static auto max = 3.0f;
-    constexpr static auto coarse = 0.01f;
-    constexpr static auto fine = 0.001f;
+    constexpr static Type min = -3.0f;
+    constexpr static Type max = 3.0f;
+    constexpr static Type coarse = 0.01f;
     constexpr static auto unit = "%";
 
     static std::string format(Type t)
@@ -203,7 +202,6 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::EnvelopeFadeInPos;
     constexpr static auto name = "envelopeFadeInPos";
-    constexpr static const char* title[] = { "FadeIn Position", "FadeIn Pos", "FadeIn" };
     using Type = FramePos;
 
     static std::string format(Type t)
@@ -216,7 +214,6 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::EnvelopeFadedInPos;
     constexpr static auto name = "envelopeFadedInPos";
-    constexpr static const char* title[] = { "FadedIn Position", "FadedIn Pos", "FadedIn" };
     using Type = FramePos;
 
     static std::string format(Type t)
@@ -229,7 +226,6 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::EnvelopeFadeOutPos;
     constexpr static auto name = "envelopeFadeOutPos";
-    constexpr static const char* title[] = { "FadeOut Position", "FadeOut Pos", "FadeOut" };
     using Type = FramePos;
 
     static std::string format(Type t)
@@ -242,7 +238,6 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::EnvelopeFadedOutPos;
     constexpr static auto name = "envelopeFadedOutPos";
-    constexpr static const char* title[] = { "FadedOut Position", "FadedOut Pos", "FadedOut" };
     using Type = FramePos;
 
     static std::string format(Type t)
@@ -255,7 +250,6 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::TriggerFrame;
     constexpr static auto name = "triggerFrame";
-    constexpr static const char* title[] = { "Hit Point", "Hit" };
     using Type = FramePos;
 
     static std::string format(Type t)
@@ -268,17 +262,83 @@ namespace Core
   {
     constexpr static ParameterId id = ParameterId::Shuffle;
     constexpr static auto name = "shuffle";
-    constexpr static const char* title[] = { "Shuffle", "Shuf" };
     using Type = Float;
-    constexpr static auto min = -1.0f;
-    constexpr static auto max = 1.0f;
-    constexpr static auto coarse = 0.01f;
-    constexpr static auto fine = 0.005f;
+    constexpr static Type min = -1.0f;
+    constexpr static Type max = 1.0f;
+    constexpr static Type coarse = 0.01f;
     constexpr static auto unit = "%";
 
     static std::string format(Type t)
     {
       return Tools::format("%3.2f %s", 100 * t, unit);
+    }
+  };
+
+  template <> struct ParameterDescription<ParameterId::WizardMode>
+  {
+    constexpr static ParameterId id = ParameterId::WizardMode;
+    constexpr static auto name = "wizardMode";
+    using Type = uint8_t;
+
+    static std::string format(Type t)
+    {
+      switch(static_cast<WizardMode>(t))
+      {
+        case Or:
+          return "Or";
+        case And:
+          return "And";
+        case Replace:
+          return "Replace";
+        case Not:
+          return "Not";
+      }
+      return "n/a";
+    }
+  };
+
+  template <> struct ParameterDescription<ParameterId::WizardRotate>
+  {
+    constexpr static ParameterId id = ParameterId::WizardRotate;
+    constexpr static auto name = "wizardRotate";
+    using Type = float;
+    constexpr static Type min = -63.0f;
+    constexpr static Type max = 63.0f;
+    constexpr static Type coarse = 0.1f;
+
+    static std::string format(Type t)
+    {
+      return Tools::format("%2f steps", std::round(t));
+    }
+  };
+
+  template <> struct ParameterDescription<ParameterId::WizardOns>
+  {
+    constexpr static ParameterId id = ParameterId::WizardOns;
+    constexpr static auto name = "wizardOns";
+    using Type = float;
+    constexpr static Type min = 0.0f;
+    constexpr static Type max = 64.0f;
+    constexpr static Type coarse = 0.1f;
+
+    static std::string format(Type t)
+    {
+      return Tools::format("%2f steps", std::round(t));
+    }
+  };
+
+  template <> struct ParameterDescription<ParameterId::WizardOffs>
+  {
+    constexpr static ParameterId id = ParameterId::WizardOffs;
+    constexpr static auto name = "wizardOffs";
+    using Type = float;
+    constexpr static Type min = 0.0f;
+    constexpr static Type max = 64.0f;
+    constexpr static Type coarse = 0.1f;
+
+    static std::string format(Type t)
+    {
+      return Tools::format("%2f steps", std::round(t));
     }
   };
 
@@ -298,5 +358,6 @@ namespace Core
       = Parameters<ParameterId::Selected, ParameterId::SampleFile, ParameterId::Reverse, ParameterId::Pattern,
                    ParameterId::Balance, ParameterId::Gain, ParameterId::Mute, ParameterId::Speed,
                    ParameterId::EnvelopeFadeInPos, ParameterId::EnvelopeFadedInPos, ParameterId::EnvelopeFadeOutPos,
-                   ParameterId::EnvelopeFadedOutPos, ParameterId::TriggerFrame, ParameterId::Shuffle>;
+                   ParameterId::EnvelopeFadedOutPos, ParameterId::TriggerFrame, ParameterId::Shuffle,
+                   ParameterId::WizardMode, ParameterId::WizardRotate, ParameterId::WizardOns, ParameterId::WizardOffs>;
 }

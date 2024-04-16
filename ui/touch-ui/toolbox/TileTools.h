@@ -1,10 +1,8 @@
 #pragma once
 
-#include <core/api/Interface.h>
 #include <ui/touch-ui/Interface.h>
 #include <tools/ReactiveVar.h>
 #include <gtkmm/box.h>
-#include <optional>
 
 namespace Core::Api
 {
