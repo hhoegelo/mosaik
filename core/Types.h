@@ -308,7 +308,7 @@ namespace Core
 
     static std::string format(Type t)
     {
-      return Tools::format("%2f steps", std::round(t));
+      return Tools::format("%2.0f steps", std::round(t));
     }
   };
 
@@ -323,7 +323,7 @@ namespace Core
 
     static std::string format(Type t)
     {
-      return Tools::format("%2f steps", std::round(t));
+      return Tools::format("%2.0f steps", std::round(t));
     }
   };
 
@@ -338,7 +338,7 @@ namespace Core
 
     static std::string format(Type t)
     {
-      return Tools::format("%2f steps", std::round(t));
+      return Tools::format("%2.0f steps", std::round(t));
     }
   };
 

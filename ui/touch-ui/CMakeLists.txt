@@ -22,6 +22,10 @@ add_library(mosaik-touchui STATIC
         Types.h
         toolbox/Steps.cpp
         toolbox/Steps.h
+        toolbox/SoftButtonGrid.cpp
+        toolbox/SoftButtonGrid.h
+        toolbox/KnobGrid.cpp
+        toolbox/KnobGrid.h
 )
 
 target_compile_options(mosaik-touchui PRIVATE)

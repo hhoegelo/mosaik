@@ -49,7 +49,7 @@ namespace Ui::Touch
     get_style_context()->add_class("toolboxes");
     Gtk::ScrolledWindow::add(m_box);
 
-    set_size_request(350, 150);
+    set_size_request(250, 150);
   }
 
   Ui::Toolboxes Toolboxes::getSelectedToolbox() const

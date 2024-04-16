@@ -81,6 +81,27 @@ namespace Ui::Touch
 .waveform {
 	min-height: 200px;
 }
+
+.steps-wizard .knobs {
+  border: 1px solid black;
+  padding: 5mm;
+}
+
+.steps-wizard .knobs .knob{
+  border: 1px solid gray;
+  padding: 5mm;
+}
+
+.steps-wizard .buttons {
+  border: 1px solid black;
+  padding: 5mm;
+}
+
+.steps-wizard .buttons .button{
+  border: 1px solid gray;
+  padding: 5mm;
+}
+
   )";
 
   Window::Window(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp)
