@@ -11,8 +11,8 @@
 namespace Ui::Touch
 {
   template <typename T>
-  static T *addToolbox(Tools::ReactiveVar<::Ui::Toolboxes> &var, Ui::Toolboxes s, Gtk::Box *box,
-                       const std::string &title, T *child)
+  static T *addToolbox(Tools::ReactiveVar<::Ui::Toolbox> &var, Ui::Toolbox s, Gtk::Box *box, const std::string &title,
+                       T *child)
   {
     child = Gtk::manage(child);
 
@@ -42,13 +42,13 @@ namespace Ui::Touch
   Toolboxes::Toolboxes(Core::Api::Interface &core)
       : m_core(core)
       , m_box(*Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL)))
-      , m_tileTools(*addToolbox(m_selectedToolbox, Ui::Toolboxes::Tile, &m_box, "Tile", new TileTools(core)))
-      , m_waveform(*addToolbox(m_selectedToolbox, Ui::Toolboxes::Waveform, &m_box, "Wave", new Waveform(core)))
+      , m_tileTools(*addToolbox(m_selectedToolbox, Ui::Toolbox::Tile, &m_box, "Tile", new TileTools(core)))
+      , m_waveform(*addToolbox(m_selectedToolbox, Ui::Toolbox::Waveform, &m_box, "Wave", new Touch::Waveform(core)))
 
   {
-    addToolbox(m_selectedToolbox, Ui::Toolboxes::Global, &m_box, "Global", new GlobalTools(core));
-    addToolbox(m_selectedToolbox, Ui::Toolboxes::Playground, &m_box, "Playground", new Playground(core));
-    addToolbox(m_selectedToolbox, Ui::Toolboxes::Steps, &m_box, "Steps", new Steps(core));
+    addToolbox(m_selectedToolbox, Ui::Toolbox::Global, &m_box, "Global", new GlobalTools(core));
+    addToolbox(m_selectedToolbox, Ui::Toolbox::Playground, &m_box, "Playground", new Playground(core));
+    addToolbox(m_selectedToolbox, Ui::Toolbox::Steps, &m_box, "Steps", new Steps(core));
 
     get_style_context()->add_class("toolboxes");
     Gtk::ScrolledWindow::add(m_box);
@@ -56,17 +56,17 @@ namespace Ui::Touch
     set_size_request(250, 150);
   }
 
-  Ui::Toolboxes Toolboxes::getSelectedToolbox() const
+  Toolbox Toolboxes::getSelectedToolbox() const
   {
     return m_selectedToolbox;
   }
 
-  Ui::Touch::Interface::Waveform &Toolboxes::getWaveform() const
+  WaveformInterface &Toolboxes::getWaveform() const
   {
     return m_waveform;
   }
 
-  Ui::Touch::Interface::FileBrowser &Toolboxes::getFileBrowser() const
+  FileBrowserInterface &Toolboxes::getFileBrowser() const
   {
     return m_tileTools;
   }

@@ -9,13 +9,21 @@ namespace Ui
   using Row = uint8_t;
   using Col = uint8_t;
 
-  enum class Toolboxes
+  enum class Toolbox
   {
     Global,
     Tile,
     Waveform,
     Steps,
     Playground
+  };
+
+  enum class Section
+  {
+    Tiles,
+    Toolboxes,
+    Mixer,
+    Output
   };
 
   enum class SoftButton

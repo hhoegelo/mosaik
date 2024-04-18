@@ -5,105 +5,6 @@
 
 namespace Ui::Touch
 {
-  auto css = R"(
-    .has-steps-indicator{
-        background-color: rgb(40,40,40);
-        margin: 3px;
-    }
-
-    .has-steps-indicator.has-steps {
-        background-color: rgb(90,90,90);
-    }
-
-    .is-playing-indicator {
-        margin: 3px;
-    }
-
-    .is-playing-indicator.is-playing {
-        background-color: rgb(40,40,40);
-    }
-
-  .tile .volume {
-    min-height: 2cm;
-  }
-
-  .waveform {
-    min-height: 3cm;
-    min-width: 3cm;
-  }
-
-    .tile {
-        border: 1px solid black;
-        border-radius: 0px;
-        margin: 2px;
-    }
-
-    .tile.selected {
-        border-color: rgb(160, 160, 160);
-    }
-
-  .is-playing-indicator.level-80db {
-    background: rgba(255, 0, 0, 0);
-  }
-.is-playing-indicator.level-70db {
-    background: rgba(255, 0, 0, 0.3);
-  }
-.is-playing-indicator.level-60db {
-    background: rgba(255, 0, 0, 0.4);
-  }
-.is-playing-indicator.level-50db {
-    background: rgba(255, 0, 0, 0.5);
-  }
-.is-playing-indicator.level-40db {
-    background: rgba(255, 0, 0, 0.6);
-  }
-.is-playing-indicator.level-30db {
-    background: rgba(255, 0, 0, 0.7);
-  }
-.is-playing-indicator.level-20db {
-    background: rgba(255, 0, 0, 0.8);
-  }
-.is-playing-indicator.level-10db {
-    background: rgba(255, 0, 0, 0.9);
-  }
-.is-playing-indicator.level-0db {
-    background: rgba(255, 0, 0, 1.0);
-  }
-
-.section .header {
-	border: 1px solid black;
-	background: gray;
-	color: white;
-	font-size: xx-large;
-	font-weight: bold;
-}
-
-.waveform {
-	min-height: 200px;
-}
-
-.steps-wizard .knobs {
-  border: 1px solid black;
-  padding: 5mm;
-}
-
-.steps-wizard .knobs .knob{
-  border: 1px solid gray;
-  padding: 5mm;
-}
-
-.steps-wizard .buttons {
-  border: 1px solid black;
-  padding: 5mm;
-}
-
-.steps-wizard .buttons .button{
-  border: 1px solid gray;
-  padding: 5mm;
-}
-
-  )";
-
   Window::Window(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp)
       : m_core(core)
       , m_dsp(dsp)
@@ -113,13 +14,50 @@ namespace Ui::Touch
 
   Window::~Window() = default;
 
+  bool Window::loadAndMonitor(const char* fileName)
+  {
+    try
+    {
+      m_cssProvider->load_from_path(fileName);
+
+      auto file = Gio::File::create_for_path(fileName);
+
+      m_cssMonitor = file->monitor_file();
+      m_cssMonitor->signal_changed().connect(
+          [this, fileName](const auto& file, const auto& other_file, Gio::FileMonitorEvent event_type)
+          {
+            auto newProvider = Gtk::CssProvider::create();
+            try
+            {
+              newProvider->load_from_path(fileName);
+              m_context->remove_provider(m_cssProvider);
+              m_cssProvider = newProvider;
+              m_context->add_provider_for_screen(Gdk::Screen::get_default(), m_cssProvider,
+                                                 GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+            }
+            catch(...)
+            {
+            }
+          });
+    }
+    catch(...)
+    {
+      return false;
+    }
+    return true;
+  }
+
   void Window::build()
   {
-    auto cssProvider = Gtk::CssProvider::create();
-    cssProvider->load_from_data(css);
-    Glib::RefPtr<Gtk::StyleContext> styleContext = Gtk::StyleContext::create();
-    styleContext->add_provider_for_screen(Gdk::Screen::get_default(), cssProvider,
-                                          GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    m_context = Gtk::StyleContext::create();
+    m_cssProvider = Gtk::CssProvider::create();
+
+    if(!loadAndMonitor(SOURCES_DIR "/ui/touch-ui/styles.css"))
+      if(!loadAndMonitor(RESOURCES_DIR "/styles.css"))
+        throw std::runtime_error("Could not find style sheet");
+
+    m_context->add_provider_for_screen(Gdk::Screen::get_default(), m_cssProvider,
+                                       GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
     set_title("Mosaik");
     set_border_width(10);
@@ -128,26 +66,15 @@ namespace Ui::Touch
     m_tiles = new Tiles(m_core, m_dsp);
     box->pack_start(*m_tiles, false, false);
 
-    m_toolboxes = new Toolboxes(m_core);
+    m_toolboxes = new Touch::Toolboxes(m_core);
     box->pack_start(*m_toolboxes, true, true);
 
     add(*box);
     show_all();
   }
 
-  Ui::Toolboxes Window::getSelectedToolbox() const
+  ToolboxesInterface& Window::getToolboxes() const
   {
-    return m_toolboxes->getSelectedToolbox();
+    return *m_toolboxes;
   }
-
-  Touch::Interface::Waveform& Window::getWaveform() const
-  {
-    return m_toolboxes->getWaveform();
-  }
-
-  Touch::Interface::FileBrowser& Window::getFileBrowser() const
-  {
-    return m_toolboxes->getFileBrowser();
-  }
-
 }

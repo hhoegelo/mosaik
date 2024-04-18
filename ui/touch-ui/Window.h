@@ -24,17 +24,20 @@ namespace Ui::Touch
     Window(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
     ~Window() override;
 
-    Touch::Interface::Waveform &getWaveform() const override;
-    Touch::Interface::FileBrowser &getFileBrowser() const override;
-    Ui::Toolboxes getSelectedToolbox() const override;
+    ToolboxesInterface &getToolboxes() const override;
 
    private:
     void build();
+    bool loadAndMonitor(const char *file);
 
     Core::Api::Interface &m_core;
     Dsp::Api::Display::Interface &m_dsp;
 
     Tiles *m_tiles = nullptr;
-    Toolboxes *m_toolboxes = nullptr;
+    Touch::Toolboxes *m_toolboxes = nullptr;
+
+    Glib::RefPtr<Gtk::StyleContext> m_context;
+    Glib::RefPtr<Gio::FileMonitor> m_cssMonitor;
+    Glib::RefPtr<Gtk::CssProvider> m_cssProvider;
   };
 }

@@ -6,35 +6,39 @@
 
 namespace Ui::Touch
 {
+  class WaveformInterface
+  {
+   public:
+    virtual ~WaveformInterface() = default;
+    virtual void incScroll(int inc) = 0;
+    virtual void incZoom(int inc) = 0;
+    [[nodiscard]] virtual double getFramesPerPixel() const = 0;
+  };
+
+  class FileBrowserInterface
+  {
+   public:
+    virtual ~FileBrowserInterface() = default;
+    virtual void inc() = 0;
+    virtual void dec() = 0;
+    virtual void prelisten() = 0;
+    virtual void load() = 0;
+    virtual void up() = 0;
+    virtual void down() = 0;
+  };
+
+  class ToolboxesInterface
+  {
+   public:
+    [[nodiscard]] virtual WaveformInterface &getWaveform() const = 0;
+    [[nodiscard]] virtual FileBrowserInterface &getFileBrowser() const = 0;
+    [[nodiscard]] virtual Toolbox getSelectedToolbox() const = 0;
+  };
+
   class Interface
   {
    public:
-    class Waveform
-    {
-     public:
-      virtual ~Waveform() = default;
-      virtual void incScroll(int inc) = 0;
-      virtual void incZoom(int inc) = 0;
-      [[nodiscard]] virtual double getFramesPerPixel() const = 0;
-    };
-
-    class FileBrowser
-    {
-     public:
-      virtual ~FileBrowser() = default;
-      virtual void inc() = 0;
-      virtual void dec() = 0;
-      virtual void prelisten() = 0;
-      virtual void load() = 0;
-      virtual void up() = 0;
-      virtual void down() = 0;
-    };
-
     virtual ~Interface() = default;
-
-    virtual Waveform &getWaveform() const = 0;
-    virtual FileBrowser &getFileBrowser() const = 0;
-
-    [[nodiscard]] virtual ::Ui::Toolboxes getSelectedToolbox() const = 0;
+    virtual ToolboxesInterface &getToolboxes() const = 0;
   };
 }

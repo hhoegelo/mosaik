@@ -18,7 +18,7 @@ namespace Gtk
 
 namespace Ui::Touch
 {
-  class TileTools : public Gtk::Box, public Interface::FileBrowser
+  class TileTools : public Gtk::Box, public FileBrowserInterface
   {
    public:
     explicit TileTools(Core::Api::Interface &core);

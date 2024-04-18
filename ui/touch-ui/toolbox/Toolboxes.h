@@ -18,22 +18,21 @@ namespace Ui::Touch
   class TileTools;
   class Steps;
 
-  class Toolboxes : public Gtk::ScrolledWindow
+  class Toolboxes : public Gtk::ScrolledWindow, public ToolboxesInterface
   {
    public:
     explicit Toolboxes(Core::Api::Interface &core);
 
-    Ui::Touch::Interface::Waveform &getWaveform() const;
-    Ui::Touch::Interface::FileBrowser &getFileBrowser() const;
-
-    ::Ui::Toolboxes getSelectedToolbox() const;
+    WaveformInterface &getWaveform() const;
+    FileBrowserInterface &getFileBrowser() const;
+    Toolbox getSelectedToolbox() const override;
 
    private:
     Core::Api::Interface &m_core;
 
-    Tools::ReactiveVar<::Ui::Toolboxes> m_selectedToolbox;
+    Tools::ReactiveVar<::Ui::Toolbox> m_selectedToolbox;
     Gtk::Box &m_box;
     TileTools &m_tileTools;
-    Waveform &m_waveform;
+    WaveformInterface &m_waveform;
   };
 }

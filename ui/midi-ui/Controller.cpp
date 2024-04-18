@@ -28,7 +28,7 @@ namespace Ui::Midi
         },
         16);
 
-    m_computations.add([this] { m_inputMapping = createMapping(m_touchUi.getSelectedToolbox()); });
+    m_computations.add([this] { m_inputMapping = createMapping(m_touchUi.getToolboxes().getSelectedToolbox()); });
     m_computations.add([this] { showPattern(); });
   }
 
@@ -94,29 +94,29 @@ namespace Ui::Midi
     auto r = [this, p](int inc)
     {
       auto tile = Core::GlobalParameters::contains(p) ? Core::TileId {} : m_core.getSelectedTiles().front();
-      auto fpp = m_touchUi.getWaveform().getFramesPerPixel();
+      auto fpp = m_touchUi.getToolboxes().getWaveform().getFramesPerPixel();
       m_core.incParameter(tile, p, inc * fpp);
     };
     return std::make_pair(k, r);
   };
 
-  Controller::Mapping Controller::createMapping(Ui::Toolboxes t)
+  Controller::Mapping Controller::createMapping(Ui::Toolbox t)
   {
     switch(t)
     {
-      case Ui::Toolboxes::Global:
+      case Ui::Toolbox::Global:
         return buildGlobalMapping();
 
-      case Ui::Toolboxes::Tile:
+      case Ui::Toolbox::Tile:
         return buildTileMapping();
 
-      case Ui::Toolboxes::Waveform:
+      case Ui::Toolbox::Waveform:
         return buildWaveformMapping();
 
-      case Ui::Toolboxes::Steps:
+      case Ui::Toolbox::Steps:
         return buildStepMapping();
 
-      case Ui::Toolboxes::Playground:
+      case Ui::Toolbox::Playground:
         return buildPlaygroundMapping();
     }
     throw std::runtime_error("unknown toolbox");
@@ -226,17 +226,17 @@ namespace Ui::Midi
       .buttonReleases = {
           { standardBindRelease(SoftButton::Left_Center,Core::ParameterId::Reverse)},
           { SoftButton::Right_North, [this] {
-      m_touchUi.getFileBrowser().dec(); } },
+      m_touchUi.getToolboxes().getFileBrowser().dec(); } },
           { SoftButton::Right_Center, [this] {
-      m_touchUi.getFileBrowser().load(); } },
+      m_touchUi.getToolboxes().getFileBrowser().load(); } },
           { SoftButton::Right_South, [this] {
-      m_touchUi.getFileBrowser().inc(); } },
+      m_touchUi.getToolboxes().getFileBrowser().inc(); } },
           { SoftButton::Right_West, [this] {
-      m_touchUi.getFileBrowser().up(); } },
+      m_touchUi.getToolboxes().getFileBrowser().up(); } },
           { SoftButton::Right_East, [this] {
-      m_touchUi.getFileBrowser().down(); } },
+      m_touchUi.getToolboxes().getFileBrowser().down(); } },
           { SoftButton::Right_NorthEast, [this] {
-              m_touchUi.getFileBrowser().prelisten(); } },
+              m_touchUi.getToolboxes().getFileBrowser().prelisten(); } },
       },
     };
   }
@@ -245,8 +245,8 @@ namespace Ui::Midi
   {
     return {
       .knobs = { { standardZoomedBind(Knob::Center, Core::ParameterId::TriggerFrame) },
-                 { Knob::Leftmost, [this](auto inc) { m_touchUi.getWaveform().incZoom(inc); } },
-                 { Knob::Rightmost, [this](auto inc) { m_touchUi.getWaveform().incScroll(inc); } },
+                 { Knob::Leftmost, [this](auto inc) { m_touchUi.getToolboxes().getWaveform().incZoom(inc); } },
+                 { Knob::Rightmost, [this](auto inc) { m_touchUi.getToolboxes().getWaveform().incScroll(inc); } },
                  { standardZoomedBind(Knob::SouthWest, Core::ParameterId::EnvelopeFadeInPos) },
                  { standardZoomedBind(Knob::NorthWest, Core::ParameterId::EnvelopeFadedInPos) },
                  { standardZoomedBind(Knob::NorthEast, Core::ParameterId::EnvelopeFadeOutPos) },

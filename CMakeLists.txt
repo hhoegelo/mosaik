@@ -43,8 +43,13 @@ pkg_check_modules(LIBS IMPORTED_TARGET alsa glibmm-2.4 giomm-2.4 gtkmm-3.0 gstre
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-
 if (LIBS_FOUND)
+    set(RESOURCES_DIR ${CMAKE_INSTALL_FULL_DATADIR}/mosaik/)
+    set(SOURCES_DIR ${CMAKE_SOURCE_DIR})
+
+    add_compile_definitions(RESOURCES_DIR="${RESOURCES_DIR}")
+    add_compile_definitions(SOURCES_DIR="${SOURCES_DIR}")
+
     add_subdirectory(core)
     add_subdirectory(dsp)
     add_subdirectory(audio)
@@ -61,6 +66,8 @@ if (LIBS_FOUND)
             mosaik-audio
             mosaik-ui
             Boost::program_options)
+
+    install(FILES ui/touch-ui/styles.css DESTINATION ${RESOURCES_DIR} PERMISSIONS OWNER_WRITE OWNER_READ)
 else ()
     message("Not all required libs were found, but you can still use the dockerized build env, like this:")
     message("    make dockerized-build-mosaik")

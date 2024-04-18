@@ -54,7 +54,7 @@ namespace Ui
         std::map<SoftButton, std::function<void()>> buttonReleases;
       };
 
-      Mapping createMapping(Ui::Toolboxes t);
+      Mapping createMapping(Ui::Toolbox t);
       Mapping buildTileMapping();
       Mapping buildStepMapping();
       Mapping buildGlobalMapping();

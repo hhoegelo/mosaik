@@ -19,7 +19,7 @@ namespace Ui
 {
   namespace Touch
   {
-    class Waveform : public Gtk::DrawingArea, public Interface::Waveform
+    class Waveform : public Gtk::DrawingArea, public WaveformInterface
     {
      public:
       explicit Waveform(Core::Api::Interface &core);
