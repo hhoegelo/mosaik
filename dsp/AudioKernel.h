@@ -29,6 +29,15 @@ namespace Dsp
       bool reverse = false;
       float playbackFrameIncrement { 0 };
 
+      // Playground
+      float playground1 { 0 };
+      float playground2 { 0 };
+      float playground3 { 0 };
+      float playground4 { 0 };
+      float playground5 { 0 };
+      float playground6 { 0 };
+      float playground7 { 0 };
+      
       // Envelope
       struct LinearInterpolation
       {

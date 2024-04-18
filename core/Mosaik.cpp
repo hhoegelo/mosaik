@@ -204,7 +204,9 @@ namespace Core::Api
       bindParameters<TileParameters>(c, src.selected, src.sample, src.reverse, src.pattern, src.balance, src.gain,
                                      src.muted, src.speed, src.envelopeFadeInPos, src.envelopeFadedInPos,
                                      src.envelopeFadeOutPos, src.envelopeFadedOutPos, src.triggerFrame, src.shuffle,
-                                     src.wizard.mode, src.wizard.rotate, src.wizard.ons, src.wizard.offs);
+                                     src.wizard.mode, src.wizard.rotate, src.wizard.ons, src.wizard.offs,
+                                     src.playground1, src.playground2, src.playground3, src.playground4,
+                                     src.playground5, src.playground6, src.playground7);
     }
 
     m_kernelUpdate.add(
@@ -293,6 +295,14 @@ namespace Core::Api
     tgt.gain_dB = src.gain;
     tgt.playbackFrameIncrement = powf(2.0f, src.speed);
     tgt.reverse = src.reverse;
+
+    tgt.playground1 = src.playground1;
+    tgt.playground2 = src.playground2;
+    tgt.playground3 = src.playground3;
+    tgt.playground4 = src.playground4;
+    tgt.playground5 = src.playground5;
+    tgt.playground6 = src.playground6;
+    tgt.playground7 = src.playground7;
 
     auto calcM
         = [](float startY, float endY, FramePos l) { return l ? (endY - startY) / static_cast<float>(l) : 0.0f; };

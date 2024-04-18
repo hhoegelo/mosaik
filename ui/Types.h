@@ -14,7 +14,8 @@ namespace Ui
     Global,
     Tile,
     Waveform,
-    Steps
+    Steps,
+    Playground
   };
 
   enum class SoftButton

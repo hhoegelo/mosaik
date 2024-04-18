@@ -58,7 +58,8 @@ namespace Ui
       Mapping buildTileMapping();
       Mapping buildStepMapping();
       Mapping buildGlobalMapping();
-      Controller::Mapping buildWaveformMapping();
+      Mapping buildWaveformMapping();
+      Mapping buildPlaygroundMapping();
 
       Core::Api::Interface &m_core;
       Ui::Midi::Interface &m_midiUi;

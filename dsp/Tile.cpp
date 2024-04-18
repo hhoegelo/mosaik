@@ -25,6 +25,9 @@ namespace Dsp
         result = audio[iFramePos];
     }
 
+    result = doPlayground(result, kernel.playground1, kernel.playground2, kernel.playground3, kernel.playground4,
+                          kernel.playground5, kernel.playground6, kernel.playground7);
+
     auto target_dB = kernel.mute ? c_silenceDB : kernel.gain_dB + doEnvelope(kernel, iFramePos);
     auto targetGain = ::Tools::dBToFactor<c_silenceDB, c_maxDB>(target_dB);
     auto targetGainLeft = (kernel.balance < 0) ? targetGain : targetGain * (1.0f - kernel.balance);
@@ -48,5 +51,33 @@ namespace Dsp
         if(iFramePos >= section.pos)
           return section.b + m_framePosition * section.m;
     return c_silenceDB;
+  }
+
+  StereoFrame Tile::doPlayground(const StereoFrame &input, float playgroundParam1, float playgroundParam2,
+                                 float playgroundParam3, float playgroundParam4, float playgroundParam5,
+                                 float playgroundParam6, float playgroundParam7)
+  {
+    /*
+     * @Daniel:
+     *  playgroundParam1 ... 7 are the parameters as set in the UI, for example Cutoff and Resonance.
+     *
+     *  If you have to have state, for example filter coefficients, you can store them in 'this',
+     *  for example m_smoothedPlaygroundSomething = calcFilterCoefficientA(playgroundParam1, playgroundParam2);
+     *
+     *  If this is an expensive operation, you'll have to check that playgroundParam1 or playgroundParam2
+     *  actually changed by comparing the incoming parameters with copies stored in 'this':
+     *
+     *  bool coefficientsOutdated = false;
+     *  coefficientsOutdated |= std::exchange(m_knownPlaygroundParameter1, playgroundParam1) != playgroundParam1;
+     *  coefficientsOutdated |= std::exchange(m_knownPlaygroundParameter2, playgroundParam2) != playgroundParam2;
+     *
+     *  if(coefficientsOutdated)
+     *    m_smoothedPlaygroundSomething = calcFilterCoefficientA(playgroundParam1, playgroundParam2);
+     *
+     */
+
+    StereoFrame output { input.left, input.right };
+
+    return output;
   }
 }

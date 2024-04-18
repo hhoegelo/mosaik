@@ -33,9 +33,7 @@ namespace Ui::Touch
 
     Tools::ReactiveVar<::Ui::Toolboxes> m_selectedToolbox;
     Gtk::Box &m_box;
-    GlobalTools &m_globalTools;
     TileTools &m_tileTools;
     Waveform &m_waveform;
-    Steps &m_steps;
   };
 }

@@ -4,6 +4,7 @@
 #include "TileTools.h"
 #include "Waveform.h"
 #include "Steps.h"
+#include "Playground.h"
 #include <gtkmm/label.h>
 #include <gtkmm/eventbox.h>
 
@@ -41,11 +42,14 @@ namespace Ui::Touch
   Toolboxes::Toolboxes(Core::Api::Interface &core)
       : m_core(core)
       , m_box(*Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL)))
-      , m_globalTools(*addToolbox(m_selectedToolbox, Ui::Toolboxes::Global, &m_box, "Global", new GlobalTools(core)))
       , m_tileTools(*addToolbox(m_selectedToolbox, Ui::Toolboxes::Tile, &m_box, "Tile", new TileTools(core)))
       , m_waveform(*addToolbox(m_selectedToolbox, Ui::Toolboxes::Waveform, &m_box, "Wave", new Waveform(core)))
-      , m_steps(*addToolbox(m_selectedToolbox, Ui::Toolboxes::Steps, &m_box, "Steps", new Steps(core)))
+
   {
+    addToolbox(m_selectedToolbox, Ui::Toolboxes::Global, &m_box, "Global", new GlobalTools(core));
+    addToolbox(m_selectedToolbox, Ui::Toolboxes::Playground, &m_box, "Playground", new Playground(core));
+    addToolbox(m_selectedToolbox, Ui::Toolboxes::Steps, &m_box, "Steps", new Steps(core));
+
     get_style_context()->add_class("toolboxes");
     Gtk::ScrolledWindow::add(m_box);
 

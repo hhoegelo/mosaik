@@ -40,6 +40,15 @@ namespace Core
     TriggerFrame,
     Speed,
 
+    // Per Tile Playground
+    Playground1,
+    Playground2,
+    Playground3,
+    Playground4,
+    Playground5,
+    Playground6,
+    Playground7,
+
     // Wizard
     WizardMode,
     WizardRotate,
@@ -342,6 +351,62 @@ namespace Core
     }
   };
 
+  template <ParameterId P> struct ParameterDescriptionPlayground
+  {
+    constexpr static ParameterId id = P;
+    using Type = float;
+    constexpr static Type min = 0.0f;
+    constexpr static Type max = 1.0f;
+    constexpr static Type coarse = 0.01f;
+
+    static std::string format(Type t)
+    {
+      return Tools::format("%3.1f %%", std::round(100 * t));
+    }
+  };
+
+  template <>
+  struct ParameterDescription<ParameterId::Playground1> : ParameterDescriptionPlayground<ParameterId::Playground1>
+  {
+    constexpr static auto name = "playground-1";
+  };
+
+  template <>
+  struct ParameterDescription<ParameterId::Playground2> : ParameterDescriptionPlayground<ParameterId::Playground2>
+  {
+    constexpr static auto name = "playground-2";
+  };
+
+  template <>
+  struct ParameterDescription<ParameterId::Playground3> : ParameterDescriptionPlayground<ParameterId::Playground3>
+  {
+    constexpr static auto name = "playground-3";
+  };
+
+  template <>
+  struct ParameterDescription<ParameterId::Playground4> : ParameterDescriptionPlayground<ParameterId::Playground4>
+  {
+    constexpr static auto name = "playground-4";
+  };
+
+  template <>
+  struct ParameterDescription<ParameterId::Playground5> : ParameterDescriptionPlayground<ParameterId::Playground5>
+  {
+    constexpr static auto name = "playground-5";
+  };
+
+  template <>
+  struct ParameterDescription<ParameterId::Playground6> : ParameterDescriptionPlayground<ParameterId::Playground6>
+  {
+    constexpr static auto name = "playground-6";
+  };
+
+  template <>
+  struct ParameterDescription<ParameterId::Playground7> : ParameterDescriptionPlayground<ParameterId::Playground7>
+  {
+    constexpr static auto name = "playground-7";
+  };
+
   template <ParameterId... ids> struct Parameters
   {
     using Descriptors = std::tuple<ParameterDescription<ids>...>;
@@ -359,5 +424,8 @@ namespace Core
                    ParameterId::Balance, ParameterId::Gain, ParameterId::Mute, ParameterId::Speed,
                    ParameterId::EnvelopeFadeInPos, ParameterId::EnvelopeFadedInPos, ParameterId::EnvelopeFadeOutPos,
                    ParameterId::EnvelopeFadedOutPos, ParameterId::TriggerFrame, ParameterId::Shuffle,
-                   ParameterId::WizardMode, ParameterId::WizardRotate, ParameterId::WizardOns, ParameterId::WizardOffs>;
+                   ParameterId::WizardMode, ParameterId::WizardRotate, ParameterId::WizardOns, ParameterId::WizardOffs,
+                   ParameterId::Playground1, ParameterId::Playground2, ParameterId::Playground3,
+                   ParameterId::Playground4, ParameterId::Playground5, ParameterId::Playground6,
+                   ParameterId::Playground7>;
 }
