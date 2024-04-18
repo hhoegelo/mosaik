@@ -105,12 +105,15 @@ a conceptional overview of the toolboxes (obsolete)
 ## Audio Signal Flow
 
 ### Tiles
+- top: minimal configuration: gain, hp, lp
+- mid: medium configuration: gain, hp, peak-eq, lp
+- bot: maximum configuration: gain, hp, distortion, peak-eq, lp
 
 ![](audio-tiles.png)
 
 ### Mixer
 
-![](audio-main.png)
+![](audio-dia-overview.png)
 
 ## Main/Mixer/Prelisten
 - headphones volume
