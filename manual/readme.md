@@ -36,22 +36,9 @@ Mosaik combines techniques from sampling, stepsequcencing, live/jamming, looping
 
 ![](toppanel.png)
 
-## UI Overview (obsolete)
+## Funk-UI
 
-![](ui-overview.png)
-
-### Quick Start Guide / Workflow
-- 1) select a tile on the tile grid (4)
-- 2) browse samples (2) via the controller and prelisten via headphones, the waveform will be shown in the Waveform Window (3)
-- 3) load the selected sample to the selected tile via the controller,
-- 4) set steps on the stepsequencer of the controller (the sequence can be prelisten via headphones)
-- 5) use the fadelope to change the sample length (start, fade-in, fade-out, end) (3)
-- 6) repeat the previous steps to get a full beat
-- 7) change to mute overlay via the controller
-    - select the tiles to be muted on the tile grid (4)
-    - press unmute all (controller) to hear the full
-     sequence again
-    - press last mute to go back to the last mute states 
+![](funk-ui.png)
 
 ## GUI
 - tile grid, toolboxes
@@ -270,5 +257,16 @@ a snapshot includes all parameter and states of mosaik. snapshots can be stored 
 
 
 
-
+### Quick Start Guide / Workflow
+- 1) select a tile on the tile grid (4)
+- 2) browse samples (2) via the controller and prelisten via headphones, the waveform will be shown in the Waveform Window (3)
+- 3) load the selected sample to the selected tile via the controller,
+- 4) set steps on the stepsequencer of the controller (the sequence can be prelisten via headphones)
+- 5) use the fadelope to change the sample length (start, fade-in, fade-out, end) (3)
+- 6) repeat the previous steps to get a full beat
+- 7) change to mute overlay via the controller
+    - select the tiles to be muted on the tile grid (4)
+    - press unmute all (controller) to hear the full
+     sequence again
+    - press last mute to go back to the last mute states 
 
