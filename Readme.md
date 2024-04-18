@@ -20,7 +20,9 @@ for release builds do:
 
 start the app:
 
-	./mosaik --alsa-out=plughw:0,0 --bits=24 --midi-ui hw:2,0,0
+	./mosaik --alsa-out=plughw:1,0 --bits=24 --midi-ui hw:2,0,0 --channels 4
+	
+
 
 
 ## HWUI debug tools
