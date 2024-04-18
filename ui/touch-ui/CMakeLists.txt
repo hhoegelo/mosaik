@@ -4,30 +4,31 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBS REQUIRED IMPORTED_TARGET gtkmm-3.0)
 
 add_library(mosaik-touchui STATIC
-        tiles/Tiles.cpp
-        tiles/Tiles.h
-        tiles/Tile.cpp
-        toolbox/Toolboxes.h
-        toolbox/Toolboxes.cpp
+        sections/tiles/Tiles.cpp
+        sections/tiles/Tiles.h
+        sections/tiles/Tile.cpp
+        sections/toolboxes/Toolboxes.h
+        sections/toolboxes/Toolboxes.cpp
         Application.cpp
         Window.cpp
         Window.h
-        toolbox/GlobalTools.cpp
-        toolbox/GlobalTools.h
-        toolbox/TileTools.cpp
-        toolbox/TileTools.h
-        toolbox/Waveform.cpp
-        toolbox/Waveform.h
+        sections/toolboxes/GlobalTools.cpp
+        sections/toolboxes/GlobalTools.h
+        sections/toolboxes/TileTools.cpp
+        sections/toolboxes/TileTools.h
+        sections/toolboxes/Waveform.cpp
+        sections/toolboxes/Waveform.h
         Interface.h
         Types.h
-        toolbox/Steps.cpp
-        toolbox/Steps.h
-        toolbox/SoftButtonGrid.cpp
-        toolbox/SoftButtonGrid.h
-        toolbox/KnobGrid.cpp
-        toolbox/KnobGrid.h
-        toolbox/Playground.cpp
-        toolbox/Playground.h
+        sections/toolboxes/Steps.cpp
+        sections/toolboxes/Steps.h
+        sections/toolboxes/SoftButtonGrid.cpp
+        sections/toolboxes/SoftButtonGrid.h
+        sections/toolboxes/KnobGrid.cpp
+        sections/toolboxes/KnobGrid.h
+        sections/toolboxes/Playground.cpp
+        sections/toolboxes/Playground.h
+        sections/SectionWrapper.h
 )
 
 target_compile_options(mosaik-touchui PRIVATE)

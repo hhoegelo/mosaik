@@ -1,12 +1,11 @@
 #include "Waveform.h"
-#include <core/api/Interface.h>
-#include <tools/ReactiveVar.h>
+#include "core/api/Interface.h"
+#include "tools/ReactiveVar.h"
 
 namespace Ui::Touch
 {
   Waveform::Waveform(Core::Api::Interface& core)
       : m_core(core)
-      , m_staticComputations(Glib::MainContext::get_default())
   {
     auto styles = get_style_context();
     styles->add_class("waveform");

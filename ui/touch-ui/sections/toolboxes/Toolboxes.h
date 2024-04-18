@@ -2,9 +2,9 @@
 
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/box.h>
-#include "tools/ReactiveVar.h"
-#include <ui/Types.h>
-#include <ui/touch-ui/Interface.h>
+#include "ui/touch-ui/sections/SectionWrapper.h"
+#include "ui/Types.h"
+#include "ui/touch-ui/Interface.h"
 
 namespace Core::Api
 {
@@ -18,13 +18,13 @@ namespace Ui::Touch
   class TileTools;
   class Steps;
 
-  class Toolboxes : public Gtk::ScrolledWindow, public ToolboxesInterface
+  class Toolboxes : public SectionWrapper<Section::Toolboxes, Gtk::ScrolledWindow>, public ToolboxesInterface
   {
    public:
-    explicit Toolboxes(Core::Api::Interface &core);
+    Toolboxes(Touch::Interface &touch, Core::Api::Interface &core);
 
-    WaveformInterface &getWaveform() const;
-    FileBrowserInterface &getFileBrowser() const;
+    WaveformInterface &getWaveform() const override;
+    FileBrowserInterface &getFileBrowser() const override;
     Toolbox getSelectedToolbox() const override;
 
    private:

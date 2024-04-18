@@ -1,5 +1,5 @@
 #include "Toolboxes.h"
-#include <ui/Types.h>
+#include "ui/Types.h"
 #include "GlobalTools.h"
 #include "TileTools.h"
 #include "Waveform.h"
@@ -39,8 +39,9 @@ namespace Ui::Touch
     return child;
   }
 
-  Toolboxes::Toolboxes(Core::Api::Interface &core)
-      : m_core(core)
+  Toolboxes::Toolboxes(Touch::Interface &touch, Core::Api::Interface &core)
+      : SectionWrapper(touch)
+      , m_core(core)
       , m_box(*Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL)))
       , m_tileTools(*addToolbox(m_selectedToolbox, Ui::Toolbox::Tile, &m_box, "Tile", new TileTools(core)))
       , m_waveform(*addToolbox(m_selectedToolbox, Ui::Toolbox::Waveform, &m_box, "Wave", new Touch::Waveform(core)))

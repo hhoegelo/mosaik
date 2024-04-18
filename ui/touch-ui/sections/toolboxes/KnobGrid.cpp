@@ -12,7 +12,6 @@ namespace Ui::Touch
           std::pair { Knob::SouthEast, std::pair { 3, 3 } } };
 
   KnobGrid::KnobGrid()
-      : m_computations(Glib::MainContext::get_default())
   {
     set_row_homogeneous(true);
     set_column_homogeneous(true);

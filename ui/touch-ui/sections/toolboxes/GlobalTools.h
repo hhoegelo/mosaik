@@ -1,7 +1,7 @@
 #pragma once
 
-#include <tools/ReactiveVar.h>
-#include <core/Types.h>
+#include "tools/ReactiveVar.h"
+#include "core/Types.h"
 #include <gtkmm/grid.h>
 
 namespace Gtk

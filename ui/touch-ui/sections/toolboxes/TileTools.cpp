@@ -1,6 +1,6 @@
 #include "TileTools.h"
-#include <core/api/Interface.h>
-#include <core/Types.h>
+#include "core/api/Interface.h"
+#include "core/Types.h"
 
 #include <gtkmm/filechooserwidget.h>
 #include <gtkmm/grid.h>
@@ -28,7 +28,6 @@ namespace Ui::Touch
   TileTools::TileTools(Core::Api::Interface &core)
       : Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL)
       , m_core(core)
-      , m_computations(Glib::MainContext::get_default())
   {
     int f = 50;
 

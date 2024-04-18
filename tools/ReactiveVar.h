@@ -34,6 +34,7 @@ namespace Tools
   class DeferredComputations : public Computations
   {
    public:
+    DeferredComputations();
     explicit DeferredComputations(Glib::RefPtr<Glib::MainContext> ctx, uint32_t timeout = 10);
     ~DeferredComputations() override;
 

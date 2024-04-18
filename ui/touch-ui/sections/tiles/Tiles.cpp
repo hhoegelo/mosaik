@@ -3,7 +3,8 @@
 
 namespace Ui::Touch
 {
-  Tiles::Tiles(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp)
+  Tiles::Tiles(Touch::Interface& touch, Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp)
+      : SectionWrapper(touch)
   {
     for(Row r = 0; r < NUM_TILE_ROWS; r++)
     {

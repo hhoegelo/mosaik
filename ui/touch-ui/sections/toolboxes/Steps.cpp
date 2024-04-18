@@ -2,7 +2,7 @@
 #include "core/Types.h"
 #include "SoftButtonGrid.h"
 #include "KnobGrid.h"
-#include <core/api/Interface.h>
+#include "core/api/Interface.h"
 #include <gtkmm/label.h>
 #include <gtkmm/grid.h>
 
@@ -12,7 +12,6 @@ namespace Ui::Touch
   Steps::Steps(Core::Api::Interface &core)
       : Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL)
       , m_core(core)
-      , m_computations(Glib::MainContext::get_default())
   {
     get_style_context()->add_class("steps-wizard");
 

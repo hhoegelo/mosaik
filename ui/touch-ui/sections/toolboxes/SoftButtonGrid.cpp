@@ -29,7 +29,6 @@ namespace Ui::Touch
 
   SoftButtonGrid::SoftButtonGrid(Where w)
       : m_where(w)
-      , m_computations(Glib::MainContext::get_default())
   {
     set_row_homogeneous(true);
     set_column_homogeneous(true);

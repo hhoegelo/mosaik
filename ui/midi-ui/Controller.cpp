@@ -18,7 +18,6 @@ namespace Ui::Midi
       : m_core(core)
       , m_midiUi(midiUi)
       , m_touchUi(touchUi)
-      , m_computations(Glib::MainContext::get_default())
   {
     Glib::signal_timeout().connect(
         [this, &dsp, &core]() mutable

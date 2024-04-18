@@ -32,7 +32,6 @@ namespace Ui::Touch
 
   Tile::Tile(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Core::TileId tileId)
       : Gtk::Grid()
-      , m_computations(Glib::MainContext::get_default())
   {
     get_style_context()->add_class("tile");
 

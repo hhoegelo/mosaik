@@ -1,9 +1,9 @@
 #pragma once
 
-#include <tools/ReactiveVar.h>
+#include "tools/ReactiveVar.h"
 
-#include <core/Types.h>
-#include <core/api/Interface.h>
+#include "core/Types.h"
+#include "core/api/Interface.h"
 
 #include <gtkmm/grid.h>
 

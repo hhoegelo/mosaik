@@ -25,16 +25,21 @@ namespace Ui::Touch
     ~Window() override;
 
     ToolboxesInterface &getToolboxes() const override;
+    Section getCurrentSection() const;
+    void selectSection(Section s);
 
    private:
-    void build();
+    void loadCss();
     bool loadAndMonitor(const char *file);
 
     Core::Api::Interface &m_core;
     Dsp::Api::Display::Interface &m_dsp;
 
-    Tiles *m_tiles = nullptr;
-    Touch::Toolboxes *m_toolboxes = nullptr;
+    Tools::ReactiveVar<Section> m_section { Section::Tiles };
+
+    // Sections
+    std::unique_ptr<Tiles> m_tiles;
+    std::unique_ptr<Toolboxes> m_toolboxes;
 
     Glib::RefPtr<Gtk::StyleContext> m_context;
     Glib::RefPtr<Gio::FileMonitor> m_cssMonitor;

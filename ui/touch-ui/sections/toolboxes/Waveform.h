@@ -3,7 +3,7 @@
 #include <gtkmm/drawingarea.h>
 #include "core/Types.h"
 #include "tools/ReactiveVar.h"
-#include <ui/touch-ui/Interface.h>
+#include "ui/touch-ui/Interface.h"
 
 namespace Tools
 {

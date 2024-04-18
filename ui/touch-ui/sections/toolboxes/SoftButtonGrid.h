@@ -1,8 +1,8 @@
 #pragma once
 
-#include <ui/Types.h>
+#include "ui/Types.h"
 #include <gtkmm/grid.h>
-#include <tools/ReactiveVar.h>
+#include "tools/ReactiveVar.h"
 
 namespace Ui::Touch
 {

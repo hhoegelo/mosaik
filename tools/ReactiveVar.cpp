@@ -81,6 +81,11 @@ namespace Tools
 
   uint32_t DeferredComputations::s_numDeferredComputationsScheduled = 0;
 
+  DeferredComputations::DeferredComputations()
+      : DeferredComputations(Glib::MainContext::get_default(), 10)
+  {
+  }
+
   DeferredComputations::DeferredComputations(Glib::RefPtr<Glib::MainContext> ctx, uint32_t timeout)
       : m_ctx(std::move(ctx))
       , m_timeout(timeout)

@@ -1,7 +1,7 @@
 
 #include "GlobalTools.h"
-#include <core/api/Interface.h>
-#include <core/Types.h>
+#include "core/api/Interface.h"
+#include "core/Types.h"
 
 #include <gtkmm/box.h>
 #include <gtkmm/label.h>
@@ -12,7 +12,6 @@ namespace Ui::Touch
 
   GlobalTools::GlobalTools(Core::Api::Interface &core)
       : m_core(core)
-      , m_computations(Glib::MainContext::get_default())
   {
     auto volBox = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
     volBox->add(*Gtk::manage(new Gtk::Label("Volume")));
