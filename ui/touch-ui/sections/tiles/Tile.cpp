@@ -1,12 +1,10 @@
 #include "Tile.h"
 #include "core/api/Interface.h"
 #include "dsp/api/display/Interface.h"
-#include "dsp/api/control/Interface.h"
 #include <gtkmm/filechooserdialog.h>
 #include <gtkmm/grid.h>
 #include <gtkmm/label.h>
 #include <glibmm/main.h>
-#include <gtkmm/scale.h>
 #include <gtkmm/drawingarea.h>
 
 #include <iostream>
@@ -31,9 +29,7 @@ namespace Ui::Touch
   }
 
   Tile::Tile(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Core::TileId tileId)
-      : Glib::ObjectBase("tile")
-      , Gtk::Grid()
-      , m_size(*this, "size", 100)
+      : Gtk::Grid()
   {
     get_style_context()->add_class("tile");
 
@@ -104,20 +100,11 @@ namespace Ui::Touch
         });
 
     runLevelMeterTimer(dsp, tileId, reverse);
-
-    signal_style_updated().connect(
-        [this]
-        {
-          int q = m_size.get_value();
-          set_size_request(q, q);
-        });
   }
 
   Gtk::Widget* Tile::buildWaveformDisplay(Core::Api::Interface& core, Core::TileId tileId)
   {
     auto wf = Gtk::manage(new Gtk::DrawingArea());
-    wf->set_size_request(60, 60);
-
     auto styles = wf->get_style_context();
     styles->add_class("waveform");
     wf->signal_draw().connect(

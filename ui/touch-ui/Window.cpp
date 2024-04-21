@@ -17,7 +17,7 @@ namespace Ui::Touch
       , m_mixer(std::make_unique<Mixer>(*this))
   {
     set_title("Mosaik");
-    //    fullscreen();
+    set_decorated(false);
 
     auto vBox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL));
     vBox->get_style_context()->add_class("root");
@@ -48,7 +48,7 @@ namespace Ui::Touch
 
     if(!loadAndMonitor(SOURCES_DIR "/ui/touch-ui/styles.less"))
       if(!loadAndMonitor(RESOURCES_DIR "/styles.less"))
-        throw std::runtime_error("Could not find style sheet");
+        throw std::runtime_error("Could not find or parse style sheet");
   }
 
   bool Window::loadAndMonitor(const char* fileName)
