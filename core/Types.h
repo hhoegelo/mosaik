@@ -49,6 +49,15 @@ namespace Core
     Playground6,
     Playground7,
 
+    // Main Playground
+    MainPlayground1,
+    MainPlayground2,
+    MainPlayground3,
+    MainPlayground4,
+    MainPlayground5,
+    MainPlayground6,
+    MainPlayground7,
+
     // Wizard
     WizardMode,
     WizardRotate,
@@ -407,6 +416,55 @@ namespace Core
     constexpr static auto name = "playground-7";
   };
 
+  template <>
+  struct ParameterDescription<ParameterId::MainPlayground1>
+      : ParameterDescriptionPlayground<ParameterId::MainPlayground1>
+  {
+    constexpr static auto name = "main-playground-1";
+  };
+
+  template <>
+  struct ParameterDescription<ParameterId::MainPlayground2>
+      : ParameterDescriptionPlayground<ParameterId::MainPlayground2>
+  {
+    constexpr static auto name = "main-playground-2";
+  };
+
+  template <>
+  struct ParameterDescription<ParameterId::MainPlayground3>
+      : ParameterDescriptionPlayground<ParameterId::MainPlayground3>
+  {
+    constexpr static auto name = "main-playground-3";
+  };
+
+  template <>
+  struct ParameterDescription<ParameterId::MainPlayground4>
+      : ParameterDescriptionPlayground<ParameterId::MainPlayground4>
+  {
+    constexpr static auto name = "main-playground-4";
+  };
+
+  template <>
+  struct ParameterDescription<ParameterId::MainPlayground5>
+      : ParameterDescriptionPlayground<ParameterId::MainPlayground5>
+  {
+    constexpr static auto name = "main-playground-5";
+  };
+
+  template <>
+  struct ParameterDescription<ParameterId::MainPlayground6>
+      : ParameterDescriptionPlayground<ParameterId::MainPlayground6>
+  {
+    constexpr static auto name = "main-playground-6";
+  };
+
+  template <>
+  struct ParameterDescription<ParameterId::MainPlayground7>
+      : ParameterDescriptionPlayground<ParameterId::MainPlayground7>
+  {
+    constexpr static auto name = "main-playground-7";
+  };
+
   template <ParameterId... ids> struct Parameters
   {
     using Descriptors = std::tuple<ParameterDescription<ids>...>;
@@ -417,7 +475,10 @@ namespace Core
     }
   };
 
-  using GlobalParameters = Parameters<ParameterId::GlobalTempo, ParameterId::GlobalVolume>;
+  using GlobalParameters
+      = Parameters<ParameterId::GlobalTempo, ParameterId::GlobalVolume, ParameterId::MainPlayground1,
+                   ParameterId::MainPlayground2, ParameterId::MainPlayground3, ParameterId::MainPlayground4,
+                   ParameterId::MainPlayground5, ParameterId::MainPlayground6, ParameterId::MainPlayground7>;
 
   using TileParameters
       = Parameters<ParameterId::Selected, ParameterId::SampleFile, ParameterId::Reverse, ParameterId::Pattern,

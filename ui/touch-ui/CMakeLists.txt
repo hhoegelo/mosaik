@@ -39,6 +39,8 @@ add_library(mosaik-touchui STATIC
         sections/mixer/Mixer.cpp
         LessToCss.cpp
         LessToCss.h
+        sections/toolboxes/MainPlayground.cpp
+        sections/toolboxes/MainPlayground.h
 )
 
 message("HHH:  ${clessc_LIBRARIES}")

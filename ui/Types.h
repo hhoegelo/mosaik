@@ -15,7 +15,8 @@ namespace Ui
     Tile,
     Waveform,
     Steps,
-    Playground
+    Playground,
+    MainPlayground
   };
 
   enum class Section

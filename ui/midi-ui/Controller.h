@@ -60,6 +60,7 @@ namespace Ui
       Mapping buildGlobalMapping();
       Mapping buildWaveformMapping();
       Mapping buildPlaygroundMapping();
+      Mapping buildMainPlaygroundMapping();
 
       Core::Api::Interface &m_core;
       Ui::Midi::Interface &m_midiUi;

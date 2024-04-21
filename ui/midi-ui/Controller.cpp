@@ -117,6 +117,9 @@ namespace Ui::Midi
 
       case Ui::Toolbox::Playground:
         return buildPlaygroundMapping();
+
+      case Ui::Toolbox::MainPlayground:
+        return buildMainPlaygroundMapping();
     }
     throw std::runtime_error("unknown toolbox");
   }
@@ -140,6 +143,20 @@ namespace Ui::Midi
                  { standardBind(Knob::Center, Core::ParameterId::Playground5) },
                  { standardBind(Knob::SouthWest, Core::ParameterId::Playground6) },
                  { standardBind(Knob::SouthEast, Core::ParameterId::Playground7) } },
+      .buttons = {},
+    };
+  }
+
+  Controller::Mapping Controller::buildMainPlaygroundMapping()
+  {
+    return {
+      .knobs = { { standardBind(Knob::Leftmost, Core::ParameterId::MainPlayground1) },
+                 { standardBind(Knob::Rightmost, Core::ParameterId::MainPlayground2) },
+                 { standardBind(Knob::NorthWest, Core::ParameterId::MainPlayground3) },
+                 { standardBind(Knob::NorthEast, Core::ParameterId::MainPlayground4) },
+                 { standardBind(Knob::Center, Core::ParameterId::MainPlayground5) },
+                 { standardBind(Knob::SouthWest, Core::ParameterId::MainPlayground6) },
+                 { standardBind(Knob::SouthEast, Core::ParameterId::MainPlayground7) } },
       .buttons = {},
     };
   }

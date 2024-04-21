@@ -46,7 +46,10 @@ namespace Dsp
     if(m_prelistenSamplePosition < kernel->prelistenSample->size())
       frame.pre = frame.pre + kernel->prelistenSample->at(m_prelistenSamplePosition++);
 
-    return frame * m_volume;
+    return doMainPlayground(frame, kernel->mainPlayground1, kernel->mainPlayground2, kernel->mainPlayground3,
+                            kernel->mainPlayground4, kernel->mainPlayground5, kernel->mainPlayground6,
+                            kernel->mainPlayground7)
+        * m_volume;
   }
 
   void Mosaik::set(AudioKernel *pKernel)
@@ -57,6 +60,12 @@ namespace Dsp
   Mosaik::ToUi &Mosaik::getUiInfo()
   {
     return m_toUi;
+  }
+
+  OutFrame Mosaik::doMainPlayground(const OutFrame &in, float p1, float p2, float p3, float p4, float p5, float p6,
+                                    float p7)
+  {
+    return in;
   }
 
 }

@@ -26,6 +26,8 @@ namespace Dsp
     ToUi &getUiInfo();
 
    private:
+    OutFrame doMainPlayground(const OutFrame &in, float p1, float p2, float p3, float p4, float p5, float p6, float p7);
+
     ToUi m_toUi;
     FramePos m_position = 0;
     FramePos m_knownFramesPerLoop = 0;

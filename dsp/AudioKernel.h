@@ -17,6 +17,15 @@ namespace Dsp
     SharedSampleBuffer prelistenSample { std::make_shared<SampleBuffer>() };
     uint8_t prelistenInteractionCounter = 0;
 
+    // Playground
+    float mainPlayground1 { 0 };
+    float mainPlayground2 { 0 };
+    float mainPlayground3 { 0 };
+    float mainPlayground4 { 0 };
+    float mainPlayground5 { 0 };
+    float mainPlayground6 { 0 };
+    float mainPlayground7 { 0 };
+
     struct Tile
     {
       SharedSampleBuffer audio { std::make_shared<SampleBuffer>() };
@@ -37,7 +46,7 @@ namespace Dsp
       float playground5 { 0 };
       float playground6 { 0 };
       float playground7 { 0 };
-      
+
       // Envelope
       struct LinearInterpolation
       {

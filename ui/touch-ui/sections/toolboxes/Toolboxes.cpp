@@ -5,6 +5,7 @@
 #include "Waveform.h"
 #include "Steps.h"
 #include "Playground.h"
+#include "MainPlayground.h"
 #include <gtkmm/label.h>
 #include <gtkmm/eventbox.h>
 
@@ -50,6 +51,7 @@ namespace Ui::Touch
     addToolbox(m_selectedToolbox, Ui::Toolbox::Global, &m_box, "Global", new GlobalTools(core));
     addToolbox(m_selectedToolbox, Ui::Toolbox::Playground, &m_box, "Playground", new Playground(core));
     addToolbox(m_selectedToolbox, Ui::Toolbox::Steps, &m_box, "Steps", new Steps(core));
+    addToolbox(m_selectedToolbox, Ui::Toolbox::MainPlayground, &m_box, "Main Playground", new MainPlayground(core));
 
     get_style_context()->add_class("toolboxes");
     Gtk::ScrolledWindow::add(m_box);

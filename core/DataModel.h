@@ -63,6 +63,13 @@ namespace Core
     {
       Tools::ReactiveVar<float> tempo { 120.f };
       Tools::ReactiveVar<float> volume { 0 };
+      Tools::ReactiveVar<float> playground1 { 0.f };
+      Tools::ReactiveVar<float> playground2 { 0.f };
+      Tools::ReactiveVar<float> playground3 { 0.f };
+      Tools::ReactiveVar<float> playground4 { 0.f };
+      Tools::ReactiveVar<float> playground5 { 0.f };
+      Tools::ReactiveVar<float> playground6 { 0.f };
+      Tools::ReactiveVar<float> playground7 { 0.f };
     };
 
     Globals globals;

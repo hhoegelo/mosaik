@@ -196,7 +196,10 @@ namespace Core::Api
       , m_dsp(dsp)
       , m_kernelUpdate(std::move(ctx), 0)
   {
-    bindParameters<GlobalParameters>(TileId {}, m_model.globals.tempo, m_model.globals.volume);
+    bindParameters<GlobalParameters>(
+        TileId {}, m_model.globals.tempo, m_model.globals.volume, m_model.globals.playground1,
+        m_model.globals.playground2, m_model.globals.playground3, m_model.globals.playground4,
+        m_model.globals.playground5, m_model.globals.playground6, m_model.globals.playground7);
 
     for(auto c = 0; c < NUM_TILES; c++)
     {
@@ -344,6 +347,14 @@ namespace Core::Api
 
     target->prelistenSample = m_dsp.getSamples(source.prelistenSample);
     target->prelistenInteractionCounter = source.prelistenInteractionCounter;
+
+    target->mainPlayground1 = source.globals.playground1;
+    target->mainPlayground2 = source.globals.playground2;
+    target->mainPlayground3 = source.globals.playground3;
+    target->mainPlayground4 = source.globals.playground4;
+    target->mainPlayground5 = source.globals.playground5;
+    target->mainPlayground6 = source.globals.playground6;
+    target->mainPlayground7 = source.globals.playground7;
   }
 
   Dsp::AudioKernel *Core::Api::Mosaik::newDspKernel(const DataModel &dataModel) const
