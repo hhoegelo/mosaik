@@ -13,15 +13,17 @@ namespace Audio
   class AlsaOut
   {
    public:
-    AlsaOut(Dsp::Api::Realtime::Interface &dsp, const std::string &device, int bits, int channels);
+    AlsaOut(Dsp::Api::Realtime::Interface &dsp, const std::string &device, int bits, int channels,
+            bool switchMainAndPre);
     ~AlsaOut();
 
    private:
     template <typename Sample>
-    void audioThread(Dsp::Api::Realtime::Interface &dsp, const std::string &device, int channels);
+    void audioThread(Dsp::Api::Realtime::Interface &dsp, const std::string &device, int channels,
+                     bool switchMainAndPre);
 
     template <typename Sample, typename AlsaFrame, int numChannels>
-    void audioThread(Dsp::Api::Realtime::Interface &dsp, const std::string &device);
+    void audioThread(Dsp::Api::Realtime::Interface &dsp, const std::string &device, bool switchMainAndPre);
 
     std::atomic_bool m_quit {};
     std::future<void> m_audioThread;

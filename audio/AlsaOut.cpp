@@ -64,7 +64,7 @@ namespace
   {
     Frame2Ch() = default;
 
-    explicit Frame2Ch(const Dsp::OutFrame &in)
+    explicit Frame2Ch(const Dsp::OutFrame &in, bool switchMainAndPre)
         : left { SampleTrait::fromFloat(in.main.left + in.pre.left) }
         , right { SampleTrait::fromFloat(in.main.right + in.pre.right) }
     {
@@ -78,12 +78,17 @@ namespace
   {
     Frame4Ch() = default;
 
-    explicit Frame4Ch(const Dsp::OutFrame &in)
+    explicit Frame4Ch(const Dsp::OutFrame &in, bool switchMainAndPre)
         : mainLeft { SampleTrait::fromFloat(in.main.left) }
         , mainRight { SampleTrait::fromFloat(in.main.right) }
         , preLeft { SampleTrait::fromFloat(in.pre.left) }
         , preRight { SampleTrait::fromFloat(in.pre.right) }
     {
+      if(switchMainAndPre)
+      {
+        std::swap(mainLeft, preLeft);
+        std::swap(mainRight, preRight);
+      }
     }
 
     SampleTrait::Sample mainLeft;
@@ -95,19 +100,20 @@ namespace
 
 namespace Audio
 {
-  AlsaOut::AlsaOut(Dsp::Api::Realtime::Interface &dsp, const std::string &device, int bits, int channels)
+  AlsaOut::AlsaOut(Dsp::Api::Realtime::Interface &dsp, const std::string &device, int bits, int channels,
+                   bool switchMainAndPre)
   {
     if(!device.empty())
     {
       m_audioThread = std::async(std::launch::async,
-                                 [this, &dsp, device, bits, channels]
+                                 [this, &dsp, device, bits, channels, switchMainAndPre]
                                  {
                                    if(bits == 16)
-                                     audioThread<S16>(dsp, device, channels);
+                                     audioThread<S16>(dsp, device, channels, switchMainAndPre);
                                    else if(bits == 24)
-                                     audioThread<S24>(dsp, device, channels);
+                                     audioThread<S24>(dsp, device, channels, switchMainAndPre);
                                    else
-                                     audioThread<S32>(dsp, device, channels);
+                                     audioThread<S32>(dsp, device, channels, switchMainAndPre);
                                  });
     }
   }
@@ -121,18 +127,19 @@ namespace Audio
   }
 
   template <typename SampleTrait>
-  void AlsaOut::audioThread(Dsp::Api::Realtime::Interface &dsp, const std::string &device, int channels)
+  void AlsaOut::audioThread(Dsp::Api::Realtime::Interface &dsp, const std::string &device, int channels,
+                            bool switchMainAndPre)
   {
     if(channels == 2)
-      audioThread<SampleTrait, Frame2Ch<SampleTrait>, 2>(dsp, device);
+      audioThread<SampleTrait, Frame2Ch<SampleTrait>, 2>(dsp, device, switchMainAndPre);
     else if(channels == 4)
-      audioThread<SampleTrait, Frame4Ch<SampleTrait>, 4>(dsp, device);
+      audioThread<SampleTrait, Frame4Ch<SampleTrait>, 4>(dsp, device, switchMainAndPre);
     else
       throw std::invalid_argument("num channels not supported");
   }
 
   template <typename SampleTrait, typename AlsaFrame, int numChannels>
-  void AlsaOut::audioThread(Dsp::Api::Realtime::Interface &dsp, const std::string &device)
+  void AlsaOut::audioThread(Dsp::Api::Realtime::Interface &dsp, const std::string &device, bool switchMainAndPre)
   {
     snd_pcm_t *pcm = nullptr;
     checkAlsa(snd_pcm_open(&pcm, device.c_str(), SND_PCM_STREAM_PLAYBACK, 0));
@@ -169,7 +176,7 @@ namespace Audio
     {
       dsp.doAudio(samples, c_framesPerPeriod, [](const Dsp::MidiEvent &) {});
       std::transform(samples, samples + c_framesPerPeriod, buffer,
-                     [](const Dsp::OutFrame &in) { return AlsaFrame(in); });
+                     [&switchMainAndPre](const Dsp::OutFrame &in) { return AlsaFrame(in, switchMainAndPre); });
       auto res = snd_pcm_writei(pcm, buffer, c_framesPerPeriod);
 
       if(res != c_framesPerPeriod)

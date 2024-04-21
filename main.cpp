@@ -23,6 +23,7 @@ int main(int args, char** argv)
     options_description desc("Allowed options");
     auto o = desc.add_options();
     o = o("help", "produce help message");
+    o = o("switch-main-and-pre", "guess what");
     o = o("alsa-out", value<std::string>(), "main device");
     o = o("bits", value<int>(), "16 or 32 bit");
     o = o("midi-ui", value<std::string>(), "alsa midi device for the mosaik hardware UI");
@@ -47,12 +48,13 @@ int main(int args, char** argv)
   std::string midiUi = vm.count("midi-ui") ? vm["midi-ui"].as<std::string>() : "";
   int bits = vm.count("bits") ? vm["bits"].as<int>() : 16;
   int channels = vm.count("channels") ? vm["channels"].as<int>() : 2;
+  bool switchMainAndPre = vm.count("switch-main-and-pre") ? true : false;
 
   Glib::init();
 
   Dsp::Dsp dsp;
   Core::Core core(dsp.getControlApi(), Glib::MainContext::get_default());
-  Audio::AlsaOut audioOut(dsp.getRealtimeApi(), alsaOut, bits, channels);
+  Audio::AlsaOut audioOut(dsp.getRealtimeApi(), alsaOut, bits, channels, switchMainAndPre);
   Ui::Touch::Application touchUI(core.getApi(), dsp.getDisplayApi());
   Ui::Midi::Ui midiUI(midiUi, core.getApi(), dsp.getDisplayApi(), touchUI.getApi());
   Ui::Midi::DebugUI dbg(core.getApi(), dsp.getDisplayApi(), touchUI.getApi());
