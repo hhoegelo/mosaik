@@ -271,6 +271,8 @@ namespace Core::Api
                                           static_cast<int8_t>(std::round(src.wizard.ons)),
                                           static_cast<int8_t>(std::round(src.wizard.offs)));
 
+    tgt.audio = m_dsp.getSamples(src.sample);
+
     for(auto s : processedPattern)
     {
       if(s)
@@ -279,7 +281,14 @@ namespace Core::Api
         int64_t shuffle
             = (step % 2) ? shuffle = static_cast<int64_t>(0.5 * static_cast<double>(framesPer16th) * src.shuffle) : 0;
 
-        auto finalPos = pos + shuffle - static_cast<FramePos>(src.triggerFrame / std::pow(2, src.speed));
+        auto audioLen = tgt.audio->size();
+
+        auto hitPoint = static_cast<FramePos>(src.triggerFrame / std::pow(2, src.speed));
+
+        if(src.reverse.get())
+          hitPoint = audioLen - hitPoint;
+
+        auto finalPos = pos + shuffle - hitPoint;
 
         while(finalPos < 0)
           finalPos += framePerLoop;
@@ -292,7 +301,6 @@ namespace Core::Api
       pos += framesPer16th;
     }
 
-    tgt.audio = m_dsp.getSamples(src.sample);
     tgt.mute = src.muted;
     tgt.balance = src.balance;
     tgt.gain_dB = src.gain;

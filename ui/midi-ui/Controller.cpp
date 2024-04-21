@@ -260,7 +260,14 @@ namespace Ui::Midi
   Controller::Mapping Controller::buildWaveformMapping()
   {
     return {
-      .knobs = { { standardZoomedBind(Knob::Center, Core::ParameterId::TriggerFrame) },
+      .knobs = { { Knob::Center,
+                   [this](auto inc)
+                   {
+                     auto sel = m_core.getSelectedTiles().front();
+                     auto reverse = std::get<bool>(m_core.getParameter(sel, Core::ParameterId::Reverse));
+                     auto fpp = m_touchUi.getToolboxes().getWaveform().getFramesPerPixel();
+                     m_core.incParameter(sel, Core::ParameterId::TriggerFrame, reverse ? -fpp * inc : fpp * inc);
+                   } },
                  { Knob::Leftmost, [this](auto inc) { m_touchUi.getToolboxes().getWaveform().incZoom(inc); } },
                  { Knob::Rightmost, [this](auto inc) { m_touchUi.getToolboxes().getWaveform().incScroll(inc); } },
                  { standardZoomedBind(Knob::SouthWest, Core::ParameterId::EnvelopeFadeInPos) },

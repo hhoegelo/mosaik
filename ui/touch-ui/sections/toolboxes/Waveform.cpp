@@ -49,7 +49,15 @@ namespace Ui::Touch
           auto numFramesPerPixel = std::max<double>(1, numFrames / numPixels);
           auto scrollPos = static_cast<double>(getSanitizedScroll());
 
+          auto reverse = std::get<bool>(m_core.getParameter(tileId, Core::ParameterId::Reverse));
+
           auto triggerPos = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::TriggerFrame));
+
+          if(reverse)
+          {
+            triggerPos = samples.size() - triggerPos;
+          }
+
           auto fadeInPos = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadeInPos));
           auto fadedInPos
               = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadedInPos));
@@ -57,7 +65,6 @@ namespace Ui::Touch
               = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadeOutPos));
           auto fadedOutPos
               = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadedOutPos));
-          auto reverse = std::get<bool>(m_core.getParameter(tileId, Core::ParameterId::Reverse));
 
           for(size_t i = 0; i < get_width(); i++)
           {
