@@ -31,7 +31,9 @@ namespace Ui::Touch
   }
 
   Tile::Tile(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Core::TileId tileId)
-      : Gtk::Grid()
+      : Glib::ObjectBase("tile")
+      , Gtk::Grid()
+      , m_size(*this, "size", 100)
   {
     get_style_context()->add_class("tile");
 
@@ -102,6 +104,13 @@ namespace Ui::Touch
         });
 
     runLevelMeterTimer(dsp, tileId, reverse);
+
+    signal_style_updated().connect(
+        [this]
+        {
+          int q = m_size.get_value();
+          set_size_request(q, q);
+        });
   }
 
   Gtk::Widget* Tile::buildWaveformDisplay(Core::Api::Interface& core, Core::TileId tileId)

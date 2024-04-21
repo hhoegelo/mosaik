@@ -17,6 +17,8 @@ namespace Ui::Touch
 {
   class Tiles;
   class Toolboxes;
+  class Mixer;
+  class Main;
 
   class Window : public Gtk::Window, public Interface
   {
@@ -40,6 +42,8 @@ namespace Ui::Touch
     // Sections
     std::unique_ptr<Tiles> m_tiles;
     std::unique_ptr<Toolboxes> m_toolboxes;
+    std::unique_ptr<Mixer> m_mixer;
+    std::unique_ptr<Main> m_main;
 
     Glib::RefPtr<Gtk::StyleContext> m_context;
     Glib::RefPtr<Gio::FileMonitor> m_cssMonitor;

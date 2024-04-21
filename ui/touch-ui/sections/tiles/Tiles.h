@@ -4,6 +4,7 @@
 #include "core/Types.h"
 #include <ui/touch-ui/sections/SectionWrapper.h>
 #include <gtkmm/grid.h>
+#include <glibmm/property.h>
 
 namespace Core::Api
 {

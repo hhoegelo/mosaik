@@ -196,8 +196,8 @@ namespace Core
     constexpr static ParameterId id = ParameterId::Speed;
     constexpr static auto name = "speed";
     using Type = Float;
-    constexpr static Type min = -3.0f;
-    constexpr static Type max = 3.0f;
+    constexpr static Type min = -6.0f;
+    constexpr static Type max = 6.0f;
     constexpr static Type coarse = 0.01f;
     constexpr static auto unit = "%";
 

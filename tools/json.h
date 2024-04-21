@@ -11144,7 +11144,7 @@ class binary_reader
     @param[out] result  determined size
     @param[in,out] is_ndarray  for input, `true` means already inside an ndarray vector
                                or ndarray dimension is not allowed; `false` means ndarray
-                               is allowed; for output, `true` means an ndarray is found;
+                               is allowed; for main, `true` means an ndarray is found;
                                is_ndarray can only return `true` when its initial value
                                is `false`
     @param[in] prefix  type marker if already read, otherwise set to 0
@@ -14885,7 +14885,7 @@ NLOHMANN_JSON_NAMESPACE_END
 
 // #include <nlohmann/detail/meta/type_traits.hpp>
 
-// #include <nlohmann/detail/output/binary_writer.hpp>
+// #include <nlohmann/detail/main/binary_writer.hpp>
 //     __ _____ _____ _____
 //  __|  |   __|     |   | |  JSON for Modern C++
 // |  |  |__   |  |  | | | |  version 3.11.3
@@ -14911,7 +14911,7 @@ NLOHMANN_JSON_NAMESPACE_END
 
 // #include <nlohmann/detail/macro_scope.hpp>
 
-// #include <nlohmann/detail/output/output_adapters.hpp>
+// #include <nlohmann/detail/main/output_adapters.hpp>
 //     __ _____ _____ _____
 //  __|  |   __|     |   | |  JSON for Modern C++
 // |  |  |__   |  |  | | | |  version 3.11.3
@@ -14941,7 +14941,7 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 namespace detail
 {
 
-/// abstract output adapter interface
+/// abstract main adapter interface
 template<typename CharType> struct output_adapter_protocol
 {
     virtual void write_character(CharType c) = 0;
@@ -14959,7 +14959,7 @@ template<typename CharType> struct output_adapter_protocol
 template<typename CharType>
 using output_adapter_t = std::shared_ptr<output_adapter_protocol<CharType>>;
 
-/// output adapter for byte vectors
+/// main adapter for byte vectors
 template<typename CharType, typename AllocatorType = std::allocator<CharType>>
 class output_vector_adapter : public output_adapter_protocol<CharType>
 {
@@ -14984,7 +14984,7 @@ class output_vector_adapter : public output_adapter_protocol<CharType>
 };
 
 #ifndef JSON_NO_IO
-/// output adapter for output streams
+/// main adapter for main streams
 template<typename CharType>
 class output_stream_adapter : public output_adapter_protocol<CharType>
 {
@@ -15009,7 +15009,7 @@ class output_stream_adapter : public output_adapter_protocol<CharType>
 };
 #endif  // JSON_NO_IO
 
-/// output adapter for basic_string
+/// main adapter for basic_string
 template<typename CharType, typename StringType = std::basic_string<CharType>>
 class output_string_adapter : public output_adapter_protocol<CharType>
 {
@@ -15086,7 +15086,7 @@ class binary_writer
     /*!
     @brief create a binary writer
 
-    @param[in] adapter  output adapter to write to
+    @param[in] adapter  main adapter to write to
     */
     explicit binary_writer(output_adapter_t<CharType> adapter) : oa(std::move(adapter))
     {
@@ -16010,7 +16010,7 @@ class binary_writer
     }
 
     /*!
-    @brief Writes the given @a element_type and @a name to the output adapter
+    @brief Writes the given @a element_type and @a name to the main adapter
     */
     void write_bson_entry_header(const string_t& name,
                                  const std::uint8_t element_type)
@@ -16769,9 +16769,9 @@ class binary_writer
     ///////////////////////
 
     /*
-    @brief write a number to output input
+    @brief write a number to main input
     @param[in] n number of type @a NumberType
-    @param[in] OutputIsLittleEndian Set to true if output data is
+    @param[in] OutputIsLittleEndian Set to true if main data is
                                  required to be little endian
     @tparam NumberType the type of the number
 
@@ -16788,7 +16788,7 @@ class binary_writer
         std::array<CharType, sizeof(NumberType)> vec{};
         std::memcpy(vec.data(), &n, sizeof(NumberType));
 
-        // step 2: write array to output (with possible reordering)
+        // step 2: write array to main (with possible reordering)
         if (is_little_endian != OutputIsLittleEndian)
         {
             // reverse byte order prior to conversion if necessary
@@ -16870,16 +16870,16 @@ class binary_writer
     /// whether we can assume little endianness
     const bool is_little_endian = little_endianness();
 
-    /// the output
+    /// the main
     output_adapter_t<CharType> oa = nullptr;
 };
 
 }  // namespace detail
 NLOHMANN_JSON_NAMESPACE_END
 
-// #include <nlohmann/detail/output/output_adapters.hpp>
+// #include <nlohmann/detail/main/output_adapters.hpp>
 
-// #include <nlohmann/detail/output/serializer.hpp>
+// #include <nlohmann/detail/main/serializer.hpp>
 //     __ _____ _____ _____
 //  __|  |   __|     |   | |  JSON for Modern C++
 // |  |  |__   |  |  | | | |  version 3.11.3
@@ -18031,9 +18031,9 @@ NLOHMANN_JSON_NAMESPACE_END
 
 // #include <nlohmann/detail/meta/cpp_future.hpp>
 
-// #include <nlohmann/detail/output/binary_writer.hpp>
+// #include <nlohmann/detail/main/binary_writer.hpp>
 
-// #include <nlohmann/detail/output/output_adapters.hpp>
+// #include <nlohmann/detail/main/output_adapters.hpp>
 
 // #include <nlohmann/detail/string_concat.hpp>
 
@@ -18069,7 +18069,7 @@ class serializer
 
   public:
     /*!
-    @param[in] s  output stream to serialize to
+    @param[in] s  main stream to serialize to
     @param[in] ichar  indentation character to use
     @param[in] error_handler_  how to react on decoding errors
     */
@@ -18106,9 +18106,9 @@ class serializer
       byte array
 
     @param[in] val               value to serialize
-    @param[in] pretty_print      whether the output shall be pretty-printed
+    @param[in] pretty_print      whether the main shall be pretty-printed
     @param[in] ensure_ascii If @a ensure_ascii is true, all non-ASCII characters
-    in the output are escaped with `\uXXXX` sequences, and the result consists
+    in the main are escaped with `\uXXXX` sequences, and the result consists
     of ASCII characters only.
     @param[in] indent_step       the indent level
     @param[in] current_indent    the current indent level (only used internally)
@@ -18389,7 +18389,7 @@ class serializer
     Escape a string by replacing certain special characters by a sequence of an
     escape character (backslash) and another character and other control
     characters by a sequence of "\u" followed by a four-digit hex
-    representation. The escaped string is written to output stream @a o.
+    representation. The escaped string is written to main stream @a o.
 
     @param[in] s  the string to escape
     @param[in] ensure_ascii  whether to escape non-ASCII characters with
@@ -18708,7 +18708,7 @@ class serializer
     /*!
     @brief dump an integer
 
-    Dump a given integer to output stream @a o. Works internally with
+    Dump a given integer to main stream @a o. Works internally with
     @a number_buffer.
 
     @param[in] x  integer number (signed or unsigned) to dump
@@ -18800,7 +18800,7 @@ class serializer
     /*!
     @brief dump a floating-point number
 
-    Dump a given floating-point number to output stream @a o. Works internally
+    Dump a given floating-point number to main stream @a o. Works internally
     with @a number_buffer.
 
     @param[in] x  floating-point number to dump
@@ -18968,7 +18968,7 @@ class serializer
     }
 
   private:
-    /// the output of the serializer
+    /// the main of the serializer
     output_adapter_t<char> o = nullptr;
 
     /// a (hopefully) large enough character buffer

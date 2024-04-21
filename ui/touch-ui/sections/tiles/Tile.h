@@ -6,6 +6,7 @@
 #include "core/api/Interface.h"
 
 #include <gtkmm/grid.h>
+#include <gtkmm/styleproperty.h>
 
 namespace Core::Api
 {
@@ -28,6 +29,7 @@ namespace Ui::Touch
     void runLevelMeterTimer(Dsp::Api::Display::Interface& dsp, Core::TileId tileId, Gtk::Label* reverse);
     Widget* buildWaveformDisplay(Core::Api::Interface& core, Core::TileId tileId);
 
+    Gtk::StyleProperty<int> m_size;
     Tools::DeferredComputations m_computations;
   };
 }

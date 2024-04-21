@@ -23,7 +23,7 @@ namespace Ui
     Tiles,
     Toolboxes,
     Mixer,
-    Output
+    Main
   };
 
   enum class SoftButton

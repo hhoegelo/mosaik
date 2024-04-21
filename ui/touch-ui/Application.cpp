@@ -9,6 +9,7 @@ namespace Ui::Touch
       , m_app(Gtk::Application::create("com.mosaik.v4"))
       , m_window(std::make_unique<Window>(m_core, m_dsp))
   {
+    Gtk::Settings::get_default()->property_gtk_application_prefer_dark_theme() = true;
   }
 
   Application::~Application() = default;

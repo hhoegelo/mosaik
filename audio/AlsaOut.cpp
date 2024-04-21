@@ -95,22 +95,27 @@ namespace Audio
 {
   AlsaOut::AlsaOut(Dsp::Api::Realtime::Interface &dsp, const std::string &device, int bits, int channels)
   {
-    m_audioThread = std::async(std::launch::async,
-                               [this, &dsp, device, bits, channels]
-                               {
-                                 if(bits == 16)
-                                   audioThread<S16>(dsp, device, channels);
-                                 else if(bits == 24)
-                                   audioThread<S24>(dsp, device, channels);
-                                 else
-                                   audioThread<S32>(dsp, device, channels);
-                               });
+    if(!device.empty())
+    {
+      m_audioThread = std::async(std::launch::async,
+                                 [this, &dsp, device, bits, channels]
+                                 {
+                                   if(bits == 16)
+                                     audioThread<S16>(dsp, device, channels);
+                                   else if(bits == 24)
+                                     audioThread<S24>(dsp, device, channels);
+                                   else
+                                     audioThread<S32>(dsp, device, channels);
+                                 });
+    }
   }
 
   AlsaOut::~AlsaOut()
   {
     m_quit = true;
-    m_audioThread.wait();
+
+    if(m_audioThread.valid())
+      m_audioThread.wait();
   }
 
   template <typename SampleTrait>

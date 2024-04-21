@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.16.3)
 
 project(mosaik)
 
+include(cmake/CPM.cmake)
+
 add_subdirectory(dockerized)
 
 option(ENABLE_TESTING OFF)
@@ -67,7 +69,7 @@ if (LIBS_FOUND)
             mosaik-ui
             Boost::program_options)
 
-    install(FILES ui/touch-ui/styles.css DESTINATION ${RESOURCES_DIR} PERMISSIONS OWNER_WRITE OWNER_READ)
+    install(FILES ui/touch-ui/styles.less DESTINATION ${RESOURCES_DIR} PERMISSIONS OWNER_WRITE OWNER_READ)
 else ()
     message("Not all required libs were found, but you can still use the dockerized build env, like this:")
     message("    make dockerized-build-mosaik")
