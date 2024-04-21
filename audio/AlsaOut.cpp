@@ -13,6 +13,8 @@ namespace
 {
   constexpr auto c_numPeriods = 8;
   constexpr auto c_framesPerPeriod = 128;
+  constexpr float c_maxSample = 1.0f;
+  constexpr float c_minSample = -1.0f;
 
   struct S16
   {
@@ -22,7 +24,7 @@ namespace
 
     inline static Sample fromFloat(float f)
     {
-      return static_cast<Sample>(f * FLOAT_TO_INT);
+      return static_cast<Sample>(std::clamp(f, c_minSample, c_maxSample) * FLOAT_TO_INT);
     }
   };
 
@@ -37,7 +39,7 @@ namespace
 
     inline static Sample fromFloat(float f)
     {
-      auto q = static_cast<int32_t>(f * FLOAT_TO_INT);
+      auto q = static_cast<int32_t>(std::clamp(f, c_minSample, c_maxSample) * FLOAT_TO_INT);
       uint8_t a = q & 0xFF;
       uint8_t b = (q >> 8) & 0xFF;
       uint8_t c = (q >> 16) & 0xFF;
@@ -54,7 +56,7 @@ namespace
 
     inline static Sample fromFloat(float f)
     {
-      return static_cast<Sample>(f * FLOAT_TO_INT);
+      return static_cast<Sample>(std::clamp(f, c_minSample, c_maxSample) * FLOAT_TO_INT);
     }
   };
 
