@@ -39,8 +39,12 @@ namespace Dsp
     result.left *= m_gainLeft;
     result.right *= m_gainRight;
 
-    ui.currentLevel = std::max({ ui.currentLevel, std::abs(result.left), std::abs(result.right) });
     m_framePosition += m_framePosition != c_invalidFramePosF32 ? kernel.playbackFrameIncrement : 0;
+
+    ui.levelLeft = std::max({ ui.levelLeft, std::abs(result.left) });
+    ui.levelRight = std::max({ ui.levelRight, std::abs(result.right) });
+    ui.frame = m_framePosition;
+    
     return result;
   }
 

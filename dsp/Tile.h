@@ -11,7 +11,9 @@ namespace Dsp
    public:
     struct ToUi
     {
-      float currentLevel { 0.0f };
+      float levelLeft { 0.0f };
+      float levelRight { 0.0f };
+      FramePos frame { 0 };
     };
 
     StereoFrame doAudio(AudioKernel::Tile &kernel, ToUi &ui, FramePos currentLoopPosition);

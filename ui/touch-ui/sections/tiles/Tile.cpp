@@ -9,6 +9,7 @@
 #include <gtkmm/drawingarea.h>
 
 #include <iostream>
+#include <gtkmm/levelbar.h>
 
 namespace Ui::Touch
 {
@@ -37,75 +38,70 @@ namespace Ui::Touch
     set_column_homogeneous(true);
     set_row_homogeneous(true);
 
-    std::array<Gtk::Label*, NUM_STEPS> steps;
+    auto steps = addSteps();
+    auto sampleName = addSampleName();
+    auto waveform = addWaveform(core, tileId);
+    auto seconds = addDurationLabel();
 
-    auto buildStep = [&steps](int i)
+    auto drawLevel = [this, d = 0.0f](const Cairo::RefPtr<Cairo::Context>& ctx, float level, float decay) mutable
     {
-      auto label = Gtk::manage(new Gtk::Label(""));
-      label->set_name("step-" + std::to_string(i));
-      label->get_style_context()->add_class("step");
-      steps[i] = label;
-      return label;
+      d = std::max(d * decay, level);
+      ctx->begin_new_path();
+      ctx->set_source_rgb(1, 1, 1);
+      ctx->set_line_width(2);
+
+      ctx->move_to(0, get_height());
+      ctx->line_to(0, (1.0f - d) * get_height());
+      ctx->stroke();
     };
 
-    for(int i = 0; i < 16; i++)
-    {
-      attach(*buildStep(i), i, 0);
-      attach(*buildStep(i + 16), 16, i);
-      attach(*buildStep(i + 32), 16 - i, 16);
-      attach(*buildStep(i + 48), 0, 16 - i);
-    }
+    auto levelL = Gtk::manage(new Gtk::DrawingArea());
+    levelL->get_style_context()->add_class("level left");
+    levelL->signal_draw().connect(
+        [drawLevel, this](const Cairo::RefPtr<Cairo::Context>& ctx) mutable
+        {
+          drawLevel(ctx, std::get<0>(m_levels), 0.98f);
+          return true;
+        });
 
-    auto sampleName = Gtk::manage(new Gtk::Label(""));
-    sampleName->get_style_context()->add_class("sample-file");
-    sampleName->property_halign() = Gtk::Align::ALIGN_START;
-    sampleName->property_valign() = Gtk::Align::ALIGN_CENTER;
-    sampleName->set_ellipsize(Pango::EllipsizeMode::ELLIPSIZE_START);
-    attach(*sampleName, 1, 1, 15, 2);
+    attach(*levelL, 13, 4, 1, 8);
 
-    auto waveform = Gtk::manage(new WaveformThumb(core, tileId));
-    attach(*waveform, 1, 3, 10, 10);
+    auto gain = Gtk::manage(new Gtk::DrawingArea());
+    gain->get_style_context()->add_class("gain");
+    gain->signal_draw().connect(
+        [drawLevel, &core, tileId, this](const Cairo::RefPtr<Cairo::Context>& ctx) mutable
+        {
+          using T = Core::ParameterDescription<Core::ParameterId::Gain>;
+          auto v = std::get<float>(core.getParameter(tileId, Core::ParameterId::Gain));
+          auto p = (v - T::min) / (T::max - T::min);
+          drawLevel(ctx, p, 0.0f);
+          return true;
+        });
+    attach(*gain, 14, 4, 1, 8);
 
-    auto seconds = Gtk::manage(new Gtk::Label("0.0s"));
-    seconds->get_style_context()->add_class("duration");
-    seconds->get_style_context()->add_class("seconds");
-    seconds->property_halign() = Gtk::Align::ALIGN_START;
-    seconds->property_valign() = Gtk::Align::ALIGN_CENTER;
-    attach(*seconds, 1, 14, 15, 2);
+    auto levelR = Gtk::manage(new Gtk::DrawingArea());
+    levelR->get_style_context()->add_class("level right");
+
+    levelR->signal_draw().connect(
+        [drawLevel, this](const Cairo::RefPtr<Cairo::Context>& ctx) mutable
+        {
+          drawLevel(ctx, std::get<1>(m_levels), 0.98f);
+          return true;
+        });
+
+    attach(*levelR, 15, 4, 1, 8);
+
+    m_computations.add([&core, gain, tileId] { gain->queue_draw(); });
 
     m_computations.add([&core, tileId, sampleName]()
                        { sampleName->set_label(core.getParameterDisplay(tileId, Core::ParameterId::SampleFile)); });
 
     m_computations.add(
-        [&core, &dsp, tileId, seconds]()
+        [this, &core, &dsp, tileId, seconds]()
         {
           auto file = std::get<Core::Path>(core.getParameter(tileId, Core::ParameterId::SampleFile));
-
           auto ms = dsp.getDuration(file).count();
-          auto s = ms / 1000;
-          char txt[256];
-
-          if(s > 0)
-            ms -= 1000 * s;
-
-          auto m = s / 60;
-          if(m > 0)
-            s -= 60 * m;
-
-          auto h = m / 60;
-          if(h > 0)
-            m -= 60 * h;
-
-          if(h > 0)
-            sprintf(txt, "%2d:%02d h", h, m);
-          else if(m > 0)
-            sprintf(txt, "%2d:%02d m", m, s);
-          else if(s > 0)
-            sprintf(txt, "%2d.%03d s", s, ms);
-          else
-            sprintf(txt, "%03d ms", ms);
-
-          seconds->set_label(txt);
+          seconds->set_label(formatTime(ms));
         });
 
     m_computations.add(
@@ -138,7 +134,86 @@ namespace Ui::Touch
           }
         });
 
-    runLevelMeterTimer(dsp, tileId);
+    runLevelMeterTimer(dsp, tileId, levelL, levelR);
+  }
+
+  std::string Tile::formatTime(long ms) const
+  {
+    auto s = ms / 1000;
+    char txt[256];
+
+    if(s > 0)
+      ms -= 1000 * s;
+
+    auto m = s / 60;
+    if(m > 0)
+      s -= 60 * m;
+
+    auto h = m / 60;
+    if(h > 0)
+      m -= 60 * h;
+
+    if(h > 0)
+      sprintf(txt, "%2d:%02d h", h, m);
+    else if(m > 0)
+      sprintf(txt, "%2d:%02d m", m, s);
+    else if(s > 0)
+      sprintf(txt, "%2d.%03d s", s, ms);
+    else
+      sprintf(txt, "%03d ms", ms);
+    return txt;
+  }
+
+  std::array<Gtk::Label*, 64> Tile::addSteps()
+  {
+    std::array<Gtk::Label*, NUM_STEPS> steps {};
+
+    auto buildStep = [&steps](int i)
+    {
+      auto label = Gtk::manage(new Gtk::Label(""));
+      label->set_name("step-" + std::to_string(i));
+      label->get_style_context()->add_class("step");
+      steps[i] = label;
+      return label;
+    };
+
+    for(int i = 0; i < 16; i++)
+    {
+      attach(*buildStep(i), i, 0);
+      attach(*buildStep(i + 16), 16, i);
+      attach(*buildStep(i + 32), 16 - i, 16);
+      attach(*buildStep(i + 48), 0, 16 - i);
+    }
+    return steps;
+  }
+
+  Gtk::Label* Tile::addDurationLabel()
+  {
+    auto seconds = Gtk::manage(new Gtk::Label("0.0s"));
+    seconds->get_style_context()->add_class("duration");
+    seconds->get_style_context()->add_class("seconds");
+    seconds->property_halign() = Gtk::ALIGN_START;
+    seconds->property_valign() = Gtk::ALIGN_CENTER;
+    attach(*seconds, 1, 14, 15, 2);
+    return seconds;
+  }
+
+  WaveformThumb* Tile::addWaveform(Core::Api::Interface& core, const Core::TileId& tileId)
+  {
+    auto waveform = Gtk::manage(new WaveformThumb(core, tileId));
+    attach(*waveform, 2, 4, 10, 8);
+    return waveform;
+  }
+
+  Gtk::Label* Tile::addSampleName()
+  {
+    auto sampleName = Gtk::manage(new Gtk::Label(""));
+    sampleName->get_style_context()->add_class("sample-file");
+    sampleName->property_halign() = Gtk::ALIGN_START;
+    sampleName->property_valign() = Gtk::ALIGN_CENTER;
+    sampleName->set_ellipsize(Pango::ELLIPSIZE_START);
+    attach(*sampleName, 1, 1, 15, 2);
+    return sampleName;
   }
 
   void Tile::on_size_allocate(Gtk::Allocation& allocation)
@@ -149,9 +224,18 @@ namespace Ui::Touch
     Gtk::Grid::on_size_allocate(allocation);
   }
 
-  void Tile::runLevelMeterTimer(Dsp::Api::Display::Interface& dsp, Core::TileId tileId)
+  void Tile::runLevelMeterTimer(Dsp::Api::Display::Interface& dsp, Core::TileId tileId, Gtk::DrawingArea* l,
+                                Gtk::DrawingArea* r)
   {
-    Glib::signal_timeout().connect([&dsp, tileId, oldDB = -80.0]() mutable { return true; }, 16);
+    Glib::signal_timeout().connect(
+        [&dsp, tileId, l, r, this]
+        {
+          m_levels = dsp.getLevel(tileId);
+          l->queue_draw();
+          r->queue_draw();
+          return true;
+        },
+        16);
   }
 
   Gtk::SizeRequestMode Tile::get_request_mode_vfunc() const
