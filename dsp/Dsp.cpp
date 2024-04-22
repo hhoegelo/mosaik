@@ -95,17 +95,20 @@ namespace Dsp
       class Mosaik : public Interface
       {
        public:
-        explicit Mosaik(::Dsp::Mosaik &dsp);
+        Mosaik(::Dsp::Mosaik &dsp, Control::Interface &ctrl);
         ~Mosaik() override = default;
         [[nodiscard]] FramePos getCurrentLoopPosition() const override;
         [[nodiscard]] float getCurrentTileLevel(Core::TileId tileId) override;
+        std::chrono::milliseconds getDuration(const std::filesystem::path &file) const override;
 
        private:
         ::Dsp::Mosaik &m_dsp;
+        Control::Interface &m_ctrl;
       };
 
-      Mosaik::Mosaik(::Dsp::Mosaik &dsp)
+      Mosaik::Mosaik(::Dsp::Mosaik &dsp, Control::Interface &ctrl)
           : m_dsp(dsp)
+          , m_ctrl(ctrl)
       {
       }
 
@@ -117,6 +120,11 @@ namespace Dsp
       float Mosaik::getCurrentTileLevel(Core::TileId tileId)
       {
         return std::exchange(m_dsp.getUiInfo().tiles[tileId.value()].currentLevel, 0.f);
+      }
+
+      std::chrono::milliseconds Mosaik::getDuration(const std::filesystem::path &file) const
+      {
+        return std::chrono::milliseconds(1000 * m_ctrl.getSamples(file)->size() / SAMPLERATE);
       }
     }
 
@@ -156,7 +164,7 @@ namespace Dsp
   Dsp::Dsp()
       : m_impl(std::make_unique<Mosaik>())
       , m_controlApi(std::make_unique<Api::Control::Mosaik>(*m_impl))
-      , m_displayApi(std::make_unique<Api::Display::Mosaik>(*m_impl))
+      , m_displayApi(std::make_unique<Api::Display::Mosaik>(*m_impl, *m_controlApi))
       , m_realtimeApi(std::make_unique<Api::Realtime::Mosaik>(*m_impl))
   {
   }

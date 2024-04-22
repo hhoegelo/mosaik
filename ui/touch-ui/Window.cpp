@@ -71,20 +71,24 @@ namespace Ui::Touch
             {
               auto less = Glib::file_get_contents(fileName);
               auto css = compileLess(less);
+
+              printf("CSS: %s\n", css.c_str());
+              
               newProvider->load_from_data(css);
               m_context->remove_provider(m_cssProvider);
               m_cssProvider = newProvider;
               m_context->add_provider_for_screen(Gdk::Screen::get_default(), m_cssProvider,
                                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
             }
-            catch(...)
+            catch(std::exception& e)
             {
-              printf("Could not load or parse css file\n");
+              printf("Could not load or parse css file: %s\n", e.what());
             }
           });
     }
-    catch(...)
+    catch(std::exception& e)
     {
+      printf("Could not load or parse css file: %s\n", e.what());
       return false;
     }
     return true;

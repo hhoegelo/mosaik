@@ -9,7 +9,6 @@
 #include <gtkmm/drawingarea.h>
 
 #include <iostream>
-#include <gtkmm/levelbar.h>
 
 namespace Ui::Touch
 {
@@ -30,59 +29,84 @@ namespace Ui::Touch
   }
 
   Tile::Tile(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Core::TileId tileId)
-      : Gtk::Grid()
+      : Glib::ObjectBase("Tile")
+      , Gtk::Grid()
+      , m_size(*this, "size", 50)
   {
     get_style_context()->add_class("tile");
+    set_column_homogeneous(true);
+    set_row_homogeneous(true);
 
-    auto hasSteps = Gtk::manage(new Gtk::Label(" [] "));
-    hasSteps->get_style_context()->add_class("has-steps-indicator");
-    attach(*hasSteps, 0, 0, 1, 1);
+    std::array<Gtk::Label*, NUM_STEPS> steps;
 
-    auto reverse = Gtk::manage(new Gtk::Label(" > "));
-    reverse->get_style_context()->add_class("is-playing-indicator");
-    attach(*reverse, 1, 0, 2, 1);
+    auto buildStep = [&steps](int i)
+    {
+      auto label = Gtk::manage(new Gtk::Label(""));
+      label->set_name("step-" + std::to_string(i));
+      label->get_style_context()->add_class("step");
+      steps[i] = label;
+      return label;
+    };
 
-    using GainDesc = Core::ParameterDescription<Core::ParameterId::Gain>;
+    for(int i = 0; i < 16; i++)
+    {
+      attach(*buildStep(i), i, 0);
+      attach(*buildStep(i + 16), 16, i);
+      attach(*buildStep(i + 32), 16 - i, 16);
+      attach(*buildStep(i + 48), 0, 16 - i);
+    }
 
-    auto volume = Gtk::manage(new Gtk::LevelBar());
-    volume->set_orientation(Gtk::Orientation::ORIENTATION_VERTICAL);
-    volume->set_min_value(0.0);
-    volume->set_max_value(GainDesc::max - GainDesc::min);
-    volume->set_inverted(true);
-    volume->get_style_context()->add_class("volume");
-    attach(*volume, 3, 0, 1, 4);
+    auto sampleName = Gtk::manage(new Gtk::Label(""));
+    sampleName->get_style_context()->add_class("sample-file");
+    sampleName->property_halign() = Gtk::Align::ALIGN_START;
+    sampleName->property_valign() = Gtk::Align::ALIGN_CENTER;
+    sampleName->set_ellipsize(Pango::EllipsizeMode::ELLIPSIZE_START);
+    attach(*sampleName, 1, 1, 15, 2);
 
     auto waveform = Gtk::manage(new WaveformThumb(core, tileId));
-    attach(*waveform, 0, 1, 12, 3);
+    attach(*waveform, 1, 3, 10, 10);
 
     auto seconds = Gtk::manage(new Gtk::Label("0.0s"));
     seconds->get_style_context()->add_class("duration");
     seconds->get_style_context()->add_class("seconds");
-    attach(*seconds, 0, 4, 2, 1);
+    seconds->property_halign() = Gtk::Align::ALIGN_START;
+    seconds->property_valign() = Gtk::Align::ALIGN_CENTER;
+    attach(*seconds, 1, 14, 15, 2);
 
-    auto steps = Gtk::manage(new Gtk::Label("0.0"));
-    steps->get_style_context()->add_class("duration");
-    steps->get_style_context()->add_class("steps");
-    attach(*steps, 2, 4, 2, 1);
+    m_computations.add([&core, tileId, sampleName]()
+                       { sampleName->set_label(core.getParameterDisplay(tileId, Core::ParameterId::SampleFile)); });
 
     m_computations.add(
-        [&core, tileId, hasSteps]()
+        [&core, &dsp, tileId, seconds]()
         {
-          constexpr auto hasStepsClass = "has-steps";
-          auto styles = hasSteps->get_style_context();
-          hasSteps->get_style_context()->add_class("has-steps-indicator");
-          auto pattern = std::get<Core::Pattern>(core.getParameter(tileId, Core::ParameterId::Pattern));
-          bool anyStepSet = std::any_of(pattern.begin(), pattern.end(), [](auto step) { return step; });
-          anyStepSet ? styles->add_class(hasStepsClass) : styles->remove_class(hasStepsClass);
+          auto file = std::get<Core::Path>(core.getParameter(tileId, Core::ParameterId::SampleFile));
+
+          auto ms = dsp.getDuration(file).count();
+          auto s = ms / 1000;
+          char txt[256];
+
+          if(s > 0)
+            ms -= 1000 * s;
+
+          auto m = s / 60;
+          if(m > 0)
+            s -= 60 * m;
+
+          auto h = m / 60;
+          if(h > 0)
+            m -= 60 * h;
+
+          if(h > 0)
+            sprintf(txt, "%2d:%02d h", h, m);
+          else if(m > 0)
+            sprintf(txt, "%2d:%02d m", m, s);
+          else if(s > 0)
+            sprintf(txt, "%2d.%03d s", s, ms);
+          else
+            sprintf(txt, "%03d ms", ms);
+
+          seconds->set_label(txt);
         });
-
-    m_computations.add(
-        [&core, tileId, reverse]()
-        { reverse->set_label(std::get<bool>(core.getParameter(tileId, Core::ParameterId::Reverse)) ? " < " : " > "); });
-
-    m_computations.add(
-        [&core, tileId, volume]()
-        { volume->set_value(std::get<float>(core.getParameter(tileId, Core::ParameterId::Gain)) - GainDesc::min); });
 
     m_computations.add(
         [&core, tileId, this]()
@@ -100,32 +124,50 @@ namespace Ui::Touch
           waveform->queue_draw();
         });
 
-    runLevelMeterTimer(dsp, tileId, reverse);
+    m_computations.add(
+        [&core, tileId, this, steps]()
+        {
+          auto pattern = std::get<Core::Pattern>(core.getParameter(tileId, Core::ParameterId::Pattern));
+
+          for(size_t i = 0; i < 64; i++)
+          {
+            if(pattern[i])
+              steps[i]->get_style_context()->add_class("selected");
+            else
+              steps[i]->get_style_context()->remove_class("selected");
+          }
+        });
+
+    runLevelMeterTimer(dsp, tileId);
   }
 
-  void Tile::runLevelMeterTimer(Dsp::Api::Display::Interface& dsp, Core::TileId tileId, Gtk::Label* reverse)
+  void Tile::on_size_allocate(Gtk::Allocation& allocation)
   {
-    Glib::signal_timeout().connect(
-        [&dsp, tileId, reverse, oldDB = -80.0]() mutable
-        {
-          auto styles = reverse->get_style_context();
-          auto decay = 0.0;
-          auto db = dB(dsp.getCurrentTileLevel(tileId));
-          db = decay * oldDB + (1.0 - decay) * db;
-          oldDB = db;
+    auto m = std::min(allocation.get_height(), allocation.get_width());
+    allocation.set_height(m);
+    allocation.set_width(m);
+    Gtk::Grid::on_size_allocate(allocation);
+  }
 
-          auto cssClass = toCss(db);
+  void Tile::runLevelMeterTimer(Dsp::Api::Display::Interface& dsp, Core::TileId tileId)
+  {
+    Glib::signal_timeout().connect([&dsp, tileId, oldDB = -80.0]() mutable { return true; }, 16);
+  }
 
-          for(const auto& color : styles->list_classes())
-          {
-            if(color.find("level-") == 0)
-              if(color != cssClass)
-                styles->remove_class(color);
-          }
-          styles->add_class(cssClass);
+  Gtk::SizeRequestMode Tile::get_request_mode_vfunc() const
+  {
+    return Gtk::SIZE_REQUEST_CONSTANT_SIZE;
+  }
 
-          return true;
-        },
-        16);
+  void Tile::get_preferred_height_vfunc(int& minimum_height, int& natural_height) const
+  {
+    int m = m_size.get_value();
+    minimum_height = natural_height = m;
+  }
+
+  void Tile::get_preferred_width_vfunc(int& minimum_width, int& natural_width) const
+  {
+    int m = m_size.get_value();
+    minimum_width = natural_width = m;
   }
 }

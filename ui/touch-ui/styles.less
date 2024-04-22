@@ -1,14 +1,52 @@
 
 .root {
-  @screen-width: 1280px;
-  @screen-height: 720px;
-  @num_tile_cols: 6;
-  @num_tile_rows: 6;
-  @tile_height: calc(@screen-height / (0.5 + @num_tile_rows));
-  @tile_width: @tile_height;
+  @screen-width: 1280;
+  @screen-height: 720;
 
-  min-width: @screen-width;
-  min-height: @screen-height;
+  @num-tile-cols: 6;
+  @num-tile-rows: 6;
+
+  @tile-height: 1px * @screen-height / (0.5 + @num-tile-rows);
+  @tile-width: @tile-height;
+
+  min-width: @screen-width * 1px;
+  min-height: @screen-height * 1px;
+
+  .tile {
+    border: 3px solid gray;
+    border-radius: 0;
+    -gtkmm__CustomObject_Tile-size: @tile-width;
+
+    @string-margin: 3px;
+    font-size: 10px;
+
+    .sample-file {
+      color: white;
+      margin-left: @string-margin;
+      margin-right: @string-margin;
+    }
+
+    .seconds {
+      color: white;
+      margin-left: @string-margin;
+      margin-right: @string-margin;
+    }
+
+    .step {
+      border: 1px solid gray;
+      background-color: lightgray;
+      padding: 0;
+      margin: 0;
+    }
+
+    .step.selected {
+      background-color: orangered;
+    }
+  }
+
+  .tile.selected {
+    border-color: orange;
+  }
 
   .has-steps-indicator {
     background-color: rgb(40, 40, 40);
@@ -32,19 +70,40 @@
   }
 
 
-  .tile {
+  .section .header {
     border: 1px solid black;
-    border-radius: 0;
-    margin: 2px;
+    background: gray;
+    color: white;
+    font-size: xx-large;
+    font-weight: bold;
+  }
 
-    .waveform {
-      // -gtkmm__CustomObject_WaveformThumb-foo: @tile_width;
+  .steps-wizard {
+    .knobs {
+      border: 1px solid black;
+      padding: 5mm;
+
+      .knob {
+        border: 1px solid gray;
+        padding: 5mm;
+      }
+    }
+
+    .buttons {
+      border: 1px solid black;
+      padding: 5mm;
+
+      .button {
+        border: 1px solid gray;
+        padding: 5mm;
+      }
     }
   }
 
-  .tile.selected {
-    border-color: rgb(160, 160, 160);
+  .root .lower {
+    background-color: white;
   }
+
 
   .is-playing-indicator.level-80db {
     background: rgba(255, 0, 0, 0);
@@ -81,46 +140,4 @@
   .is-playing-indicator.level-0db {
     background: rgba(255, 0, 0, 1.0);
   }
-
-  .section .header {
-    border: 1px solid black;
-    background: gray;
-    color: white;
-    font-size: xx-large;
-    font-weight: bold;
-  }
-
-  .steps-wizard {
-    .knobs {
-      border: 1px solid black;
-      padding: 5mm;
-
-      .knob {
-        border: 1px solid gray;
-        padding: 5mm;
-      }
-    }
-
-    .buttons {
-      border: 1px solid black;
-      padding: 5mm;
-
-      .button {
-        border: 1px solid gray;
-        padding: 5mm;
-      }
-    }
-  }
-
-  .root .lower {
-    background-color: white;
-  }
-
-  .tile {
-    min-width: @tile_width;
-    min-height: @tile_height;
-
-    //-gtkmm__CustomObject_tile-size: @tile_height;
-  }
-
 }

@@ -6,6 +6,7 @@
 #include "core/api/Interface.h"
 
 #include <gtkmm/grid.h>
+#include <gtkmm/styleproperty.h>
 
 namespace Core::Api
 {
@@ -22,11 +23,19 @@ namespace Ui::Touch
   class Tile : public Gtk::Grid
   {
    public:
-    Tile(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Core::TileId tileId);
+    Tile(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp, Core::TileId tileId);
+
+    void on_size_allocate(Gtk::Allocation &allocation);
+
+   protected:
+    Gtk::SizeRequestMode get_request_mode_vfunc() const override;
+    void get_preferred_height_vfunc(int &minimum_height, int &natural_height) const override;
+    void get_preferred_width_vfunc(int &minimum_width, int &natural_width) const override;
 
    private:
-    void runLevelMeterTimer(Dsp::Api::Display::Interface& dsp, Core::TileId tileId, Gtk::Label* reverse);
+    void runLevelMeterTimer(Dsp::Api::Display::Interface &dsp, Core::TileId tileId);
 
+    Gtk::StyleProperty<int> m_size;
     Tools::DeferredComputations m_computations;
   };
 }

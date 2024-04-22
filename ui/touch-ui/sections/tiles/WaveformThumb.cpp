@@ -7,19 +7,8 @@ namespace Ui::Touch
 {
   WaveformThumb::WaveformThumb(Core::Api::Interface& core, Core::TileId tileId)
       : ObjectBase("WaveformThumb")
-      , m_foo(*this, "foo", 12)
   {
-    auto styles = get_style_context();
-    styles->add_class("waveform");
-
-    set_size_request(50, 50);
-
-    get_style_context()->signal_changed().connect(
-        [this]
-        {
-          guint i = m_foo.get_value();
-          printf("I = %d \n", i);
-        });
+    get_style_context()->add_class("waveform");
 
     signal_draw().connect(
         [this, tileId, &core](const Cairo::RefPtr<Cairo::Context>& ctx)

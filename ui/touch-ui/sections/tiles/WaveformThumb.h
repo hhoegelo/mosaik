@@ -15,8 +15,5 @@ namespace Ui::Touch
   {
    public:
     WaveformThumb(Core::Api::Interface& core, Core::TileId tileId);
-
-   private:
-    Gtk::StyleProperty<guint> m_foo;
   };
 }

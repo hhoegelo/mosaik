@@ -44,7 +44,6 @@ add_library(mosaik-touchui STATIC
         sections/tiles/WaveformThumb.cpp
 )
 
-message("HHH:  ${clessc_LIBRARIES}")
 target_compile_options(mosaik-touchui PRIVATE)
 target_include_directories(mosaik-touchui PUBLIC ${CMAKE_SOURCE_DIR} ${LIBS_INCLUDE_DIRS} ${clessc_INCLUDE_DIRS})
 target_link_libraries(mosaik-touchui mosaik-core ${LIBS_LIBRARIES} less)
