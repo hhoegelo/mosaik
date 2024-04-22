@@ -1,6 +1,7 @@
 #include "Tile.h"
 #include "core/api/Interface.h"
 #include "dsp/api/display/Interface.h"
+#include "WaveformThumb.h"
 #include <gtkmm/filechooserdialog.h>
 #include <gtkmm/grid.h>
 #include <gtkmm/label.h>
@@ -51,7 +52,7 @@ namespace Ui::Touch
     volume->get_style_context()->add_class("volume");
     attach(*volume, 3, 0, 1, 4);
 
-    auto waveform = buildWaveformDisplay(core, tileId);
+    auto waveform = Gtk::manage(new WaveformThumb(core, tileId));
     attach(*waveform, 0, 1, 12, 3);
 
     auto seconds = Gtk::manage(new Gtk::Label("0.0s"));
@@ -100,56 +101,6 @@ namespace Ui::Touch
         });
 
     runLevelMeterTimer(dsp, tileId, reverse);
-  }
-
-  Gtk::Widget* Tile::buildWaveformDisplay(Core::Api::Interface& core, Core::TileId tileId)
-  {
-    auto wf = Gtk::manage(new Gtk::DrawingArea());
-    auto styles = wf->get_style_context();
-    styles->add_class("waveform");
-    wf->signal_draw().connect(
-        [tileId, &core, wf](const Cairo::RefPtr<Cairo::Context>& ctx)
-        {
-          ctx->set_line_width(1);
-
-          auto samples = core.getSamples(tileId);
-          auto w = wf->get_width();
-          auto h = wf->get_height();
-          auto adv = std::max<double>(1, samples.get()->size() / static_cast<double>(w));
-          auto frame = 0.0;
-
-          for(size_t i = 0; i < w; i++)
-          {
-            float v = 0;
-
-            for(size_t a = 0; a < static_cast<size_t>(adv); a++)
-            {
-              auto idx = static_cast<size_t>(std::round(frame + a));
-              if(idx < samples->size())
-              {
-                v = std::max(v, std::abs(std::max(samples->data()[idx].left, samples->data()[idx].right)));
-              }
-            }
-
-            ctx->move_to(i, h / 2 + v * h / 2);
-            ctx->line_to(i, h / 2 - v * h / 2);
-            frame += adv;
-          }
-
-          ctx->stroke();
-          return true;
-        });
-
-    wf->add_events(Gdk::EventMask::BUTTON_PRESS_MASK | Gdk::EventMask::POINTER_MOTION_MASK);
-
-    wf->signal_button_press_event().connect(
-        [&core, tileId](GdkEventButton*)
-        {
-          core.setParameter(tileId, Core::ParameterId::Selected, true);
-          return false;
-        });
-
-    return wf;
   }
 
   void Tile::runLevelMeterTimer(Dsp::Api::Display::Interface& dsp, Core::TileId tileId, Gtk::Label* reverse)

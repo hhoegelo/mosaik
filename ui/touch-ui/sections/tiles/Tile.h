@@ -26,7 +26,6 @@ namespace Ui::Touch
 
    private:
     void runLevelMeterTimer(Dsp::Api::Display::Interface& dsp, Core::TileId tileId, Gtk::Label* reverse);
-    Widget* buildWaveformDisplay(Core::Api::Interface& core, Core::TileId tileId);
 
     Tools::DeferredComputations m_computations;
   };

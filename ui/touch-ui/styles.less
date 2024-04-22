@@ -31,15 +31,15 @@
     min-height: 2cm;
   }
 
-  .waveform {
-    min-height: 3cm;
-    min-width: 3cm;
-  }
 
   .tile {
     border: 1px solid black;
-    border-radius: 0px;
+    border-radius: 0;
     margin: 2px;
+
+    .waveform {
+      // -gtkmm__CustomObject_WaveformThumb-foo: @tile_width;
+    }
   }
 
   .tile.selected {
@@ -90,10 +90,6 @@
     font-weight: bold;
   }
 
-  .waveform {
-    min-height: 200px;
-  }
-
   .steps-wizard {
     .knobs {
       border: 1px solid black;
@@ -123,6 +119,7 @@
   .tile {
     min-width: @tile_width;
     min-height: @tile_height;
+
     //-gtkmm__CustomObject_tile-size: @tile_height;
   }
 

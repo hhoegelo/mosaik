@@ -41,6 +41,7 @@ add_library(mosaik-touchui STATIC
         LessToCss.h
         sections/toolboxes/MainPlayground.cpp
         sections/toolboxes/MainPlayground.h
+        sections/tiles/WaveformThumb.cpp
 )
 
 message("HHH:  ${clessc_LIBRARIES}")

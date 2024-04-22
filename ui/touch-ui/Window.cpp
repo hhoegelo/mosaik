@@ -17,7 +17,7 @@ namespace Ui::Touch
       , m_mixer(std::make_unique<Mixer>(*this))
   {
     set_title("Mosaik");
-    set_decorated(false);
+    set_decorated(true);
 
     auto vBox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL));
     vBox->get_style_context()->add_class("root");
