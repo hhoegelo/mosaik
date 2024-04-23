@@ -9,7 +9,7 @@ namespace Ui::Touch
   {
     auto styles = get_style_context();
     styles->add_class("waveform");
-    set_size_request(0, 150);
+    set_size_request(-1, 150);
 
     m_staticComputations.add(
         [this]

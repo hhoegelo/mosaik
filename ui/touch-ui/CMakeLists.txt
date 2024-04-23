@@ -44,6 +44,8 @@ add_library(mosaik-touchui STATIC
         sections/tiles/WaveformThumb.cpp
         sections/tiles/LevelMeter.cpp
         sections/tiles/LevelMeter.h
+        sections/toolboxes/FileBrowser.cpp
+        sections/toolboxes/FileBrowser.h
 )
 
 target_compile_options(mosaik-touchui PRIVATE)

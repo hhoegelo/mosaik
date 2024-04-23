@@ -18,24 +18,18 @@ namespace Gtk
 
 namespace Ui::Touch
 {
-  class TileTools : public Gtk::Box, public FileBrowserInterface
+  class FileBrowser;
+
+  class TileTools : public Gtk::Box
   {
    public:
     explicit TileTools(Core::Api::Interface &core);
 
-    void up() override;
-    void down() override;
-    void inc() override;
-    void dec() override;
-    void load() override;
-    void prelisten() override;
+    FileBrowserInterface &getFileBrowser() const;
 
    private:
-    void navigate(const std::function<void(Gtk::TreePath &)> &cb);
-
     Core::Api::Interface &m_core;
-
-    Gtk::FileChooserWidget *m_fileBrowser;
+    FileBrowser *m_fileBrowser;
     Tools::DeferredComputations m_computations;
   };
 }

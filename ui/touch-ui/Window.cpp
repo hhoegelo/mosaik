@@ -29,10 +29,11 @@ namespace Ui::Touch
     vBox->add(*upperBox);
     vBox->add(*lowerBox);
 
-    upperBox->add(*m_tiles);
-    upperBox->add(*m_toolboxes);
-    lowerBox->add(*m_mixer);
-    lowerBox->add(*m_main);
+    upperBox->pack_start(*m_tiles, false, false);
+    upperBox->pack_start(*m_toolboxes, Gtk::PackOptions::PACK_EXPAND_WIDGET);
+
+    lowerBox->pack_start(*m_mixer);
+    lowerBox->pack_start(*m_main, Gtk::PackOptions::PACK_EXPAND_WIDGET);
 
     add(*vBox);
     loadCss();
@@ -73,7 +74,7 @@ namespace Ui::Touch
               auto css = compileLess(less);
 
               printf("CSS: %s\n", css.c_str());
-              
+
               newProvider->load_from_data(css);
               m_context->remove_provider(m_cssProvider);
               m_cssProvider = newProvider;

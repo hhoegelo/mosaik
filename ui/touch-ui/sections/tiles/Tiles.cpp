@@ -20,11 +20,5 @@ namespace Ui::Touch
       }
     }
   }
-  void Tiles::on_size_allocate(Gtk::Allocation& allocation)
-  {
-    auto m = std::min(allocation.get_height(), allocation.get_width());
-    allocation.set_height(m);
-    allocation.set_width(m);
-    Gtk::Grid::on_size_allocate(allocation);
-  }
+
 }

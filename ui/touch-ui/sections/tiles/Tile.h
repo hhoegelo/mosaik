@@ -27,8 +27,6 @@ namespace Ui::Touch
    public:
     Tile(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp, Core::TileId tileId);
 
-    void on_size_allocate(Gtk::Allocation &allocation);
-
    protected:
     Gtk::SizeRequestMode get_request_mode_vfunc() const override;
     void get_preferred_height_vfunc(int &minimum_height, int &natural_height) const override;
