@@ -12,7 +12,7 @@
 namespace
 {
   constexpr auto c_numPeriods = 8;
-  constexpr auto c_framesPerPeriod = 128;
+  constexpr auto c_framesPerPeriod = 256;
   constexpr float c_maxSample = 1.0f;
   constexpr float c_minSample = -1.0f;
 

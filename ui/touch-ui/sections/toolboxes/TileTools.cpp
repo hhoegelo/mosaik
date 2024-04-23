@@ -33,6 +33,11 @@ namespace Ui::Touch
 
     m_fileBrowser = Gtk::manage(new Gtk::FileChooserWidget(Gtk::FILE_CHOOSER_ACTION_OPEN));
     m_fileBrowser->get_style_context()->add_class("file-browser");
+
+    auto home = getenv("HOME");
+    auto music = Tools::format("%s/Music/", home);
+    m_fileBrowser->set_current_folder(music);
+
     m_fileBrowser->signal_file_activated().connect(
         [this]
         {

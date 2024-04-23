@@ -35,9 +35,6 @@ namespace Ui::Touch
     void get_preferred_width_vfunc(int &minimum_width, int &natural_width) const override;
 
    private:
-    void runLevelMeterTimer(Dsp::Api::Display::Interface &dsp, Core::TileId tileId, Gtk::DrawingArea *l,
-                            Gtk::DrawingArea *r);
-
     Gtk::Label *addSampleName();
     Ui::Touch::WaveformThumb *addWaveform(Core::Api::Interface &core, const Core::TileId &tileId);
     Gtk::Label *addDurationLabel();
@@ -46,6 +43,6 @@ namespace Ui::Touch
 
     Gtk::StyleProperty<int> m_size;
     Tools::DeferredComputations m_computations;
-    std::tuple<float, float> m_levels {};
+    Tools::ReactiveVar<std::tuple<float, float>> m_levels {};
   };
 }
