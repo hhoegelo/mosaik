@@ -83,7 +83,8 @@ namespace Ui::Touch
     m_computations.add(
         [&core, tileId, waveform]()
         {
-          auto _ = core.getParameter(tileId, Core::ParameterId::SampleFile);
+          auto _1 = core.getParameter(tileId, Core::ParameterId::SampleFile);
+          auto _2 = core.getSamples(tileId);
           waveform->queue_draw();
         });
 

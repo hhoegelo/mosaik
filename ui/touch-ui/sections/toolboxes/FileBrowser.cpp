@@ -2,7 +2,7 @@
 #include "tools/Format.h"
 #include <core/api/Interface.h>
 
-#include <giomm/file.h>
+#include <giomm.h>
 
 namespace Ui::Touch
 {
@@ -30,8 +30,6 @@ namespace Ui::Touch
     auto home = getenv("HOME");
     auto music = Tools::format("%s/Music/", home);
     setFolder(Gio::File::create_for_path(music));
-
-    set_size_request(-1, 350);
   }
 
   void FileBrowser::up()
@@ -43,8 +41,7 @@ namespace Ui::Touch
   {
     if(auto it = get_selection()->get_selected())
     {
-      Glib::RefPtr<Gio::File> d;
-      it->get_value(c_columns.col_data);
+      Glib::RefPtr<Gio::File> d = it->get_value(c_columns.col_data);
 
       if(d->query_file_type() == Gio::FILE_TYPE_DIRECTORY)
         setFolder(d);
@@ -65,9 +62,10 @@ namespace Ui::Touch
   {
     if(auto it = get_selection()->get_selected())
     {
-      Glib::RefPtr<Gio::File> d;
-      it->get_value(c_columns.col_data);
-      m_core.setParameter(m_core.getSelectedTiles().front(), Core::ParameterId::SampleFile, Core::Path(d->get_path()));
+      Glib::RefPtr<Gio::File> d = it->get_value(c_columns.col_data);
+      if(d && d->query_file_type() == Gio::FileType::FILE_TYPE_REGULAR)
+        m_core.setParameter(m_core.getSelectedTiles().front(), Core::ParameterId::SampleFile,
+                            Core::Path(d->get_path()));
     }
   }
 
@@ -75,9 +73,9 @@ namespace Ui::Touch
   {
     if(auto it = get_selection()->get_selected())
     {
-      Glib::RefPtr<Gio::File> d;
-      it->get_value(c_columns.col_data);
-      m_core.setPrelistenSample(d->get_path());
+      Glib::RefPtr<Gio::File> d = it->get_value(c_columns.col_data);
+      if(d && d->query_file_type() == Gio::FileType::FILE_TYPE_REGULAR)
+        m_core.setPrelistenSample(d->get_path());
     }
   }
 
@@ -103,9 +101,17 @@ namespace Ui::Touch
 
     while(auto c = e->next_file())
     {
-      Gtk::TreeModel::Row row = *(m_store->append());
-      row[c_columns.col_name] = c->get_display_name();
-      row[c_columns.col_data] = s->get_child(c->get_name());
+      auto ct = c->get_content_type();
+      auto mt = Gio::content_type_get_mime_type(ct);
+
+      if(ct.find("audio/") == 0 || mt == "inode/directory")
+      {
+        Gtk::TreeModel::Row row = *(m_store->append());
+        row[c_columns.col_name] = c->get_display_name();
+        auto n = c->get_name();
+        auto c = s->get_child(n);
+        row[c_columns.col_data] = c;
+      }
     }
 
     get_selection()->select(Gtk::TreeModel::Path("0"));

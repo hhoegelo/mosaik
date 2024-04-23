@@ -50,8 +50,10 @@ namespace Ui::Touch
     m_fileBrowser = Gtk::manage(new FileBrowser(core));
     auto fileBrowserScroll = Gtk::manage(new Gtk::ScrolledWindow());
     fileBrowserScroll->add(*m_fileBrowser);
+    fileBrowserScroll->set_vexpand();
+    fileBrowserScroll->set_size_request(-1, 250);
     m_fileBrowser->get_style_context()->add_class("file-browser");
-    pack_start(*fileBrowserScroll);
+    pack_start(*fileBrowserScroll, true, true);
 
     auto controls = Gtk::manage(new Gtk::Grid());
 

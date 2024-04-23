@@ -2,6 +2,7 @@
 #include <iostream>
 #include <atomic>
 #include <future>
+#include <set>
 
 // WORKAROUND gstreamermm gcc-13 compilation error
 #define __atomic_load(A, B, C) (*B) = *A
@@ -10,10 +11,38 @@
 
 namespace Dsp::Tools
 {
+  std::set<std::string> querySupportedMimeTypes()
+  {
+    std::set<std::string> ret;
+    auto r = Gst::Registry::get();
+    for(auto p : r->get_plugin_list())
+    {
+      for(auto f : r->get_feature_list(p->get_name()))
+      {
+        if(f->is_element_factory())
+        {
+          auto factory = Glib::RefPtr<Gst::ElementFactory>::cast_dynamic(f);
+          for(auto pad : factory->get_static_pad_templates())
+          {
+            if(auto c = pad.get_caps())
+            {
+              for(auto st = 0; st < c->size(); st++)
+              {
+                ret.insert(c->get_structure(st).get_name());
+              }
+            }
+          }
+        }
+      }
+    }
+    return ret;
+  }
+
   AudioFileDecoder::AudioFileDecoder(const std::filesystem::path &path, const Callback &cb)
       : m_cb(cb)
   {
     Gst::init();
+    querySupportedMimeTypes();
 
     if(exists(path))
     {
@@ -83,5 +112,11 @@ namespace Dsp::Tools
   {
     if(m_pipeline)
       m_pipeline->set_state(Gst::State::STATE_NULL);
+  }
+
+  std::set<std::string> AudioFileDecoder::getSupportedMimeTypes()
+  {
+    static std::set<std::string> types = querySupportedMimeTypes();
+    return types;
   }
 }
