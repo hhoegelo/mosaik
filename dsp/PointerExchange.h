@@ -50,8 +50,8 @@ namespace Dsp
     }
 
    private:
-    std::atomic<T *> next;
+    std::atomic<T *> next {};
     T *current = nullptr;
-    std::atomic<T *> doomed;
+    std::atomic<T *> doomed {};
   };
 }
