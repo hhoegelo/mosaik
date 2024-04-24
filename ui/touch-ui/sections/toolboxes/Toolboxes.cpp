@@ -27,6 +27,7 @@ namespace Ui::Touch
     events->add(*section);
 
     box->pack_start(*events, true, true);
+    box->set_hexpand();
 
     events->add_events(Gdk::BUTTON_PRESS_MASK);
 
@@ -46,7 +47,6 @@ namespace Ui::Touch
       , m_box(*Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL)))
       , m_tileTools(*addToolbox(m_selectedToolbox, Ui::Toolbox::Tile, &m_box, "Tile", new TileTools(core)))
       , m_waveform(*addToolbox(m_selectedToolbox, Ui::Toolbox::Waveform, &m_box, "Wave", new Touch::Waveform(core)))
-
   {
     addToolbox(m_selectedToolbox, Ui::Toolbox::Global, &m_box, "Global", new GlobalTools(core));
     addToolbox(m_selectedToolbox, Ui::Toolbox::Playground, &m_box, "Playground", new Playground(core));
@@ -54,9 +54,17 @@ namespace Ui::Touch
     addToolbox(m_selectedToolbox, Ui::Toolbox::MainPlayground, &m_box, "Main Playground", new MainPlayground(core));
 
     get_style_context()->add_class("toolboxes");
-    Gtk::ScrolledWindow::add(m_box);
 
-    set_size_request(250, 150);
+    auto scroller = Gtk::manage(new Gtk::ScrolledWindow());
+    scroller->add(m_box);
+    add(*scroller);
+
+    set_hexpand();
+    m_box.set_hexpand_set();
+    scroller->set_hexpand();
+
+    scroller->property_hscrollbar_policy() = Gtk::PolicyType::POLICY_NEVER;
+    scroller->set_propagate_natural_width();
   }
 
   Toolbox Toolboxes::getSelectedToolbox() const
@@ -71,7 +79,7 @@ namespace Ui::Touch
 
   FileBrowserInterface &Toolboxes::getFileBrowser() const
   {
-    return m_tileTools;
+    return m_tileTools.getFileBrowser();
   }
 
 }

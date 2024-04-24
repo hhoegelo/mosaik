@@ -1,6 +1,7 @@
 #pragma once
 
 #include <dsp/Types.h>
+#include <set>
 #include <vector>
 #include <filesystem>
 #include <functional>
@@ -22,6 +23,8 @@ namespace Dsp::Tools
     ~AudioFileDecoder();
 
     bool isDone() const;
+
+    static std::set<std::string> getSupportedMimeTypes();
 
    private:
     Callback m_cb;

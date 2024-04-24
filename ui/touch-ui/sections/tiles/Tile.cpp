@@ -9,23 +9,21 @@
 #include <gtkmm/drawingarea.h>
 
 #include <iostream>
-#include <gtkmm/levelbar.h>
+#include "LevelMeter.h"
 
 namespace Ui::Touch
 {
   namespace
   {
-    double dB(double level)
+    float ampToLevelMeter(float amp)
     {
-      if(level <= 0)
-        return -80;
-      return 20 * std::log10(level);
-    }
+      auto minDb = -72.f;
 
-    std::string toCss(double db)
-    {
-      int rounded_dB = std::clamp(static_cast<int>(std::round(db / -10.0) * -10), -80, 0);
-      return "level-" + std::to_string(std::abs(rounded_dB)) + "db";
+      if(amp == 0.f)
+        return 0.f;
+
+      auto db = log10f(amp) * 20.f;
+      return std::clamp(1.f - db / minDb, 0.f, 1.f);
     }
   }
 
@@ -34,6 +32,8 @@ namespace Ui::Touch
       , Gtk::Grid()
       , m_size(*this, "size", 50)
   {
+    constexpr auto levelMeterDecay = 0.98f;
+
     get_style_context()->add_class("tile");
     set_column_homogeneous(true);
     set_row_homogeneous(true);
@@ -43,55 +43,22 @@ namespace Ui::Touch
     auto waveform = addWaveform(core, tileId);
     auto seconds = addDurationLabel();
 
-    auto drawLevel = [this, d = 0.0f](const Cairo::RefPtr<Cairo::Context>& ctx, float level, float decay) mutable
-    {
-      d = std::max(d * decay, level);
-      ctx->begin_new_path();
-      ctx->set_source_rgb(1, 1, 1);
-      ctx->set_line_width(2);
+    attach(*Gtk::manage(new LevelMeter(
+               "level left", [this] { return ampToLevelMeter(std::get<0>(m_levels.get())); }, levelMeterDecay)),
+           13, 4, 1, 8);
 
-      ctx->move_to(0, get_height());
-      ctx->line_to(0, (1.0f - d) * get_height());
-      ctx->stroke();
-    };
+    attach(*Gtk::manage(new LevelMeter("gain",
+                                       [this, &core, tileId]
+                                       {
+                                         using T = Core::ParameterDescription<Core::ParameterId::Gain>;
+                                         auto v = std::get<float>(core.getParameter(tileId, Core::ParameterId::Gain));
+                                         return (v - T::min) / (T::max - T::min);
+                                       })),
+           14, 4, 1, 8);
 
-    auto levelL = Gtk::manage(new Gtk::DrawingArea());
-    levelL->get_style_context()->add_class("level left");
-    levelL->signal_draw().connect(
-        [drawLevel, this](const Cairo::RefPtr<Cairo::Context>& ctx) mutable
-        {
-          drawLevel(ctx, std::get<0>(m_levels), 0.98f);
-          return true;
-        });
-
-    attach(*levelL, 13, 4, 1, 8);
-
-    auto gain = Gtk::manage(new Gtk::DrawingArea());
-    gain->get_style_context()->add_class("gain");
-    gain->signal_draw().connect(
-        [drawLevel, &core, tileId, this](const Cairo::RefPtr<Cairo::Context>& ctx) mutable
-        {
-          using T = Core::ParameterDescription<Core::ParameterId::Gain>;
-          auto v = std::get<float>(core.getParameter(tileId, Core::ParameterId::Gain));
-          auto p = (v - T::min) / (T::max - T::min);
-          drawLevel(ctx, p, 0.0f);
-          return true;
-        });
-    attach(*gain, 14, 4, 1, 8);
-
-    auto levelR = Gtk::manage(new Gtk::DrawingArea());
-    levelR->get_style_context()->add_class("level right");
-
-    levelR->signal_draw().connect(
-        [drawLevel, this](const Cairo::RefPtr<Cairo::Context>& ctx) mutable
-        {
-          drawLevel(ctx, std::get<1>(m_levels), 0.98f);
-          return true;
-        });
-
-    attach(*levelR, 15, 4, 1, 8);
-
-    m_computations.add([&core, gain, tileId] { gain->queue_draw(); });
+    attach(*Gtk::manage(new LevelMeter(
+               "level right", [this] { return ampToLevelMeter(std::get<1>(m_levels.get())); }, levelMeterDecay)),
+           15, 4, 1, 8);
 
     m_computations.add([&core, tileId, sampleName]()
                        { sampleName->set_label(core.getParameterDisplay(tileId, Core::ParameterId::SampleFile)); });
@@ -116,7 +83,8 @@ namespace Ui::Touch
     m_computations.add(
         [&core, tileId, waveform]()
         {
-          auto _ = core.getParameter(tileId, Core::ParameterId::SampleFile);
+          auto _1 = core.getParameter(tileId, Core::ParameterId::SampleFile);
+          auto _2 = core.getSamples(tileId);
           waveform->queue_draw();
         });
 
@@ -134,7 +102,13 @@ namespace Ui::Touch
           }
         });
 
-    runLevelMeterTimer(dsp, tileId, levelL, levelR);
+    Glib::signal_timeout().connect(
+        [&dsp, tileId, this]
+        {
+          m_levels = dsp.getLevel(tileId);
+          return true;
+        },
+        20);
   }
 
   std::string Tile::formatTime(long ms) const
@@ -214,28 +188,6 @@ namespace Ui::Touch
     sampleName->set_ellipsize(Pango::ELLIPSIZE_START);
     attach(*sampleName, 1, 1, 15, 2);
     return sampleName;
-  }
-
-  void Tile::on_size_allocate(Gtk::Allocation& allocation)
-  {
-    auto m = std::min(allocation.get_height(), allocation.get_width());
-    allocation.set_height(m);
-    allocation.set_width(m);
-    Gtk::Grid::on_size_allocate(allocation);
-  }
-
-  void Tile::runLevelMeterTimer(Dsp::Api::Display::Interface& dsp, Core::TileId tileId, Gtk::DrawingArea* l,
-                                Gtk::DrawingArea* r)
-  {
-    Glib::signal_timeout().connect(
-        [&dsp, tileId, l, r, this]
-        {
-          m_levels = dsp.getLevel(tileId);
-          l->queue_draw();
-          r->queue_draw();
-          return true;
-        },
-        16);
   }
 
   Gtk::SizeRequestMode Tile::get_request_mode_vfunc() const

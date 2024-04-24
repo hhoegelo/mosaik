@@ -16,6 +16,7 @@ namespace Ui::Touch
     auto volBox = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
     volBox->add(*Gtk::manage(new Gtk::Label("Volume")));
     volBox->add(*buildLevel(Core::ParameterId::GlobalVolume));
+    volBox->set_tooltip_text("The global volume");
 
     auto tempoBox = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
     tempoBox->add(*Gtk::manage(new Gtk::Label("Tempo")));

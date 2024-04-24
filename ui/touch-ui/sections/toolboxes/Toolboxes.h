@@ -18,7 +18,7 @@ namespace Ui::Touch
   class TileTools;
   class Steps;
 
-  class Toolboxes : public SectionWrapper<Section::Toolboxes, Gtk::ScrolledWindow>, public ToolboxesInterface
+  class Toolboxes : public SectionWrapper<Section::Toolboxes, Gtk::Box>, public ToolboxesInterface
   {
    public:
     Toolboxes(Touch::Interface &touch, Core::Api::Interface &core);

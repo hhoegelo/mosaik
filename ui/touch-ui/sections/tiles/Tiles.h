@@ -22,7 +22,6 @@ namespace Ui::Touch
   {
    public:
     Tiles(Touch::Interface& touch, Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp);
-    void on_size_allocate(Gtk::Allocation& allocation) override;
   };
 
 }

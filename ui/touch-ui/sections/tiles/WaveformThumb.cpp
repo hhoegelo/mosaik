@@ -13,11 +13,17 @@ namespace Ui::Touch
     signal_draw().connect(
         [this, tileId, &core](const Cairo::RefPtr<Cairo::Context>& ctx)
         {
-          ctx->set_line_width(1);
-
-          auto samples = core.getSamples(tileId);
           auto w = get_width();
           auto h = get_height();
+
+          get_style_context()->render_background(ctx, 0, 0, w, h);
+
+          ctx->set_line_width(1);
+
+          auto c = get_style_context()->get_color();
+          ctx->set_source_rgba(c.get_red(), c.get_green(), c.get_blue(), c.get_alpha());
+
+          auto samples = core.getSamples(tileId);
           auto adv = std::max<double>(1, samples.get()->size() / static_cast<double>(w));
           auto frame = 0.0;
 
