@@ -75,30 +75,42 @@ namespace Dsp
    *  if(coefficientsOutdated)
    *    m_smoothedPlaygroundSomething = calcFilterCoefficientA(playgroundParam1, playgroundParam2);
    *
+   *    constexpr auto denormal = 1e-13f;
+   *
    */
   StereoFrame Tile::doPlayground(const StereoFrame &input, float playgroundParam1, float playgroundParam2,
                                  float playgroundParam3, float playgroundParam4, float playgroundParam5,
                                  float playgroundParam6, float playgroundParam7)
   {
-    float m_cutoff = playgroundParam1;
+    float m_cutoff = playgroundParam1*100;
+    if(m_cutoff < 17)
+        m_cutoff = 17;
+
     float m_reso = playgroundParam2;
+    if(m_reso > 0.99)
+        m_reso = 0.99;
 
     float HP { 0.0f };
     float BP { 0.0f };
     float LP { 0.0f };
 
-    float F = (pow(1.059, m_cutoff)) * 8.17742;
+    // pow(base,expo)
+    float F = 8.17742 * pow(1.059, m_cutoff);
+
     float W = F * (6.28319 / SAMPLERATE);
     if(W > 0.8) W = 0.8;
+
     float d = 2 * (1 - m_reso);
-    HP = input.left - (m_BPz * d) + m_LPz;
+
+    HP = input.left - ((m_BPz * d) + m_LPz);
     BP = (HP * W) + m_BPz;
-    LP = ((HP * W) + m_BPz) + m_LPz;
+    LP = (BP * W) + m_LPz;
+
     m_HPz = HP;
     m_BPz = BP;
     m_LPz = LP;
 
-    StereoFrame output { HP, input.right };
+    StereoFrame output { LP, LP };
 
     return output;
   }

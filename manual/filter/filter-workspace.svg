@@ -66,17 +66,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.99999995"
-     inkscape:cx="1677.3472"
-     inkscape:cy="1354.7834"
+     inkscape:zoom="1.9999999"
+     inkscape:cx="1736.5789"
+     inkscape:cy="1391.6517"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1920"
+     inkscape:window-width="959"
      inkscape:window-height="1009"
-     inkscape:window-x="0"
+     inkscape:window-x="960"
      inkscape:window-y="0"
-     inkscape:window-maximized="1"
+     inkscape:window-maximized="0"
      inkscape:snap-global="true"
      inkscape:snap-smooth-nodes="true" />
   <metadata
@@ -87,7 +87,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -105,14 +105,14 @@
       <image
          sodipodi:absref="/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik/manual/filter/Hipass 1 Reson.PNG"
          xlink:href="Hipass 1 Reson.PNG"
-         transform="translate(66.410416,87.577082)"
-         clip-path="url(#clipPath1354)"
-         width="144.78"
-         height="187.11334"
-         preserveAspectRatio="none"
-         id="image59"
+         y="-889.52698"
          x="-91.486351"
-         y="-889.52698" />
+         id="image59"
+         preserveAspectRatio="none"
+         height="187.11334"
+         width="144.78"
+         clip-path="url(#clipPath1354)"
+         transform="translate(66.410416,87.577082)" />
       <text
          id="text1094"
          y="-682.0611"
@@ -131,12 +131,12 @@
       <image
          sodipodi:absref="/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik/manual/filter/Hipass 3.PNG"
          xlink:href="Hipass 3.PNG"
-         width="93.980003"
-         height="67.098335"
-         preserveAspectRatio="none"
-         id="image92"
+         y="-423.91309"
          x="33.475765"
-         y="-423.91309" />
+         id="image92"
+         preserveAspectRatio="none"
+         height="67.098335"
+         width="93.980003" />
       <text
          id="text1106"
          y="-426.59973"
@@ -155,12 +155,12 @@
       <image
          sodipodi:absref="/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik/manual/filter/Hipass 3 ClipMax.PNG"
          xlink:href="Hipass 3 ClipMax.PNG"
-         width="98.213333"
-         height="66.463333"
-         preserveAspectRatio="none"
-         id="image103"
+         y="-340.7251"
          x="33.475765"
-         y="-340.7251" />
+         id="image103"
+         preserveAspectRatio="none"
+         height="66.463333"
+         width="98.213333" />
       <text
          id="text1110"
          y="-343.21744"
@@ -182,13 +182,13 @@
         <image
            sodipodi:absref="/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik/manual/filter/Hipass 3 Norm.PNG"
            xlink:href="Hipass 3 Norm.PNG"
-           clip-path="url(#clipPath1258)"
-           y="-424.2663"
-           x="-14.149235"
-           id="image114"
-           preserveAspectRatio="none"
+           width="92.498337"
            height="55.244999"
-           width="92.498337" />
+           preserveAspectRatio="none"
+           id="image114"
+           x="-14.149235"
+           y="-424.2663"
+           clip-path="url(#clipPath1258)" />
         <text
            xml:space="preserve"
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
@@ -208,12 +208,12 @@
       <image
          sodipodi:absref="/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik/manual/filter/Hipass 4.PNG"
          xlink:href="Hipass 4.PNG"
-         width="129.96333"
-         height="57.996666"
-         preserveAspectRatio="none"
-         id="image125"
+         y="-333.28442"
          x="161.42616"
-         y="-333.28442" />
+         id="image125"
+         preserveAspectRatio="none"
+         height="57.996666"
+         width="129.96333" />
       <text
          id="text1118"
          y="-335.35416"
@@ -232,12 +232,12 @@
       <image
          sodipodi:absref="/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik/manual/filter/Hipass 4 z-1.PNG"
          xlink:href="Hipass 4 z-1.PNG"
-         width="101.6"
-         height="52.704998"
-         preserveAspectRatio="none"
-         id="image136"
+         y="-258.35443"
          x="161.42616"
-         y="-258.35443" />
+         id="image136"
+         preserveAspectRatio="none"
+         height="52.704998"
+         width="101.6" />
       <text
          id="text1122"
          y="-260.60339"
@@ -256,12 +256,12 @@
       <image
          sodipodi:absref="/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik/manual/filter/Peak 1.PNG"
          xlink:href="Peak 1.PNG"
-         width="81.491669"
-         height="53.551666"
-         preserveAspectRatio="none"
-         id="image147"
+         y="-322.82086"
          x="340.42603"
-         y="-322.82086" />
+         id="image147"
+         preserveAspectRatio="none"
+         height="53.551666"
+         width="81.491669" />
       <text
          id="text1126"
          y="-325.25693"
@@ -280,12 +280,12 @@
       <image
          sodipodi:absref="/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik/manual/filter/Peak 1 UI.PNG"
          xlink:href="Peak 1 UI.PNG"
-         width="121.49667"
-         height="62.441666"
-         preserveAspectRatio="none"
-         id="image158"
+         y="-254.86337"
          x="340.61313"
-         y="-254.86337" />
+         id="image158"
+         preserveAspectRatio="none"
+         height="62.441666"
+         width="121.49667" />
       <text
          id="text1130"
          y="-256.45084"
@@ -304,12 +304,12 @@
       <image
          sodipodi:absref="/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik/manual/filter/Peak 2.PNG"
          xlink:href="Peak 2.PNG"
-         width="124.24834"
-         height="54.609997"
-         preserveAspectRatio="none"
-         id="image169"
+         y="-473.91507"
          x="493.55173"
-         y="-473.91507" />
+         id="image169"
+         preserveAspectRatio="none"
+         height="54.609997"
+         width="124.24834" />
       <text
          id="text1134"
          y="-475.58334"
@@ -328,12 +328,12 @@
       <image
          sodipodi:absref="/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik/manual/filter/Peak 2 SetBQEQ.PNG"
          xlink:href="Peak 2 SetBQEQ.PNG"
-         width="129.32832"
-         height="60.325001"
-         preserveAspectRatio="none"
-         id="image180"
+         y="-403.26071"
          x="493.55173"
-         y="-403.26071" />
+         id="image180"
+         preserveAspectRatio="none"
+         height="60.325001"
+         width="129.32832" />
       <text
          id="text1138"
          y="-405.20416"
@@ -352,12 +352,12 @@
       <image
          sodipodi:absref="/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik/manual/filter/Peak 2 SetBQEQ Alfa BW.PNG"
          xlink:href="Peak 2 SetBQEQ Alfa BW.PNG"
-         width="130.38666"
-         height="51.011669"
-         preserveAspectRatio="none"
-         id="image202"
+         y="-251.5804"
          x="493.55173"
-         y="-251.5804" />
+         id="image202"
+         preserveAspectRatio="none"
+         height="51.011669"
+         width="130.38666" />
       <text
          id="text1146"
          y="-254.12709"
@@ -376,12 +376,12 @@
       <image
          sodipodi:absref="/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik/manual/filter/Peak 2 SetBQEQ ClipF.PNG"
          xlink:href="Peak 2 SetBQEQ ClipF.PNG"
-         width="122.555"
-         height="50.165001"
-         preserveAspectRatio="none"
-         id="image213"
+         y="-177.64525"
          x="493.55173"
-         y="-177.64525" />
+         id="image213"
+         preserveAspectRatio="none"
+         height="50.165001"
+         width="122.555" />
       <text
          id="text1150"
          y="-179.91144"
@@ -411,12 +411,12 @@
       <image
          sodipodi:absref="/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik/manual/filter/Peak 2 SetBQEQ A.PNG"
          xlink:href="Peak 2 SetBQEQ A.PNG"
-         width="116.62833"
-         height="50.799999"
-         preserveAspectRatio="none"
-         id="image191"
+         y="-593.4231"
          x="261.61578"
-         y="-593.4231" />
+         id="image191"
+         preserveAspectRatio="none"
+         height="50.799999"
+         width="116.62833" />
     </g>
     <g
        id="g1395"
@@ -424,12 +424,12 @@
       <image
          sodipodi:absref="/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik/manual/filter/Peak 2 SetBQEQ Omega.PNG"
          xlink:href="Peak 2 SetBQEQ Omega.PNG"
-         width="131.44499"
-         height="55.456669"
-         preserveAspectRatio="none"
-         id="image224"
+         y="-660.53375"
          x="247.28746"
-         y="-660.53375" />
+         id="image224"
+         preserveAspectRatio="none"
+         height="55.456669"
+         width="131.44499" />
       <text
          id="text1154"
          y="-662.76617"
@@ -448,12 +448,12 @@
       <image
          sodipodi:absref="/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik/manual/filter/Peak 3.PNG"
          xlink:href="Peak 3.PNG"
-         width="121.285"
-         height="61.171665"
-         preserveAspectRatio="none"
-         id="image235"
+         y="-442.39673"
          x="677.18768"
-         y="-442.39673" />
+         id="image235"
+         preserveAspectRatio="none"
+         height="61.171665"
+         width="121.285" />
       <text
          id="text1158"
          y="-444.40576"
@@ -472,12 +472,12 @@
       <image
          sodipodi:absref="/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik/manual/filter/Hipass 2.PNG"
          xlink:href="Hipass 2.PNG"
-         width="83.184998"
-         height="69.849998"
-         preserveAspectRatio="none"
-         id="image70"
+         y="-431.9649"
          x="-155.06094"
-         y="-431.9649" />
+         id="image70"
+         preserveAspectRatio="none"
+         height="69.849998"
+         width="83.184998" />
       <text
          id="text1098"
          y="-435.03485"
@@ -1065,7 +1065,12 @@
          id="tspan1411-2-6-6"
          x="901.19641"
          y="-42.183609"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'DejaVu Sans Mono';-inkscape-font-specification:'DejaVu Sans Mono';fill:#d3d3d3;fill-opacity:1;stroke:none;stroke-width:1">out = 10^(in/40)</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'DejaVu Sans Mono';-inkscape-font-specification:'DejaVu Sans Mono';fill:#d3d3d3;fill-opacity:1;stroke:none;stroke-width:1">out = 10^(in/40)</tspan><tspan
+         sodipodi:role="line"
+         x="901.19641"
+         y="-36.891941"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'DejaVu Sans Mono';-inkscape-font-specification:'DejaVu Sans Mono';fill:#d3d3d3;fill-opacity:1;stroke:none;stroke-width:1"
+         id="tspan1097">pow</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:'DejaVu Sans Mono';-inkscape-font-specification:'DejaVu Sans Mono';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#d3d3d3;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
@@ -1506,7 +1511,7 @@
          x="488.97272"
          y="-55.752361"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.11666656px;font-family:'DejaVu Sans Mono';-inkscape-font-specification:'DejaVu Sans Mono';fill:#fcfcfc;fill-opacity:1;stroke:none;stroke-width:1"
-         id="tspan353-1-7-9-1">LP = (v*W)+LPz</tspan><tspan
+         id="tspan353-1-7-9-1">LP = (BP*W)+LPz</tspan><tspan
          sodipodi:role="line"
          x="488.97272"
          y="-53.106529"
