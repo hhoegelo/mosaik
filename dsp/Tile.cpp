@@ -57,30 +57,48 @@ namespace Dsp
     return c_silenceDB;
   }
 
+
+  /*
+   * @Daniel:
+   *  playgroundParam1 ... 7 are the parameters as set in the UI, for example Cutoff and Resonance.
+   *
+   *  If you have to have state, for example filter coefficients, you can store them in 'this',
+   *  for example m_smoothedPlaygroundSomething = calcFilterCoefficientA(playgroundParam1, playgroundParam2);
+   *
+   *  If this is an expensive operation, you'll have to check that playgroundParam1 or playgroundParam2
+   *  actually changed by comparing the incoming parameters with copies stored in 'this':
+   *
+   *  bool coefficientsOutdated = false;
+   *  coefficientsOutdated |= std::exchange(m_knownPlaygroundParameter1, playgroundParam1) != playgroundParam1;
+   *  coefficientsOutdated |= std::exchange(m_knownPlaygroundParameter2, playgroundParam2) != playgroundParam2;
+   *
+   *  if(coefficientsOutdated)
+   *    m_smoothedPlaygroundSomething = calcFilterCoefficientA(playgroundParam1, playgroundParam2);
+   *
+   */
   StereoFrame Tile::doPlayground(const StereoFrame &input, float playgroundParam1, float playgroundParam2,
                                  float playgroundParam3, float playgroundParam4, float playgroundParam5,
                                  float playgroundParam6, float playgroundParam7)
   {
-    /*
-     * @Daniel:
-     *  playgroundParam1 ... 7 are the parameters as set in the UI, for example Cutoff and Resonance.
-     *
-     *  If you have to have state, for example filter coefficients, you can store them in 'this',
-     *  for example m_smoothedPlaygroundSomething = calcFilterCoefficientA(playgroundParam1, playgroundParam2);
-     *
-     *  If this is an expensive operation, you'll have to check that playgroundParam1 or playgroundParam2
-     *  actually changed by comparing the incoming parameters with copies stored in 'this':
-     *
-     *  bool coefficientsOutdated = false;
-     *  coefficientsOutdated |= std::exchange(m_knownPlaygroundParameter1, playgroundParam1) != playgroundParam1;
-     *  coefficientsOutdated |= std::exchange(m_knownPlaygroundParameter2, playgroundParam2) != playgroundParam2;
-     *
-     *  if(coefficientsOutdated)
-     *    m_smoothedPlaygroundSomething = calcFilterCoefficientA(playgroundParam1, playgroundParam2);
-     *
-     */
+    float m_cutoff = playgroundParam1;
+    float m_reso = playgroundParam2;
 
-    StereoFrame output { input.left, input.right };
+    float HP { 0.0f };
+    float BP { 0.0f };
+    float LP { 0.0f };
+
+    float F = (pow(1.059, m_cutoff)) * 8.17742;
+    float W = F * (6.28319 / SAMPLERATE);
+    if(W > 0.8) W = 0.8;
+    float d = 2 * (1 - m_reso);
+    HP = input.left - (m_BPz * d) + m_LPz;
+    BP = (HP * W) + m_BPz;
+    LP = ((HP * W) + m_BPz) + m_LPz;
+    m_HPz = HP;
+    m_BPz = BP;
+    m_LPz = LP;
+
+    StereoFrame output { HP, input.right };
 
     return output;
   }

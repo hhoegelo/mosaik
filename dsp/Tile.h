@@ -34,5 +34,9 @@ namespace Dsp
     // playground dsp state goes here
     float m_smoothedPlaygroundSomething { 0.0f };
     float m_smoothedPlaygroundOtherThing { 0.0f };
+
+    float m_HPz { 0.0f };
+    float m_BPz { 0.0f };
+    float m_LPz { 0.0f };
   };
 }
