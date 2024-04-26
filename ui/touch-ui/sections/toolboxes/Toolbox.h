@@ -2,6 +2,7 @@
 
 #include <ui/Types.h>
 #include <gtkmm/box.h>
+#include "tools/ReactiveVar.h"
 
 namespace Ui::Touch
 {
@@ -14,6 +15,7 @@ namespace Ui::Touch
             Gtk::Widget *maximized);
 
    private:
+    Tools::DeferredComputations m_computations;
   };
 
 }

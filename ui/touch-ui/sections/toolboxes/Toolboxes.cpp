@@ -12,63 +12,35 @@
 
 namespace Ui::Touch
 {
-  template <typename T>
-  static T *addToolbox(Tools::ReactiveVar<::Ui::Toolbox> &var, Ui::Toolbox s, Gtk::Box *box, const std::string &title,
-                       T *child)
-  {
-    child = Gtk::manage(child);
-
-    auto events = Gtk::manage(new Gtk::EventBox());
-    auto section = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL));
-    auto label = Gtk::manage(new Gtk::Label(title));
-    label->get_style_context()->add_class("header");
-    section->pack_start(*label, false, true);
-    section->pack_start(*child, true, true);
-    section->get_style_context()->add_class("section");
-    events->add(*section);
-
-    box->pack_start(*events, true, true);
-    box->set_hexpand();
-
-    events->add_events(Gdk::BUTTON_PRESS_MASK);
-
-    events->signal_button_press_event().connect(
-        [&var, s](GdkEventButton *event)
-        {
-          var = s;
-          return false;
-        });
-
-    return child;
-  }
 
   Toolboxes::Toolboxes(Touch::Interface &touch, Core::Api::Interface &core)
       : SectionWrapper(touch)
       , m_core(core)
       , m_box(*Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL)))
-      , m_tileTools(*addToolbox(m_selectedToolbox, Ui::Toolbox::Tile, &m_box, "Tile", new TileTools(core)))
-      , m_waveform(*addToolbox(m_selectedToolbox, Ui::Toolbox::Waveform, &m_box, "Wave", new Touch::Waveform(core)))
   {
-    {
-      auto a = Gtk::manage(new Toolbox(*this, Ui::Toolbox::Global, "Toolbox: Global",
-                                       new Gtk::Label("I am minimized global toolbox"),
-                                       new Gtk::Label("I am maximized global toolbox")));
+    m_tileTools = new TileTools(core);
+    auto w = new Touch::Waveform(core);
+    m_waveform = w;
 
-      auto b = Gtk::manage(new Toolbox(*this, Ui::Toolbox::MainPlayground, "Toolbox: Main Playground",
-                                       new Gtk::Label("I am minimized main playground"),
-                                       new Gtk::Label("I am maximized main playground")));
+    m_box.pack_start(*Gtk::manage(new Toolbox(*this, Ui::Toolbox::Global, "Global",
+                                              new Gtk::Label("I am minimized global toolbox"), new GlobalTools(core))));
 
-      auto c = Gtk::manage(new Toolbox(*this, Ui::Toolbox::Steps, "Toolbox: Steps",
-                                       new Gtk::Label("I am minimized steps"), new Gtk::Label("I am maximized steps")));
-      m_box.pack_start(*a);
-      m_box.pack_start(*b);
-      m_box.pack_start(*c);
-    }
+    m_box.pack_start(*Gtk::manage(
+        new Toolbox(*this, Ui::Toolbox::Tile, "Tile", new Gtk::Label("I am minimized Tile toolbox"), m_tileTools)));
 
-    addToolbox(m_selectedToolbox, Ui::Toolbox::Global, &m_box, "Global", new GlobalTools(core));
-    addToolbox(m_selectedToolbox, Ui::Toolbox::Playground, &m_box, "Playground", new Playground(core));
-    addToolbox(m_selectedToolbox, Ui::Toolbox::Steps, &m_box, "Steps", new Steps(core));
-    addToolbox(m_selectedToolbox, Ui::Toolbox::MainPlayground, &m_box, "Main Playground", new MainPlayground(core));
+    m_box.pack_start(*Gtk::manage(
+        new Toolbox(*this, Ui::Toolbox::Waveform, "Waveform", new Gtk::Label("I am minimized waveform toolbox"), w)));
+
+    m_box.pack_start(*Gtk::manage(new Toolbox(*this, Ui::Toolbox::Steps, "Steps",
+                                              new Gtk::Label("I am minimized Steps toolbox"), new Steps(core))));
+
+    m_box.pack_start(
+        *Gtk::manage(new Toolbox(*this, Ui::Toolbox::Playground, "Playground",
+                                 new Gtk::Label("I am minimized Playground toolbox"), new Playground(core))));
+
+    m_box.pack_start(
+        *Gtk::manage(new Toolbox(*this, Ui::Toolbox::MainPlayground, "MainPlayground",
+                                 new Gtk::Label("I am minimized MainPlayground toolbox"), new MainPlayground(core))));
 
     get_style_context()->add_class("toolboxes");
 
@@ -91,17 +63,16 @@ namespace Ui::Touch
 
   WaveformInterface &Toolboxes::getWaveform() const
   {
-    return m_waveform;
+    return *m_waveform;
   }
 
   FileBrowserInterface &Toolboxes::getFileBrowser() const
   {
-    return m_tileTools.getFileBrowser();
+    return m_tileTools->getFileBrowser();
   }
 
   void Toolboxes::selectToolbox(Ui::Toolbox t)
   {
     m_selectedToolbox = t;
   }
-
 }

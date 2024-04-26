@@ -33,7 +33,8 @@ namespace Ui::Touch
 
     Tools::ReactiveVar<::Ui::Toolbox> m_selectedToolbox;
     Gtk::Box &m_box;
-    TileTools &m_tileTools;
-    WaveformInterface &m_waveform;
+    
+    TileTools *m_tileTools = nullptr;
+    WaveformInterface *m_waveform = nullptr;
   };
 }
