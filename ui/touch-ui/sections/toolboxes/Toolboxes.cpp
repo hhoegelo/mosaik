@@ -9,6 +9,7 @@
 #include "MainPlayground.h"
 #include <gtkmm/label.h>
 #include <gtkmm/eventbox.h>
+#include <gtkmm/fixed.h>
 
 namespace Ui::Touch
 {
@@ -22,38 +23,29 @@ namespace Ui::Touch
     auto w = new Touch::Waveform(core);
     m_waveform = w;
 
-    m_box.pack_start(*Gtk::manage(new Toolbox(*this, Ui::Toolbox::Global, "Global",
-                                              new Gtk::Label("I am minimized global toolbox"), new GlobalTools(core))));
+    auto add = [&](Gtk::Widget *w) { m_box.pack_start(*Gtk::manage(w), Gtk::PACK_SHRINK); };
 
-    m_box.pack_start(*Gtk::manage(
-        new Toolbox(*this, Ui::Toolbox::Tile, "Tile", new Gtk::Label("I am minimized Tile toolbox"), m_tileTools)));
+    add(new Toolbox(*this, Ui::Toolbox::Global, "Global", new Gtk::Label("I am minimized global toolbox"),
+                    new GlobalTools(core)));
 
-    m_box.pack_start(*Gtk::manage(
-        new Toolbox(*this, Ui::Toolbox::Waveform, "Waveform", new Gtk::Label("I am minimized waveform toolbox"), w)));
+    add(new Toolbox(*this, Ui::Toolbox::Tile, "Tile", new Gtk::Label("I am minimized Tile toolbox"), m_tileTools));
 
-    m_box.pack_start(*Gtk::manage(new Toolbox(*this, Ui::Toolbox::Steps, "Steps",
-                                              new Gtk::Label("I am minimized Steps toolbox"), new Steps(core))));
+    add(new Toolbox(*this, Ui::Toolbox::Waveform, "Waveform", new Gtk::Label("I am minimized waveform toolbox"), w));
 
-    m_box.pack_start(
-        *Gtk::manage(new Toolbox(*this, Ui::Toolbox::Playground, "Playground",
-                                 new Gtk::Label("I am minimized Playground toolbox"), new Playground(core))));
+    add(new Toolbox(*this, Ui::Toolbox::Steps, "Steps", new Gtk::Label("I am minimized Steps toolbox"),
+                    new Steps(core)));
 
-    m_box.pack_start(
-        *Gtk::manage(new Toolbox(*this, Ui::Toolbox::MainPlayground, "MainPlayground",
-                                 new Gtk::Label("I am minimized MainPlayground toolbox"), new MainPlayground(core))));
+    add(new Toolbox(*this, Ui::Toolbox::Playground, "Playground", new Gtk::Label("I am minimized Playground toolbox"),
+                    new Playground(core)));
+
+    add(new Toolbox(*this, Ui::Toolbox::MainPlayground, "MainPlayground",
+                    new Gtk::Label("I am minimized MainPlayground toolbox"), new MainPlayground(core)));
 
     get_style_context()->add_class("toolboxes");
 
-    auto scroller = Gtk::manage(new Gtk::ScrolledWindow());
-    scroller->add(m_box);
-    add(*scroller);
-
-    set_hexpand();
-    m_box.set_hexpand_set();
-    scroller->set_hexpand();
-
-    scroller->property_hscrollbar_policy() = Gtk::PolicyType::POLICY_NEVER;
-    scroller->set_propagate_natural_width();
+    this->add(m_box);
+    m_box.set_hexpand();
+    set_valign(Gtk::Align::ALIGN_START);
   }
 
   Ui::Toolbox Toolboxes::getSelectedToolbox() const

@@ -21,10 +21,14 @@ namespace Ui::Touch
     {
       auto box = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
       box->get_style_context()->add_class("knob");
-      box->add(*Gtk::manage(new Gtk::Label("---")));
+      auto label = Gtk::manage(new Gtk::Label("---"));
+      box->add(*label);
       auto level = Gtk::manage(new Gtk::Label());
       box->add(*level);
       level->set_label("---");
+
+      label->get_style_context()->add_class("label");
+      level->get_style_context()->add_class("level");
       attach(*box, c.second.first, c.second.second, 1, 1);
     }
   }

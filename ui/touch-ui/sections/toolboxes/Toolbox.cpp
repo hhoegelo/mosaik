@@ -26,20 +26,19 @@ namespace Ui::Touch
           return true;
         });
 
-    box->add(*headline);
-    box->add(*minimzed);
+    box->pack_start(*headline, Gtk::PACK_SHRINK);
+    box->pack_start(*minimzed, Gtk::PACK_SHRINK);
+    pack_start(*eventBox, Gtk::PACK_SHRINK);
+    pack_start(*maximized, Gtk::PACK_EXPAND_WIDGET);
 
-    add(*eventBox);
-    add(*maximized);
-
-    auto setChildVisability = [=, &toolboxes]
+    auto checkChildVisibility = [=, &toolboxes]
     {
       auto sel = toolboxes.getSelectedToolbox() == tool;
       minimzed->set_visible(!sel);
       maximized->set_visible(sel);
     };
 
-    m_computations.add(setChildVisability);
-    signal_realize().connect(setChildVisability);
+    m_computations.add(checkChildVisibility);
+    signal_realize().connect(checkChildVisibility);
   }
 }

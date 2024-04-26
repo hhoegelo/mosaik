@@ -2,7 +2,7 @@
 
 #include "tools/ReactiveVar.h"
 #include "core/Types.h"
-#include <gtkmm/grid.h>
+#include <gtkmm/box.h>
 
 namespace Gtk
 {
@@ -17,16 +17,13 @@ namespace Core::Api
 namespace Ui::Touch
 {
 
-  class GlobalTools : public Gtk::Grid
+  class GlobalTools : public Gtk::Box
   {
    public:
     explicit GlobalTools(Core::Api::Interface &core);
 
    private:
     Gtk::Label *buildLevel(Core::ParameterId id);
-
-    Core::Api::Interface &m_core;
-    Tools::DeferredComputations m_computations;
   };
 
 }
