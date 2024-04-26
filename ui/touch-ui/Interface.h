@@ -32,7 +32,8 @@ namespace Ui::Touch
    public:
     [[nodiscard]] virtual WaveformInterface &getWaveform() const = 0;
     [[nodiscard]] virtual FileBrowserInterface &getFileBrowser() const = 0;
-    [[nodiscard]] virtual Toolbox getSelectedToolbox() const = 0;
+    [[nodiscard]] virtual Ui::Toolbox getSelectedToolbox() const = 0;
+    virtual void selectToolbox(Ui::Toolbox t) = 0;
   };
 
   class Interface

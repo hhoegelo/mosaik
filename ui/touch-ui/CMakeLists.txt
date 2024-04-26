@@ -46,6 +46,8 @@ add_library(mosaik-touchui STATIC
         sections/tiles/LevelMeter.h
         sections/toolboxes/FileBrowser.cpp
         sections/toolboxes/FileBrowser.h
+        sections/toolboxes/Toolbox.cpp
+        sections/toolboxes/Toolbox.h
 )
 
 target_compile_options(mosaik-touchui PRIVATE)

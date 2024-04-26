@@ -3,7 +3,9 @@
 #include <dsp/api/realtime/Interface.h>
 #include <alsa/asoundlib.h>
 
+#include <glibmm.h>
 #include <iostream>
+#include <numeric>
 
 #define checkAlsa(A)                                                                                                   \
   if(auto res = A)                                                                                                     \
@@ -116,10 +118,20 @@ namespace Audio
                                      audioThread<S32>(dsp, device, channels, switchMainAndPre);
                                  });
     }
+
+    m_timer = Glib::MainContext::get_default()->signal_timeout().connect_seconds(
+        [this]
+        {
+          auto average = std::accumulate(m_cpuUsage.begin(), m_cpuUsage.end(), 0.0) / m_cpuUsage.size();
+          std::cout << "AudioThread CPU Usage: " << 100.0 * average << "%" << std::endl;
+          return true;
+        },
+        2);
   }
 
   AlsaOut::~AlsaOut()
   {
+    m_timer.disconnect();
     m_quit = true;
 
     if(m_audioThread.valid())
@@ -141,6 +153,18 @@ namespace Audio
   template <typename SampleTrait, typename AlsaFrame, int numChannels>
   void AlsaOut::audioThread(Dsp::Api::Realtime::Interface &dsp, const std::string &device, bool switchMainAndPre)
   {
+    int preferedCore = 1;
+    cpu_set_t set;
+    CPU_ZERO(&set);
+    CPU_SET(preferedCore, &set);
+
+    if(sched_setaffinity(0, sizeof(cpu_set_t), &set) < 0)
+      std::cerr << "could not set thread affinity" << std::endl;
+
+    sched_param p { sched_get_priority_max(SCHED_FIFO) };
+    if(pthread_setschedparam(pthread_self(), SCHED_FIFO, &p))
+      std::cerr << "set thread prio failed. Consider 'sudo setcap 'cap_sys_nice=eip' <application>'" << std::endl;
+
     snd_pcm_t *pcm = nullptr;
     checkAlsa(snd_pcm_open(&pcm, device.c_str(), SND_PCM_STREAM_PLAYBACK, 0));
 
@@ -160,9 +184,6 @@ namespace Audio
     checkAlsa(snd_pcm_hw_params(pcm, hwparams));
     checkAlsa(snd_pcm_prepare(pcm));
 
-    sched_param p { sched_get_priority_max(SCHED_FIFO) };
-    pthread_setschedparam(pthread_self(), SCHED_FIFO, &p);
-
     AlsaFrame buffer[c_framesPerPeriod] {};
 
     for(int i = 0; i < c_numPeriods; i++)
@@ -174,9 +195,18 @@ namespace Audio
 
     while(!m_quit)
     {
+      auto startDSP = g_get_monotonic_time();
+
       dsp.doAudio(samples, c_framesPerPeriod, [](const Dsp::MidiEvent &) {});
       std::transform(samples, samples + c_framesPerPeriod, buffer,
                      [&switchMainAndPre](const Dsp::OutFrame &in) { return AlsaFrame(in, switchMainAndPre); });
+      auto endDSP = g_get_monotonic_time();
+      auto diff = endDSP - startDSP;
+
+      m_cpuUsage[m_cpuUsageWriteHead % m_cpuUsage.size()]
+          = 1.0 * SAMPLERATE * diff / (std::micro::den * c_framesPerPeriod);
+      m_cpuUsageWriteHead++;
+
       auto res = snd_pcm_writei(pcm, buffer, c_framesPerPeriod);
 
       if(res != c_framesPerPeriod)

@@ -5,6 +5,7 @@
 #include "ui/touch-ui/sections/mixer/Mixer.h"
 #include "LessToCss.h"
 #include <gtkmm/grid.h>
+#include <iostream>
 
 namespace Ui::Touch
 {
@@ -17,7 +18,19 @@ namespace Ui::Touch
       , m_mixer(std::make_unique<Mixer>(*this))
   {
     set_title("Mosaik");
-    set_decorated(true);
+
+    if(DEBUG_BUILD)
+    {
+      std::cout << "Debug Build" << std::endl;
+      set_decorated(true);
+    }
+
+    if(RELEASE_BUILD)
+    {
+      std::cout << "Release Build" << std::endl;
+      fullscreen();
+      set_decorated(false);
+    }
 
     auto vBox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL));
     vBox->get_style_context()->add_class("root");
@@ -29,7 +42,9 @@ namespace Ui::Touch
     vBox->add(*upperBox);
     vBox->add(*lowerBox);
 
-    upperBox->pack_start(*m_tiles, false, false);
+    auto fixed = Gtk::manage(new Gtk::Fixed());
+    fixed->add(*m_tiles);
+    upperBox->pack_start(*fixed, false, false);
     upperBox->pack_start(*m_toolboxes, Gtk::PackOptions::PACK_EXPAND_WIDGET);
 
     lowerBox->pack_start(*m_mixer);

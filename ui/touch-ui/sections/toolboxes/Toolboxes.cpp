@@ -2,6 +2,7 @@
 #include "ui/Types.h"
 #include "GlobalTools.h"
 #include "TileTools.h"
+#include "Toolbox.h"
 #include "Waveform.h"
 #include "Steps.h"
 #include "Playground.h"
@@ -48,6 +49,22 @@ namespace Ui::Touch
       , m_tileTools(*addToolbox(m_selectedToolbox, Ui::Toolbox::Tile, &m_box, "Tile", new TileTools(core)))
       , m_waveform(*addToolbox(m_selectedToolbox, Ui::Toolbox::Waveform, &m_box, "Wave", new Touch::Waveform(core)))
   {
+    {
+      auto a = Gtk::manage(new Toolbox(*this, Ui::Toolbox::Global, "Toolbox: Global",
+                                       new Gtk::Label("I am minimized global toolbox"),
+                                       new Gtk::Label("I am maximized global toolbox")));
+
+      auto b = Gtk::manage(new Toolbox(*this, Ui::Toolbox::MainPlayground, "Toolbox: Main Playground",
+                                       new Gtk::Label("I am minimized main playground"),
+                                       new Gtk::Label("I am maximized main playground")));
+
+      auto c = Gtk::manage(new Toolbox(*this, Ui::Toolbox::Steps, "Toolbox: Steps",
+                                       new Gtk::Label("I am minimized steps"), new Gtk::Label("I am maximized steps")));
+      m_box.pack_start(*a);
+      m_box.pack_start(*b);
+      m_box.pack_start(*c);
+    }
+
     addToolbox(m_selectedToolbox, Ui::Toolbox::Global, &m_box, "Global", new GlobalTools(core));
     addToolbox(m_selectedToolbox, Ui::Toolbox::Playground, &m_box, "Playground", new Playground(core));
     addToolbox(m_selectedToolbox, Ui::Toolbox::Steps, &m_box, "Steps", new Steps(core));
@@ -67,7 +84,7 @@ namespace Ui::Touch
     scroller->set_propagate_natural_width();
   }
 
-  Toolbox Toolboxes::getSelectedToolbox() const
+  Ui::Toolbox Toolboxes::getSelectedToolbox() const
   {
     return m_selectedToolbox;
   }
@@ -80,6 +97,11 @@ namespace Ui::Touch
   FileBrowserInterface &Toolboxes::getFileBrowser() const
   {
     return m_tileTools.getFileBrowser();
+  }
+
+  void Toolboxes::selectToolbox(Ui::Toolbox t)
+  {
+    m_selectedToolbox = t;
   }
 
 }

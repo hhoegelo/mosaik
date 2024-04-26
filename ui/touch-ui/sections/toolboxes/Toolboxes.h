@@ -25,7 +25,8 @@ namespace Ui::Touch
 
     WaveformInterface &getWaveform() const override;
     FileBrowserInterface &getFileBrowser() const override;
-    Toolbox getSelectedToolbox() const override;
+    Ui::Toolbox getSelectedToolbox() const override;
+    void selectToolbox(Ui::Toolbox t) override;
 
    private:
     Core::Api::Interface &m_core;
