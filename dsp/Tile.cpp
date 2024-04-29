@@ -83,18 +83,14 @@ namespace Dsp
                                  float playgroundParam6, float playgroundParam7)
   {
     float m_cutoff = playgroundParam1*100;
-    if(m_cutoff < 17)
-        m_cutoff = 17;
+    if(m_cutoff < 17) m_cutoff = 17;
 
     float m_reso = playgroundParam2;
-    if(m_reso > 0.99)
-        m_reso = 0.99;
+    if(m_reso > 0.99) m_reso = 0.99;
 
     float HP { 0.0f };
     float BP { 0.0f };
     float LP { 0.0f };
-
-    // pow(base,expo)
     float F = 8.17742 * pow(1.059, m_cutoff);
 
     float W = F * (6.28319 / SAMPLERATE);

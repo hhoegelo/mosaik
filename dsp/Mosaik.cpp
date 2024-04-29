@@ -65,6 +65,16 @@ namespace Dsp
   OutFrame Mosaik::doMainPlayground(const OutFrame &in, float p1, float p2, float p3, float p4, float p5, float p6,
                                     float p7)
   {
+    float ml = in.main.left;
+    float mr = in.main.right;
+    float pl = in.pre.left;
+    float pr = in.pre.right;
+
+    float out_l = (p1*ml) + (1-p1)*pl;
+    float out_r = (p1*mr) + (1-p1)*pr;
+
+    OutFrame output { out_l, out_r, in.main.left, in.main.right};
+
     return in;
   }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 7.0.2, 2024-03-28T15:42:04. -->
+<!-- Written by QtCreator 7.0.2, 2024-04-29T13:04:20. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -67,7 +67,180 @@
     <value type="bool" key="AutoTest.Framework.QtQuickTest">true</value>
     <value type="bool" key="AutoTest.Framework.QtTest">true</value>
    </valuemap>
-   <valuemap type="QVariantMap" key="AutoTest.CheckStates"/>
+   <valuemap type="QVariantMap" key="AutoTest.CheckStates">
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:ARGB">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Alpha">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Average">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Blue">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:ColorTest">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Contrast">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Darken">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Desaturate">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Difference">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Exclusion">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Fade">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:FadeIn">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:FadeOut">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Green">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Greyscale">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:HSL">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:HSLA">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:HSV">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:HSVA">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:HSVHue">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:HSVSaturation">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:HSVValue">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Hardlight">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Hue">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Lighten">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Lightness">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Luma">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Luminance">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Mix">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Multiply">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Negate">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Overlay">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:RGB">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:RGBA">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Red">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Saturate">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Saturation">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Screen">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Shade">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Softlight">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Spin">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/Color_test.cpp:Tint">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssParser_test.cpp:AtRule">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssParser_test.cpp:AtValue">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssParser_test.cpp:BlockValue">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssParser_test.cpp:CssParserTest">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssParser_test.cpp:DeclarationNoColon">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssParser_test.cpp:DeclarationNoValue">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssParser_test.cpp:Ruleset">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssParser_test.cpp:RulesetNoEnding">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssParser_test.cpp:Selector">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssSelectorParser_test.cpp:CssSelectorParserTest">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssSelectorParser_test.cpp:Multiple">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssSelectorParser_test.cpp:Parentheses">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssSelectorParser_test.cpp:Simple">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssTokenizer_test.cpp:CssTokenizerTest">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssTokenizer_test.cpp:Minus">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssTokenizer_test.cpp:NonAscii">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssTokenizer_test.cpp:Other">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssTokenizer_test.cpp:ReckognizesTokens">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssTokenizer_test.cpp:String">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssTokenizer_test.cpp:StringEscape">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssTokenizer_test.cpp:URL">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/CssTokenizer_test.cpp:UnicodeRange">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:Arguments">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:AttributeSelectorMatch">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:ColorOps">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:CommentAtEndOfString">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:Comments">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:CssComment">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:DeepVariable">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:Default">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:DefaultArguments">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:DefaultFunctionArguments">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:DetachedRuleset">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:EmptyStatement">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:Equals">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:Escape">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:EscapedStringArgument">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:ExtendAll">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:ExtendInterpolatedSelector">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:ExtendNestedMedia">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:ExtendOutsideMedia">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:ExtendSelector">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:ExtendStatement">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:HashMixin">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:HiddenMixin">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:ImportantMixin">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:InterpolateNestedRuleset">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:InterpolateProperty">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:InterpolateSelector">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:LessComment">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:LessParserTest">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:Loop">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:MediaQuery">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:MergeComma">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:MergeSpace">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:Minus">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:Mixin">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:MixinGuards">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:MixinGuards2">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:MultipleMixinCalls">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:NamedArguments">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:Namespace">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:NamespaceGuardFalse">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:NamespaceGuardTrue">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:NestedAtRule">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:NestedLoop">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:NestedMedia">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:NestedRulesets">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:NotAFunction">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:NotAFunction2">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:NotAFunction3">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:NotAFunction4">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:NotAParameterMixin">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:NotDefault">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:NotGuard">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:Operations">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:OperatorOrder">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:ParameterMatching">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:ParameterMixin">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:PrefixTest">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:PropertyAsterisk">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:RestArgument">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:ReturnMixin">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:SameNameMixin">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:SelectorAmpReplacement">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:SwitchArgument">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:SwitchArgumentMisMatch">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:UrlImport">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:UrlInterpolation">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:Variable">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessParser_test.cpp:VariableScope">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessRuleset_test.cpp:LessRulesetTest">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessRuleset_test.cpp:Parent">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessRuleset_test.cpp:Variable">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessSelectorParser_test.cpp:Condition">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessSelectorParser_test.cpp:ConditionMultiple">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessSelectorParser_test.cpp:Defaults">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessSelectorParser_test.cpp:Extension">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessSelectorParser_test.cpp:ExtensionMultiple1">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessSelectorParser_test.cpp:ExtensionMultiple2">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessSelectorParser_test.cpp:ExtensionMultiple3">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessSelectorParser_test.cpp:LessSelectorParserTest">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessSelectorParser_test.cpp:ParameterCondition">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessSelectorParser_test.cpp:Parameters">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessSelectorParser_test.cpp:Parameters2">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessSelectorParser_test.cpp:ParametersRest">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/LessSelectorParser_test.cpp:ParametersUnlimited">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:Conditions">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:Extract">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:FunctionErrors">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:GetUnit">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:IsColor">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:IsEm">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:IsKeyword">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:IsNumber">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:IsPercentage">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:IsPixel">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:IsString">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:IsUnit">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:IsUrl">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:Length">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:Max">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:Min">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:OperandMismatch">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:Operators">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:OperatorsInParens">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:Replace">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:StringFormat">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:StringOperations">Checked</value>
+    <value type="Qt::CheckState" key="1@/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-src/tests/ValueProcessor_test.cpp:ValueProcessorTest">Checked</value>
+   </valuemap>
    <value type="int" key="AutoTest.RunAfterBuild">0</value>
    <value type="bool" key="AutoTest.UseGlobal">true</value>
    <valuelist type="QVariantList" key="ClangCodeModel.CustomCommandLineKey"/>
@@ -166,6 +339,7 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">mosaik</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">CMakeProjectManager.CMakeRunConfiguration.mosaik</value>
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">mosaik</value>
+    <value type="QString" key="RunConfiguration.Arguments">--alsa-out=plughw:0,0</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
@@ -173,7 +347,41 @@
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
     <value type="QString" key="RunConfiguration.WorkingDirectory.default">/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build</value>
    </valuemap>
-   <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
+   <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.1">
+    <value type="bool" key="Analyzer.Perf.Settings.UseGlobalSettings">true</value>
+    <value type="bool" key="Analyzer.QmlProfiler.Settings.UseGlobalSettings">true</value>
+    <value type="bool" key="Analyzer.Valgrind.Settings.UseGlobalSettings">true</value>
+    <valuelist type="QVariantList" key="CustomOutputParsers"/>
+    <value type="int" key="PE.EnvironmentAspect.Base">2</value>
+    <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">clessc</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">CMakeProjectManager.CMakeRunConfiguration.clessc</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">clessc</value>
+    <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
+    <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
+    <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
+    <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
+    <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-build</value>
+   </valuemap>
+   <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.2">
+    <value type="bool" key="Analyzer.Perf.Settings.UseGlobalSettings">true</value>
+    <value type="bool" key="Analyzer.QmlProfiler.Settings.UseGlobalSettings">true</value>
+    <value type="bool" key="Analyzer.Valgrind.Settings.UseGlobalSettings">true</value>
+    <valuelist type="QVariantList" key="CustomOutputParsers"/>
+    <value type="int" key="PE.EnvironmentAspect.Base">2</value>
+    <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">testlessc</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">CMakeProjectManager.CMakeRunConfiguration.testlessc</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">testlessc</value>
+    <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
+    <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
+    <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
+    <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
+    <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/mnt/ad4247cf-f066-4f4c-a5f3-3ab1a55586e0/projects-2024/mosaik-build/_deps/clessc-build</value>
+   </valuemap>
+   <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">3</value>
   </valuemap>
  </data>
  <data>

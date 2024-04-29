@@ -231,9 +231,9 @@ void process_hb()
 uint8_t spi_buf[13] = {0};
 void task_read_spi()
 {
-	//HAL_GPIO_WritePin( SPI2_SAP_GPIO_Port, SPI2_SAP_Pin, GPIO_PIN_RESET );
+	HAL_GPIO_WritePin( SPI2_SAP_GPIO_Port, SPI2_SAP_Pin, GPIO_PIN_RESET );
 	HAL_SPI_Receive( &hspi2, spi_buf, sizeof(spi_buf), 10 );
-	//HAL_GPIO_WritePin( SPI2_SAP_GPIO_Port, SPI2_SAP_Pin, GPIO_PIN_SET );
+	HAL_GPIO_WritePin( SPI2_SAP_GPIO_Port, SPI2_SAP_Pin, GPIO_PIN_SET );
 }
 
 
@@ -303,13 +303,17 @@ int main(void)
   coos_task_add( task_read_spi, 0, 1 );
   coos_task_add( task_write_uart, 0, 100 );
   coos_task_add( task_parse, 3, 5 );
-  coos_task_add( task_update_rgb, 7, 10 );
+  //coos_task_add( task_update_rgb, 7, 10 );
 
   for( int i=0; i<MAX_LED; i++ )
   {
+	  Set_LED(i,1,0,0);
+#if 0
 	  RGBW_Set(i, 0, 0, 0, 0);
 	  RGBW_Send();
+#endif
   }
+  WS2812_Send();
 
   HAL_UART_Receive_IT(&huart1, temp, 1);
   HAL_TIM_Base_Start_IT( &htim17 );

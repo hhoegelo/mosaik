@@ -1,0 +1,6 @@
+../Core/Src/coos.c:29:6:coos_init	16	static
+../Core/Src/coos.c:53:9:coos_task_add	32	static
+../Core/Src/coos.c:86:9:coos_task_delete	16	static
+../Core/Src/coos.c:105:6:COOS_GoToArtificialSleep	8	static
+../Core/Src/coos.c:118:6:coos_dispatch	16	static
+../Core/Src/coos.c:159:6:coos_update	16	static
