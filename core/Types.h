@@ -208,11 +208,13 @@ namespace Core
     constexpr static Type min = -6.0f;
     constexpr static Type max = 6.0f;
     constexpr static Type coarse = 0.01f;
-    constexpr static auto unit = "%";
 
     static std::string format(Type t)
     {
-      return Tools::format("%3.2f %s", 100.0f * std::pow(2.0f, t), unit);
+      int semitones = std::round(t * 12);
+      int octaves = semitones / 12;
+      semitones -= octaves * 12;
+      return Tools::format("%d oct, %d semi", octaves, std::abs(semitones));
     }
   };
 

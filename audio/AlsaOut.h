@@ -1,7 +1,9 @@
 #pragma once
 
+#include <sigc++/connection.h>
 #include <string>
 #include <future>
+#include <array>
 
 namespace Dsp::Api::Realtime
 {
@@ -27,5 +29,10 @@ namespace Audio
 
     std::atomic_bool m_quit {};
     std::future<void> m_audioThread;
+
+    std::array<double, 128> m_cpuUsage { 0.0 };
+    uint32_t m_cpuUsageWriteHead = 0;
+
+    sigc::connection m_timer;
   };
 }

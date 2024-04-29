@@ -25,14 +25,16 @@ namespace Ui::Touch
 
     WaveformInterface &getWaveform() const override;
     FileBrowserInterface &getFileBrowser() const override;
-    Toolbox getSelectedToolbox() const override;
+    Ui::Toolbox getSelectedToolbox() const override;
+    void selectToolbox(Ui::Toolbox t) override;
 
    private:
     Core::Api::Interface &m_core;
 
     Tools::ReactiveVar<::Ui::Toolbox> m_selectedToolbox;
     Gtk::Box &m_box;
-    TileTools &m_tileTools;
-    WaveformInterface &m_waveform;
+    
+    TileTools *m_tileTools = nullptr;
+    WaveformInterface *m_waveform = nullptr;
   };
 }
