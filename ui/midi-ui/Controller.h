@@ -42,8 +42,10 @@ namespace Ui
       void setLed(Led led, Color color);
       void showPattern();
 
-      std::pair<Knob, std::function<void(int)>> standardBind(Knob k, Core::ParameterId p);
-      std::pair<SoftButton, std::function<void()>> standardBindRelease(SoftButton k, Core::ParameterId p);
+      template <Ui::Toolbox T, Core::ParameterId ID> std::pair<Knob, std::function<void(int)>> bindKnobRotation();
+
+      template <Ui::Toolbox T, Core::ParameterId ID> std::pair<SoftButton, std::function<void()>> bindButtonToggle();
+
       std::pair<Knob, std::function<void(int)>> standardZoomedBind(Knob k, Core::ParameterId p);
 
       struct Mapping
@@ -54,13 +56,13 @@ namespace Ui
         std::map<SoftButton, std::function<void()>> buttonReleases;
       };
 
+      template <Ui::Toolbox T, typename... Bindings> void addCustomInvokations(Mapping &mappings, Bindings... bindings);
+
       Mapping createMapping(Ui::Toolbox t);
+      template <Ui::Toolbox T> Mapping buildMapping();
       Mapping buildTileMapping();
       Mapping buildStepMapping();
-      Mapping buildGlobalMapping();
       Mapping buildWaveformMapping();
-      Mapping buildPlaygroundMapping();
-      Mapping buildMainPlaygroundMapping();
 
       Core::Api::Interface &m_core;
       Ui::Midi::Interface &m_midiUi;

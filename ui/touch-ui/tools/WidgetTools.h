@@ -19,4 +19,6 @@ namespace Ui::Touch
 
     return nullptr;
   }
+
+  Gtk::Widget *findChildWidget(const Gtk::Widget *p, const char *name);
 }

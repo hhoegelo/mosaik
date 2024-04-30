@@ -11,8 +11,7 @@ namespace Ui::Touch
   class Toolbox : public Gtk::Box
   {
    public:
-    Toolbox(ToolboxesInterface &toolboxes, Ui::Toolbox tool, const char *title, Gtk::Widget *minimzed,
-            Gtk::Widget *maximized);
+    Toolbox(ToolboxesInterface &toolboxes, Ui::Toolbox tool, Gtk::Widget *minimzed, Gtk::Widget *maximized);
 
    private:
     Tools::DeferredComputations m_computations;

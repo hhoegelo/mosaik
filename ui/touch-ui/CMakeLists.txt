@@ -50,6 +50,7 @@ add_library(mosaik-touchui STATIC
         sections/toolboxes/Toolbox.h
         Display.h
         Display.cpp
+        tools/WidgetTools.cpp
 )
 
 target_compile_options(mosaik-touchui PRIVATE)

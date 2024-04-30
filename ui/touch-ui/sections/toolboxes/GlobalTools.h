@@ -1,13 +1,6 @@
 #pragma once
 
-#include "tools/ReactiveVar.h"
-#include "core/Types.h"
 #include <gtkmm/box.h>
-
-namespace Gtk
-{
-  class LevelBar;
-}
 
 namespace Core::Api
 {

@@ -12,11 +12,11 @@ namespace Ui::Touch
   using TileParameters = Core::TileParameters<WrapParameterDescription>::Wrapped;
 
   template <typename Description>
-  bool fillString(std::string &target, const Core::ParameterValue &v, Core::ParameterId id)
+  bool fillString(std::string &target, Core::Api::Interface &core, Core::TileId tile, Core::ParameterId id)
   {
     if(Description::id == id)
     {
-      target = Description::format(std::get<typename Description::Type>(v));
+      target = Description::format(std::get<typename Description::Type>(core.getParameter(tile, id)));
       return true;
     }
 
@@ -25,17 +25,13 @@ namespace Ui::Touch
 
   std::string getDisplayValue(Core::Api::Interface &core, Core::TileId tile, Core::ParameterId id)
   {
+    std::string ret;
     GlobalParameters globalParams {};
-    TileParameters tileParams {};
-    return std::apply(
-        [&](auto... a)
-        {
-          std::string ret;
-          auto value = core.getParameter(tile, id);
-          (fillString<decltype(a)>(ret, value, id) || ...);
-          return ret;
-        },
-        std::tuple_cat(globalParams, tileParams));
+
+    if(!std::apply([&](auto... a) { return (fillString<decltype(a)>(ret, core, {}, id) || ...); }, GlobalParameters {}))
+      std::apply([&](auto... a) { return (fillString<decltype(a)>(ret, core, tile, id) || ...); }, TileParameters {});
+
+    return ret;
   }
 
   std::string getDisplayValue(Core::Api::Interface &core, Core::ParameterId id)

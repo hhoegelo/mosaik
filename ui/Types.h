@@ -261,11 +261,44 @@ namespace Ui
 
   template <Toolbox t> struct ToolboxDefinition;
 
-  template <typename... Entries> struct List
+  template <Core::ParameterId ID> struct MinimizedParameterEntry
   {
-    template <typename T> void forEach(const T &cb)
+    constexpr static auto id = ID;
+  };
+
+  enum class UIBinding
+  {
+    ReleasedKnobRotate,
+    PressedKnobRotate,
+    ButtonPressSet,
+    ButtonPressToggle,
+    ButtonPressInvoke,
+    ButtonReleaseSet,
+    ButtonReleaseToggle,
+    ButtonReleaseInvoke,
+  };
+
+  template <Core::ParameterId ID, Color C, UIBinding B, auto P> struct MaximizedParameterEntry
+  {
+    constexpr static Core::ParameterId id = ID;
+    constexpr static Color color = C;
+    constexpr static UIBinding binding = B;
+    constexpr static std::variant<SoftButton, Knob> position = P;
+  };
+
+  template <Color C, auto P, UIBinding B, typename I> struct MaximizedCustomEntry
+  {
+    using ID = I;
+    constexpr static Color color = C;
+    constexpr static UIBinding binding = B;
+    constexpr static std::variant<SoftButton, Knob> position = P;
+  };
+
+  template <typename... E> struct Entries
+  {
+    template <typename CB> static void forEach(const CB &cb)
     {
-      (cb(Entries {}), ...);
+      (cb(E {}), ...);
     }
   };
 
@@ -273,57 +306,166 @@ namespace Ui
   {
     constexpr static auto title = "Global";
 
-    using Minimized = List<Core::ParameterId::GlobalVolume, Core::ParameterId::GlobalTempo>;
-
-    static constexpr std::tuple maximized = {
-      std::make_tuple(Core::ParameterId::GlobalVolume, Color::Green, Knob::Center),
-      std::make_tuple(Core::ParameterId::GlobalTempo, Color::Blue, Knob::Leftmost),
-    };
+    using Minimized = Entries<MinimizedParameterEntry<Core::ParameterId::GlobalVolume>,
+                              MinimizedParameterEntry<Core::ParameterId::GlobalTempo>>;
+    using MaximizedParameters = Entries<MaximizedParameterEntry<Core::ParameterId::GlobalVolume, Color::Green,
+                                                                UIBinding::ReleasedKnobRotate, Knob::Center>,
+                                        MaximizedParameterEntry<Core::ParameterId::GlobalTempo, Color::Blue,
+                                                                UIBinding::ReleasedKnobRotate, Knob::Leftmost>>;
+    using MaximizedCustom = Entries<>;
   };
 
   template <> struct ToolboxDefinition<Toolbox::MainPlayground>
   {
     constexpr static auto title = "Main Playground";
-
-    static constexpr Core::ParameterId minimized[] {};
-
-    static constexpr std::tuple maximized = {};
+    using Minimized = Entries<MinimizedParameterEntry<Core::ParameterId::MainPlayground1>,
+                              MinimizedParameterEntry<Core::ParameterId::MainPlayground2>,
+                              MinimizedParameterEntry<Core::ParameterId::MainPlayground3>>;
+    using MaximizedParameters = Entries<MaximizedParameterEntry<Core::ParameterId::MainPlayground1, Color::Blue,
+                                                                UIBinding::ReleasedKnobRotate, Knob::Leftmost>,
+                                        MaximizedParameterEntry<Core::ParameterId::MainPlayground2, Color::Blue,
+                                                                UIBinding::ReleasedKnobRotate, Knob::Rightmost>,
+                                        MaximizedParameterEntry<Core::ParameterId::MainPlayground3, Color::Blue,
+                                                                UIBinding::ReleasedKnobRotate, Knob::NorthWest>,
+                                        MaximizedParameterEntry<Core::ParameterId::MainPlayground4, Color::Blue,
+                                                                UIBinding::ReleasedKnobRotate, Knob::NorthEast>,
+                                        MaximizedParameterEntry<Core::ParameterId::MainPlayground5, Color::Blue,
+                                                                UIBinding::ReleasedKnobRotate, Knob::Center>,
+                                        MaximizedParameterEntry<Core::ParameterId::MainPlayground6, Color::Blue,
+                                                                UIBinding::ReleasedKnobRotate, Knob::SouthWest>,
+                                        MaximizedParameterEntry<Core::ParameterId::MainPlayground7, Color::Blue,
+                                                                UIBinding::ReleasedKnobRotate, Knob::SouthEast>>;
+    using MaximizedCustom = Entries<>;
   };
 
   template <> struct ToolboxDefinition<Toolbox::Playground>
   {
     constexpr static auto title = "Playground";
-
-    static constexpr Core::ParameterId minimized[] {};
-
-    static constexpr std::tuple maximized = {};
+    using Minimized = Entries<MinimizedParameterEntry<Core::ParameterId::Playground1>,
+                              MinimizedParameterEntry<Core::ParameterId::Playground2>,
+                              MinimizedParameterEntry<Core::ParameterId::Playground3>>;
+    using MaximizedParameters = Entries<MaximizedParameterEntry<Core::ParameterId::Playground1, Color::Blue,
+                                                                UIBinding::ReleasedKnobRotate, Knob::Leftmost>,
+                                        MaximizedParameterEntry<Core::ParameterId::Playground2, Color::Blue,
+                                                                UIBinding::ReleasedKnobRotate, Knob::Rightmost>,
+                                        MaximizedParameterEntry<Core::ParameterId::Playground3, Color::Blue,
+                                                                UIBinding::ReleasedKnobRotate, Knob::NorthWest>,
+                                        MaximizedParameterEntry<Core::ParameterId::Playground4, Color::Blue,
+                                                                UIBinding::ReleasedKnobRotate, Knob::NorthEast>,
+                                        MaximizedParameterEntry<Core::ParameterId::Playground5, Color::Blue,
+                                                                UIBinding::ReleasedKnobRotate, Knob::Center>,
+                                        MaximizedParameterEntry<Core::ParameterId::Playground6, Color::Blue,
+                                                                UIBinding::ReleasedKnobRotate, Knob::SouthWest>,
+                                        MaximizedParameterEntry<Core::ParameterId::Playground7, Color::Blue,
+                                                                UIBinding::ReleasedKnobRotate, Knob::SouthEast>>;
+    using MaximizedCustom = Entries<>;
   };
 
   template <> struct ToolboxDefinition<Toolbox::Steps>
   {
+    struct Cancel
+    {
+      static constexpr auto title = "Cancel";
+    };
+
+    struct Apply
+    {
+      static constexpr auto title = "Apply";
+    };
+
+    struct And
+    {
+      static constexpr auto title = "And";
+    };
+
+    struct Or
+    {
+      static constexpr auto title = "Or";
+    };
+
+    struct Not
+    {
+      static constexpr auto title = "Not";
+    };
+
     constexpr static auto title = "Step Wizard";
-
-    static constexpr Core::ParameterId minimized[] {};
-
-    static constexpr std::tuple maximized = {};
+    using Minimized = Entries<MinimizedParameterEntry<Core::ParameterId::WizardRotate>>;
+    using MaximizedParameters = Entries<MaximizedParameterEntry<Core::ParameterId::WizardRotate, Color::Green,
+                                                                UIBinding::ReleasedKnobRotate, Knob::Center>,
+                                        MaximizedParameterEntry<Core::ParameterId::WizardOns, Color::Blue,
+                                                                UIBinding::ReleasedKnobRotate, Knob::SouthEast>,
+                                        MaximizedParameterEntry<Core::ParameterId::WizardOffs, Color::Blue,
+                                                                UIBinding::ReleasedKnobRotate, Knob::SouthWest>>;
+    using MaximizedCustom
+        = Entries<MaximizedCustomEntry<Color::Green, SoftButton::Right_North, UIBinding::ButtonPressInvoke, And>,
+                  MaximizedCustomEntry<Color::Green, SoftButton::Right_NorthEast, UIBinding::ButtonPressInvoke, Or>,
+                  MaximizedCustomEntry<Color::Green, SoftButton::Right_East, UIBinding::ButtonPressInvoke, Not>,
+                  MaximizedCustomEntry<Color::Green, SoftButton::Right_Center, UIBinding::ButtonPressInvoke, Apply>,
+                  MaximizedCustomEntry<Color::Green, SoftButton::Right_South, UIBinding::ButtonPressInvoke, Cancel>>;
   };
 
   template <> struct ToolboxDefinition<Toolbox::Tile>
   {
     constexpr static auto title = "Tile";
 
-    static constexpr Core::ParameterId minimized[] {};
+    using Minimized
+        = Entries<MinimizedParameterEntry<Core::ParameterId::Gain>, MinimizedParameterEntry<Core::ParameterId::Mute>,
+                  MinimizedParameterEntry<Core::ParameterId::Balance>,
+                  MinimizedParameterEntry<Core::ParameterId::Speed>>;
+    using MaximizedParameters = Entries<
+        MaximizedParameterEntry<Core::ParameterId::Gain, Color::Green, UIBinding::ReleasedKnobRotate, Knob::Center>,
+        MaximizedParameterEntry<Core::ParameterId::Speed, Color::Blue, UIBinding::ReleasedKnobRotate, Knob::Rightmost>,
+        MaximizedParameterEntry<Core::ParameterId::Balance, Color::Purple, UIBinding::ReleasedKnobRotate,
+                                Knob::Leftmost>,
+        MaximizedParameterEntry<Core::ParameterId::Shuffle, Color::Red, UIBinding::ReleasedKnobRotate, Knob::NorthEast>,
+        MaximizedParameterEntry<Core::ParameterId::Reverse, Color::Blue, UIBinding::ButtonPressToggle,
+                                SoftButton::Left_Center>>;
 
-    static constexpr std::tuple maximized = {};
+    struct Up
+    {
+      static constexpr auto title = "Up";
+    };
+
+    struct Down
+    {
+      static constexpr auto title = "Down";
+    };
+
+    struct Enter
+    {
+      static constexpr auto title = "Enter";
+    };
+
+    struct Leave
+    {
+      static constexpr auto title = "Leave";
+    };
+
+    struct Load
+    {
+      static constexpr auto title = "Load";
+    };
+
+    struct Prelisten
+    {
+      static constexpr auto title = "Prelisten";
+    };
+
+    using MaximizedCustom = Entries<
+        MaximizedCustomEntry<Color::Green, SoftButton::Right_North, UIBinding::ButtonPressInvoke, Up>,
+        MaximizedCustomEntry<Color::Green, SoftButton::Right_South, UIBinding::ButtonPressInvoke, Down>,
+        MaximizedCustomEntry<Color::Green, SoftButton::Right_West, UIBinding::ButtonPressInvoke, Leave>,
+        MaximizedCustomEntry<Color::Green, SoftButton::Right_East, UIBinding::ButtonPressInvoke, Enter>,
+        MaximizedCustomEntry<Color::Red, SoftButton::Right_Center, UIBinding::ButtonPressInvoke, Load>,
+        MaximizedCustomEntry<Color::Purple, SoftButton::Right_SouthEast, UIBinding::ButtonPressInvoke, Prelisten>>;
   };
 
   template <> struct ToolboxDefinition<Toolbox::Waveform>
   {
     constexpr static auto title = "Waveform";
-
-    static constexpr Core::ParameterId minimized[] {};
-
-    static constexpr std::tuple maximized = {};
+    using Minimized = Entries<>;
+    using MaximizedParameters = Entries<>;
+    using MaximizedCustom = Entries<>;
   };
 
   template <Core::ParameterId id> struct ParameterDescription : Core::ParameterDescription<id>
@@ -558,8 +700,92 @@ namespace Ui
     {
       return Tools::format("%3.1f %%", std::round(100 * t));
     }
+  };
 
-    constexpr static auto title = "Playground";
+  template <>
+  struct ParameterDescription<Core::ParameterId::MainPlayground1>
+      : ParameterDescriptionPlayground<Core::ParameterId::MainPlayground1>
+  {
+    constexpr static auto title = "Playground 1";
+  };
+  template <>
+  struct ParameterDescription<Core::ParameterId::MainPlayground2>
+      : ParameterDescriptionPlayground<Core::ParameterId::MainPlayground2>
+  {
+    constexpr static auto title = "Playground 2";
+  };
+  template <>
+  struct ParameterDescription<Core::ParameterId::MainPlayground3>
+      : ParameterDescriptionPlayground<Core::ParameterId::MainPlayground3>
+  {
+    constexpr static auto title = "Playground 3";
+  };
+  template <>
+  struct ParameterDescription<Core::ParameterId::MainPlayground4>
+      : ParameterDescriptionPlayground<Core::ParameterId::MainPlayground4>
+  {
+    constexpr static auto title = "Playground 4";
+  };
+  template <>
+  struct ParameterDescription<Core::ParameterId::MainPlayground5>
+      : ParameterDescriptionPlayground<Core::ParameterId::MainPlayground5>
+  {
+    constexpr static auto title = "Playground 5";
+  };
+  template <>
+  struct ParameterDescription<Core::ParameterId::MainPlayground6>
+      : ParameterDescriptionPlayground<Core::ParameterId::MainPlayground6>
+  {
+    constexpr static auto title = "Playground 6";
+  };
+  template <>
+  struct ParameterDescription<Core::ParameterId::MainPlayground7>
+      : ParameterDescriptionPlayground<Core::ParameterId::MainPlayground7>
+  {
+    constexpr static auto title = "Playground 7";
+  };
+
+  template <>
+  struct ParameterDescription<Core::ParameterId::Playground1>
+      : ParameterDescriptionPlayground<Core::ParameterId::Playground1>
+  {
+    constexpr static auto title = "Playground 1";
+  };
+  template <>
+  struct ParameterDescription<Core::ParameterId::Playground2>
+      : ParameterDescriptionPlayground<Core::ParameterId::Playground2>
+  {
+    constexpr static auto title = "Playground 2";
+  };
+  template <>
+  struct ParameterDescription<Core::ParameterId::Playground3>
+      : ParameterDescriptionPlayground<Core::ParameterId::Playground3>
+  {
+    constexpr static auto title = "Playground 3";
+  };
+  template <>
+  struct ParameterDescription<Core::ParameterId::Playground4>
+      : ParameterDescriptionPlayground<Core::ParameterId::Playground4>
+  {
+    constexpr static auto title = "Playground 4";
+  };
+  template <>
+  struct ParameterDescription<Core::ParameterId::Playground5>
+      : ParameterDescriptionPlayground<Core::ParameterId::Playground5>
+  {
+    constexpr static auto title = "Playground 5";
+  };
+  template <>
+  struct ParameterDescription<Core::ParameterId::Playground6>
+      : ParameterDescriptionPlayground<Core::ParameterId::Playground6>
+  {
+    constexpr static auto title = "Playground 6";
+  };
+  template <>
+  struct ParameterDescription<Core::ParameterId::Playground7>
+      : ParameterDescriptionPlayground<Core::ParameterId::Playground7>
+  {
+    constexpr static auto title = "Playground 7";
   };
 
 }

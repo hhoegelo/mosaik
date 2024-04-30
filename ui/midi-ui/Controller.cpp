@@ -72,21 +72,45 @@ namespace Ui::Midi
         it->second();
   }
 
-  std::pair<Knob, std::function<void(int)>> Controller::standardBind(Knob k, Core::ParameterId p)
+  template <Ui::Toolbox T, Core::ParameterId ID>
+  std::pair<Knob, std::function<void(int)>> Controller::bindKnobRotation()
   {
-    auto r = [this, p](int inc)
-    {
-      auto tile
-          = Core::GlobalParameters<Core::NoWrap>::contains(p) ? Core::TileId {} : m_core.getSelectedTiles().front();
-      m_core.incParameter(tile, p, inc);
-    };
-    return std::make_pair(k, r);
+    std::pair<Knob, std::function<void(int)>> ret;
+
+    using E = ToolboxDefinition<T>::MaximizedParameters;
+    E::forEach(
+        [&](auto a)
+        {
+          if(a.id == ID)
+          {
+            ret = std::make_pair(std::get<Knob>(a.position),
+                                 [this](int inc)
+                                 {
+                                   auto tile = Core::GlobalParameters<Core::NoWrap>::contains(ID)
+                                       ? Core::TileId {}
+                                       : m_core.getSelectedTile();
+                                   m_core.incParameter(tile, ID, inc);
+                                 });
+          }
+        });
+
+    return ret;
   };
 
-  std::pair<SoftButton, std::function<void()>> Controller::standardBindRelease(SoftButton k, Core::ParameterId p)
+  template <Ui::Toolbox T, Core::ParameterId ID>
+  std::pair<SoftButton, std::function<void()>> Controller::bindButtonToggle()
   {
-    auto r = [this, p] { m_core.toggleSelectedTilesParameter(p); };
-    return std::make_pair(k, r);
+    std::pair<SoftButton, std::function<void()>> ret;
+
+    using E = ToolboxDefinition<T>::MaximizedParameters;
+    E::forEach(
+        [&](auto a)
+        {
+          if(a.id == ID)
+            ret = std::make_pair(std::get<SoftButton>(a.position), [this] { m_core.toggleSelectedTilesParameter(ID); });
+        });
+
+    return ret;
   }
 
   std::pair<Knob, std::function<void(int)>> Controller::standardZoomedBind(Knob k, Core::ParameterId p)
@@ -106,7 +130,7 @@ namespace Ui::Midi
     switch(t)
     {
       case Ui::Toolbox::Global:
-        return buildGlobalMapping();
+        return buildMapping<Toolbox::Global>();
 
       case Ui::Toolbox::Tile:
         return buildTileMapping();
@@ -118,49 +142,77 @@ namespace Ui::Midi
         return buildStepMapping();
 
       case Ui::Toolbox::Playground:
-        return buildPlaygroundMapping();
+        return buildMapping<Toolbox::Playground>();
 
       case Ui::Toolbox::MainPlayground:
-        return buildMainPlaygroundMapping();
+        return buildMapping<Toolbox::MainPlayground>();
     }
     throw std::runtime_error("unknown toolbox");
   }
 
-  Controller::Mapping Controller::buildGlobalMapping()
+  template <Toolbox T> Controller::Mapping Controller::buildMapping()
   {
-    return {
-      .knobs = { { standardBind(Knob::Center, Core::ParameterId::GlobalVolume) },
-                 { standardBind(Knob::SouthEast, Core::ParameterId::GlobalTempo) } },
-      .buttons = {},
-    };
+    Controller::Mapping mapping;
+
+    ToolboxDefinition<T>::MaximizedParameters::forEach(
+        [&](auto a)
+        {
+          using D = decltype(a);
+          switch(D::binding)
+          {
+            case UIBinding::ReleasedKnobRotate:
+              mapping.knobs.insert(bindKnobRotation<T, D::id>());
+              break;
+
+            case UIBinding::ButtonPressToggle:
+              mapping.buttonPresses.insert(bindButtonToggle<T, D::id>());
+              break;
+
+            case UIBinding::ButtonReleaseToggle:
+              mapping.buttonReleases.insert(bindButtonToggle<T, D::id>());
+              break;
+
+            default:
+              throw std::runtime_error("Unsupported ui binding");
+          }
+        });
+
+    return mapping;
   }
 
-  Controller::Mapping Controller::buildPlaygroundMapping()
+  template <typename I> struct Bind
   {
-    return {
-      .knobs = { { standardBind(Knob::Leftmost, Core::ParameterId::Playground1) },
-                 { standardBind(Knob::Rightmost, Core::ParameterId::Playground2) },
-                 { standardBind(Knob::NorthWest, Core::ParameterId::Playground3) },
-                 { standardBind(Knob::NorthEast, Core::ParameterId::Playground4) },
-                 { standardBind(Knob::Center, Core::ParameterId::Playground5) },
-                 { standardBind(Knob::SouthWest, Core::ParameterId::Playground6) },
-                 { standardBind(Knob::SouthEast, Core::ParameterId::Playground7) } },
-      .buttons = {},
-    };
-  }
+    using ID = I;
+    std::function<void()> handler;
+  };
 
-  Controller::Mapping Controller::buildMainPlaygroundMapping()
+  template <Ui::Toolbox T, typename... Bindings>
+  void Controller::addCustomInvokations(Mapping &mapping, Bindings... bindings)
   {
-    return {
-      .knobs = { { standardBind(Knob::Leftmost, Core::ParameterId::MainPlayground1) },
-                 { standardBind(Knob::Rightmost, Core::ParameterId::MainPlayground2) },
-                 { standardBind(Knob::NorthWest, Core::ParameterId::MainPlayground3) },
-                 { standardBind(Knob::NorthEast, Core::ParameterId::MainPlayground4) },
-                 { standardBind(Knob::Center, Core::ParameterId::MainPlayground5) },
-                 { standardBind(Knob::SouthWest, Core::ParameterId::MainPlayground6) },
-                 { standardBind(Knob::SouthEast, Core::ParameterId::MainPlayground7) } },
-      .buttons = {},
-    };
+    ToolboxDefinition<T>::MaximizedCustom::forEach(
+        [&](auto a)
+        {
+          using MaximizedUiOnly = decltype(a);
+
+          auto insertIfIdMatches = [&](std::map<SoftButton, std::function<void()>> &target, auto b)
+          {
+            using Binding = decltype(b);
+            if constexpr(std::is_same_v<typename Binding::ID, typename MaximizedUiOnly::ID>)
+            {
+              target[std::get<SoftButton>(MaximizedUiOnly::position)] = b.handler;
+            }
+          };
+
+          switch(MaximizedUiOnly::binding)
+          {
+            case UIBinding::ButtonPressInvoke:
+              (insertIfIdMatches(mapping.buttonPresses, bindings), ...);
+              break;
+
+            default:
+              throw std::runtime_error("Unsupported ui binding");
+          }
+        });
   }
 
   Controller::Mapping Controller::buildStepMapping()
@@ -174,89 +226,50 @@ namespace Ui::Midi
       m_core.setParameter(sel, Core::ParameterId::WizardOffs, 0.0f);
     };
 
-    return { .knobs = { { standardBind(Knob::Rightmost, Core::ParameterId::WizardRotate) },
-                        { standardBind(Knob::NorthEast, Core::ParameterId::WizardOns) },
-                        { standardBind(Knob::Center, Core::ParameterId::WizardOffs) } },
-             .buttonPresses = {
-                 { SoftButton::Right_SouthWest,
-                   [this]
-                   {
-                     m_core.setParameter(m_core.getSelectedTiles().front(), Core::ParameterId::WizardMode,
-                                         static_cast<uint8_t>(Core::WizardMode::Or));
-                   } },
+    auto apply = [this, reset]
+    {
+      auto tile = m_core.getSelectedTiles().front();
+      auto p = std::get<Core::Pattern>(m_core.getParameter(tile, Core::ParameterId::Pattern));
 
-                 { SoftButton::Right_South,
-                   [this]
-                   {
-                     m_core.setParameter(m_core.getSelectedTiles().front(), Core::ParameterId::WizardMode,
-                                         static_cast<uint8_t>(Core::WizardMode::And));
-                   } },
+      p = Core::processWizard(
+          p, static_cast<Core::WizardMode>(std::get<uint8_t>(m_core.getParameter(tile, Core::ParameterId::WizardMode))),
+          static_cast<int8_t>(std::round(std::get<float>(m_core.getParameter(tile, Core::ParameterId::WizardRotate)))),
+          static_cast<uint8_t>(std::round(std::get<float>(m_core.getParameter(tile, Core::ParameterId::WizardOns)))),
+          static_cast<uint8_t>(std::round(std::get<float>(m_core.getParameter(tile, Core::ParameterId::WizardOffs)))));
 
-                 { SoftButton::Right_SouthEast,
-                   [this]
-                   {
-                     m_core.setParameter(m_core.getSelectedTiles().front(), Core::ParameterId::WizardMode,
-                                         static_cast<uint8_t>(Core::WizardMode::Replace));
-                   } },
+      m_core.setParameter(tile, Core::ParameterId::Pattern, p);
+      reset();
+    };
 
-                 { SoftButton::Right_East,
-                   [this]
-                   {
-                     m_core.setParameter(m_core.getSelectedTiles().front(), Core::ParameterId::WizardMode,
-                                         static_cast<uint8_t>(Core::WizardMode::Not));
-                   } },
+    auto setMode = [&](Core::WizardMode mode)
+    { m_core.setParameter(m_core.getSelectedTile(), Core::ParameterId::WizardMode, static_cast<uint8_t>(mode)); };
 
-                 { SoftButton::Right_West, [reset] { reset(); } },
+    auto mapping = buildMapping<Toolbox::Steps>();
+    addCustomInvokations<Toolbox::Steps>(
+        mapping, Bind<ToolboxDefinition<Toolbox::Steps>::Apply>(apply),
+        Bind<ToolboxDefinition<Toolbox::Steps>::Cancel>(reset),
+        Bind<ToolboxDefinition<Toolbox::Steps>::And>([setMode] { setMode(Core::WizardMode::And); }),
+        Bind<ToolboxDefinition<Toolbox::Steps>::Or>([setMode] { setMode(Core::WizardMode::Or); }),
+        Bind<ToolboxDefinition<Toolbox::Steps>::Not>([setMode] { setMode(Core::WizardMode::Not); }));
 
-                 { SoftButton::Right_Center,
-                   [this, reset]
-                   {
-                     auto tile = m_core.getSelectedTiles().front();
-                     auto p = std::get<Core::Pattern>(m_core.getParameter(tile, Core::ParameterId::Pattern));
-
-                     p = Core::processWizard(
-                         p,
-                         static_cast<Core::WizardMode>(
-                             std::get<uint8_t>(m_core.getParameter(tile, Core::ParameterId::WizardMode))),
-                         static_cast<int8_t>(
-                             std::round(std::get<float>(m_core.getParameter(tile, Core::ParameterId::WizardRotate)))),
-                         static_cast<uint8_t>(
-                             std::round(std::get<float>(m_core.getParameter(tile, Core::ParameterId::WizardOns)))),
-                         static_cast<uint8_t>(
-                             std::round(std::get<float>(m_core.getParameter(tile, Core::ParameterId::WizardOffs)))));
-
-                     m_core.setParameter(tile, Core::ParameterId::Pattern, p);
-                     reset();
-                   } },
-             } };
+    return mapping;
   }
 
   Controller::Mapping Controller::buildTileMapping()
   {
-    return {
-      .knobs
-      = {
-          { standardBind(Knob::Center,Core::ParameterId::Gain) },
-          { standardBind(Knob::Rightmost,Core::ParameterId::Speed) },
-          { standardBind(Knob::Leftmost,Core::ParameterId::Balance)},
-          { standardBind(Knob::SouthWest,Core::ParameterId::Shuffle)},
-           },
-      .buttonReleases = {
-          { standardBindRelease(SoftButton::Left_Center,Core::ParameterId::Reverse)},
-          { SoftButton::Right_North, [this] {
-      m_touchUi.getToolboxes().getFileBrowser().dec(); } },
-          { SoftButton::Right_Center, [this] {
-      m_touchUi.getToolboxes().getFileBrowser().load(); } },
-          { SoftButton::Right_South, [this] {
-      m_touchUi.getToolboxes().getFileBrowser().inc(); } },
-          { SoftButton::Right_West, [this] {
-      m_touchUi.getToolboxes().getFileBrowser().up(); } },
-          { SoftButton::Right_East, [this] {
-      m_touchUi.getToolboxes().getFileBrowser().down(); } },
-          { SoftButton::Right_NorthEast, [this] {
-              m_touchUi.getToolboxes().getFileBrowser().prelisten(); } },
-      },
-    };
+    Controller::Mapping mapping = buildMapping<Toolbox::Tile>();
+
+    addCustomInvokations<Toolbox::Tile>(
+        mapping,
+        Bind<ToolboxDefinition<Toolbox::Tile>::Up>([this] { m_touchUi.getToolboxes().getFileBrowser().dec(); }),
+        Bind<ToolboxDefinition<Toolbox::Tile>::Down>([this] { m_touchUi.getToolboxes().getFileBrowser().inc(); }),
+        Bind<ToolboxDefinition<Toolbox::Tile>::Enter>([this] { m_touchUi.getToolboxes().getFileBrowser().down(); }),
+        Bind<ToolboxDefinition<Toolbox::Tile>::Leave>([this] { m_touchUi.getToolboxes().getFileBrowser().up(); }),
+        Bind<ToolboxDefinition<Toolbox::Tile>::Prelisten>([this]
+                                                          { m_touchUi.getToolboxes().getFileBrowser().prelisten(); }),
+        Bind<ToolboxDefinition<Toolbox::Tile>::Load>([this] { m_touchUi.getToolboxes().getFileBrowser().load(); }));
+
+    return mapping;
   }
 
   Controller::Mapping Controller::buildWaveformMapping()
