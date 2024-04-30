@@ -4,7 +4,6 @@
 #include "core/Types.h"
 #include "KnobGrid.h"
 
-#include <gtkmm/box.h>
 #include <gtkmm/label.h>
 #include <gtkmm/levelbar.h>
 
@@ -23,4 +22,5 @@ namespace Ui::Touch
 
     pack_start(*knobs);
   }
+
 }

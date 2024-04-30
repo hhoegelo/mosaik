@@ -48,6 +48,8 @@ add_library(mosaik-touchui STATIC
         sections/toolboxes/FileBrowser.h
         sections/toolboxes/Toolbox.cpp
         sections/toolboxes/Toolbox.h
+        sections/toolboxes/MinimizedToolbox.cpp
+        sections/toolboxes/MinimizedToolbox.h
 )
 
 target_compile_options(mosaik-touchui PRIVATE)

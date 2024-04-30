@@ -7,6 +7,7 @@
 #include "Steps.h"
 #include "Playground.h"
 #include "MainPlayground.h"
+#include "MinimizedToolbox.h"
 #include <gtkmm/label.h>
 #include <gtkmm/eventbox.h>
 #include <gtkmm/fixed.h>
@@ -25,10 +26,14 @@ namespace Ui::Touch
 
     auto add = [&](Gtk::Widget *w) { m_box.pack_start(*Gtk::manage(w), Gtk::PACK_SHRINK); };
 
-    add(new Toolbox(*this, Ui::Toolbox::Global, "Global", new Gtk::Label("I am minimized global toolbox"),
+    add(new Toolbox(*this, Ui::Toolbox::Global, "Global",
+                    new MinimizedToolbox({ Core::ParameterId::GlobalVolume, Core::ParameterId::GlobalTempo }),
                     new GlobalTools(core)));
 
-    add(new Toolbox(*this, Ui::Toolbox::Tile, "Tile", new Gtk::Label("I am minimized Tile toolbox"), m_tileTools));
+    add(new Toolbox(
+        *this, Ui::Toolbox::Tile, "Tile",
+        new MinimizedToolbox({ Core::ParameterId::Gain, Core::ParameterId::Mute, Core::ParameterId::Speed }),
+        m_tileTools));
 
     add(new Toolbox(*this, Ui::Toolbox::Waveform, "Waveform", new Gtk::Label("I am minimized waveform toolbox"), w));
 

@@ -1,13 +1,6 @@
 #pragma once
 
-#include "tools/ReactiveVar.h"
-#include "core/Types.h"
 #include <gtkmm/box.h>
-
-namespace Gtk
-{
-  class LevelBar;
-}
 
 namespace Core::Api
 {
@@ -21,9 +14,6 @@ namespace Ui::Touch
   {
    public:
     explicit GlobalTools(Core::Api::Interface &core);
-
-   private:
-    Gtk::Label *buildLevel(Core::ParameterId id);
   };
 
 }
