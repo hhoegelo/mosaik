@@ -48,9 +48,15 @@ add_library(mosaik-touchui STATIC
         sections/toolboxes/FileBrowser.h
         sections/toolboxes/Toolbox.cpp
         sections/toolboxes/Toolbox.h
+        Display.h
+        Display.cpp
 )
 
 target_compile_options(mosaik-touchui PRIVATE)
 target_include_directories(mosaik-touchui PUBLIC ${CMAKE_SOURCE_DIR} ${LIBS_INCLUDE_DIRS} ${clessc_INCLUDE_DIRS})
 target_link_libraries(mosaik-touchui mosaik-core ${LIBS_LIBRARIES} less)
 
+if (ENABLE_TESTING)
+    enable_testing()
+    add_subdirectory(tests)
+endif ()

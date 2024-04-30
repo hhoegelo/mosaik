@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include "LevelMeter.h"
+#include "ui/touch-ui/Display.h"
 
 namespace Ui::Touch
 {
@@ -61,7 +62,7 @@ namespace Ui::Touch
            15, 4, 1, 8);
 
     m_computations.add([&core, tileId, sampleName]()
-                       { sampleName->set_label(core.getParameterDisplay(tileId, Core::ParameterId::SampleFile)); });
+                       { sampleName->set_label(getDisplayValue(core, tileId, Core::ParameterId::SampleFile)); });
 
     m_computations.add(
         [this, &core, &dsp, tileId, seconds]()

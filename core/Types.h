@@ -84,12 +84,6 @@ namespace Core
     constexpr static Type min = 20.0f;
     constexpr static Type max = 400.0f;
     constexpr static Type coarse = 1.0f;
-    constexpr static auto unit = "bpm";
-
-    static std::string format(Type t)
-    {
-      return Tools::format("%3.1f %s", t, unit);
-    }
   };
 
   template <> struct ParameterDescription<ParameterId::GlobalVolume>
@@ -100,12 +94,6 @@ namespace Core
     constexpr static Type min = -72.0f;
     constexpr static Type max = 0.0f;
     constexpr static Type coarse = 0.5f;
-    constexpr static auto unit = "dB";
-
-    static std::string format(Type t)
-    {
-      return Tools::format("%2.1f %s", t, unit);
-    }
   };
 
   template <> struct ParameterDescription<ParameterId::Selected>
@@ -113,11 +101,6 @@ namespace Core
     constexpr static ParameterId id = ParameterId::Selected;
     using Type = Bool;
     constexpr static auto name = "selected";
-
-    static std::string format(Type t)
-    {
-      return Tools::format("%s", t ? "yes" : "no");
-    }
   };
 
   template <> struct ParameterDescription<ParameterId::Reverse>
@@ -125,11 +108,6 @@ namespace Core
     constexpr static ParameterId id = ParameterId::Reverse;
     using Type = Bool;
     constexpr static auto name = "reverse";
-
-    static std::string format(Type t)
-    {
-      return Tools::format("%s", t ? "<<<" : ">>>");
-    }
   };
 
   template <> struct ParameterDescription<ParameterId::SampleFile>
@@ -137,11 +115,6 @@ namespace Core
     constexpr static ParameterId id = ParameterId::SampleFile;
     using Type = Path;
     constexpr static auto name = "sample";
-
-    static std::string format(const Type& t)
-    {
-      return t.string();
-    }
   };
 
   template <> struct ParameterDescription<ParameterId::Pattern>
@@ -149,11 +122,6 @@ namespace Core
     constexpr static ParameterId id = ParameterId::Pattern;
     using Type = Pattern;
     constexpr static auto name = "pattern";
-
-    static std::string format(const Type& t)
-    {
-      return "n/a";
-    }
   };
 
   template <> struct ParameterDescription<ParameterId::Mute>
@@ -161,11 +129,6 @@ namespace Core
     constexpr static ParameterId id = ParameterId::Mute;
     using Type = Bool;
     constexpr static auto name = "mute";
-
-    static std::string format(const Type& t)
-    {
-      return Tools::format("%s", t ? "muted" : "unmuted");
-    }
   };
 
   template <> struct ParameterDescription<ParameterId::Balance>
@@ -177,11 +140,6 @@ namespace Core
     constexpr static Type max = 1.0f;
     constexpr static Type coarse = 0.01f;
     constexpr static auto unit = "%";
-
-    static std::string format(Type t)
-    {
-      return Tools::format("%3.2f %s", 100 * t, unit);
-    }
   };
 
   template <> struct ParameterDescription<ParameterId::Gain>
@@ -193,11 +151,6 @@ namespace Core
     constexpr static Type max = 6.0f;
     constexpr static Type coarse = 0.1f;
     constexpr static auto unit = "dB";
-
-    static std::string format(Type t)
-    {
-      return Tools::format("%3.2f %s", t, unit);
-    }
   };
 
   template <> struct ParameterDescription<ParameterId::Speed>
@@ -208,14 +161,6 @@ namespace Core
     constexpr static Type min = -6.0f;
     constexpr static Type max = 6.0f;
     constexpr static Type coarse = 0.01f;
-
-    static std::string format(Type t)
-    {
-      int semitones = std::round(t * 12);
-      int octaves = semitones / 12;
-      semitones -= octaves * 12;
-      return Tools::format("%d oct, %d semi", octaves, std::abs(semitones));
-    }
   };
 
   template <> struct ParameterDescription<ParameterId::EnvelopeFadeInPos>
@@ -223,11 +168,6 @@ namespace Core
     constexpr static ParameterId id = ParameterId::EnvelopeFadeInPos;
     constexpr static auto name = "envelopeFadeInPos";
     using Type = FramePos;
-
-    static std::string format(Type t)
-    {
-      return Tools::format("%zu", t);
-    }
   };
 
   template <> struct ParameterDescription<ParameterId::EnvelopeFadedInPos>
@@ -235,11 +175,6 @@ namespace Core
     constexpr static ParameterId id = ParameterId::EnvelopeFadedInPos;
     constexpr static auto name = "envelopeFadedInPos";
     using Type = FramePos;
-
-    static std::string format(Type t)
-    {
-      return Tools::format("%zu", t);
-    }
   };
 
   template <> struct ParameterDescription<ParameterId::EnvelopeFadeOutPos>
@@ -247,11 +182,6 @@ namespace Core
     constexpr static ParameterId id = ParameterId::EnvelopeFadeOutPos;
     constexpr static auto name = "envelopeFadeOutPos";
     using Type = FramePos;
-
-    static std::string format(Type t)
-    {
-      return Tools::format("%zu", t);
-    }
   };
 
   template <> struct ParameterDescription<ParameterId::EnvelopeFadedOutPos>
@@ -259,11 +189,6 @@ namespace Core
     constexpr static ParameterId id = ParameterId::EnvelopeFadedOutPos;
     constexpr static auto name = "envelopeFadedOutPos";
     using Type = FramePos;
-
-    static std::string format(Type t)
-    {
-      return Tools::format("%zu", t);
-    }
   };
 
   template <> struct ParameterDescription<ParameterId::TriggerFrame>
@@ -271,11 +196,6 @@ namespace Core
     constexpr static ParameterId id = ParameterId::TriggerFrame;
     constexpr static auto name = "triggerFrame";
     using Type = FramePos;
-
-    static std::string format(Type t)
-    {
-      return Tools::format("%zu", t);
-    }
   };
 
   template <> struct ParameterDescription<ParameterId::Shuffle>
@@ -287,11 +207,6 @@ namespace Core
     constexpr static Type max = 1.0f;
     constexpr static Type coarse = 0.01f;
     constexpr static auto unit = "%";
-
-    static std::string format(Type t)
-    {
-      return Tools::format("%3.2f %s", 100 * t, unit);
-    }
   };
 
   template <> struct ParameterDescription<ParameterId::WizardMode>
@@ -299,22 +214,6 @@ namespace Core
     constexpr static ParameterId id = ParameterId::WizardMode;
     constexpr static auto name = "wizardMode";
     using Type = uint8_t;
-
-    static std::string format(Type t)
-    {
-      switch(static_cast<WizardMode>(t))
-      {
-        case Or:
-          return "Or";
-        case And:
-          return "And";
-        case Replace:
-          return "Replace";
-        case Not:
-          return "Not";
-      }
-      return "n/a";
-    }
   };
 
   template <> struct ParameterDescription<ParameterId::WizardRotate>
@@ -325,11 +224,6 @@ namespace Core
     constexpr static Type min = -63.0f;
     constexpr static Type max = 63.0f;
     constexpr static Type coarse = 0.1f;
-
-    static std::string format(Type t)
-    {
-      return Tools::format("%2.0f steps", std::round(t));
-    }
   };
 
   template <> struct ParameterDescription<ParameterId::WizardOns>
@@ -340,11 +234,6 @@ namespace Core
     constexpr static Type min = 0.0f;
     constexpr static Type max = 64.0f;
     constexpr static Type coarse = 0.1f;
-
-    static std::string format(Type t)
-    {
-      return Tools::format("%2.0f steps", std::round(t));
-    }
   };
 
   template <> struct ParameterDescription<ParameterId::WizardOffs>
@@ -355,11 +244,6 @@ namespace Core
     constexpr static Type min = 0.0f;
     constexpr static Type max = 64.0f;
     constexpr static Type coarse = 0.1f;
-
-    static std::string format(Type t)
-    {
-      return Tools::format("%2.0f steps", std::round(t));
-    }
   };
 
   template <ParameterId P> struct ParameterDescriptionPlayground
@@ -369,11 +253,6 @@ namespace Core
     constexpr static Type min = 0.0f;
     constexpr static Type max = 1.0f;
     constexpr static Type coarse = 0.01f;
-
-    static std::string format(Type t)
-    {
-      return Tools::format("%3.1f %%", std::round(100 * t));
-    }
   };
 
   template <>
@@ -467,9 +346,9 @@ namespace Core
     constexpr static auto name = "main-playground-7";
   };
 
-  template <ParameterId... ids> struct Parameters
+  template <template <ParameterId> typename Wrapper, ParameterId... ids> struct Parameters
   {
-    using Descriptors = std::tuple<ParameterDescription<ids>...>;
+    using Wrapped = std::tuple<typename Wrapper<ids>::Wrapped...>;
 
     static bool contains(ParameterId id)
     {
@@ -477,13 +356,15 @@ namespace Core
     }
   };
 
+  template <template <ParameterId> typename Wrapper>
   using GlobalParameters
-      = Parameters<ParameterId::GlobalTempo, ParameterId::GlobalVolume, ParameterId::MainPlayground1,
+      = Parameters<Wrapper, ParameterId::GlobalTempo, ParameterId::GlobalVolume, ParameterId::MainPlayground1,
                    ParameterId::MainPlayground2, ParameterId::MainPlayground3, ParameterId::MainPlayground4,
                    ParameterId::MainPlayground5, ParameterId::MainPlayground6, ParameterId::MainPlayground7>;
 
+  template <template <ParameterId> typename Wrapper>
   using TileParameters
-      = Parameters<ParameterId::Selected, ParameterId::SampleFile, ParameterId::Reverse, ParameterId::Pattern,
+      = Parameters<Wrapper, ParameterId::Selected, ParameterId::SampleFile, ParameterId::Reverse, ParameterId::Pattern,
                    ParameterId::Balance, ParameterId::Gain, ParameterId::Mute, ParameterId::Speed,
                    ParameterId::EnvelopeFadeInPos, ParameterId::EnvelopeFadedInPos, ParameterId::EnvelopeFadeOutPos,
                    ParameterId::EnvelopeFadedOutPos, ParameterId::TriggerFrame, ParameterId::Shuffle,
@@ -491,4 +372,17 @@ namespace Core
                    ParameterId::Playground1, ParameterId::Playground2, ParameterId::Playground3,
                    ParameterId::Playground4, ParameterId::Playground5, ParameterId::Playground6,
                    ParameterId::Playground7>;
+
+  template <ParameterId id> struct WrapParameterDescription
+  {
+    using Wrapped = ParameterDescription<id>;
+  };
+
+  template <ParameterId id> struct NoWrap
+  {
+    using Wrapped = void;
+  };
+
+  using GlobalParameterDescriptors = GlobalParameters<WrapParameterDescription>::Wrapped;
+  using TileParameterDescriptors = TileParameters<WrapParameterDescription>::Wrapped;
 }

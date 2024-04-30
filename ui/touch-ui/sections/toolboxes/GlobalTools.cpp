@@ -4,9 +4,7 @@
 #include "core/Types.h"
 #include "KnobGrid.h"
 
-#include <gtkmm/box.h>
-#include <gtkmm/label.h>
-#include <gtkmm/levelbar.h>
+#include <ui/touch-ui/Display.h>
 
 namespace Ui::Touch
 {
@@ -16,7 +14,7 @@ namespace Ui::Touch
     auto knobs = Gtk::manage(new KnobGrid());
 
     auto addKnob = [&](const char *title, Core::ParameterId id, Knob k)
-    { knobs->set(k, title, [&core, id] { return core.getParameterDisplay({}, id); }); };
+    { knobs->set(k, title, [&core, id] { return getDisplayValue(core, {}, id); }); };
 
     addKnob("Volume", Core::ParameterId::GlobalVolume, Knob::Center);
     addKnob("Tempo", Core::ParameterId::GlobalTempo, Knob::SouthEast);

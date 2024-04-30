@@ -25,12 +25,12 @@ namespace Core::Api
         };
 
         if(j.contains("globals"))
-          std::apply([&](auto... a) { (loadParameter(j["globals"], {}, a), ...); }, GlobalParameters::Descriptors {});
+          std::apply([&](auto... a) { (loadParameter(j["globals"], {}, a), ...); }, GlobalParameterDescriptors {});
 
         if(j.contains("tiles"))
           for(uint8_t i = 0; i < NUM_TILES; i++)
             std::apply([&](auto... a) { (loadParameter(j["tiles"][i], TileId { i }, a), ...); },
-                       TileParameters::Descriptors {});
+                       TileParameterDescriptors {});
       }
       catch(...)
       {
@@ -46,11 +46,10 @@ namespace Core::Api
     auto saveParameter = [&](auto &json, TileId id, auto p)
     { json[p.name] = std::get<typename decltype(p)::Type>(getParameter(id, p.id)); };
 
-    std::apply([&](auto... a) { (saveParameter(j["globals"], {}, a), ...); }, GlobalParameters::Descriptors {});
+    std::apply([&](auto... a) { (saveParameter(j["globals"], {}, a), ...); }, GlobalParameterDescriptors {});
 
     for(uint8_t i = 0; i < NUM_TILES; i++)
-      std::apply([&](auto... a) { (saveParameter(j["tiles"][i], TileId { i }, a), ...); },
-                 TileParameters::Descriptors {});
+      std::apply([&](auto... a) { (saveParameter(j["tiles"][i], TileId { i }, a), ...); }, TileParameterDescriptors {});
 
     std::ofstream(path) << j;
   }
@@ -111,8 +110,8 @@ namespace Core::Api
     return static_cast<Step>(std::round(static_cast<double>(pos) / framesPer16th));
   }
 
-  std::string Interface::getFirstSelectedTileParameterDisplay(ParameterId parameterId) const
+  TileId Interface::getSelectedTile() const
   {
-    return getParameterDisplay(getSelectedTiles().front(), parameterId);
+    return getSelectedTiles().front();
   }
 }

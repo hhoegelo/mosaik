@@ -2,6 +2,7 @@
 #include "KnobGrid.h"
 #include "SoftButtonGrid.h"
 #include "core/api/Interface.h"
+#include <ui/touch-ui/Display.h>
 
 namespace Ui::Touch
 {
@@ -10,7 +11,7 @@ namespace Ui::Touch
     auto knobs = Gtk::manage(new KnobGrid());
 
     auto addKnob = [&](const char *title, Core::ParameterId id, Knob k)
-    { knobs->set(k, title, [&core, id] { return core.getFirstSelectedTileParameterDisplay(id); }); };
+    { knobs->set(k, title, [&core, id] { return getDisplayValue(core, id); }); };
 
     addKnob("1", Core::ParameterId::Playground1, Knob::Leftmost);
     addKnob("2", Core::ParameterId::Playground2, Knob::Rightmost);

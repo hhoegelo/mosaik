@@ -25,7 +25,6 @@ namespace Core::Api
     void incParameter(TileId tileId, ParameterId parameterId, int steps) override;
     void setPrelistenSample(const Path &path) override;
     [[nodiscard]] ParameterValue getParameter(TileId tileId, ParameterId parameterId) const override;
-    [[nodiscard]] std::string getParameterDisplay(TileId tileId, ParameterId parameterId) const override;
     [[nodiscard]] Dsp::SharedSampleBuffer getSamples(TileId tileId) const override;
 
     struct ParamAccess
@@ -34,7 +33,6 @@ namespace Core::Api
       std::function<void(const ParameterValue &)> load;
       std::function<ParameterValue()> get;
       std::function<void(int steps)> inc;
-      std::function<std::string(const ParameterValue &)> display;
     };
 
    private:

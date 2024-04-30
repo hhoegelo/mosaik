@@ -7,9 +7,12 @@
 #include "Steps.h"
 #include "Playground.h"
 #include "MainPlayground.h"
+#include "GenericToolbox.h"
+#include "ui/touch-ui/tools/WidgetTools.h"
 #include <gtkmm/label.h>
 #include <gtkmm/eventbox.h>
 #include <gtkmm/fixed.h>
+#include <ui/touch-ui/tools/WidgetTools.h>
 
 namespace Ui::Touch
 {
@@ -19,6 +22,13 @@ namespace Ui::Touch
       , m_core(core)
       , m_box(*Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL)))
   {
+    m_box.pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Global>(*this)));
+    m_box.pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Tile>(*this, new TileTools(core))));
+    m_box.pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Waveform>(*this, new Touch::Waveform(core))));
+    m_box.pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Steps>(*this)));
+    m_box.pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Playground>(*this)));
+    m_box.pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::MainPlayground>(*this)));
+    /*
     m_tileTools = new TileTools(core);
     auto w = new Touch::Waveform(core);
     m_waveform = w;
@@ -40,7 +50,7 @@ namespace Ui::Touch
 
     add(new Toolbox(*this, Ui::Toolbox::MainPlayground, "MainPlayground",
                     new Gtk::Label("I am minimized MainPlayground toolbox"), new MainPlayground(core)));
-
+*/
     get_style_context()->add_class("toolboxes");
 
     this->add(m_box);
@@ -55,12 +65,12 @@ namespace Ui::Touch
 
   WaveformInterface &Toolboxes::getWaveform() const
   {
-    return *m_waveform;
+    return *findChildWidget<WaveformInterface>(this);
   }
 
   FileBrowserInterface &Toolboxes::getFileBrowser() const
   {
-    return m_tileTools->getFileBrowser();
+    return *findChildWidget<FileBrowserInterface>(this);
   }
 
   void Toolboxes::selectToolbox(Ui::Toolbox t)

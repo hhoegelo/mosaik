@@ -21,13 +21,11 @@ namespace Core::Api
     virtual void setPrelistenSample(const Path &path) = 0;
 
     [[nodiscard]] virtual ParameterValue getParameter(TileId tileId, ParameterId parameterId) const = 0;
-    [[nodiscard]] virtual std::string getParameterDisplay(TileId tileId, ParameterId parameterId) const = 0;
-
     [[nodiscard]] virtual Dsp::SharedSampleBuffer getSamples(TileId tileId) const = 0;
     [[nodiscard]] std::vector<TileId> getSelectedTiles() const;
 
     // Convenience
-    [[nodiscard]] std::string getFirstSelectedTileParameterDisplay(ParameterId parameterId) const;
+    TileId getSelectedTile() const;
     [[nodiscard]] Step loopPositionToStep(Dsp::FramePos pos) const;
     [[nodiscard]] Pattern getMergedPattern() const;
     void incSelectedTilesParameter(ParameterId parameterId, int steps);

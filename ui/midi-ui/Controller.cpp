@@ -76,7 +76,8 @@ namespace Ui::Midi
   {
     auto r = [this, p](int inc)
     {
-      auto tile = Core::GlobalParameters ::contains(p) ? Core::TileId {} : m_core.getSelectedTiles().front();
+      auto tile
+          = Core::GlobalParameters<Core::NoWrap>::contains(p) ? Core::TileId {} : m_core.getSelectedTiles().front();
       m_core.incParameter(tile, p, inc);
     };
     return std::make_pair(k, r);
@@ -92,7 +93,8 @@ namespace Ui::Midi
   {
     auto r = [this, p](int inc)
     {
-      auto tile = Core::GlobalParameters::contains(p) ? Core::TileId {} : m_core.getSelectedTiles().front();
+      auto tile
+          = Core::GlobalParameters<Core::NoWrap>::contains(p) ? Core::TileId {} : m_core.getSelectedTiles().front();
       auto fpp = m_touchUi.getToolboxes().getWaveform().getFramesPerPixel();
       m_core.incParameter(tile, p, inc * fpp);
     };

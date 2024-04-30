@@ -2,6 +2,7 @@
 #include "core/api/Interface.h"
 #include "core/Types.h"
 #include "FileBrowser.h"
+#include "ui/touch-ui/Display.h"
 
 #include <gtkmm/filechooserwidget.h>
 #include <gtkmm/grid.h>
@@ -64,7 +65,7 @@ namespace Ui::Touch
       auto level = Gtk::manage(new Gtk::Label());
       box->add(*level);
       controls->attach(*box, x, y, 1, 1);
-      m_computations.add([this, level, id] { level->set_label(m_core.getFirstSelectedTileParameterDisplay(id)); });
+      m_computations.add([&core, level, id] { level->set_label(getDisplayValue(core, id)); });
     };
 
     addParameter("Gain", Core::ParameterId::Gain, 2, 2);

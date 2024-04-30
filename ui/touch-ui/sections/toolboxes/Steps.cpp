@@ -5,6 +5,7 @@
 #include "core/api/Interface.h"
 #include <gtkmm/label.h>
 #include <gtkmm/grid.h>
+#include <ui/touch-ui/Display.h>
 
 namespace Ui::Touch
 {
@@ -19,7 +20,7 @@ namespace Ui::Touch
     auto buttons = Gtk::manage(new SoftButtonGrid(SoftButtonGrid::Where::Right));
 
     auto addKnob = [&](const char *title, Core::ParameterId id, Knob k)
-    { knobs->set(k, title, [this, id] { return m_core.getFirstSelectedTileParameterDisplay(id); }); };
+    { knobs->set(k, title, [&core, id] { return getDisplayValue(core, id); }); };
 
     auto addButton = [buttons](const char *title, SoftButton s) { buttons->set(s, title, [] { return ""; }); };
 

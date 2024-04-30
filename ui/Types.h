@@ -1,8 +1,17 @@
 #pragma once
 
 #include <cstdint>
+#include <map>
 #include <string>
+#include <array>
 #include <core/Types.h>
+
+template <class... Ts> struct overloaded : Ts...
+{
+  using Ts::operator()...;
+};
+// explicit deduction guide (not needed as of C++20)
+template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
 namespace Ui
 {
@@ -135,6 +144,7 @@ namespace Ui
 
   enum class Color
   {
+    None = -1,
     Red = 0,
     Blue = 1,
     Green = 2,
@@ -248,4 +258,308 @@ namespace Ui
     }
     return "none";
   }
+
+  template <Toolbox t> struct ToolboxDefinition;
+
+  template <typename... Entries> struct List
+  {
+    template <typename T> void forEach(const T &cb)
+    {
+      (cb(Entries {}), ...);
+    }
+  };
+
+  template <> struct ToolboxDefinition<Toolbox::Global>
+  {
+    constexpr static auto title = "Global";
+
+    using Minimized = List<Core::ParameterId::GlobalVolume, Core::ParameterId::GlobalTempo>;
+
+    static constexpr std::tuple maximized = {
+      std::make_tuple(Core::ParameterId::GlobalVolume, Color::Green, Knob::Center),
+      std::make_tuple(Core::ParameterId::GlobalTempo, Color::Blue, Knob::Leftmost),
+    };
+  };
+
+  template <> struct ToolboxDefinition<Toolbox::MainPlayground>
+  {
+    constexpr static auto title = "Main Playground";
+
+    static constexpr Core::ParameterId minimized[] {};
+
+    static constexpr std::tuple maximized = {};
+  };
+
+  template <> struct ToolboxDefinition<Toolbox::Playground>
+  {
+    constexpr static auto title = "Playground";
+
+    static constexpr Core::ParameterId minimized[] {};
+
+    static constexpr std::tuple maximized = {};
+  };
+
+  template <> struct ToolboxDefinition<Toolbox::Steps>
+  {
+    constexpr static auto title = "Step Wizard";
+
+    static constexpr Core::ParameterId minimized[] {};
+
+    static constexpr std::tuple maximized = {};
+  };
+
+  template <> struct ToolboxDefinition<Toolbox::Tile>
+  {
+    constexpr static auto title = "Tile";
+
+    static constexpr Core::ParameterId minimized[] {};
+
+    static constexpr std::tuple maximized = {};
+  };
+
+  template <> struct ToolboxDefinition<Toolbox::Waveform>
+  {
+    constexpr static auto title = "Waveform";
+
+    static constexpr Core::ParameterId minimized[] {};
+
+    static constexpr std::tuple maximized = {};
+  };
+
+  template <Core::ParameterId id> struct ParameterDescription : Core::ParameterDescription<id>
+  {
+    static std::string format(typename Core::ParameterDescription<id>::Type t)
+    {
+      return "";
+    }
+  };
+
+  template <>
+  struct ParameterDescription<Core::ParameterId::GlobalTempo>
+      : Core::ParameterDescription<Core::ParameterId::GlobalTempo>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%2.1f bpm", t);
+    }
+
+    constexpr static auto title = "Tempo";
+  };
+
+  template <>
+  struct ParameterDescription<Core::ParameterId::GlobalVolume>
+      : Core::ParameterDescription<Core::ParameterId::GlobalVolume>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%2.1f dB", t);
+    }
+
+    constexpr static auto title = "Volume";
+  };
+
+  template <>
+  struct ParameterDescription<Core::ParameterId::Selected> : Core::ParameterDescription<Core::ParameterId::Selected>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%s", t ? "selected" : "not selected");
+    }
+
+    constexpr static auto title = "Selected";
+  };
+
+  template <>
+  struct ParameterDescription<Core::ParameterId::Reverse> : Core::ParameterDescription<Core::ParameterId::Reverse>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%s", t ? "<<<" : ">>>");
+    }
+
+    constexpr static auto title = "Reverse";
+  };
+
+  template <> struct ParameterDescription<Core::ParameterId::Mute> : Core::ParameterDescription<Core::ParameterId::Mute>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%s", t ? "Muted" : "Unmuted");
+    }
+
+    constexpr static auto title = "Mute";
+  };
+
+  template <>
+  struct ParameterDescription<Core::ParameterId::Balance> : Core::ParameterDescription<Core::ParameterId::Balance>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%3.2f %%", 100 * t);
+    }
+
+    constexpr static auto title = "Balance";
+  };
+
+  template <> struct ParameterDescription<Core::ParameterId::Gain> : Core::ParameterDescription<Core::ParameterId::Gain>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%3.2f dB", t);
+    }
+
+    constexpr static auto title = "Gain";
+  };
+
+  template <>
+  struct ParameterDescription<Core::ParameterId::Speed> : Core::ParameterDescription<Core::ParameterId::Speed>
+  {
+    static std::string format(Type t)
+    {
+      int semitones = std::round(t * 12);
+      int octaves = semitones / 12;
+      semitones -= octaves * 12;
+      return Tools::format("%d oct, %d semi", octaves, std::abs(semitones));
+    }
+
+    constexpr static auto title = "Speed";
+  };
+
+  template <>
+  struct ParameterDescription<Core::ParameterId::EnvelopeFadeInPos>
+      : Core::ParameterDescription<Core::ParameterId::EnvelopeFadeInPos>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%zu", t);
+    }
+
+    constexpr static auto title = "Fade In";
+  };
+
+  template <>
+  struct ParameterDescription<Core::ParameterId::EnvelopeFadedInPos>
+      : Core::ParameterDescription<Core::ParameterId::EnvelopeFadedInPos>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%zu", t);
+    }
+
+    constexpr static auto title = "Faded In";
+  };
+
+  template <>
+  struct ParameterDescription<Core::ParameterId::EnvelopeFadeOutPos>
+      : Core::ParameterDescription<Core::ParameterId::EnvelopeFadeOutPos>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%zu", t);
+    }
+
+    constexpr static auto title = "Fade Out";
+  };
+
+  template <>
+  struct ParameterDescription<Core::ParameterId::EnvelopeFadedOutPos>
+      : Core::ParameterDescription<Core::ParameterId::EnvelopeFadedOutPos>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%zu", t);
+    }
+
+    constexpr static auto title = "Faded Out";
+  };
+
+  template <>
+  struct ParameterDescription<Core::ParameterId::TriggerFrame>
+      : Core::ParameterDescription<Core::ParameterId::TriggerFrame>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%zu", t);
+    }
+
+    constexpr static auto title = "Hit Point";
+  };
+
+  template <>
+  struct ParameterDescription<Core::ParameterId::Shuffle> : Core::ParameterDescription<Core::ParameterId::Shuffle>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%3.2f %s", 100 * t, unit);
+    }
+
+    constexpr static auto title = "Shuffle";
+  };
+
+  template <>
+  struct ParameterDescription<Core::ParameterId::WizardMode> : Core::ParameterDescription<Core::ParameterId::WizardMode>
+  {
+    static std::string format(Type t)
+    {
+      switch(static_cast<Core::WizardMode>(t))
+      {
+        case Core::Or:
+          return "Or";
+        case Core::And:
+          return "And";
+        case Core::Replace:
+          return "Replace";
+        case Core::Not:
+          return "Not";
+      }
+      return "n/a";
+    }
+
+    constexpr static auto title = "Wizard Mode";
+  };
+
+  template <>
+  struct ParameterDescription<Core::ParameterId::WizardRotate>
+      : Core::ParameterDescription<Core::ParameterId::WizardRotate>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%2.0f steps", std::round(t));
+    }
+
+    constexpr static auto title = "Rotate";
+  };
+
+  template <>
+  struct ParameterDescription<Core::ParameterId::WizardOns> : Core::ParameterDescription<Core::ParameterId::WizardOns>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%2.0f steps", std::round(t));
+    }
+
+    constexpr static auto title = "On's";
+  };
+
+  template <>
+  struct ParameterDescription<Core::ParameterId::WizardOffs> : Core::ParameterDescription<Core::ParameterId::WizardOffs>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%2.0f steps", std::round(t));
+    }
+
+    constexpr static auto title = "Off's";
+  };
+
+  template <Core::ParameterId P> struct ParameterDescriptionPlayground : Core::ParameterDescription<P>
+  {
+    static std::string format(typename Core::ParameterDescription<P>::Type t)
+    {
+      return Tools::format("%3.1f %%", std::round(100 * t));
+    }
+
+    constexpr static auto title = "Playground";
+  };
+
 }

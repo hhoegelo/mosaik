@@ -21,9 +21,6 @@ namespace Ui::Touch
   {
    public:
     explicit GlobalTools(Core::Api::Interface &core);
-
-   private:
-    Gtk::Label *buildLevel(Core::ParameterId id);
   };
 
 }
