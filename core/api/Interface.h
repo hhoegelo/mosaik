@@ -27,7 +27,6 @@ namespace Core::Api
     // Convenience
     TileId getSelectedTile() const;
     [[nodiscard]] Step loopPositionToStep(Dsp::FramePos pos) const;
-    [[nodiscard]] Pattern getMergedPattern() const;
     void incSelectedTilesParameter(ParameterId parameterId, int steps);
     void toggleSelectedTilesParameter(ParameterId parameterId);
 

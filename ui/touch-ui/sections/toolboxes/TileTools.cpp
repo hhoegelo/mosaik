@@ -1,8 +1,8 @@
 #include "TileTools.h"
-#include "FileBrowser.h"
 #include <ui/touch-ui/tools/WidgetTools.h>
 #include <gtkmm/filechooserwidget.h>
-#include <gtkmm/scrolledwindow.h>
+#include <gtkmm/treepath.h>
+#include <gtkmm/treeview.h>
 
 namespace Ui::Touch
 {

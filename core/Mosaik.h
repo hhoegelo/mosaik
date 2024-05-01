@@ -10,6 +10,11 @@
 #include <map>
 #include <utility>
 
+namespace Core
+{
+  template <ParameterId id> struct ParameterDescriptor;
+}
+
 namespace Core::Api
 {
   class Mosaik : public Interface
@@ -40,7 +45,7 @@ namespace Core::Api
     template <typename Parameters, typename Targets, size_t... idx>
     void bindParameters(std::integer_sequence<size_t, idx...> int_seq, TileId tileId, Targets targets);
     template <typename Parameters, typename Targets, size_t idx> void bindParameter(TileId tileId, Targets targets);
-    template <ParameterId id, typename T = ParameterDescription<id>::Type>
+    template <ParameterId id, typename T = ParameterDescriptor<id>::Type>
     void bindParameter(TileId tileId, Tools::ReactiveVar<T> &target);
 
     [[nodiscard]] Dsp::AudioKernel *newDspKernel(const DataModel &dataModel) const;

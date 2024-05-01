@@ -2,6 +2,6 @@
 #include <core/Types.h>
 #include <ui/Types.h>
 
-TEST_CASE("interpret UI::ParameterDescription correctly")
+TEST_CASE("interpret UI::ParameterDescriptor correctly")
 {
 }

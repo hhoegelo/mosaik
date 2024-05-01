@@ -42,27 +42,24 @@ namespace Ui
       void setLed(Led led, Color color);
       void showPattern();
 
-      template <Ui::Toolbox T, Core::ParameterId ID> std::pair<Knob, std::function<void(int)>> bindKnobRotation();
-
-      template <Ui::Toolbox T, Core::ParameterId ID> std::pair<SoftButton, std::function<void()>> bindButtonToggle();
-
-      std::pair<Knob, std::function<void(int)>> standardZoomedBind(Knob k, Core::ParameterId p);
-
       struct Mapping
       {
-        std::map<Knob, std::function<void(int)>> knobs;
-        std::map<SoftButton, std::function<void(ButtonEvent)>> buttons;
-        std::map<SoftButton, std::function<void()>> buttonPresses;
-        std::map<SoftButton, std::function<void()>> buttonReleases;
+        std::map<Knob, std::function<void(int)>> knobIncDecReleased;
+        std::map<Knob, std::function<void(int)>> knobIncDecPressed;
+        std::map<SoftButton, std::function<void()>> buttonPressed;
+        std::map<SoftButton, std::function<void()>> buttonReleased;
       };
-
-      template <Ui::Toolbox T, typename... Bindings> void addCustomInvokations(Mapping &mappings, Bindings... bindings);
 
       Mapping createMapping(Ui::Toolbox t);
       template <Ui::Toolbox T> Mapping buildMapping();
-      Mapping buildTileMapping();
-      Mapping buildStepMapping();
-      Mapping buildWaveformMapping();
+
+      template <Toolbox T, typename D> std::pair<Knob, std::function<void(int)>> bindKnobUiParameterAction();
+      template <Toolbox T, typename D> std::pair<SoftButton, std::function<void()>> bindButtonUiParameterAction();
+      template <Toolbox T, typename D> std::pair<SoftButton, std::function<void()>> bindButtonUiInvokeAction();
+      template <Toolbox T, typename D> std::pair<Knob, std::function<void(int)>> bindKnobUiInvokeAction();
+
+      template <Toolbox T, typename D> void invokeButtonAction();
+      template <Toolbox T, typename D> void invokeKnobAction(int incs);
 
       Core::Api::Interface &m_core;
       Ui::Midi::Interface &m_midiUi;
@@ -73,6 +70,8 @@ namespace Ui
 
       Tools::ReactiveVar<Step> m_currentStep { 0 };
       std::array<Color, static_cast<size_t>(Led::NUM_LEDS)> m_ledLatch {};
+
+      std::array<bool, static_cast<size_t>(SoftButton::MAX_BUTTON_ID)> m_buttonState {};
     };
   }
 }

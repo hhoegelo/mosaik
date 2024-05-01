@@ -1,6 +1,7 @@
 #include <cmath>
 #include "Interface.h"
 #include "ui/midi-ui/Interface.h"
+#include <core/ParameterDescriptor.h>
 
 #define JSON_ASSERT(x)
 #include <tools/json.h>
@@ -63,21 +64,6 @@ namespace Core::Api
         ret.emplace_back(c);
 
     return ret;
-  }
-
-  Core::Pattern Interface::getMergedPattern() const
-  {
-    Core::Pattern merged {};
-
-    for(const auto &tile : getSelectedTiles())
-    {
-      auto pattern = std::get<Core::Pattern>(getParameter(tile, Core::ParameterId::Pattern));
-
-      for(size_t i = 0; i < merged.size(); i++)
-        merged[i] |= pattern[i];
-    }
-
-    return merged;
   }
 
   void Interface::setStep(Step step, bool value)

@@ -93,12 +93,30 @@
   }
 
 
-  .section .header {
-    border: 1px solid black;
-    background: gray;
-    color: white;
-    font-size: xx-large;
-    font-weight: bold;
+  .section {
+    .toolbox {
+      .header {
+        border: 1px solid black;
+        color: white;
+        font-size: x-large;
+
+      }
+
+      .minimized {
+        .header {
+          background: gray;
+          font-weight: normal;
+        }
+      }
+
+      .maximized {
+        .header {
+          background: orange;
+          font-weight: bold;
+        }
+      }
+    }
+
   }
 
   .knobs {

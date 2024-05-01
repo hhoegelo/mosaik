@@ -1,6 +1,7 @@
 #include "Mosaik.h"
 #include "StepWizard.h"
 #include <dsp/api/control/Interface.h>
+#include <core/ParameterDescriptor.h>
 #include <cmath>
 
 namespace Core::Api
@@ -12,7 +13,7 @@ namespace Core::Api
   {
     static Mosaik::ParamAccess bind(ICore &, IDsp &, TileId, Tools::ReactiveVar<V> &target)
     {
-      using T = ParameterDescription<id>;
+      using T = ParameterDescriptor<id>;
       return { .set = [&target](const auto &v) { target = std::get<V>(v); },
                .load = [&target](const auto &v) { target = std::get<V>(v); },
                .get = [&target]() -> ParameterValue { return target.get(); },
@@ -24,7 +25,7 @@ namespace Core::Api
   {
     static Mosaik::ParamAccess bind(ICore &, IDsp &, TileId, Tools::ReactiveVar<float> &target)
     {
-      using T = ParameterDescription<id>;
+      using T = ParameterDescriptor<id>;
       return { .set = [&target](const auto &v) { target = std::clamp(std::get<float>(v), T::min, T::max); },
                .load = [&target](const auto &v) { target = std::get<float>(v); },
                .get = [&target]() -> ParameterValue { return target.get(); },
@@ -37,7 +38,7 @@ namespace Core::Api
   {
     static Mosaik::ParamAccess bind(ICore &, IDsp &, TileId, Tools::ReactiveVar<bool> &target)
     {
-      using T = ParameterDescription<id>;
+      using T = ParameterDescriptor<id>;
       return { .set = [&target](const auto &v) { target = std::get<bool>(v); },
                .load = [&target](const auto &v) { target = std::get<bool>(v); },
                .get = [&target]() -> ParameterValue { return target.get(); },
@@ -54,7 +55,7 @@ namespace Core::Api
   {
     static Mosaik::ParamAccess bind(ICore &core, IDsp &, TileId tileId, Tools::ReactiveVar<bool> &target)
     {
-      using T = ParameterDescription<ParameterId::Selected>;
+      using T = ParameterDescriptor<ParameterId::Selected>;
       return { .set =
                    [&target, &core, tileId](const auto &v)
                {
@@ -80,7 +81,7 @@ namespace Core::Api
   {
     static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, TileId tileId, Tools::ReactiveVar<FramePos> &target)
     {
-      using T = ParameterDescription<ParameterId::EnvelopeFadeInPos>;
+      using T = ParameterDescriptor<ParameterId::EnvelopeFadeInPos>;
 
       return { .set = [](const ParameterValue &) { throw std::runtime_error("should not be called"); },
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
@@ -104,7 +105,7 @@ namespace Core::Api
   {
     static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, TileId tileId, Tools::ReactiveVar<FramePos> &target)
     {
-      using T = ParameterDescription<ParameterId::EnvelopeFadedInPos>;
+      using T = ParameterDescriptor<ParameterId::EnvelopeFadedInPos>;
 
       return { .set = [](const ParameterValue &) { throw std::runtime_error("should not be called"); },
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
@@ -123,7 +124,7 @@ namespace Core::Api
   {
     static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, TileId tileId, Tools::ReactiveVar<FramePos> &target)
     {
-      using T = ParameterDescription<ParameterId::EnvelopeFadeOutPos>;
+      using T = ParameterDescriptor<ParameterId::EnvelopeFadeOutPos>;
 
       return { .set = [](const ParameterValue &) { throw std::runtime_error("should not be called"); },
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
@@ -143,7 +144,7 @@ namespace Core::Api
   {
     static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, TileId tileId, Tools::ReactiveVar<FramePos> &target)
     {
-      using T = ParameterDescription<ParameterId::EnvelopeFadedOutPos>;
+      using T = ParameterDescriptor<ParameterId::EnvelopeFadedOutPos>;
 
       return { .set = [](const ParameterValue &) { throw std::runtime_error("should not be called"); },
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
@@ -171,7 +172,7 @@ namespace Core::Api
   {
     static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, TileId tileId, Tools::ReactiveVar<FramePos> &target)
     {
-      using T = ParameterDescription<ParameterId::TriggerFrame>;
+      using T = ParameterDescriptor<ParameterId::TriggerFrame>;
 
       return { .set = [](const ParameterValue &) { throw std::runtime_error("should not be called"); },
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },

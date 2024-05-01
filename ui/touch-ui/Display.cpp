@@ -1,11 +1,12 @@
 #include "Display.h"
-#include <ui/Types.h>
+#include <array>
+#include <ui/ParameterDescriptor.h>
 
 namespace Ui::Touch
 {
   template <Core::ParameterId id> struct WrapParameterDescription
   {
-    using Wrapped = ParameterDescription<id>;
+    using Wrapped = ParameterDescriptor<id>;
   };
 
   using GlobalParameters = Core::GlobalParameters<WrapParameterDescription>::Wrapped;

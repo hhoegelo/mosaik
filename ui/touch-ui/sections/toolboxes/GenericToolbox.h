@@ -4,7 +4,8 @@
 #include "ui/touch-ui/Display.h"
 #include "KnobGrid.h"
 #include "SoftButtonGrid.h"
-#include <ui/Types.h>
+#include <ui/ParameterDescriptor.h>
+#include <ui/ToolboxDefinition.h>
 #include <gtkmm/label.h>
 
 namespace Ui::Touch
@@ -17,7 +18,7 @@ namespace Ui::Touch
     {
       get_style_context()->add_class("parameter");
 
-      auto name = Gtk::manage(new Gtk::Label(ParameterDescription<ID>::title));
+      auto name = Gtk::manage(new Gtk::Label(ParameterDescriptor<ID>::title));
       name->get_style_context()->add_class("name");
       pack_start(*name);
 
@@ -84,7 +85,7 @@ namespace Ui::Touch
             {
               using B = decltype(a);
               if(std::holds_alternative<Knob>(B::position))
-                knobs->set(std::get<Knob>(B::position), ParameterDescription<B::id>::title,
+                knobs->set(std::get<Knob>(B::position), ParameterDescriptor<B::id>::title,
                            [&] { return getDisplayValue(core, B::id); });
             });
 
@@ -110,9 +111,9 @@ namespace Ui::Touch
               using B = decltype(a);
               if(std::holds_alternative<SoftButton>(B::position))
               {
-                lButtons->set(std::get<SoftButton>(B::position), ParameterDescription<B::id>::title,
+                lButtons->set(std::get<SoftButton>(B::position), ParameterDescriptor<B::id>::title,
                               [&] { return getDisplayValue(core, B::id); });
-                rButtons->set(std::get<SoftButton>(B::position), ParameterDescription<B::id>::title,
+                rButtons->set(std::get<SoftButton>(B::position), ParameterDescriptor<B::id>::title,
                               [&] { return getDisplayValue(core, B::id); });
               }
             });

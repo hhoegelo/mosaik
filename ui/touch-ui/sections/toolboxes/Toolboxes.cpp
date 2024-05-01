@@ -1,6 +1,5 @@
 #include "Toolboxes.h"
 #include "ui/Types.h"
-#include "GlobalTools.h"
 #include "TileTools.h"
 #include "Waveform.h"
 #include "GenericToolbox.h"
@@ -8,6 +7,15 @@
 
 namespace Ui::Touch
 {
+  class WaveformToolbox : public GenericMaximized<Ui::Toolbox::Waveform>
+  {
+   public:
+    WaveformToolbox(Core::Api::Interface &core)
+        : GenericMaximized<Ui::Toolbox::Waveform>(core)
+    {
+      pack_start(*Gtk::manage(new Touch::Waveform(core)));
+    }
+  };
 
   Toolboxes::Toolboxes(Touch::Interface &touch, Core::Api::Interface &core)
       : SectionWrapper(touch)
@@ -19,7 +27,7 @@ namespace Ui::Touch
     box->set_hexpand();
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Global>(*this, core)));
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Tile>(*this, core, new TileTools(core))));
-    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Waveform>(*this, core, new Touch::Waveform(core))));
+    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Waveform>(*this, core, new WaveformToolbox(core))));
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Steps>(*this, core)));
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Playground>(*this, core)));
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::MainPlayground>(*this, core)));
