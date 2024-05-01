@@ -40,12 +40,20 @@ namespace Ui::Touch
         : Gtk::Box(Gtk::ORIENTATION_HORIZONTAL)
     {
       get_style_context()->add_class("minimized");
+      set_homogeneous();
       auto headline = Gtk::manage(new Gtk::Label(ToolboxDefinition<T>::title));
       headline->get_style_context()->add_class("header");
+      headline->set_halign(Gtk::Align::ALIGN_START);
       pack_start(*headline);
 
+      auto minis = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
+      pack_start(*minis);
       Ui::ToolboxDefinition<T>::Minimized::forEach(
-          [&](auto a) { pack_start(*Gtk::manage(new GenericMinimizedParameter<decltype(a)::id>(core))); });
+          [&](auto a)
+          {
+            minis->set_halign(Gtk::Align::ALIGN_START);
+            minis->pack_start(*Gtk::manage(new GenericMinimizedParameter<decltype(a)::id>(core)));
+          });
     }
   };
 
