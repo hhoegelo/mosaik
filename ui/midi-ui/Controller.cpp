@@ -124,8 +124,8 @@ namespace Ui::Midi
                               auto fpp = m_touchUi.getToolboxes().getWaveform().getFramesPerPixel();
                               m_core.incParameter(tile, D::id, fpp * inc);
                             });
-    else
-      static_assert(false);
+    //else
+      //static_assert(false);
   }
 
   template <Toolbox T, typename D>
@@ -135,8 +135,8 @@ namespace Ui::Midi
     if constexpr(D::action == UiAction::Toggle)
       return std::make_pair(std::get<SoftButton>(D::position),
                             [this]() { m_core.toggleSelectedTilesParameter(D::id); });
-    else
-      static_assert(false);
+    //else
+      //static_assert(false);
   }
 
   template <Toolbox T, typename D> std::pair<SoftButton, std::function<void()>> Controller::bindButtonUiInvokeAction()
@@ -144,8 +144,8 @@ namespace Ui::Midi
     if constexpr(D::action == UiAction::Invoke)
       return std::make_pair(std::get<SoftButton>(D::position),
                             [this]() { this->invokeButtonAction<T, typename D::ID>(); });
-    else
-      static_assert(false);
+    //else
+      //static_assert(false);
   }
 
   template <Toolbox T, typename D> std::pair<Knob, std::function<void(int)>> Controller::bindKnobUiInvokeAction()
@@ -153,8 +153,8 @@ namespace Ui::Midi
     if constexpr(D::action == UiAction::Invoke)
       return std::make_pair(std::get<Knob>(D::position),
                             [this](int i) { this->invokeKnobAction<T, typename D::ID>(i); });
-    else
-      static_assert(false);
+    //else
+      //static_assert(false);
   }
 
   template <Toolbox T> Controller::Mapping Controller::buildMapping()
@@ -190,8 +190,8 @@ namespace Ui::Midi
             mapping.knobIncDecReleased.insert(bindKnobUiInvokeAction<T, D>());
           else if constexpr(D::event == UiEvent::PressedKnobRotate)
             mapping.knobIncDecPressed.insert(bindKnobUiInvokeAction<T, D>());
-          else
-            static_assert(false);
+          //else
+            //static_assert(false);
         });
 
     return mapping;
