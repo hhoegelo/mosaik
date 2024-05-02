@@ -10,6 +10,11 @@
 #include <map>
 #include <utility>
 
+namespace Core
+{
+  template <ParameterId id> struct ParameterDescriptor;
+}
+
 namespace Core::Api
 {
   class Mosaik : public Interface
@@ -25,7 +30,6 @@ namespace Core::Api
     void incParameter(TileId tileId, ParameterId parameterId, int steps) override;
     void setPrelistenSample(const Path &path) override;
     [[nodiscard]] ParameterValue getParameter(TileId tileId, ParameterId parameterId) const override;
-    [[nodiscard]] std::string getParameterDisplay(TileId tileId, ParameterId parameterId) const override;
     [[nodiscard]] Dsp::SharedSampleBuffer getSamples(TileId tileId) const override;
 
     struct ParamAccess
@@ -34,7 +38,6 @@ namespace Core::Api
       std::function<void(const ParameterValue &)> load;
       std::function<ParameterValue()> get;
       std::function<void(int steps)> inc;
-      std::function<std::string(const ParameterValue &)> display;
     };
 
    private:
@@ -42,7 +45,7 @@ namespace Core::Api
     template <typename Parameters, typename Targets, size_t... idx>
     void bindParameters(std::integer_sequence<size_t, idx...> int_seq, TileId tileId, Targets targets);
     template <typename Parameters, typename Targets, size_t idx> void bindParameter(TileId tileId, Targets targets);
-    template <ParameterId id, typename T = ParameterDescription<id>::Type>
+    template <ParameterId id, typename T = ParameterDescriptor<id>::Type>
     void bindParameter(TileId tileId, Tools::ReactiveVar<T> &target);
 
     [[nodiscard]] Dsp::AudioKernel *newDspKernel(const DataModel &dataModel) const;

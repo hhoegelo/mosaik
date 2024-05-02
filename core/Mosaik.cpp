@@ -1,6 +1,7 @@
 #include "Mosaik.h"
 #include "StepWizard.h"
 #include <dsp/api/control/Interface.h>
+#include <core/ParameterDescriptor.h>
 #include <cmath>
 
 namespace Core::Api
@@ -12,12 +13,11 @@ namespace Core::Api
   {
     static Mosaik::ParamAccess bind(ICore &, IDsp &, TileId, Tools::ReactiveVar<V> &target)
     {
-      using T = ParameterDescription<id>;
+      using T = ParameterDescriptor<id>;
       return { .set = [&target](const auto &v) { target = std::get<V>(v); },
                .load = [&target](const auto &v) { target = std::get<V>(v); },
                .get = [&target]() -> ParameterValue { return target.get(); },
-               .inc = [](int) {},
-               .display = [](const ParameterValue &v) { return T::format(std::get<V>(v)); } };
+               .inc = [](int) {} };
     }
   };
 
@@ -25,13 +25,12 @@ namespace Core::Api
   {
     static Mosaik::ParamAccess bind(ICore &, IDsp &, TileId, Tools::ReactiveVar<float> &target)
     {
-      using T = ParameterDescription<id>;
+      using T = ParameterDescriptor<id>;
       return { .set = [&target](const auto &v) { target = std::clamp(std::get<float>(v), T::min, T::max); },
                .load = [&target](const auto &v) { target = std::get<float>(v); },
                .get = [&target]() -> ParameterValue { return target.get(); },
                .inc = [&target](int steps)
-               { target = std::clamp(target.get() + T::coarse * static_cast<float>(steps), T::min, T::max); },
-               .display = [](const ParameterValue &v) { return T::format(std::get<float>(v)); } };
+               { target = std::clamp(target.get() + T::coarse * static_cast<float>(steps), T::min, T::max); } };
     }
   };
 
@@ -39,7 +38,7 @@ namespace Core::Api
   {
     static Mosaik::ParamAccess bind(ICore &, IDsp &, TileId, Tools::ReactiveVar<bool> &target)
     {
-      using T = ParameterDescription<id>;
+      using T = ParameterDescriptor<id>;
       return { .set = [&target](const auto &v) { target = std::get<bool>(v); },
                .load = [&target](const auto &v) { target = std::get<bool>(v); },
                .get = [&target]() -> ParameterValue { return target.get(); },
@@ -48,8 +47,7 @@ namespace Core::Api
                {
                  if(steps % 1)
                    target = !target.get();
-               },
-               .display = [](const ParameterValue &v) { return T::format(std::get<bool>(v)); } };
+               } };
     }
   };
 
@@ -57,7 +55,7 @@ namespace Core::Api
   {
     static Mosaik::ParamAccess bind(ICore &core, IDsp &, TileId tileId, Tools::ReactiveVar<bool> &target)
     {
-      using T = ParameterDescription<ParameterId::Selected>;
+      using T = ParameterDescriptor<ParameterId::Selected>;
       return { .set =
                    [&target, &core, tileId](const auto &v)
                {
@@ -75,8 +73,7 @@ namespace Core::Api
                },
                .load = [&target](const auto &v) { target = std::get<bool>(v); },
                .get = [&target]() -> ParameterValue { return target.get(); },
-               .inc = [](int) {},
-               .display = [](const ParameterValue &v) { return T::format(std::get<bool>(v)); } };
+               .inc = [](int) {} };
     }
   };
 
@@ -84,7 +81,7 @@ namespace Core::Api
   {
     static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, TileId tileId, Tools::ReactiveVar<FramePos> &target)
     {
-      using T = ParameterDescription<ParameterId::EnvelopeFadeInPos>;
+      using T = ParameterDescriptor<ParameterId::EnvelopeFadeInPos>;
 
       return { .set = [](const ParameterValue &) { throw std::runtime_error("should not be called"); },
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
@@ -108,7 +105,7 @@ namespace Core::Api
   {
     static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, TileId tileId, Tools::ReactiveVar<FramePos> &target)
     {
-      using T = ParameterDescription<ParameterId::EnvelopeFadedInPos>;
+      using T = ParameterDescriptor<ParameterId::EnvelopeFadedInPos>;
 
       return { .set = [](const ParameterValue &) { throw std::runtime_error("should not be called"); },
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
@@ -127,7 +124,7 @@ namespace Core::Api
   {
     static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, TileId tileId, Tools::ReactiveVar<FramePos> &target)
     {
-      using T = ParameterDescription<ParameterId::EnvelopeFadeOutPos>;
+      using T = ParameterDescriptor<ParameterId::EnvelopeFadeOutPos>;
 
       return { .set = [](const ParameterValue &) { throw std::runtime_error("should not be called"); },
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
@@ -147,7 +144,7 @@ namespace Core::Api
   {
     static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, TileId tileId, Tools::ReactiveVar<FramePos> &target)
     {
-      using T = ParameterDescription<ParameterId::EnvelopeFadedOutPos>;
+      using T = ParameterDescriptor<ParameterId::EnvelopeFadedOutPos>;
 
       return { .set = [](const ParameterValue &) { throw std::runtime_error("should not be called"); },
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
@@ -175,7 +172,7 @@ namespace Core::Api
   {
     static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, TileId tileId, Tools::ReactiveVar<FramePos> &target)
     {
-      using T = ParameterDescription<ParameterId::TriggerFrame>;
+      using T = ParameterDescriptor<ParameterId::TriggerFrame>;
 
       return { .set = [](const ParameterValue &) { throw std::runtime_error("should not be called"); },
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
@@ -196,7 +193,7 @@ namespace Core::Api
       , m_dsp(dsp)
       , m_kernelUpdate(std::move(ctx), 0)
   {
-    bindParameters<GlobalParameters>(
+    bindParameters<GlobalParameterDescriptors>(
         TileId {}, m_model.globals.tempo, m_model.globals.volume, m_model.globals.playground1,
         m_model.globals.playground2, m_model.globals.playground3, m_model.globals.playground4,
         m_model.globals.playground5, m_model.globals.playground6, m_model.globals.playground7);
@@ -204,12 +201,12 @@ namespace Core::Api
     for(auto c = 0; c < NUM_TILES; c++)
     {
       auto &src = m_model.tiles[c];
-      bindParameters<TileParameters>(c, src.selected, src.sample, src.reverse, src.pattern, src.balance, src.gain,
-                                     src.muted, src.speed, src.envelopeFadeInPos, src.envelopeFadedInPos,
-                                     src.envelopeFadeOutPos, src.envelopeFadedOutPos, src.triggerFrame, src.shuffle,
-                                     src.wizard.mode, src.wizard.rotate, src.wizard.ons, src.wizard.offs,
-                                     src.playground1, src.playground2, src.playground3, src.playground4,
-                                     src.playground5, src.playground6, src.playground7);
+      bindParameters<TileParameterDescriptors>(
+          c, src.selected, src.sample, src.reverse, src.pattern, src.balance, src.gain, src.muted, src.speed,
+          src.envelopeFadeInPos, src.envelopeFadedInPos, src.envelopeFadeOutPos, src.envelopeFadedOutPos,
+          src.triggerFrame, src.shuffle, src.wizard.mode, src.wizard.rotate, src.wizard.ons, src.wizard.offs,
+          src.playground1, src.playground2, src.playground3, src.playground4, src.playground5, src.playground6,
+          src.playground7);
     }
 
     m_kernelUpdate.add(
@@ -244,12 +241,6 @@ namespace Core::Api
   ParameterValue Mosaik::getParameter(TileId tileId, ParameterId parameterId) const
   {
     return m_access.find({ tileId, parameterId })->second.get();
-  }
-
-  std::string Mosaik::getParameterDisplay(TileId tileId, ParameterId parameterId) const
-  {
-    const auto &a = m_access.find({ tileId, parameterId })->second;
-    return a.display(a.get());
   }
 
   Dsp::SharedSampleBuffer Mosaik::getSamples(TileId tileId) const
@@ -393,7 +384,7 @@ namespace Core::Api
   template <typename Parameters, typename Targets, size_t idx>
   void Mosaik::bindParameter(TileId tileId, Targets targets)
   {
-    using D = typename std::tuple_element_t<idx, typename Parameters::Descriptors>;
+    using D = typename std::tuple_element_t<idx, Parameters>;
     bindParameter<D::id>(tileId, std::get<idx>(targets));
   }
 
@@ -410,7 +401,7 @@ namespace Core::Api
 
   template <typename Parameters, typename... Args> void Mosaik::bindParameters(TileId tileId, Args &...target)
   {
-    using Indizes = std::make_index_sequence<std::tuple_size_v<typename Parameters::Descriptors>>;
+    using Indizes = std::make_index_sequence<std::tuple_size_v<Parameters>>;
     bindParameters<Parameters>(Indizes {}, tileId, std::make_tuple(std::ref(target)...));
   }
 }

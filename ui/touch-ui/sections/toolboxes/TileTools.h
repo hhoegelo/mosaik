@@ -1,35 +1,36 @@
 #pragma once
 
-#include "ui/touch-ui/Interface.h"
-#include "tools/ReactiveVar.h"
-#include <gtkmm/box.h>
+#include <ui/Types.h>
+#include "GenericToolbox.h"
+#include <ui/touch-ui/Interface.h>
+
+namespace Gtk
+{
+  class FileChooserWidget;
+}
 
 namespace Core::Api
 {
   class Interface;
 }
 
-namespace Gtk
-{
-  class LevelBar;
-  class FileChooserWidget;
-  class TreePath;
-}
-
 namespace Ui::Touch
 {
-  class FileBrowser;
 
-  class TileTools : public Gtk::Box
+  class TileTools : public GenericMaximized<Ui::Toolbox::Tile>, public FileBrowserInterface
   {
    public:
     explicit TileTools(Core::Api::Interface &core);
 
-    FileBrowserInterface &getFileBrowser() const;
+    void up() override;
+    void down() override;
+    void inc() override;
+    void dec() override;
+    void load() override;
+    void prelisten() override;
 
    private:
     Core::Api::Interface &m_core;
-    FileBrowser *m_fileBrowser;
-    Tools::DeferredComputations m_computations;
+    Gtk::FileChooserWidget *m_files;
   };
 }

@@ -1,8 +1,17 @@
 #pragma once
 
 #include <cstdint>
+#include <map>
 #include <string>
+#include <array>
 #include <core/Types.h>
+
+template <class... Ts> struct overloaded : Ts...
+{
+  using Ts::operator()...;
+};
+// explicit deduction guide (not needed as of C++20)
+template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
 namespace Ui
 {
@@ -57,6 +66,8 @@ namespace Ui
     Center_SouthEast = 92,
     Center_NorthEast = 93,
     Center_Rightmost = 94,
+
+    MAX_BUTTON_ID = 103
   };
 
   enum class Knob
@@ -69,6 +80,16 @@ namespace Ui
     NorthEast = 5,
     Rightmost = 6,
   };
+
+  inline SoftButton getButtonForKnob(Knob k)
+  {
+    return static_cast<SoftButton>(static_cast<int>(k) + 88);
+  }
+
+  inline Knob getKnobForButton(SoftButton k)
+  {
+    return static_cast<Knob>(static_cast<int>(k) - 88);
+  }
 
   enum class Led
   {
@@ -135,6 +156,7 @@ namespace Ui
 
   enum class Color
   {
+    None = -1,
     Red = 0,
     Blue = 1,
     Green = 2,

@@ -10,6 +10,7 @@ add_library(${PROJECT_NAME} STATIC Types.h Core.cpp api/Interface.cpp
         Mosaik.h
         StepWizard.cpp
         StepWizard.h
+        ParameterDescriptor.h
 )
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)

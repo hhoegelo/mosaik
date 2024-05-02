@@ -1,50 +1,38 @@
 #include "Toolboxes.h"
 #include "ui/Types.h"
-#include "GlobalTools.h"
 #include "TileTools.h"
-#include "Toolbox.h"
 #include "Waveform.h"
-#include "Steps.h"
-#include "Playground.h"
-#include "MainPlayground.h"
-#include <gtkmm/label.h>
-#include <gtkmm/eventbox.h>
-#include <gtkmm/fixed.h>
+#include "GenericToolbox.h"
+#include "ui/touch-ui/tools/WidgetTools.h"
 
 namespace Ui::Touch
 {
+  class WaveformToolbox : public GenericMaximized<Ui::Toolbox::Waveform>
+  {
+   public:
+    WaveformToolbox(Core::Api::Interface &core)
+        : GenericMaximized<Ui::Toolbox::Waveform>(core)
+    {
+      pack_start(*Gtk::manage(new Touch::Waveform(core)));
+    }
+  };
 
   Toolboxes::Toolboxes(Touch::Interface &touch, Core::Api::Interface &core)
       : SectionWrapper(touch)
-      , m_core(core)
-      , m_box(*Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL)))
   {
-    m_tileTools = new TileTools(core);
-    auto w = new Touch::Waveform(core);
-    m_waveform = w;
-
-    auto add = [&](Gtk::Widget *w) { m_box.pack_start(*Gtk::manage(w), Gtk::PACK_SHRINK); };
-
-    add(new Toolbox(*this, Ui::Toolbox::Global, "Global", new Gtk::Label("I am minimized global toolbox"),
-                    new GlobalTools(core)));
-
-    add(new Toolbox(*this, Ui::Toolbox::Tile, "Tile", new Gtk::Label("I am minimized Tile toolbox"), m_tileTools));
-
-    add(new Toolbox(*this, Ui::Toolbox::Waveform, "Waveform", new Gtk::Label("I am minimized waveform toolbox"), w));
-
-    add(new Toolbox(*this, Ui::Toolbox::Steps, "Steps", new Gtk::Label("I am minimized Steps toolbox"),
-                    new Steps(core)));
-
-    add(new Toolbox(*this, Ui::Toolbox::Playground, "Playground", new Gtk::Label("I am minimized Playground toolbox"),
-                    new Playground(core)));
-
-    add(new Toolbox(*this, Ui::Toolbox::MainPlayground, "MainPlayground",
-                    new Gtk::Label("I am minimized MainPlayground toolbox"), new MainPlayground(core)));
-
     get_style_context()->add_class("toolboxes");
 
-    this->add(m_box);
-    m_box.set_hexpand();
+    auto box = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL));
+
+    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Global>(*this, core)));
+    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Tile>(*this, core, new TileTools(core))));
+    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Waveform>(*this, core, new WaveformToolbox(core))));
+    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Steps>(*this, core)));
+    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Playground>(*this, core)));
+    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::MainPlayground>(*this, core)));
+
+    add(*box);
+
     set_valign(Gtk::Align::ALIGN_START);
   }
 
@@ -55,12 +43,12 @@ namespace Ui::Touch
 
   WaveformInterface &Toolboxes::getWaveform() const
   {
-    return *m_waveform;
+    return *findChildWidget<WaveformInterface>(this);
   }
 
   FileBrowserInterface &Toolboxes::getFileBrowser() const
   {
-    return m_tileTools->getFileBrowser();
+    return *findChildWidget<FileBrowserInterface>(this);
   }
 
   void Toolboxes::selectToolbox(Ui::Toolbox t)

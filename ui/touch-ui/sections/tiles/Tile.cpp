@@ -1,15 +1,13 @@
 #include "Tile.h"
-#include "core/api/Interface.h"
-#include "dsp/api/display/Interface.h"
-#include "WaveformThumb.h"
-#include <gtkmm/filechooserdialog.h>
-#include <gtkmm/grid.h>
-#include <gtkmm/label.h>
-#include <glibmm/main.h>
-#include <gtkmm/drawingarea.h>
+#include <core/api/Interface.h>
+#include <core/ParameterDescriptor.h>
+#include <dsp/api/display/Interface.h>
+#include <ui/touch-ui/Display.h>
 
-#include <iostream>
+#include "WaveformThumb.h"
 #include "LevelMeter.h"
+
+#include <gtkmm/label.h>
 
 namespace Ui::Touch
 {
@@ -50,7 +48,7 @@ namespace Ui::Touch
     attach(*Gtk::manage(new LevelMeter("gain",
                                        [this, &core, tileId]
                                        {
-                                         using T = Core::ParameterDescription<Core::ParameterId::Gain>;
+                                         using T = Core::ParameterDescriptor<Core::ParameterId::Gain>;
                                          auto v = std::get<float>(core.getParameter(tileId, Core::ParameterId::Gain));
                                          return (v - T::min) / (T::max - T::min);
                                        })),
@@ -61,7 +59,7 @@ namespace Ui::Touch
            15, 4, 1, 8);
 
     m_computations.add([&core, tileId, sampleName]()
-                       { sampleName->set_label(core.getParameterDisplay(tileId, Core::ParameterId::SampleFile)); });
+                       { sampleName->set_label(getDisplayValue(core, tileId, Core::ParameterId::SampleFile)); });
 
     m_computations.add(
         [this, &core, &dsp, tileId, seconds]()

@@ -1,6 +1,7 @@
 #include <cmath>
 #include "Interface.h"
 #include "ui/midi-ui/Interface.h"
+#include <core/ParameterDescriptor.h>
 
 #define JSON_ASSERT(x)
 #include <tools/json.h>
@@ -25,12 +26,12 @@ namespace Core::Api
         };
 
         if(j.contains("globals"))
-          std::apply([&](auto... a) { (loadParameter(j["globals"], {}, a), ...); }, GlobalParameters::Descriptors {});
+          std::apply([&](auto... a) { (loadParameter(j["globals"], {}, a), ...); }, GlobalParameterDescriptors {});
 
         if(j.contains("tiles"))
           for(uint8_t i = 0; i < NUM_TILES; i++)
             std::apply([&](auto... a) { (loadParameter(j["tiles"][i], TileId { i }, a), ...); },
-                       TileParameters::Descriptors {});
+                       TileParameterDescriptors {});
       }
       catch(...)
       {
@@ -46,11 +47,10 @@ namespace Core::Api
     auto saveParameter = [&](auto &json, TileId id, auto p)
     { json[p.name] = std::get<typename decltype(p)::Type>(getParameter(id, p.id)); };
 
-    std::apply([&](auto... a) { (saveParameter(j["globals"], {}, a), ...); }, GlobalParameters::Descriptors {});
+    std::apply([&](auto... a) { (saveParameter(j["globals"], {}, a), ...); }, GlobalParameterDescriptors {});
 
     for(uint8_t i = 0; i < NUM_TILES; i++)
-      std::apply([&](auto... a) { (saveParameter(j["tiles"][i], TileId { i }, a), ...); },
-                 TileParameters::Descriptors {});
+      std::apply([&](auto... a) { (saveParameter(j["tiles"][i], TileId { i }, a), ...); }, TileParameterDescriptors {});
 
     std::ofstream(path) << j;
   }
@@ -64,21 +64,6 @@ namespace Core::Api
         ret.emplace_back(c);
 
     return ret;
-  }
-
-  Core::Pattern Interface::getMergedPattern() const
-  {
-    Core::Pattern merged {};
-
-    for(const auto &tile : getSelectedTiles())
-    {
-      auto pattern = std::get<Core::Pattern>(getParameter(tile, Core::ParameterId::Pattern));
-
-      for(size_t i = 0; i < merged.size(); i++)
-        merged[i] |= pattern[i];
-    }
-
-    return merged;
   }
 
   void Interface::setStep(Step step, bool value)
@@ -111,8 +96,8 @@ namespace Core::Api
     return static_cast<Step>(std::round(static_cast<double>(pos) / framesPer16th));
   }
 
-  std::string Interface::getFirstSelectedTileParameterDisplay(ParameterId parameterId) const
+  TileId Interface::getSelectedTile() const
   {
-    return getParameterDisplay(getSelectedTiles().front(), parameterId);
+    return getSelectedTiles().front();
   }
 }

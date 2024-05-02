@@ -6,14 +6,13 @@
 namespace Ui::Touch
 {
 
-  Toolbox::Toolbox(ToolboxesInterface &toolboxes, Ui::Toolbox tool, const char *title, Gtk::Widget *minimzed,
-                   Gtk::Widget *maximized)
+  Toolbox::Toolbox(ToolboxesInterface &toolboxes, Ui::Toolbox tool, Gtk::Widget *minimzed, Gtk::Widget *maximized)
   {
     set_orientation(Gtk::ORIENTATION_VERTICAL);
 
     get_style_context()->add_class("toolbox");
-    auto headline = Gtk::manage(new Gtk::Label(title));
-    headline->get_style_context()->add_class("header");
+
+    set_size_request(540, -1);
 
     auto eventBox = Gtk::manage(new Gtk::EventBox());
     auto box = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL));
@@ -26,7 +25,6 @@ namespace Ui::Touch
           return true;
         });
 
-    box->pack_start(*headline, Gtk::PACK_SHRINK);
     box->pack_start(*minimzed, Gtk::PACK_SHRINK);
     pack_start(*eventBox, Gtk::PACK_SHRINK);
     pack_start(*maximized, Gtk::PACK_EXPAND_WIDGET);
