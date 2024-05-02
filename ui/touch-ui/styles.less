@@ -12,10 +12,6 @@
   min-width: @screen-width * 1px;
   min-height: @screen-height * 1px;
 
-  #places_sidebar {
-
-  }
-
   .tile {
     border: 3px solid gray;
     margin: 1px;
@@ -71,43 +67,26 @@
     border-color: orange;
   }
 
-  .has-steps-indicator {
-    background-color: rgb(40, 40, 40);
-    margin: 3px;
-  }
-
-  .has-steps-indicator.has-steps {
-    background-color: rgb(90, 90, 90);
-  }
-
-  .is-playing-indicator {
-    margin: 3px;
-  }
-
-  .is-playing-indicator.is-playing {
-    background-color: rgb(40, 40, 40);
-  }
-
   .tile .volume {
     min-height: 2cm;
   }
-
 
   .section {
     .toolbox {
       .header {
         color: white;
         font-size: x-large;
-
       }
 
       .minimized {
+        padding-bottom: 10px;
+
         .header {
           font-weight: normal;
         }
 
         .parameter {
-          padding-left: 0px;
+          padding-left: 15px;
           padding-right: 0px;
           margin: 0px;
         }
@@ -118,9 +97,10 @@
           background: orange;
           font-weight: bold;
         }
+
+        border: 3px solid orange;
       }
     }
-
   }
 
   .knobs {
@@ -145,45 +125,7 @@
     }
   }
 
-
   .root .lower {
     background-color: white;
-  }
-
-
-  .is-playing-indicator.level-80db {
-    background: rgba(255, 0, 0, 0);
-  }
-
-  .is-playing-indicator.level-70db {
-    background: rgba(255, 0, 0, 0.3);
-  }
-
-  .is-playing-indicator.level-60db {
-    background: rgba(255, 0, 0, 0.4);
-  }
-
-  .is-playing-indicator.level-50db {
-    background: rgba(255, 0, 0, 0.5);
-  }
-
-  .is-playing-indicator.level-40db {
-    background: rgba(255, 0, 0, 0.6);
-  }
-
-  .is-playing-indicator.level-30db {
-    background: rgba(255, 0, 0, 0.7);
-  }
-
-  .is-playing-indicator.level-20db {
-    background: rgba(255, 0, 0, 0.8);
-  }
-
-  .is-playing-indicator.level-10db {
-    background: rgba(255, 0, 0, 0.9);
-  }
-
-  .is-playing-indicator.level-0db {
-    background: rgba(255, 0, 0, 1.0);
   }
 }

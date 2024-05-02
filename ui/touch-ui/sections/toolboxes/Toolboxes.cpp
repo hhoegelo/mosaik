@@ -24,7 +24,6 @@ namespace Ui::Touch
 
     auto box = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL));
 
-    box->set_hexpand();
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Global>(*this, core)));
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Tile>(*this, core, new TileTools(core))));
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Waveform>(*this, core, new WaveformToolbox(core))));

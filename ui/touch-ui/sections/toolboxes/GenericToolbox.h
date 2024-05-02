@@ -40,7 +40,6 @@ namespace Ui::Touch
         : Gtk::Box(Gtk::ORIENTATION_HORIZONTAL)
     {
       get_style_context()->add_class("minimized");
-      set_homogeneous();
       auto headline = Gtk::manage(new Gtk::Label(ToolboxDefinition<T>::title));
       headline->get_style_context()->add_class("header");
       headline->set_halign(Gtk::Align::ALIGN_START);
@@ -51,8 +50,8 @@ namespace Ui::Touch
       Ui::ToolboxDefinition<T>::Minimized::forEach(
           [&](auto a)
           {
-            minis->set_halign(Gtk::Align::ALIGN_START);
-            minis->pack_start(*Gtk::manage(new GenericMinimizedParameter<decltype(a)::id>(core)));
+            minis->set_halign(Gtk::Align::ALIGN_END);
+            minis->pack_start(*Gtk::manage(new GenericMinimizedParameter<decltype(a)::id>(core)), false, false);
           });
     }
   };
@@ -66,6 +65,7 @@ namespace Ui::Touch
       get_style_context()->add_class("maximized");
       auto headline = Gtk::manage(new Gtk::Label(ToolboxDefinition<T>::title));
       headline->get_style_context()->add_class("header");
+      
       pack_start(*headline);
 
       bool hasKnobs = false;

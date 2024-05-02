@@ -12,6 +12,8 @@ namespace Ui::Touch
 
     get_style_context()->add_class("toolbox");
 
+    set_size_request(540, -1);
+
     auto eventBox = Gtk::manage(new Gtk::EventBox());
     auto box = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL));
     eventBox->add(*box);
