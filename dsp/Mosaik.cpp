@@ -75,7 +75,8 @@ namespace Dsp
 
     OutFrame output { out_l, out_r, in.main.left, in.main.right};
 
-    return in;
+    return output;
+    //return in;
   }
 
 }

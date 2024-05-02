@@ -17,6 +17,26 @@ namespace Ui::Touch
       , m_main(std::make_unique<Main>(*this))
       , m_mixer(std::make_unique<Mixer>(*this))
   {
+#if 0
+    set_title("Mosaik");
+
+    if(DEBUG_BUILD)
+    {
+      std::cout << "Debug Build" << std::endl;
+      //set_decorated(false);
+      //gtk_window_fullscreen(GTK_WINDOW(Window));
+    }
+
+    if(RELEASE_BUILD)
+    {
+      std::cout << "Release Build" << std::endl;
+      fullscreen();
+      set_decorated(false);
+    }
+
+    //set_resizable(false);
+#endif
+
     set_title("Mosaik");
 
     if(DEBUG_BUILD)
@@ -32,7 +52,14 @@ namespace Ui::Touch
       set_decorated(false);
     }
 
+    constexpr auto c_screenWidth = 1200;
+    constexpr auto c_screenHeight = 720;
+
+    set_default_size(c_screenWidth, c_screenHeight);
+    set_size_request(c_screenWidth, c_screenHeight);
     set_resizable(false);
+    set_position(Gtk::WindowPosition::WIN_POS_CENTER);
+
 
     auto vBox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL));
     vBox->get_style_context()->add_class("root");

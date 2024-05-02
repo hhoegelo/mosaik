@@ -132,7 +132,7 @@ void setup()
 	pixels.begin();
 	for( int id = 0; id < NUMPIXELS; id++ )
 	{
-		pixels.setPixelColor(id, pixels.Color(0,0,0));
+		pixels.setPixelColor(id, pixels.Color(0,0,25));
 	}
 	pixels.show();
 
