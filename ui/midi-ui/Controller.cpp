@@ -8,7 +8,7 @@
 #include <ui/ToolboxDefinition.h>
 #include <cmath>
 
-#if(__GNUC__ > 10)
+#if(__GNUC__ > 12)
 #define UNSUPPORTED_BRANCH() static_assert(false)
 #else
 #define UNSUPPORTED_BRANCH() throw std::runtime_error("unsupported branch")
