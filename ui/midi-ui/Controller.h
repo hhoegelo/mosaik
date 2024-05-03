@@ -72,6 +72,9 @@ namespace Ui
       std::array<Color, static_cast<size_t>(Led::NUM_LEDS)> m_ledLatch {};
 
       std::array<bool, static_cast<size_t>(SoftButton::MAX_BUTTON_ID)> m_buttonState {};
+
+      int m_stepWizard = 0;
+      std::chrono::system_clock::time_point m_stepWizardLastUsage = std::chrono::system_clock::time_point::min();
     };
   }
 }

@@ -129,7 +129,12 @@ namespace Ui
     constexpr static auto title = "Step Wizard";
     using Minimized = Entries<>;
     using MaximizedParameters = Entries<>;
-    using MaximizedCustom = Entries<>;
+    struct Wizard
+    {
+      static constexpr auto title = "Wizard";
+    };
+    using MaximizedCustom = Entries<
+        MaximizedCustomEntry<Wizard, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Center>>;
   };
 
   template <> struct ToolboxDefinition<Toolbox::Tile>

@@ -14,6 +14,8 @@
 #define UNSUPPORTED_BRANCH() throw std::runtime_error("unsupported branch")
 #endif
 
+using namespace std::chrono_literals;
+
 namespace Ui::Midi
 {
   static Led stepToLed(Step s)
@@ -248,6 +250,33 @@ namespace Ui::Midi
     auto reverse = std::get<bool>(m_core.getParameter(sel, Core::ParameterId::Reverse));
     auto fpp = m_touchUi.getToolboxes().getWaveform().getFramesPerPixel();
     m_core.incParameter(sel, Core::ParameterId::TriggerFrame, reverse ? -fpp * inc : fpp * inc);
+  }
+
+  template <> void Controller::invokeKnobAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::Wizard>(int inc)
+  {
+    auto now = std::chrono::system_clock::now();
+
+    m_stepWizardLastUsage = now;
+    m_stepWizard = std::clamp(m_stepWizard + inc, 0, 255);
+
+    auto sel = m_core.getSelectedTile();
+    Core::Pattern pattern {};
+
+    int64_t w = std::abs(m_stepWizard);
+
+    if(w <= 0xFF)
+      w = w | w << 8;
+
+    if(w <= 0xFFFF)
+      w = w | w << 16;
+
+    if(w <= 0xFFFFFFFF)
+      w = w | w << 32;
+
+    for(size_t i = 0; i < NUM_STEPS; i++)
+      pattern[i] = w & (1 << i);
+
+    m_core.setParameter(sel, Core::ParameterId::Pattern, pattern);
   }
 
   void Controller::onStepButtonEvent(Step b, ButtonEvent e)
