@@ -3,7 +3,8 @@
 
 namespace Ui::Touch
 {
-  Tiles::Tiles(Touch::Interface& touch, Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp)
+  Tiles::Tiles(Touch::Interface& touch, Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp,
+               Ui::Controller& controller)
       : SectionWrapper(touch)
   {
     get_style_context()->add_class("tiles");
@@ -15,7 +16,7 @@ namespace Ui::Touch
     {
       for(Col c = 0; c < NUM_TILE_COLUMNS; c++)
       {
-        auto tile = Gtk::manage(new Tile(core, dsp, r * NUM_TILE_COLUMNS + c));
+        auto tile = Gtk::manage(new Tile(core, dsp, controller, r * NUM_TILE_COLUMNS + c));
         attach(*tile, r, c);
       }
     }

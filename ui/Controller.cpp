@@ -1,11 +1,12 @@
 #include "Controller.h"
 #include "core/ParameterDescriptor.h"
-#include <ui/Types.h>
-#include <core/api/Interface.h>
-#include <ui/midi-ui/Interface.h>
-#include <dsp/api/display/Interface.h>
-#include <ui/touch-ui/Interface.h>
-#include <ui/ToolboxDefinition.h>
+#include "Types.h"
+#include "core/api/Interface.h"
+#include "ui/midi-ui/Interface.h"
+#include "dsp/api/display/Interface.h"
+#include "ui/touch-ui/Interface.h"
+#include "ToolboxDefinition.h"
+#include <inttypes.h>
 #include <cmath>
 
 #if(__GNUC__ > 12)
@@ -16,18 +17,15 @@
 
 using namespace std::chrono_literals;
 
-namespace Ui::Midi
+namespace Ui
 {
   static Led stepToLed(Step s)
   {
     return static_cast<Led>(s);
   }
 
-  Controller::Controller(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp, Ui::Touch::Interface &touchUi,
-                         Ui::Midi::Interface &midiUi)
+  Controller::Controller(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp)
       : m_core(core)
-      , m_midiUi(midiUi)
-      , m_touchUi(touchUi)
   {
     Glib::signal_timeout().connect(
         [this, &dsp, &core]() mutable
@@ -36,9 +34,19 @@ namespace Ui::Midi
           return true;
         },
         16);
+  }
 
-    m_computations.add([this] { m_inputMapping = createMapping(m_touchUi.getToolboxes().getSelectedToolbox()); });
+  void Controller::init(Touch::Interface &touchUi)
+  {
+    m_touchUi = &touchUi;
+
+    m_computations.add([this] { m_inputMapping = createMapping(m_touchUi->getToolboxes().getSelectedToolbox()); });
     m_computations.add([this] { showPattern(); });
+  }
+
+  void Controller::addUi(Midi::Interface &midiUI)
+  {
+    m_midiUi.push_back(&midiUI);
   }
 
   void Controller::showPattern()
@@ -121,7 +129,7 @@ namespace Ui::Midi
                             [this](int inc)
                             {
                               auto tile = isGlobal ? Core::TileId {} : m_core.getSelectedTile();
-                              auto fpp = m_touchUi.getToolboxes().getWaveform().getFramesPerPixel();
+                              auto fpp = m_touchUi->getToolboxes().getWaveform().getFramesPerPixel();
                               m_core.incParameter(tile, D::id, fpp * inc);
                             });
     else
@@ -204,43 +212,43 @@ namespace Ui::Midi
 
   template <> void Controller::invokeButtonAction<Toolbox::Tile, ToolboxDefinition<Toolbox::Tile>::Up>()
   {
-    m_touchUi.getToolboxes().getFileBrowser().dec();
+    m_touchUi->getToolboxes().getFileBrowser().dec();
   }
 
   template <> void Controller::invokeButtonAction<Toolbox::Tile, ToolboxDefinition<Toolbox::Tile>::Down>()
   {
-    m_touchUi.getToolboxes().getFileBrowser().inc();
+    m_touchUi->getToolboxes().getFileBrowser().inc();
   }
 
   template <> void Controller::invokeButtonAction<Toolbox::Tile, ToolboxDefinition<Toolbox::Tile>::Leave>()
   {
-    m_touchUi.getToolboxes().getFileBrowser().up();
+    m_touchUi->getToolboxes().getFileBrowser().up();
   }
 
   template <> void Controller::invokeButtonAction<Toolbox::Tile, ToolboxDefinition<Toolbox::Tile>::Enter>()
   {
-    m_touchUi.getToolboxes().getFileBrowser().down();
+    m_touchUi->getToolboxes().getFileBrowser().down();
   }
 
   template <> void Controller::invokeButtonAction<Toolbox::Tile, ToolboxDefinition<Toolbox::Tile>::Prelisten>()
   {
-    m_touchUi.getToolboxes().getFileBrowser().prelisten();
+    m_touchUi->getToolboxes().getFileBrowser().prelisten();
   }
 
   template <> void Controller::invokeButtonAction<Toolbox::Tile, ToolboxDefinition<Toolbox::Tile>::Load>()
   {
-    m_touchUi.getToolboxes().getFileBrowser().load();
+    m_touchUi->getToolboxes().getFileBrowser().load();
   }
 
   template <> void Controller::invokeKnobAction<Toolbox::Waveform, ToolboxDefinition<Toolbox::Waveform>::Zoom>(int inc)
   {
-    m_touchUi.getToolboxes().getWaveform().incZoom(inc);
+    m_touchUi->getToolboxes().getWaveform().incZoom(inc);
   }
 
   template <>
   void Controller::invokeKnobAction<Toolbox::Waveform, ToolboxDefinition<Toolbox::Waveform>::Scroll>(int inc)
   {
-    m_touchUi.getToolboxes().getWaveform().incScroll(inc);
+    m_touchUi->getToolboxes().getWaveform().incScroll(inc);
   }
 
   template <>
@@ -248,21 +256,24 @@ namespace Ui::Midi
   {
     auto sel = m_core.getSelectedTiles().front();
     auto reverse = std::get<bool>(m_core.getParameter(sel, Core::ParameterId::Reverse));
-    auto fpp = m_touchUi.getToolboxes().getWaveform().getFramesPerPixel();
+    auto fpp = m_touchUi->getToolboxes().getWaveform().getFramesPerPixel();
     m_core.incParameter(sel, Core::ParameterId::TriggerFrame, reverse ? -fpp * inc : fpp * inc);
   }
 
-  template <> void Controller::invokeKnobAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::Wizard>(int inc)
+  template <> void Controller::invokeKnobAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::OneFitsAll>(int inc)
   {
     auto now = std::chrono::system_clock::now();
 
     m_stepWizardLastUsage = now;
-    m_stepWizard = std::clamp(m_stepWizard + inc, 0, 255);
+    m_oneFitsAllStepWizard = std::clamp(m_oneFitsAllStepWizard + inc, 0, 255);
 
     auto sel = m_core.getSelectedTile();
     Core::Pattern pattern {};
 
-    int64_t w = std::abs(m_stepWizard);
+    int64_t w = std::abs(m_oneFitsAllStepWizard);
+
+    if(w <= 0x0F)
+      w = w | w << 4;
 
     if(w <= 0xFF)
       w = w | w << 8;
@@ -274,10 +285,72 @@ namespace Ui::Midi
       w = w | w << 32;
 
     uint64_t m = 1;
+
     for(size_t i = 0; i < NUM_STEPS; i++)
       pattern[i] = w & (m << i);
 
     m_core.setParameter(sel, Core::ParameterId::Pattern, pattern);
+  }
+
+  template <> void Controller::invokeKnobAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::Rotate>(int inc)
+  {
+    auto sel = m_core.getSelectedTile();
+    auto pattern = std::get<Core::Pattern>(m_core.getParameter(sel, Core::ParameterId::Pattern));
+
+    if(inc > 0)
+      std::rotate(pattern.rbegin(), pattern.rbegin() + std::abs(inc), pattern.rend());
+    else if(inc < 0)
+      std::rotate(pattern.begin(), pattern.begin() + std::abs(inc), pattern.end());
+
+    m_core.setParameter(sel, Core::ParameterId::Pattern, pattern);
+  }
+
+  template <> void Controller::invokeKnobAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::Steps>(int inc)
+  {
+    m_wizardSteps = std::clamp(m_wizardSteps + inc, 0, 64);
+    processStepsGapsWizard();
+  }
+
+  template <> void Controller::invokeKnobAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::Gaps>(int inc)
+  {
+    m_wizardGaps = std::clamp(m_wizardGaps + inc, 0, 64);
+    processStepsGapsWizard();
+  }
+
+  void Controller::processStepsGapsWizard()
+  {
+    Core::Pattern pattern = {};
+
+    if(m_wizardSteps || m_wizardGaps)
+    {
+      for(int i = 0; i < NUM_STEPS;)
+      {
+        for(int x = 0; x < m_wizardSteps; x++)
+        {
+          if(i < NUM_STEPS)
+            pattern[i] = true;
+
+          i++;
+        }
+
+        i += m_wizardGaps;
+      }
+      m_core.setParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern, pattern);
+    }
+  }
+
+  template <> void Controller::invokeButtonAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::All>()
+  {
+    Core::Pattern pattern = {};
+    pattern.fill(true);
+    m_core.setParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern, pattern);
+  }
+
+  template <> void Controller::invokeButtonAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::None>()
+  {
+    Core::Pattern pattern = {};
+    pattern.fill(false);
+    m_core.setParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern, pattern);
   }
 
   void Controller::onStepButtonEvent(Step b, ButtonEvent e)
@@ -296,7 +369,130 @@ namespace Ui::Midi
 
     if(std::exchange(m_ledLatch[idx], color) != color)
     {
-      m_midiUi.setLed(led, color);
+      for(auto a : m_midiUi)
+        a->setLed(led, color);
     }
+  }
+
+  /*
+   * GET DISPLAY VALUES
+   */
+  template <Core::ParameterId id> struct WrapParameterDescription
+  {
+    using Wrapped = ParameterDescriptor<id>;
+  };
+
+  using GlobalParameters = Core::GlobalParameters<WrapParameterDescription>::Wrapped;
+  using TileParameters = Core::TileParameters<WrapParameterDescription>::Wrapped;
+
+  template <typename Description>
+  bool fillString(std::string &target, Core::Api::Interface &core, Core::TileId tile, Core::ParameterId id)
+  {
+    if(Description::id == id)
+    {
+      target = Description::format(std::get<typename Description::Type>(core.getParameter(tile, id)));
+      return true;
+    }
+
+    return false;
+  }
+
+  std::string Controller::getDisplayValue(Core::TileId tile, Core::ParameterId id)
+  {
+    std::string ret;
+    GlobalParameters globalParams {};
+
+    if(!std::apply([&](auto... a) { return (fillString<decltype(a)>(ret, m_core, {}, id) || ...); },
+                   GlobalParameters {}))
+      std::apply([&](auto... a) { return (fillString<decltype(a)>(ret, m_core, tile, id) || ...); }, TileParameters {});
+
+    return ret;
+  }
+
+  std::string Controller::getDisplayValue(Core::ParameterId id)
+  {
+    return getDisplayValue(m_core.getSelectedTile(), id);
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Waveform>::Zoom>()
+  {
+    return Tools::format("x %3.2f", m_touchUi->getToolboxes().getWaveform().getZoom());
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Waveform>::Scroll>()
+  {
+    return Tools::format("%" PRId64 " frames", m_touchUi->getToolboxes().getWaveform().getScroll());
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Waveform>::HitPoint>()
+  {
+    return Tools::format(
+        "%" PRId64 " frames",
+        std::get<Core::FramePos>(m_core.getParameter(m_core.getSelectedTile(), Core::ParameterId::TriggerFrame)));
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Global>::TapNSync>()
+  {
+    return "";
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Tile>::Up>()
+  {
+    return "";
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Tile>::Down>()
+  {
+    return "";
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Tile>::Enter>()
+  {
+    return "";
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Tile>::Leave>()
+  {
+    return "";
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Tile>::Load>()
+  {
+    return "";
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Tile>::Prelisten>()
+  {
+    return "";
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Steps>::OneFitsAll>()
+  {
+    return "";
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Steps>::All>()
+  {
+    return "";
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Steps>::Gaps>()
+  {
+    return std::to_string(m_wizardGaps);
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Steps>::Steps>()
+  {
+    return std::to_string(m_wizardSteps);
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Steps>::Rotate>()
+  {
+    return "";
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Steps>::None>()
+  {
+    return "";
   }
 }

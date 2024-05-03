@@ -168,4 +168,14 @@ namespace Ui::Touch
     return std::max<double>(1, numFrames / numPixels);
   }
 
+  double Waveform::getZoom() const
+  {
+    return m_zoom;
+  }
+
+  Core::FramePos Waveform::getScroll() const
+  {
+    return m_scrollPos;
+  }
+
 }

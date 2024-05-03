@@ -18,7 +18,7 @@ namespace Tools
     class Computation;
 
     virtual ~Computations();
-    void add(const std::function<void()>& cb);
+    virtual void add(const std::function<void()>& cb);
 
    protected:
     virtual void onComputationInvalidated(Computation* c) = 0;
@@ -38,6 +38,8 @@ namespace Tools
     explicit DeferredComputations(Glib::RefPtr<Glib::MainContext> ctx, uint32_t timeout = 10);
     ~DeferredComputations() override;
 
+    void add(const std::function<void()>& cb) override;
+
     static void waitForAllScheduledComputationsDone();
 
    private:
@@ -46,6 +48,7 @@ namespace Tools
     Glib::RefPtr<Glib::MainContext> m_ctx;
     uint32_t m_timeout;
     sigc::connection m_timer;
+    sigc::connection m_initTimer;
     std::vector<std::function<void()>> m_pending;
     static uint32_t s_numDeferredComputationsScheduled;
   };

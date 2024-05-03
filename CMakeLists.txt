@@ -68,7 +68,8 @@ if (LIBS_FOUND)
             mosaik-core
             mosaik-dsp
             mosaik-audio
-            mosaik-ui
+            mosaik-touchui
+            mosaik-midiui
             Boost::program_options)
 
     install(FILES ui/touch-ui/styles.less DESTINATION ${RESOURCES_DIR} PERMISSIONS OWNER_WRITE OWNER_READ)

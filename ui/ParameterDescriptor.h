@@ -2,6 +2,7 @@
 
 #include <tools/Format.h>
 #include <core/ParameterDescriptor.h>
+#include <inttypes.h>
 #include <cmath>
 
 namespace Ui
@@ -109,7 +110,7 @@ namespace Ui
   {
     static std::string format(Type t)
     {
-      return Tools::format("%zu", t);
+      return Tools::format("%" PRId64, t);
     }
 
     constexpr static auto title = "Fade In";
@@ -121,7 +122,7 @@ namespace Ui
   {
     static std::string format(Type t)
     {
-      return Tools::format("%zu", t);
+      return Tools::format("%" PRId64, t);
     }
 
     constexpr static auto title = "Faded In";
@@ -133,7 +134,7 @@ namespace Ui
   {
     static std::string format(Type t)
     {
-      return Tools::format("%zu", t);
+      return Tools::format("%" PRId64, t);
     }
 
     constexpr static auto title = "Fade Out";
@@ -145,7 +146,7 @@ namespace Ui
   {
     static std::string format(Type t)
     {
-      return Tools::format("%zu", t);
+      return Tools::format("%" PRId64, t);
     }
 
     constexpr static auto title = "Faded Out";
@@ -157,7 +158,7 @@ namespace Ui
   {
     static std::string format(Type t)
     {
-      return Tools::format("%zu", t);
+      return Tools::format("%" PRId64, t);
     }
 
     constexpr static auto title = "Hit Point";

@@ -3,6 +3,7 @@
 #include <core/ParameterDescriptor.h>
 #include <dsp/api/display/Interface.h>
 #include <ui/touch-ui/Display.h>
+#include <ui/Controller.h>
 
 #include "WaveformThumb.h"
 #include "LevelMeter.h"
@@ -25,7 +26,8 @@ namespace Ui::Touch
     }
   }
 
-  Tile::Tile(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Core::TileId tileId)
+  Tile::Tile(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Ui::Controller& controller,
+             Core::TileId tileId)
       : Glib::ObjectBase("Tile")
       , Gtk::Grid()
       , m_size(*this, "size", 50)
@@ -58,8 +60,8 @@ namespace Ui::Touch
                "level right", [this] { return ampToLevelMeter(std::get<1>(m_levels.get())); }, levelMeterDecay)),
            15, 4, 1, 8);
 
-    m_computations.add([&core, tileId, sampleName]()
-                       { sampleName->set_label(getDisplayValue(core, tileId, Core::ParameterId::SampleFile)); });
+    m_computations.add([&controller, tileId, sampleName]()
+                       { sampleName->set_label(controller.getDisplayValue(tileId, Core::ParameterId::SampleFile)); });
 
     m_computations.add(
         [this, &core, &dsp, tileId, seconds]()

@@ -129,12 +129,44 @@ namespace Ui
     constexpr static auto title = "Step Wizard";
     using Minimized = Entries<>;
     using MaximizedParameters = Entries<>;
-    struct Wizard
+
+    struct OneFitsAll
     {
-      static constexpr auto title = "Wizard";
+      static constexpr auto title = "One Fits All";
     };
+
+    struct Rotate
+    {
+      static constexpr auto title = "Rotate";
+    };
+
+    struct Steps
+    {
+      static constexpr auto title = "Steps";
+    };
+
+    struct Gaps
+    {
+      static constexpr auto title = "Gaps";
+    };
+
+    struct All
+    {
+      static constexpr auto title = "All";
+    };
+
+    struct None
+    {
+      static constexpr auto title = "None";
+    };
+
     using MaximizedCustom = Entries<
-        MaximizedCustomEntry<Wizard, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Center>>;
+        MaximizedCustomEntry<OneFitsAll, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Leftmost>,
+        MaximizedCustomEntry<Rotate, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Center>,
+        MaximizedCustomEntry<Steps, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::SouthWest>,
+        MaximizedCustomEntry<Gaps, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::SouthEast>,
+        MaximizedCustomEntry<All, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_NorthEast>,
+        MaximizedCustomEntry<None, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_North>>;
   };
 
   template <> struct ToolboxDefinition<Toolbox::Tile>

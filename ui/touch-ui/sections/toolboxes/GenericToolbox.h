@@ -6,14 +6,20 @@
 #include "SoftButtonGrid.h"
 #include <ui/ParameterDescriptor.h>
 #include <ui/ToolboxDefinition.h>
+#include <ui/Controller.h>
 #include <gtkmm/label.h>
+
+namespace Ui
+{
+  class Controller;
+}
 
 namespace Ui::Touch
 {
   template <Core::ParameterId ID> class GenericMinimizedParameter : public Gtk::Box
   {
    public:
-    GenericMinimizedParameter(Core::Api::Interface &core)
+    GenericMinimizedParameter(Ui::Controller &controller)
         : Gtk::Box(Gtk::ORIENTATION_VERTICAL)
     {
       get_style_context()->add_class("parameter");
@@ -26,7 +32,7 @@ namespace Ui::Touch
       value->get_style_context()->add_class("value");
       pack_start(*value);
 
-      m_computations.add([&core, value] { value->set_label(getDisplayValue(core, ID)); });
+      m_computations.add([&controller, value] { value->set_label(controller.getDisplayValue(ID)); });
     }
 
    private:
@@ -36,7 +42,7 @@ namespace Ui::Touch
   template <Ui::Toolbox T> class GenericMinimized : public Gtk::Box
   {
    public:
-    GenericMinimized(Core::Api::Interface &core)
+    GenericMinimized(Ui::Controller &controller)
         : Gtk::Box(Gtk::ORIENTATION_HORIZONTAL)
     {
       get_style_context()->add_class("minimized");
@@ -51,7 +57,7 @@ namespace Ui::Touch
           [&](auto a)
           {
             minis->set_halign(Gtk::Align::ALIGN_END);
-            minis->pack_start(*Gtk::manage(new GenericMinimizedParameter<decltype(a)::id>(core)), false, false);
+            minis->pack_start(*Gtk::manage(new GenericMinimizedParameter<decltype(a)::id>(controller)), false, false);
           });
     }
   };
@@ -59,13 +65,13 @@ namespace Ui::Touch
   template <Ui::Toolbox T> class GenericMaximized : public Gtk::Box
   {
    public:
-    GenericMaximized(Core::Api::Interface &core)
+    GenericMaximized(Ui::Controller &controller)
         : Gtk::Box(Gtk::ORIENTATION_VERTICAL)
     {
       get_style_context()->add_class("maximized");
       auto headline = Gtk::manage(new Gtk::Label(ToolboxDefinition<T>::title));
       headline->get_style_context()->add_class("header");
-      
+
       pack_start(*headline);
 
       bool hasKnobs = false;
@@ -94,7 +100,7 @@ namespace Ui::Touch
               using B = decltype(a);
               if(std::holds_alternative<Knob>(B::position))
                 knobs->set(std::get<Knob>(B::position), ParameterDescriptor<B::id>::title,
-                           [&] { return getDisplayValue(core, B::id); });
+                           [&] { return controller.getDisplayValue(B::id); });
             });
 
         Ui::ToolboxDefinition<T>::MaximizedCustom::forEach(
@@ -102,7 +108,8 @@ namespace Ui::Touch
             {
               using B = decltype(a);
               if(std::holds_alternative<Knob>(B::position))
-                knobs->set(std::get<Knob>(B::position), B::ID::title, [&] { return "---"; });
+                knobs->set(std::get<Knob>(B::position), B::ID::title,
+                           [&] { return controller.getDisplayValue<typename B::ID>(); });
             });
 
         pack_start(*knobs);
@@ -120,9 +127,9 @@ namespace Ui::Touch
               if(std::holds_alternative<SoftButton>(B::position))
               {
                 lButtons->set(std::get<SoftButton>(B::position), ParameterDescriptor<B::id>::title,
-                              [&] { return getDisplayValue(core, B::id); });
+                              [&] { return controller.getDisplayValue(B::id); });
                 rButtons->set(std::get<SoftButton>(B::position), ParameterDescriptor<B::id>::title,
-                              [&] { return getDisplayValue(core, B::id); });
+                              [&] { return controller.getDisplayValue(B::id); });
               }
             });
 
@@ -150,20 +157,20 @@ namespace Ui::Touch
   {
 
    public:
-    GenericToolbox(ToolboxesInterface &toolboxes, Core::Api::Interface &core, Gtk::Widget *maximized = nullptr)
-        : Toolbox(toolboxes, T, buildMinimized(core), maximized ? maximized : buildMaximized(core))
+    GenericToolbox(ToolboxesInterface &toolboxes, Ui::Controller &controller, Gtk::Widget *maximized = nullptr)
+        : Toolbox(toolboxes, T, buildMinimized(controller), maximized ? maximized : buildMaximized(controller))
     {
       get_style_context()->add_class("generic toolbox");
     }
 
-    static Gtk::Widget *buildMinimized(Core::Api::Interface &core)
+    static Gtk::Widget *buildMinimized(Ui::Controller &controller)
     {
-      return new GenericMinimized<T>(core);
+      return new GenericMinimized<T>(controller);
     }
 
-    static Gtk::Widget *buildMaximized(Core::Api::Interface &core)
+    static Gtk::Widget *buildMaximized(Ui::Controller &controller)
     {
-      return new GenericMaximized<T>(core);
+      return new GenericMaximized<T>(controller);
     }
   };
 }

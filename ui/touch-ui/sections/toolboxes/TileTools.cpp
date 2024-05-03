@@ -23,8 +23,8 @@ namespace Ui::Touch
     }
   }
 
-  TileTools::TileTools(Core::Api::Interface &core)
-      : GenericMaximized(core)
+  TileTools::TileTools(Core::Api::Interface &core, Ui::Controller &controller)
+      : GenericMaximized(controller)
       , m_core(core)
   {
     m_files = Gtk::manage(new Gtk::FileChooserWidget());

@@ -55,8 +55,13 @@ int main(int args, char** argv)
   Dsp::Dsp dsp;
   Core::Core core(dsp.getControlApi(), Glib::MainContext::get_default());
   Audio::AlsaOut audioOut(dsp.getRealtimeApi(), alsaOut, bits, channels, switchMainAndPre);
-  Ui::Touch::Application touchUI(core.getApi(), dsp.getDisplayApi());
-  Ui::Midi::Ui midiUI(midiUi, core.getApi(), dsp.getDisplayApi(), touchUI.getApi());
+
+  Ui::Controller controller(core.getApi(), dsp.getDisplayApi());
+  Ui::Touch::Application touchUI(core.getApi(), dsp.getDisplayApi(), controller);
+  Ui::Midi::Ui midiUI(midiUi, core.getApi(), dsp.getDisplayApi(), touchUI.getApi(), controller);
+
+  controller.init(touchUI.getApi());
+  controller.addUi(midiUI);
 
   std::filesystem::path home = getenv("HOME");
   auto storage = home / ".mosaik";
@@ -67,8 +72,9 @@ int main(int args, char** argv)
 
   if(DEBUG_BUILD)
   {
-    debugUI = std::make_unique<Ui::Midi::DebugUI>(core.getApi(), dsp.getDisplayApi(), touchUI.getApi());
+    debugUI = std::make_unique<Ui::Midi::DebugUI>(core.getApi(), dsp.getDisplayApi(), touchUI.getApi(), controller);
     touchUI.attach(*debugUI);
+    controller.addUi(*debugUI);
   }
 
   touchUI.run();

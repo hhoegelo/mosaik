@@ -5,8 +5,6 @@ pkg_check_modules(LIBS REQUIRED IMPORTED_TARGET gtkmm-3.0)
 
 add_library(mosaik-midiui STATIC Ui.cpp DebugUI.cpp
         Interface.h
-        Controller.cpp
-        Controller.h
         Interface.cpp
         Erp.cpp
         Erp.h
@@ -14,6 +12,6 @@ add_library(mosaik-midiui STATIC Ui.cpp DebugUI.cpp
         MidiEventDispatcher.h)
 
 target_include_directories(mosaik-midiui PRIVATE ${CMAKE_SOURCE_DIR} ${LIBS_INCLUDE_DIRS})
-target_link_libraries(mosaik-midiui mosaik-core mosaik-midi mosaik-touchui ${LIBS_LIBRARIES})
+target_link_libraries(mosaik-midiui mosaik-core mosaik-midi mosaik-ui mosaik-touchui ${LIBS_LIBRARIES})
 
 

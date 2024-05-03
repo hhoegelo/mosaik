@@ -9,11 +9,9 @@
 
 namespace Ui::Touch
 {
-  Window::Window(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp)
-      : m_core(core)
-      , m_dsp(dsp)
-      , m_toolboxes(std::make_unique<Touch::Toolboxes>(*this, m_core))
-      , m_tiles(std::make_unique<Tiles>(*this, m_core, m_dsp))
+  Window::Window(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Ui::Controller& controller)
+      : m_toolboxes(std::make_unique<Touch::Toolboxes>(*this, core, controller))
+      , m_tiles(std::make_unique<Tiles>(*this, core, dsp, controller))
       , m_main(std::make_unique<Main>(*this))
       , m_mixer(std::make_unique<Mixer>(*this))
   {
@@ -59,7 +57,6 @@ namespace Ui::Touch
     set_size_request(c_screenWidth, c_screenHeight);
     set_resizable(false);
     set_position(Gtk::WindowPosition::WIN_POS_CENTER);
-
 
     auto vBox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL));
     vBox->get_style_context()->add_class("root");

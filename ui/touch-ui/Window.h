@@ -13,6 +13,11 @@ namespace Dsp::Api::Display
   class Interface;
 }
 
+namespace Ui
+{
+  class Controller;
+}
+
 namespace Ui::Touch
 {
   class Tiles;
@@ -23,7 +28,7 @@ namespace Ui::Touch
   class Window : public Gtk::Window, public Interface
   {
    public:
-    Window(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
+    Window(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp, Ui::Controller &controller);
     ~Window() override;
 
     ToolboxesInterface &getToolboxes() const override;
@@ -33,9 +38,6 @@ namespace Ui::Touch
    private:
     void loadCss();
     bool loadAndMonitor(const char *file);
-
-    Core::Api::Interface &m_core;
-    Dsp::Api::Display::Interface &m_dsp;
 
     Tools::ReactiveVar<Section> m_section { Section::Tiles };
 

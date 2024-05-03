@@ -20,7 +20,7 @@ namespace Ui::Touch
   class TileTools : public GenericMaximized<Ui::Toolbox::Tile>, public FileBrowserInterface
   {
    public:
-    explicit TileTools(Core::Api::Interface &core);
+    TileTools(Core::Api::Interface &core, Ui::Controller &controller);
 
     void up() override;
     void down() override;

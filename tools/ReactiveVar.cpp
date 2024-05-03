@@ -119,12 +119,32 @@ namespace Tools
   DeferredComputations::~DeferredComputations()
   {
     m_timer.disconnect();
+    m_initTimer.disconnect();
   }
 
   void DeferredComputations::waitForAllScheduledComputationsDone()
   {
     while(s_numDeferredComputationsScheduled > 0)
       Glib::MainContext::get_default()->iteration(true);
+  }
+
+  void DeferredComputations::add(const std::function<void()> &cb)
+  {
+    auto p = std::make_shared<Computation>(*this, cb);
+    m_computations.push_back(p);
+
+    if(!m_initTimer.connected())
+    {
+      m_initTimer = m_ctx->signal_timeout().connect(
+          [this]
+          {
+            for(auto p : m_computations)
+              p->execute();
+
+            return false;
+          },
+          m_timeout);
+    }
   }
 
 }
