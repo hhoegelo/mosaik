@@ -273,8 +273,9 @@ namespace Ui::Midi
     if(w <= 0xFFFFFFFF)
       w = w | w << 32;
 
+    uint64_t m = 1;
     for(size_t i = 0; i < NUM_STEPS; i++)
-      pattern[i] = w & (1 << i);
+      pattern[i] = w & (m << i);
 
     m_core.setParameter(sel, Core::ParameterId::Pattern, pattern);
   }
