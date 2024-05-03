@@ -36,9 +36,7 @@ namespace Ui::Midi
     }
     else if(event[0] == 0xb0)
     {
-      m_knobEvent(static_cast<Knob>(event[1]), 5 * (static_cast<int>(event[2]) - 64));
+      m_knobEvent(static_cast<Knob>(event[1]), static_cast<int>(event[2]) - 64);
     }
-
-    printf("%x %d %d\n", event[0], event[1], event[2]);
   }
 }
