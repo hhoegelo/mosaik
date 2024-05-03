@@ -18,7 +18,8 @@ namespace Ui
     ReleasedKnobRotate,
     PressedKnobRotate,
     ButtonPress,
-    ButtonRelease
+    ButtonRelease,
+    KnobClick  // no turn between press and release
   };
 
   enum class UiAction
@@ -28,6 +29,7 @@ namespace Ui
     Set,
     Toggle,
     Invoke,
+    Default
   };
 
   template <Core::ParameterId ID, Color C, UiEvent E, UiAction A, auto P> struct MaximizedParameterEntry
@@ -177,11 +179,14 @@ namespace Ui
         = Entries<MinimizedParameterEntry<Core::ParameterId::Gain>, MinimizedParameterEntry<Core::ParameterId::Mute>,
                   MinimizedParameterEntry<Core::ParameterId::Balance>,
                   MinimizedParameterEntry<Core::ParameterId::Speed>>;
+
     using MaximizedParameters
         = Entries<MaximizedParameterEntry<Core::ParameterId::Gain, Color::Green, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::Center>,
                   MaximizedParameterEntry<Core::ParameterId::Speed, Color::Blue, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::Rightmost>,
+                  MaximizedParameterEntry<Core::ParameterId::Speed, Color::Blue, UiEvent::KnobClick, UiAction::Default,
+                                          Knob::Rightmost>,
                   MaximizedParameterEntry<Core::ParameterId::Balance, Color::Purple, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::Leftmost>,
                   MaximizedParameterEntry<Core::ParameterId::Shuffle, Color::Red, UiEvent::ReleasedKnobRotate,

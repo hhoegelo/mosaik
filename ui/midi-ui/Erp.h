@@ -9,6 +9,8 @@ namespace Ui::Midi
     Erp();
 
     sigc::connection connect(const std::function<void(int)>& cb);
+    sigc::connection down(const std::function<void()>& cb);
+    sigc::connection up(const std::function<void()>& cb);
 
    protected:
     bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
@@ -21,5 +23,7 @@ namespace Ui::Midi
     std::optional<Point> m_lastMousePos;
     double m_degree = 0;
     sigc::signal<void, double> m_turn;
+    sigc::signal<void> m_down;
+    sigc::signal<void> m_up;
   };
 }

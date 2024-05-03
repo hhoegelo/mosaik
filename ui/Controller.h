@@ -55,6 +55,7 @@ namespace Ui
     {
       std::map<Knob, std::function<void(int)>> knobIncDecReleased;
       std::map<Knob, std::function<void(int)>> knobIncDecPressed;
+      std::map<Knob, std::function<void()>> knobClick;
       std::map<SoftButton, std::function<void()>> buttonPressed;
       std::map<SoftButton, std::function<void()>> buttonReleased;
     };
@@ -66,6 +67,7 @@ namespace Ui
     template <Toolbox T, typename D> std::pair<SoftButton, std::function<void()>> bindButtonUiParameterAction();
     template <Toolbox T, typename D> std::pair<SoftButton, std::function<void()>> bindButtonUiInvokeAction();
     template <Toolbox T, typename D> std::pair<Knob, std::function<void(int)>> bindKnobUiInvokeAction();
+    template <Toolbox T, typename D> std::pair<Knob, std::function<void()>> bindKnobUiClickAction();
 
     template <Toolbox T, typename D> void invokeButtonAction();
     template <Toolbox T, typename D> void invokeKnobAction(int incs);
@@ -84,6 +86,7 @@ namespace Ui
     std::array<Color, static_cast<size_t>(Led::NUM_LEDS)> m_ledLatch {};
 
     std::array<bool, static_cast<size_t>(SoftButton::MAX_BUTTON_ID)> m_buttonState {};
+    std::array<bool, static_cast<size_t>(Knob::NUM_KNOBS)> m_turnWhilePressed {};
 
     /// Wizard
     Tools::ReactiveVar<int> m_oneFitsAllStepWizard { 0 };

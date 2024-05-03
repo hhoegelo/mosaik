@@ -18,7 +18,7 @@ namespace Tools
     class Computation;
 
     virtual ~Computations();
-    virtual void add(const std::function<void()>& cb);
+    virtual void add(const std::function<void()>& cb, bool fromOutside = true);
 
    protected:
     virtual void onComputationInvalidated(Computation* c) = 0;
@@ -38,7 +38,7 @@ namespace Tools
     explicit DeferredComputations(Glib::RefPtr<Glib::MainContext> ctx, uint32_t timeout = 10);
     ~DeferredComputations() override;
 
-    void add(const std::function<void()>& cb) override;
+    void add(const std::function<void()>& cb, bool fromOutside = true) override;
 
     static void waitForAllScheduledComputationsDone();
 

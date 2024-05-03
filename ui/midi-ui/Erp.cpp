@@ -39,11 +39,14 @@ namespace Ui::Midi
 
     return true;
   }
+
   bool Erp::on_button_press_event(GdkEventButton *event)
   {
     if(event->button == GDK_BUTTON_PRIMARY)
       m_lastMousePos = Point { event->x, event->y };
 
+    if(event->button > 1)
+      m_down.emit();
     return true;
   }
   bool Erp::on_button_release_event(GdkEventButton *event)
@@ -51,6 +54,9 @@ namespace Ui::Midi
     if(event->button == GDK_BUTTON_PRIMARY)
       m_lastMousePos.reset();
 
+    if(event->button > 1)
+      m_up.emit();
+    
     return true;
   }
   bool Erp::on_motion_notify_event(GdkEventMotion *event)
@@ -73,5 +79,15 @@ namespace Ui::Midi
   sigc::connection Erp::connect(const std::function<void(int)> &cb)
   {
     return m_turn.connect(cb);
+  }
+
+  sigc::connection Erp::down(const std::function<void()> &cb)
+  {
+    return m_down.connect(cb);
+  }
+
+  sigc::connection Erp::up(const std::function<void()> &cb)
+  {
+    return m_up.connect(cb);
   }
 }

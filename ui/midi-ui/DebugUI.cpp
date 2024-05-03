@@ -108,6 +108,8 @@ namespace Ui::Midi
     auto w = Gtk::manage(new Erp());
     w->set_name(getKnobName(knob));
     w->connect([this, knob](auto inc) { m_ctrl.onErpInc(knob, inc); });
+    w->down([this, knob]() { m_ctrl.onSoftButtonEvent(getButtonForKnob(knob), ButtonEvent::Press); });
+    w->up([this, knob]() { m_ctrl.onSoftButtonEvent(getButtonForKnob(knob), ButtonEvent::Release); });
     auto r = Gtk::manage(new Gtk::EventBox());
     r->add(*w);
     r->add_events(Gdk::BUTTON1_MOTION_MASK | Gdk::BUTTON_PRESS_MASK);

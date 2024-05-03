@@ -64,6 +64,8 @@ namespace Ui
 
   void Controller::onErpInc(Knob k, int inc)
   {
+    m_turnWhilePressed[static_cast<size_t>(k)] = true;
+
     if(m_buttonState[static_cast<int>(getButtonForKnob(k))])
     {
       if(auto it = m_inputMapping.knobIncDecPressed.find(k); it != m_inputMapping.knobIncDecPressed.end())
@@ -81,12 +83,32 @@ namespace Ui
     m_buttonState[static_cast<int>(b)] = (e == ButtonEvent::Press);
 
     if(e == ButtonEvent::Press)
+    {
+      if(isKnob(b))
+      {
+        auto k = getKnobForButton(b);
+        m_turnWhilePressed[static_cast<size_t>(k)] = false;
+      }
+
       if(auto it = m_inputMapping.buttonPressed.find(b); it != m_inputMapping.buttonPressed.end())
         it->second();
+    }
 
     if(e == ButtonEvent::Release)
+    {
       if(auto it = m_inputMapping.buttonReleased.find(b); it != m_inputMapping.buttonReleased.end())
         it->second();
+
+      if(isKnob(b))
+      {
+        auto k = getKnobForButton(b);
+        if(!m_turnWhilePressed[static_cast<size_t>(k)])
+        {
+          if(auto it = m_inputMapping.knobClick.find(k); it != m_inputMapping.knobClick.end())
+            it->second();
+        }
+      }
+    }
   }
 
   Controller::Mapping Controller::createMapping(Ui::Toolbox t)
@@ -139,10 +161,21 @@ namespace Ui
   template <Toolbox T, typename D>
   std::pair<SoftButton, std::function<void()>> Controller::bindButtonUiParameterAction()
   {
-    constexpr bool isGlobal = Core::GlobalParameters<Core::NoWrap>::contains(D::id);
     if constexpr(D::action == UiAction::Toggle)
       return std::make_pair(std::get<SoftButton>(D::position),
                             [this]() { m_core.toggleSelectedTilesParameter(D::id); });
+    else
+      UNSUPPORTED_BRANCH();
+  }
+
+  template <Toolbox T, typename D> std::pair<Knob, std::function<void()>> Controller::bindKnobUiClickAction()
+  {
+    constexpr bool isGlobal = Core::GlobalParameters<Core::NoWrap>::contains(D::id);
+    auto tile = isGlobal ? Core::TileId {} : m_core.getSelectedTile();
+
+    if constexpr(D::action == UiAction::Default)
+      return std::make_pair(std::get<Knob>(D::position), [this, tile]()
+                            { m_core.setParameter(tile, D::id, ParameterDescriptor<D::id>::defaultValue); });
     else
       UNSUPPORTED_BRANCH();
   }
@@ -181,6 +214,8 @@ namespace Ui
             mapping.buttonPressed.insert(bindButtonUiParameterAction<T, D>());
           else if constexpr(D::event == UiEvent::ButtonRelease)
             mapping.buttonReleased.insert(bindButtonUiParameterAction<T, D>());
+          else if constexpr(D::event == UiEvent::KnobClick)
+            mapping.knobClick.insert(bindKnobUiClickAction<T, D>());
           else
             throw std::runtime_error("Unsupported ui binding");
         });
