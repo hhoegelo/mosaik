@@ -139,43 +139,6 @@ namespace Core
     constexpr static auto unit = "%";
   };
 
-  template <> struct ParameterDescriptor<ParameterId::WizardMode>
-  {
-    constexpr static ParameterId id = ParameterId::WizardMode;
-    constexpr static auto name = "wizardMode";
-    using Type = uint8_t;
-  };
-
-  template <> struct ParameterDescriptor<ParameterId::WizardRotate>
-  {
-    constexpr static ParameterId id = ParameterId::WizardRotate;
-    constexpr static auto name = "wizardRotate";
-    using Type = float;
-    constexpr static Type min = -63.0f;
-    constexpr static Type max = 63.0f;
-    constexpr static Type coarse = 0.1f;
-  };
-
-  template <> struct ParameterDescriptor<ParameterId::WizardOns>
-  {
-    constexpr static ParameterId id = ParameterId::WizardOns;
-    constexpr static auto name = "wizardOns";
-    using Type = float;
-    constexpr static Type min = 0.0f;
-    constexpr static Type max = 64.0f;
-    constexpr static Type coarse = 0.1f;
-  };
-
-  template <> struct ParameterDescriptor<ParameterId::WizardOffs>
-  {
-    constexpr static ParameterId id = ParameterId::WizardOffs;
-    constexpr static auto name = "wizardOffs";
-    using Type = float;
-    constexpr static Type min = 0.0f;
-    constexpr static Type max = 64.0f;
-    constexpr static Type coarse = 0.1f;
-  };
-
   template <ParameterId P> struct ParameterDescriptionPlayground
   {
     constexpr static ParameterId id = P;
@@ -293,15 +256,13 @@ namespace Core
                    ParameterId::MainPlayground5, ParameterId::MainPlayground6, ParameterId::MainPlayground7>;
 
   template <template <ParameterId> typename Wrapper>
-  using TileParameters
-      = Parameters<Wrapper, ParameterId::Selected, ParameterId::SampleFile, ParameterId::Reverse, ParameterId::Pattern,
-                   ParameterId::Balance, ParameterId::Gain, ParameterId::Mute, ParameterId::Speed,
-                   ParameterId::EnvelopeFadeInPos, ParameterId::EnvelopeFadedInPos, ParameterId::EnvelopeFadeOutPos,
-                   ParameterId::EnvelopeFadedOutPos, ParameterId::TriggerFrame, ParameterId::Shuffle,
-                   ParameterId::WizardMode, ParameterId::WizardRotate, ParameterId::WizardOns, ParameterId::WizardOffs,
-                   ParameterId::Playground1, ParameterId::Playground2, ParameterId::Playground3,
-                   ParameterId::Playground4, ParameterId::Playground5, ParameterId::Playground6,
-                   ParameterId::Playground7>;
+  using TileParameters = Parameters<Wrapper, ParameterId::Selected, ParameterId::SampleFile, ParameterId::Reverse,
+                                    ParameterId::Pattern, ParameterId::Balance, ParameterId::Gain, ParameterId::Mute,
+                                    ParameterId::Speed, ParameterId::EnvelopeFadeInPos, ParameterId::EnvelopeFadedInPos,
+                                    ParameterId::EnvelopeFadeOutPos, ParameterId::EnvelopeFadedOutPos,
+                                    ParameterId::TriggerFrame, ParameterId::Shuffle, ParameterId::Playground1,
+                                    ParameterId::Playground2, ParameterId::Playground3, ParameterId::Playground4,
+                                    ParameterId::Playground5, ParameterId::Playground6, ParameterId::Playground7>;
 
   template <ParameterId id> struct WrapParameterDescriptor
   {

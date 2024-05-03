@@ -3,11 +3,7 @@ cmake_minimum_required(VERSION 3.16.3)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBS REQUIRED IMPORTED_TARGET gtkmm-3.0)
 
-CPMAddPackage(
-        NAME "clessc"
-        GITHUB_REPOSITORY "BramvdKroef/clessc"
-        GIT_TAG "4176967fdfcb9ed571fbad659f8bec77e06a9d12"
-)
+CPMAddPackage("gh:BramvdKroef/clessc#4176967fdfcb9ed571fbad659f8bec77e06a9d12")
 
 add_library(mosaik-touchui STATIC
         sections/tiles/Tiles.cpp

@@ -1,5 +1,4 @@
 #include "Controller.h"
-#include "core/StepWizard.h"
 #include "core/ParameterDescriptor.h"
 #include <ui/Types.h>
 #include <core/api/Interface.h>
@@ -8,6 +7,12 @@
 #include <ui/touch-ui/Interface.h>
 #include <ui/ToolboxDefinition.h>
 #include <cmath>
+
+#if(__GNUC__ > 10)
+#define UNSUPPORTED_BRANCH() static_assert(false)
+#else
+#define UNSUPPORTED_BRANCH() throw std::runtime_error("unsupported branch")
+#endif
 
 namespace Ui::Midi
 {
@@ -38,13 +43,6 @@ namespace Ui::Midi
   {
     auto tile = m_core.getSelectedTile();
     auto pattern = std::get<Core::Pattern>(m_core.getParameter(tile, Core::ParameterId::Pattern));
-
-    pattern = Core::processWizard(
-        pattern,
-        static_cast<Core::WizardMode>(std::get<uint8_t>(m_core.getParameter(tile, Core::ParameterId::WizardMode))),
-        static_cast<int8_t>(std::round(std::get<float>(m_core.getParameter(tile, Core::ParameterId::WizardRotate)))),
-        static_cast<uint8_t>(std::round(std::get<float>(m_core.getParameter(tile, Core::ParameterId::WizardOns)))),
-        static_cast<uint8_t>(std::round(std::get<float>(m_core.getParameter(tile, Core::ParameterId::WizardOffs)))));
 
     for(size_t i = 0; i < 64; i++)
     {
@@ -124,8 +122,8 @@ namespace Ui::Midi
                               auto fpp = m_touchUi.getToolboxes().getWaveform().getFramesPerPixel();
                               m_core.incParameter(tile, D::id, fpp * inc);
                             });
-    //else
-      //static_assert(false);
+    else
+      UNSUPPORTED_BRANCH();
   }
 
   template <Toolbox T, typename D>
@@ -135,8 +133,8 @@ namespace Ui::Midi
     if constexpr(D::action == UiAction::Toggle)
       return std::make_pair(std::get<SoftButton>(D::position),
                             [this]() { m_core.toggleSelectedTilesParameter(D::id); });
-    //else
-      //static_assert(false);
+    else
+      UNSUPPORTED_BRANCH();
   }
 
   template <Toolbox T, typename D> std::pair<SoftButton, std::function<void()>> Controller::bindButtonUiInvokeAction()
@@ -144,8 +142,8 @@ namespace Ui::Midi
     if constexpr(D::action == UiAction::Invoke)
       return std::make_pair(std::get<SoftButton>(D::position),
                             [this]() { this->invokeButtonAction<T, typename D::ID>(); });
-    //else
-      //static_assert(false);
+    else
+      UNSUPPORTED_BRANCH();
   }
 
   template <Toolbox T, typename D> std::pair<Knob, std::function<void(int)>> Controller::bindKnobUiInvokeAction()
@@ -153,8 +151,8 @@ namespace Ui::Midi
     if constexpr(D::action == UiAction::Invoke)
       return std::make_pair(std::get<Knob>(D::position),
                             [this](int i) { this->invokeKnobAction<T, typename D::ID>(i); });
-    //else
-      //static_assert(false);
+    else
+      UNSUPPORTED_BRANCH();
   }
 
   template <Toolbox T> Controller::Mapping Controller::buildMapping()
@@ -190,59 +188,16 @@ namespace Ui::Midi
             mapping.knobIncDecReleased.insert(bindKnobUiInvokeAction<T, D>());
           else if constexpr(D::event == UiEvent::PressedKnobRotate)
             mapping.knobIncDecPressed.insert(bindKnobUiInvokeAction<T, D>());
-          //else
-            //static_assert(false);
+          else
+            UNSUPPORTED_BRANCH();
         });
 
     return mapping;
   }
 
-  template <typename I> struct Bind
+  template <> void Controller::invokeButtonAction<Toolbox::Global, ToolboxDefinition<Toolbox::Global>::TapNSync>()
   {
-    using ID = I;
-    std::function<void()> handler;
-  };
-
-  template <> void Controller::invokeButtonAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::Cancel>()
-  {
-    auto sel = m_core.getSelectedTiles().front();
-    m_core.setParameter(sel, Core::ParameterId::WizardMode, static_cast<uint8_t>(Core::WizardMode::Or));
-    m_core.setParameter(sel, Core::ParameterId::WizardRotate, 0.0f);
-    m_core.setParameter(sel, Core::ParameterId::WizardOns, 0.0f);
-    m_core.setParameter(sel, Core::ParameterId::WizardOffs, 0.0f);
-  }
-
-  template <> void Controller::invokeButtonAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::Apply>()
-  {
-    auto tile = m_core.getSelectedTiles().front();
-    auto p = std::get<Core::Pattern>(m_core.getParameter(tile, Core::ParameterId::Pattern));
-
-    p = Core::processWizard(
-        p, static_cast<Core::WizardMode>(std::get<uint8_t>(m_core.getParameter(tile, Core::ParameterId::WizardMode))),
-        static_cast<int8_t>(std::round(std::get<float>(m_core.getParameter(tile, Core::ParameterId::WizardRotate)))),
-        static_cast<uint8_t>(std::round(std::get<float>(m_core.getParameter(tile, Core::ParameterId::WizardOns)))),
-        static_cast<uint8_t>(std::round(std::get<float>(m_core.getParameter(tile, Core::ParameterId::WizardOffs)))));
-
-    m_core.setParameter(tile, Core::ParameterId::Pattern, p);
-    this->invokeButtonAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::Cancel>();
-  }
-
-  template <> void Controller::invokeButtonAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::And>()
-  {
-    auto tile = m_core.getSelectedTile();
-    m_core.setParameter(tile, Core::ParameterId::WizardMode, static_cast<uint8_t>(Core::WizardMode::And));
-  }
-
-  template <> void Controller::invokeButtonAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::Or>()
-  {
-    auto tile = m_core.getSelectedTile();
-    m_core.setParameter(tile, Core::ParameterId::WizardMode, static_cast<uint8_t>(Core::WizardMode::Or));
-  }
-
-  template <> void Controller::invokeButtonAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::Not>()
-  {
-    auto tile = m_core.getSelectedTile();
-    m_core.setParameter(tile, Core::ParameterId::WizardMode, static_cast<uint8_t>(Core::WizardMode::Not));
+    m_core.addTap();
   }
 
   template <> void Controller::invokeButtonAction<Toolbox::Tile, ToolboxDefinition<Toolbox::Tile>::Up>()

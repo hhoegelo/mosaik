@@ -100,4 +100,8 @@ namespace Core::Api
   {
     return getSelectedTiles().front();
   }
+
+  void Interface::addTap()
+  {
+  }
 }

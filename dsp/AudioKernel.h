@@ -5,11 +5,14 @@
 #include <memory>
 #include <vector>
 #include <array>
+#include <chrono>
 
 namespace Dsp
 {
   struct AudioKernel
   {
+    std::chrono::system_clock::time_point sequencerStartTime;
+
     float volume_dB = 0.0;
     FramePos framesPer16th = 1;
     FramePos framesPerLoop = 1;

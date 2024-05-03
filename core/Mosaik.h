@@ -31,6 +31,7 @@ namespace Core::Api
     void setPrelistenSample(const Path &path) override;
     [[nodiscard]] ParameterValue getParameter(TileId tileId, ParameterId parameterId) const override;
     [[nodiscard]] Dsp::SharedSampleBuffer getSamples(TileId tileId) const override;
+    void addTap() override;
 
     struct ParamAccess
     {
@@ -54,7 +55,7 @@ namespace Core::Api
     void translateTile(const DataModel &dataModel, Dsp::AudioKernel::Tile &tgt, const DataModel::Tile &src) const;
 
     DataModel &m_model;
-
+    std::vector<std::chrono::system_clock::time_point> m_taps;
     std::map<std::tuple<TileId, ParameterId>, ParamAccess> m_access;
     Dsp::Api::Control::Interface &m_dsp;
     std::vector<Path> getAllSamples(DataModel &model) const;

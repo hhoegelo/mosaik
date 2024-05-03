@@ -8,8 +8,6 @@ pkg_check_modules(LIBS REQUIRED IMPORTED_TARGET sigc++-2.0 glibmm-2.4)
 add_library(${PROJECT_NAME} STATIC Types.h Core.cpp api/Interface.cpp
         Mosaik.cpp
         Mosaik.h
-        StepWizard.cpp
-        StepWizard.h
         ParameterDescriptor.h
 )
 

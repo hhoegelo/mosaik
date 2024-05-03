@@ -54,12 +54,6 @@ namespace Core
     MainPlayground5,
     MainPlayground6,
     MainPlayground7,
-
-    // Wizard
-    WizardMode,
-    WizardRotate,
-    WizardOns,
-    WizardOffs,
   };
 
   using Path = std::filesystem::path;

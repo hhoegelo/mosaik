@@ -174,62 +174,6 @@ namespace Ui
     constexpr static auto title = "Shuffle";
   };
 
-  template <>
-  struct ParameterDescriptor<Core::ParameterId::WizardMode> : Core::ParameterDescriptor<Core::ParameterId::WizardMode>
-  {
-    static std::string format(Type t)
-    {
-      switch(static_cast<Core::WizardMode>(t))
-      {
-        case Core::Or:
-          return "Or";
-        case Core::And:
-          return "And";
-        case Core::Replace:
-          return "Replace";
-        case Core::Not:
-          return "Not";
-      }
-      return "n/a";
-    }
-
-    constexpr static auto title = "Wizard Mode";
-  };
-
-  template <>
-  struct ParameterDescriptor<Core::ParameterId::WizardRotate>
-      : Core::ParameterDescriptor<Core::ParameterId::WizardRotate>
-  {
-    static std::string format(Type t)
-    {
-      return Tools::format("%2.0f steps", std::round(t));
-    }
-
-    constexpr static auto title = "Rotate";
-  };
-
-  template <>
-  struct ParameterDescriptor<Core::ParameterId::WizardOns> : Core::ParameterDescriptor<Core::ParameterId::WizardOns>
-  {
-    static std::string format(Type t)
-    {
-      return Tools::format("%2.0f steps", std::round(t));
-    }
-
-    constexpr static auto title = "On's";
-  };
-
-  template <>
-  struct ParameterDescriptor<Core::ParameterId::WizardOffs> : Core::ParameterDescriptor<Core::ParameterId::WizardOffs>
-  {
-    static std::string format(Type t)
-    {
-      return Tools::format("%2.0f steps", std::round(t));
-    }
-
-    constexpr static auto title = "Off's";
-  };
-
   template <Core::ParameterId P> struct ParameterDescriptionPlayground : Core::ParameterDescriptor<P>
   {
     static std::string format(typename Core::ParameterDescriptor<P>::Type t)

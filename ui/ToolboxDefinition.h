@@ -60,6 +60,11 @@ namespace Ui
   {
     constexpr static auto title = "Global";
 
+    struct TapNSync
+    {
+      constexpr static auto title = "Tap'n Sync";
+    };
+
     using Minimized = Entries<MinimizedParameterEntry<Core::ParameterId::GlobalVolume>,
                               MinimizedParameterEntry<Core::ParameterId::GlobalTempo>>;
     using MaximizedParameters
@@ -67,7 +72,8 @@ namespace Ui
                                           UiAction::IncDec, Knob::Center>,
                   MaximizedParameterEntry<Core::ParameterId::GlobalTempo, Color::Blue, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::Leftmost>>;
-    using MaximizedCustom = Entries<>;
+    using MaximizedCustom = Entries<
+        MaximizedCustomEntry<TapNSync, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_Center>>;
   };
 
   template <> struct ToolboxDefinition<Toolbox::MainPlayground>
@@ -120,46 +126,10 @@ namespace Ui
 
   template <> struct ToolboxDefinition<Toolbox::Steps>
   {
-    struct Cancel
-    {
-      static constexpr auto title = "Cancel";
-    };
-
-    struct Apply
-    {
-      static constexpr auto title = "Apply";
-    };
-
-    struct And
-    {
-      static constexpr auto title = "And";
-    };
-
-    struct Or
-    {
-      static constexpr auto title = "Or";
-    };
-
-    struct Not
-    {
-      static constexpr auto title = "Not";
-    };
-
     constexpr static auto title = "Step Wizard";
-    using Minimized = Entries<MinimizedParameterEntry<Core::ParameterId::WizardRotate>>;
-    using MaximizedParameters
-        = Entries<MaximizedParameterEntry<Core::ParameterId::WizardRotate, Color::Green, UiEvent::ReleasedKnobRotate,
-                                          UiAction::IncDec, Knob::Center>,
-                  MaximizedParameterEntry<Core::ParameterId::WizardOns, Color::Blue, UiEvent::ReleasedKnobRotate,
-                                          UiAction::IncDec, Knob::SouthEast>,
-                  MaximizedParameterEntry<Core::ParameterId::WizardOffs, Color::Blue, UiEvent::ReleasedKnobRotate,
-                                          UiAction::IncDec, Knob::SouthWest>>;
-    using MaximizedCustom = Entries<
-        MaximizedCustomEntry<And, Color::Green, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_North>,
-        MaximizedCustomEntry<Or, Color::Green, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_NorthEast>,
-        MaximizedCustomEntry<Not, Color::Green, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_East>,
-        MaximizedCustomEntry<Apply, Color::Green, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_Center>,
-        MaximizedCustomEntry<Cancel, Color::Green, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_South>>;
+    using Minimized = Entries<>;
+    using MaximizedParameters = Entries<>;
+    using MaximizedCustom = Entries<>;
   };
 
   template <> struct ToolboxDefinition<Toolbox::Tile>

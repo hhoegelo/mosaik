@@ -28,6 +28,16 @@ namespace Dsp
 
     m_knownFramesPerLoop = kernel->framesPerLoop;
 
+    if(std::exchange(m_sequencerStartTime, kernel->sequencerStartTime) != kernel->sequencerStartTime)
+    {
+      size_t diffMS = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now()
+                                                                            - m_sequencerStartTime)
+                          .count();
+      size_t framesSinceStart = diffMS * SAMPLERATE / 1000;
+      double posInLoop = fmod(static_cast<double>(framesSinceStart), static_cast<double>(m_knownFramesPerLoop));
+      m_position = std::round(posInLoop);
+    }
+
     auto currentLoopPosition = (m_position++ % kernel->framesPerLoop);
     m_toUi.currentLoopPosition = currentLoopPosition;
 
@@ -70,10 +80,10 @@ namespace Dsp
     float pl = in.pre.left;
     float pr = in.pre.right;
 
-    float out_l = (p1*ml) + (1-p1)*pl;
-    float out_r = (p1*mr) + (1-p1)*pr;
+    float out_l = (p1 * ml) + (1 - p1) * pl;
+    float out_r = (p1 * mr) + (1 - p1) * pr;
 
-    OutFrame output { out_l, out_r, in.main.left, in.main.right};
+    OutFrame output { out_l, out_r, in.main.left, in.main.right };
 
     return output;
     //return in;

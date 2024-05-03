@@ -35,6 +35,7 @@ namespace Dsp
 
     uint8_t m_prelistenInteractionCounter = 0;
     int64_t m_prelistenSamplePosition = 0;
+    std::chrono::system_clock::time_point m_sequencerStartTime;
 
     std::array<Tile, NUM_TILES> m_tiles;
     PointerExchange<AudioKernel> m_audioKernel;

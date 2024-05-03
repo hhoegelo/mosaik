@@ -1,8 +1,9 @@
 #include "Mosaik.h"
-#include "StepWizard.h"
 #include <dsp/api/control/Interface.h>
 #include <core/ParameterDescriptor.h>
 #include <cmath>
+
+using namespace std::chrono_literals;
 
 namespace Core::Api
 {
@@ -204,9 +205,8 @@ namespace Core::Api
       bindParameters<TileParameterDescriptors>(
           c, src.selected, src.sample, src.reverse, src.pattern, src.balance, src.gain, src.muted, src.speed,
           src.envelopeFadeInPos, src.envelopeFadedInPos, src.envelopeFadeOutPos, src.envelopeFadedOutPos,
-          src.triggerFrame, src.shuffle, src.wizard.mode, src.wizard.rotate, src.wizard.ons, src.wizard.offs,
-          src.playground1, src.playground2, src.playground3, src.playground4, src.playground5, src.playground6,
-          src.playground7);
+          src.triggerFrame, src.shuffle, src.playground1, src.playground2, src.playground3, src.playground4,
+          src.playground5, src.playground6, src.playground7);
     }
 
     m_kernelUpdate.add(
@@ -257,14 +257,9 @@ namespace Core::Api
 
     Dsp::FramePos pos = 0;
 
-    auto processedPattern = processWizard(src.pattern, static_cast<Core::WizardMode>(src.wizard.mode.get()),
-                                          static_cast<int8_t>(std::round(src.wizard.rotate)),
-                                          static_cast<int8_t>(std::round(src.wizard.ons)),
-                                          static_cast<int8_t>(std::round(src.wizard.offs)));
-
     tgt.audio = m_dsp.getSamples(src.sample);
 
-    for(auto s : processedPattern)
+    for(auto s : src.pattern.get())
     {
       if(s)
       {
@@ -337,6 +332,8 @@ namespace Core::Api
 
   void Core::Api::Mosaik::translateGlobals(Dsp::AudioKernel *target, const DataModel &source) const
   {
+    static auto firstCompilation = std::chrono::system_clock::now();
+
     auto numFramesPerMinute = SAMPLERATE * 60.0f;
     auto num16thPerMinute = source.globals.tempo * 4;
 
@@ -354,6 +351,9 @@ namespace Core::Api
     target->mainPlayground5 = source.globals.playground5;
     target->mainPlayground6 = source.globals.playground6;
     target->mainPlayground7 = source.globals.playground7;
+
+    auto one = source.tappedOne.get();
+    target->sequencerStartTime = one.has_value() ? one.value() : firstCompilation;
   }
 
   Dsp::AudioKernel *Core::Api::Mosaik::newDspKernel(const DataModel &dataModel) const
@@ -379,6 +379,28 @@ namespace Core::Api
       ret.push_back(t.sample);
 
     return ret;
+  }
+
+  void Mosaik::addTap()
+  {
+    auto now = std::chrono::system_clock::now();
+
+    if(!m_taps.empty() && (now - m_taps.back()) > 3s)
+      m_taps.clear();
+
+    m_taps.push_back(now);
+
+    m_model.tappedOne = m_taps.front();
+
+    if(m_taps.size() > 1)
+    {
+      auto dur = m_taps.back() - m_taps.front();
+      auto numTaps = m_taps.size();
+      auto durPerTapNS = std::chrono::duration_cast<std::chrono::nanoseconds>(dur / (numTaps - 1)).count();
+      auto minuteNS = std::chrono::duration_cast<std::chrono::nanoseconds>(60s).count();
+      float bpm = minuteNS / static_cast<float>(durPerTapNS);
+      setParameter({}, ParameterId::GlobalTempo, bpm);
+    }
   }
 
   template <typename Parameters, typename Targets, size_t idx>

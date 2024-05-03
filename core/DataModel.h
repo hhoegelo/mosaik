@@ -6,6 +6,8 @@
 #include <filesystem>
 #include <array>
 #include <set>
+#include <chrono>
+#include <vector>
 
 namespace Core
 {
@@ -48,15 +50,6 @@ namespace Core
       Tools::ReactiveVar<float> playground5 { 0.f };
       Tools::ReactiveVar<float> playground6 { 0.f };
       Tools::ReactiveVar<float> playground7 { 0.f };
-
-      struct Wizard
-      {
-
-        Tools::ReactiveVar<uint8_t> mode { WizardMode::Or };
-        Tools::ReactiveVar<float> rotate { 0 };
-        Tools::ReactiveVar<float> ons { 1 };
-        Tools::ReactiveVar<float> offs { 3 };
-      } wizard;
     };
 
     struct Globals
@@ -76,5 +69,7 @@ namespace Core
     std::array<Tile, NUM_TILES> tiles;
     Tools::ReactiveVar<Path> prelistenSample { "" };
     Tools::ReactiveVar<uint8_t> prelistenInteractionCounter { 0 };
+
+    Tools::ReactiveVar<std::optional<std::chrono::system_clock::time_point>> tappedOne;
   };
 }
