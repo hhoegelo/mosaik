@@ -86,9 +86,9 @@ namespace Ui
     std::array<bool, static_cast<size_t>(SoftButton::MAX_BUTTON_ID)> m_buttonState {};
 
     /// Wizard
-    int m_oneFitsAllStepWizard = 0;
-    int m_wizardSteps = 0;
-    int m_wizardGaps = 0;
+    Tools::ReactiveVar<int> m_oneFitsAllStepWizard { 0 };
+    Tools::ReactiveVar<int> m_wizardSteps { 0 };
+    Tools::ReactiveVar<int> m_wizardGaps { 0 };
     std::chrono::system_clock::time_point m_stepWizardLastUsage = std::chrono::system_clock::time_point::min();
   };
 }

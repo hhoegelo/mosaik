@@ -24,6 +24,7 @@ namespace Ui
     }
 
     constexpr static auto title = "Tempo";
+    constexpr static Type defaultValue = 120;
   };
 
   template <>
@@ -36,6 +37,7 @@ namespace Ui
     }
 
     constexpr static auto title = "Volume";
+    constexpr static Type defaultValue = 0;
   };
 
   template <>
@@ -79,6 +81,7 @@ namespace Ui
     }
 
     constexpr static auto title = "Balance";
+    constexpr static Type defaultValue = 0;
   };
 
   template <> struct ParameterDescriptor<Core::ParameterId::Gain> : Core::ParameterDescriptor<Core::ParameterId::Gain>
@@ -89,6 +92,7 @@ namespace Ui
     }
 
     constexpr static auto title = "Gain";
+    constexpr static Type defaultValue = 0;
   };
 
   template <> struct ParameterDescriptor<Core::ParameterId::Speed> : Core::ParameterDescriptor<Core::ParameterId::Speed>
@@ -102,6 +106,7 @@ namespace Ui
     }
 
     constexpr static auto title = "Speed";
+    constexpr static Type defaultValue = 0;
   };
 
   template <>
@@ -173,6 +178,7 @@ namespace Ui
     }
 
     constexpr static auto title = "Shuffle";
+    constexpr static Type defaultValue = 0;
   };
 
   template <Core::ParameterId P> struct ParameterDescriptionPlayground : Core::ParameterDescriptor<P>
@@ -181,6 +187,7 @@ namespace Ui
     {
       return Tools::format("%3.1f %%", std::round(100 * t));
     }
+    constexpr static Core::ParameterDescriptor<P>::Type defaultValue = 120;
   };
 
   template <>
