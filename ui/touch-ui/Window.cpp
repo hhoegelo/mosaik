@@ -6,6 +6,7 @@
 #include "LessToCss.h"
 #include <gtkmm/grid.h>
 #include <iostream>
+#include <ui/Controller.h>
 
 namespace Ui::Touch
 {
@@ -34,6 +35,8 @@ namespace Ui::Touch
 
     //set_resizable(false);
 #endif
+
+    controller.run();
 
     set_title("Mosaik");
 

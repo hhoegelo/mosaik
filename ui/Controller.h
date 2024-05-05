@@ -35,6 +35,7 @@ namespace Ui
     Controller(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
 
     void init(Ui::Touch::Interface &touchUi);
+    void run();
 
     void addUi(Ui::Midi::Interface &midiUI);
 
@@ -75,7 +76,7 @@ namespace Ui
     void processStepsGapsWizard();
 
     Core::Api::Interface &m_core;
-    Ui::Touch::Interface *m_touchUi { nullptr };
+    Tools::ReactiveVar<Ui::Touch::Interface *> m_touchUi { nullptr };
 
     std::vector<Ui::Midi::Interface *> m_midiUi;
 

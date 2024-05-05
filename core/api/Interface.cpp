@@ -55,37 +55,24 @@ namespace Core::Api
     std::ofstream(path) << j;
   }
 
-  std::vector<TileId> Interface::getSelectedTiles() const
-  {
-    std::vector<TileId> ret;
-
-    for(auto c = 0; c < NUM_TILES; c++)
-      if(get<bool>(getParameter(c, ParameterId::Selected)))
-        ret.emplace_back(c);
-
-    return ret;
-  }
-
   void Interface::setStep(Step step, bool value)
   {
-    for(const auto &tileId : getSelectedTiles())
-    {
-      auto old = std::get<Pattern>(getParameter(tileId, ParameterId::Pattern));
-      old[step] = value;
-      setParameter(tileId, ParameterId::Pattern, old);
-    }
+    auto tileId = getSelectedTile();
+    auto old = std::get<Pattern>(getParameter(tileId, ParameterId::Pattern));
+    old[step] = value;
+    setParameter(tileId, ParameterId::Pattern, old);
   }
 
   void Interface::incSelectedTilesParameter(ParameterId parameterId, int steps)
   {
-    for(const auto &tileId : getSelectedTiles())
-      incParameter(tileId, parameterId, steps);
+    auto tileId = getSelectedTile();
+    incParameter(tileId, parameterId, steps);
   }
 
   void Interface::toggleSelectedTilesParameter(ParameterId parameterId)
   {
-    for(const auto &tileId : getSelectedTiles())
-      setParameter(tileId, parameterId, !std::get<bool>(getParameter(tileId, parameterId)));
+    auto tileId = getSelectedTile();
+    setParameter(tileId, parameterId, !std::get<bool>(getParameter(tileId, parameterId)));
   }
 
   Step Interface::loopPositionToStep(Dsp::FramePos pos) const
@@ -98,7 +85,11 @@ namespace Core::Api
 
   TileId Interface::getSelectedTile() const
   {
-    return getSelectedTiles().front();
+    for(auto c = 0; c < NUM_TILES; c++)
+      if(get<bool>(getParameter(c, ParameterId::Selected)))
+        return c;
+
+    return { 0 };
   }
 
   void Interface::addTap()

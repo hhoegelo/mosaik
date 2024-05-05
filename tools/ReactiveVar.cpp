@@ -64,7 +64,7 @@ namespace Tools
 
   Computations::~Computations() = default;
 
-  void Computations::add(const std::function<void()> &cb, bool fromOutside)
+  void Computations::add(const std::function<void()> &cb)
   {
     auto p = std::make_shared<Computation>(*this, cb);
     m_computations.push_back(p);
@@ -108,7 +108,7 @@ namespace Tools
           {
             auto c = std::move(m_pending);
             for(const auto &k : c)
-              add(k, false);
+              add(k);
             s_numDeferredComputationsScheduled--;
             return false;
           },
@@ -126,32 +126,6 @@ namespace Tools
   {
     while(s_numDeferredComputationsScheduled > 0)
       Glib::MainContext::get_default()->iteration(true);
-  }
-
-  void DeferredComputations::add(const std::function<void()> &cb, bool fromOutside)
-  {
-    auto p = std::make_shared<Computation>(*this, cb);
-    m_computations.push_back(p);
-
-    if(fromOutside)
-    {
-      if(!m_initTimer.connected())
-      {
-        m_initTimer = m_ctx->signal_timeout().connect(
-            [this]
-            {
-              for(auto p : m_computations)
-                p->execute();
-
-              return false;
-            },
-            m_timeout);
-      }
-    }
-    else
-    {
-      p->execute();
-    }
   }
 
 }

@@ -109,15 +109,20 @@ namespace Ui
     constexpr static Type defaultValue = 0;
   };
 
+  namespace detail
+  {
+    inline std::string formatFramePos(Core::FramePos p)
+    {
+      if(p == std::numeric_limits<Core::FramePos>::max())
+        return "end";
+      return Tools::format("%" PRId64, p);
+    }
+  }
   template <>
   struct ParameterDescriptor<Core::ParameterId::EnvelopeFadeInPos>
       : Core::ParameterDescriptor<Core::ParameterId::EnvelopeFadeInPos>
   {
-    static std::string format(Type t)
-    {
-      return Tools::format("%" PRId64, t);
-    }
-
+    static constexpr auto format = detail::formatFramePos;
     constexpr static auto title = "Fade In";
   };
 
@@ -125,11 +130,7 @@ namespace Ui
   struct ParameterDescriptor<Core::ParameterId::EnvelopeFadedInPos>
       : Core::ParameterDescriptor<Core::ParameterId::EnvelopeFadedInPos>
   {
-    static std::string format(Type t)
-    {
-      return Tools::format("%" PRId64, t);
-    }
-
+    static constexpr auto format = detail::formatFramePos;
     constexpr static auto title = "Faded In";
   };
 
@@ -137,11 +138,7 @@ namespace Ui
   struct ParameterDescriptor<Core::ParameterId::EnvelopeFadeOutPos>
       : Core::ParameterDescriptor<Core::ParameterId::EnvelopeFadeOutPos>
   {
-    static std::string format(Type t)
-    {
-      return Tools::format("%" PRId64, t);
-    }
-
+    static constexpr auto format = detail::formatFramePos;
     constexpr static auto title = "Fade Out";
   };
 
@@ -149,11 +146,7 @@ namespace Ui
   struct ParameterDescriptor<Core::ParameterId::EnvelopeFadedOutPos>
       : Core::ParameterDescriptor<Core::ParameterId::EnvelopeFadedOutPos>
   {
-    static std::string format(Type t)
-    {
-      return Tools::format("%" PRId64, t);
-    }
-
+    static constexpr auto format = detail::formatFramePos;
     constexpr static auto title = "Faded Out";
   };
 
@@ -161,11 +154,7 @@ namespace Ui
   struct ParameterDescriptor<Core::ParameterId::TriggerFrame>
       : Core::ParameterDescriptor<Core::ParameterId::TriggerFrame>
   {
-    static std::string format(Type t)
-    {
-      return Tools::format("%" PRId64, t);
-    }
-
+    static constexpr auto format = detail::formatFramePos;
     constexpr static auto title = "Hit Point";
   };
 

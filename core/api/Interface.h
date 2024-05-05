@@ -24,10 +24,8 @@ namespace Core::Api
     [[nodiscard]] virtual Dsp::SharedSampleBuffer getSamples(TileId tileId) const = 0;
     virtual void addTap() = 0;
 
-    [[nodiscard]] std::vector<TileId> getSelectedTiles() const;
-
     // Convenience
-    TileId getSelectedTile() const;
+    [[nodiscard]] TileId getSelectedTile() const;
     [[nodiscard]] Step loopPositionToStep(Dsp::FramePos pos) const;
     void incSelectedTilesParameter(ParameterId parameterId, int steps);
     void toggleSelectedTilesParameter(ParameterId parameterId);

@@ -14,7 +14,7 @@ namespace Ui::Touch
     m_staticComputations.add(
         [this]
         {
-          auto tileId = m_core.getSelectedTiles().front();
+          auto tileId = m_core.getSelectedTile();
           auto samples = *m_core.getSamples(tileId);
           m_scrollPos = 0;
           m_zoom = 1.0;
@@ -37,7 +37,7 @@ namespace Ui::Touch
 
           ctx->set_line_width(1);
 
-          auto tileId = m_core.getSelectedTiles().front();
+          auto tileId = m_core.getSelectedTile();
           auto samples = *m_core.getSamples(tileId);
           auto numFrames = static_cast<double>(samples.size());
           auto w = static_cast<double>(get_width());
@@ -133,7 +133,7 @@ namespace Ui::Touch
 
   double Waveform::getSanitizedZoom() const
   {
-    auto tileId = m_core.getSelectedTiles().front();
+    auto tileId = m_core.getSelectedTile();
     auto samples = *m_core.getSamples(tileId);
     auto numFrames = static_cast<double>(samples.size());
     auto width = static_cast<double>(get_width());
@@ -146,7 +146,7 @@ namespace Ui::Touch
 
   Core::FramePos Waveform::getSanitizedScroll() const
   {
-    auto tileId = m_core.getSelectedTiles().front();
+    auto tileId = m_core.getSelectedTile();
     auto samples = *m_core.getSamples(tileId);
     auto numFrames = static_cast<double>(samples.size());
     auto width = static_cast<double>(get_width());
@@ -158,7 +158,7 @@ namespace Ui::Touch
 
   double Waveform::getFramesPerPixel() const
   {
-    auto tileId = m_core.getSelectedTiles().front();
+    auto tileId = m_core.getSelectedTile();
     auto samples = *m_core.getSamples(tileId);
     auto numFrames = static_cast<double>(samples.size());
     auto zoom = getSanitizedZoom();

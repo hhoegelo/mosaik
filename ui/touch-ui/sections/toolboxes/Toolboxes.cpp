@@ -26,7 +26,7 @@ namespace Ui::Touch
 
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Global>(*this, controller)));
     box->pack_start(
-        *Gtk::manage(new GenericToolbox<Ui::Toolbox::Tile>(*this, controller, new TileTools(core, controller))));
+        *Gtk::manage(new GenericToolbox<Ui::Toolbox::Tile>(*this, controller, new TileTools(*this, core, controller))));
     box->pack_start(*Gtk::manage(
         new GenericToolbox<Ui::Toolbox::Waveform>(*this, controller, new WaveformToolbox(core, controller))));
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Steps>(*this, controller)));

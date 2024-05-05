@@ -39,8 +39,16 @@ namespace Ui
   void Controller::init(Touch::Interface &touchUi)
   {
     m_touchUi = &touchUi;
+  }
 
-    m_computations.add([this] { m_inputMapping = createMapping(m_touchUi->getToolboxes().getSelectedToolbox()); });
+  void Controller::run()
+  {
+    m_computations.add(
+        [this]
+        {
+          if(auto p = m_touchUi.get())
+            m_inputMapping = createMapping(p->getToolboxes().getSelectedToolbox());
+        });
     m_computations.add([this] { showPattern(); });
   }
 
@@ -150,9 +158,12 @@ namespace Ui
       return std::make_pair(std::get<Knob>(D::position),
                             [this](int inc)
                             {
-                              auto tile = isGlobal ? Core::TileId {} : m_core.getSelectedTile();
-                              auto fpp = m_touchUi->getToolboxes().getWaveform().getFramesPerPixel();
-                              m_core.incParameter(tile, D::id, fpp * inc);
+                              if(auto p = m_touchUi.get())
+                              {
+                                auto tile = isGlobal ? Core::TileId {} : m_core.getSelectedTile();
+                                auto fpp = p->getToolboxes().getWaveform().getFramesPerPixel();
+                                m_core.incParameter(tile, D::id, fpp * inc);
+                              }
                             });
     else
       UNSUPPORTED_BRANCH();
@@ -247,52 +258,63 @@ namespace Ui
 
   template <> void Controller::invokeButtonAction<Toolbox::Tile, ToolboxDefinition<Toolbox::Tile>::Up>()
   {
-    m_touchUi->getToolboxes().getFileBrowser().dec();
+    if(auto p = m_touchUi.get())
+      p->getToolboxes().getFileBrowser().dec();
   }
 
   template <> void Controller::invokeButtonAction<Toolbox::Tile, ToolboxDefinition<Toolbox::Tile>::Down>()
   {
-    m_touchUi->getToolboxes().getFileBrowser().inc();
+    if(auto p = m_touchUi.get())
+      p->getToolboxes().getFileBrowser().inc();
   }
 
   template <> void Controller::invokeButtonAction<Toolbox::Tile, ToolboxDefinition<Toolbox::Tile>::Leave>()
   {
-    m_touchUi->getToolboxes().getFileBrowser().up();
+    if(auto p = m_touchUi.get())
+      p->getToolboxes().getFileBrowser().up();
   }
 
   template <> void Controller::invokeButtonAction<Toolbox::Tile, ToolboxDefinition<Toolbox::Tile>::Enter>()
   {
-    m_touchUi->getToolboxes().getFileBrowser().down();
+    if(auto p = m_touchUi.get())
+      p->getToolboxes().getFileBrowser().down();
   }
 
   template <> void Controller::invokeButtonAction<Toolbox::Tile, ToolboxDefinition<Toolbox::Tile>::Prelisten>()
   {
-    m_touchUi->getToolboxes().getFileBrowser().prelisten();
+    if(auto p = m_touchUi.get())
+      p->getToolboxes().getFileBrowser().prelisten();
   }
 
   template <> void Controller::invokeButtonAction<Toolbox::Tile, ToolboxDefinition<Toolbox::Tile>::Load>()
   {
-    m_touchUi->getToolboxes().getFileBrowser().load();
+    if(auto p = m_touchUi.get())
+      p->getToolboxes().getFileBrowser().load();
   }
 
   template <> void Controller::invokeKnobAction<Toolbox::Waveform, ToolboxDefinition<Toolbox::Waveform>::Zoom>(int inc)
   {
-    m_touchUi->getToolboxes().getWaveform().incZoom(inc);
+    if(auto p = m_touchUi.get())
+      p->getToolboxes().getWaveform().incZoom(inc);
   }
 
   template <>
   void Controller::invokeKnobAction<Toolbox::Waveform, ToolboxDefinition<Toolbox::Waveform>::Scroll>(int inc)
   {
-    m_touchUi->getToolboxes().getWaveform().incScroll(inc);
+    if(auto p = m_touchUi.get())
+      p->getToolboxes().getWaveform().incScroll(inc);
   }
 
   template <>
   void Controller::invokeKnobAction<Toolbox::Waveform, ToolboxDefinition<Toolbox::Waveform>::HitPoint>(int inc)
   {
-    auto sel = m_core.getSelectedTiles().front();
-    auto reverse = std::get<bool>(m_core.getParameter(sel, Core::ParameterId::Reverse));
-    auto fpp = m_touchUi->getToolboxes().getWaveform().getFramesPerPixel();
-    m_core.incParameter(sel, Core::ParameterId::TriggerFrame, reverse ? -fpp * inc : fpp * inc);
+    if(auto p = m_touchUi.get())
+    {
+      auto sel = m_core.getSelectedTile();
+      auto reverse = std::get<bool>(m_core.getParameter(sel, Core::ParameterId::Reverse));
+      auto fpp = p->getToolboxes().getWaveform().getFramesPerPixel();
+      m_core.incParameter(sel, Core::ParameterId::TriggerFrame, reverse ? -fpp * inc : fpp * inc);
+    }
   }
 
   template <> void Controller::invokeKnobAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::OneFitsAll>(int inc)
@@ -451,12 +473,16 @@ namespace Ui
 
   template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Waveform>::Zoom>()
   {
-    return Tools::format("x %3.2f", m_touchUi->getToolboxes().getWaveform().getZoom());
+    if(auto p = m_touchUi.get())
+      return Tools::format("x %3.2f", p->getToolboxes().getWaveform().getZoom());
+    return "";
   }
 
   template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Waveform>::Scroll>()
   {
-    return Tools::format("%" PRId64 " frames", m_touchUi->getToolboxes().getWaveform().getScroll());
+    if(auto p = m_touchUi.get())
+      return Tools::format("%" PRId64 " frames", p->getToolboxes().getWaveform().getScroll());
+    return "";
   }
 
   template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Waveform>::HitPoint>()
