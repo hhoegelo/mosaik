@@ -32,6 +32,7 @@ namespace Core::Api
     [[nodiscard]] ParameterValue getParameter(TileId tileId, ParameterId parameterId) const override;
     [[nodiscard]] Dsp::SharedSampleBuffer getSamples(TileId tileId) const override;
     void addTap() override;
+    void setOne() override;
 
     struct ParamAccess
     {

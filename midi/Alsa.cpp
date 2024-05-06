@@ -15,10 +15,15 @@ namespace Midi
   Alsa::Alsa(const std::string &device, Callback cb)
       : m_cb(std::move(cb))
   {
-    checkAlsa(snd_rawmidi_open(&m_input, &m_output, device.c_str(), SND_RAWMIDI_NONBLOCK));
+    snd_midi_event_new(128, &m_encoder);
+    snd_midi_event_new(128, &m_decoder);
+    snd_midi_event_no_status(m_decoder, 1);
 
-    pollfd polls[1];
-    snd_rawmidi_poll_descriptors(m_input, polls, 1);
+    checkAlsa(snd_rawmidi_open(&m_input, &m_output, device.c_str(), SND_RAWMIDI_NONBLOCK));
+    snd_rawmidi_nonblock(m_input, 1);
+
+    pollfd polls[128];
+    snd_rawmidi_poll_descriptors(m_input, polls, 128);
 
     auto channel = g_io_channel_unix_new(polls[0].fd);
 
@@ -29,12 +34,8 @@ namespace Midi
           if(condition & G_IO_IN)
           {
             auto pThis = static_cast<Alsa *>(data);
-            MidiEvent event;
-
-            if(snd_rawmidi_read(pThis->m_input, event.begin(), event.size()) == 3)
-              pThis->m_cb(event);
+            pThis->processInput();
           }
-
           return true;
         },
         this);
@@ -48,6 +49,32 @@ namespace Midi
     snd_rawmidi_close(m_output);
   }
 
+  void Alsa::processInput()
+  {
+    snd_seq_event_t event;
+    uint8_t byte;
+
+    while(true)
+    {
+      auto readResult = snd_rawmidi_read(m_input, &byte, 1);
+
+      if(readResult == 1)
+      {
+        if(snd_midi_event_encode_byte(m_encoder, byte, &event) == 1)
+        {
+          if(event.type != SND_SEQ_EVENT_NONE)
+          {
+            MidiEvent e;
+            snd_midi_event_decode(m_decoder, e.data(), e.size(), &event);
+            m_cb(e);
+          }
+        }
+      }
+      else
+        return;
+    }
+  }
+
   void Alsa::send(const Alsa::MidiEvent &event)
   {
     if(m_output)
@@ -55,5 +82,4 @@ namespace Midi
       snd_rawmidi_write(m_output, event.data(), event.size());
     }
   }
-
 }

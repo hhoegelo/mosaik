@@ -23,6 +23,7 @@ namespace Core::Api
     [[nodiscard]] virtual ParameterValue getParameter(TileId tileId, ParameterId parameterId) const = 0;
     [[nodiscard]] virtual Dsp::SharedSampleBuffer getSamples(TileId tileId) const = 0;
     virtual void addTap() = 0;
+    virtual void setOne() = 0;
 
     // Convenience
     [[nodiscard]] TileId getSelectedTile() const;

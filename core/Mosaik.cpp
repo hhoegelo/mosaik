@@ -410,6 +410,11 @@ namespace Core::Api
     }
   }
 
+  void Mosaik::setOne()
+  {
+    m_model.tappedOne = std::chrono::system_clock::now();
+  }
+
   template <typename Parameters, typename Targets, size_t idx>
   void Mosaik::bindParameter(TileId tileId, Targets targets)
   {
