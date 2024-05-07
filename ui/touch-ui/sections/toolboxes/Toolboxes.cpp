@@ -30,6 +30,7 @@ namespace Ui::Touch
     box->pack_start(*Gtk::manage(
         new GenericToolbox<Ui::Toolbox::Waveform>(*this, controller, new WaveformToolbox(core, controller))));
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Steps>(*this, controller)));
+    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Mute>(*this, controller)));
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Playground>(*this, controller)));
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::MainPlayground>(*this, controller)));
 

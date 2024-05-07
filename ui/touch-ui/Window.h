@@ -42,8 +42,8 @@ namespace Ui::Touch
     Tools::ReactiveVar<Section> m_section { Section::Tiles };
 
     // Sections
-    std::unique_ptr<Tiles> m_tiles;
     std::unique_ptr<Toolboxes> m_toolboxes;
+    std::unique_ptr<Tiles> m_tiles;
     std::unique_ptr<Mixer> m_mixer;
     std::unique_ptr<Main> m_main;
 

@@ -282,4 +282,76 @@ namespace Ui
         MaximizedCustomEntry<Scroll, Color::Purple, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Rightmost>,
         MaximizedCustomEntry<HitPoint, Color::Purple, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Center>>;
   };
+
+  template <> struct ToolboxDefinition<Toolbox::Mute>
+  {
+    constexpr static auto title = "Mute";
+    using Minimized = Entries<>;
+    using MaximizedParameters = Entries<>;
+
+    struct SaveArmed
+    {
+      static constexpr auto title = "Save";
+    };
+
+    struct SaveUnarmed
+    {
+      static constexpr auto title = "Save";
+    };
+
+    struct Slot1
+    {
+      static constexpr auto title = "Slot 1";
+    };
+
+    struct Slot2
+    {
+      static constexpr auto title = "Slot 2";
+    };
+
+    struct Slot3
+    {
+      static constexpr auto title = "Slot 3";
+    };
+
+    struct Slot4
+    {
+      static constexpr auto title = "Slot 4";
+    };
+
+    struct Slot5
+    {
+      static constexpr auto title = "Slot 5";
+    };
+
+    struct Slot6
+    {
+      static constexpr auto title = "Slot 6";
+    };
+
+    struct UnmuteAll
+    {
+      static constexpr auto title = "Unmute All";
+    };
+
+    struct LastMute
+    {
+      static constexpr auto title = "Last Mute";
+    };
+
+    using MaximizedCustom = Entries<
+        MaximizedCustomEntry<UnmuteAll, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke,
+                             SoftButton::Left_SouthWest>,
+        MaximizedCustomEntry<LastMute, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_South>,
+        MaximizedCustomEntry<SaveArmed, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_North>,
+        MaximizedCustomEntry<SaveUnarmed, Color::Purple, UiEvent::ButtonRelease, UiAction::Invoke,
+                             SoftButton::Right_North>,
+        MaximizedCustomEntry<Slot1, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_West>,
+        MaximizedCustomEntry<Slot2, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_Center>,
+        MaximizedCustomEntry<Slot3, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_East>,
+        MaximizedCustomEntry<Slot4, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthWest>,
+        MaximizedCustomEntry<Slot5, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_South>,
+        MaximizedCustomEntry<Slot6, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke,
+                             SoftButton::Right_SouthEast>>;
+  };
 }

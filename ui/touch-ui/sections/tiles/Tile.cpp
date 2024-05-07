@@ -60,6 +60,16 @@ namespace Ui::Touch
                "level right", [this] { return ampToLevelMeter(std::get<1>(m_levels.get())); }, levelMeterDecay)),
            15, 4, 1, 8);
 
+    m_computations.add(
+        [this, &core, tileId]()
+        {
+          auto muted = std::get<bool>(core.getParameter(tileId, Core::ParameterId::Mute));
+          if(muted)
+            get_style_context()->add_class("muted");
+          else
+            get_style_context()->remove_class("muted");
+        });
+
     m_computations.add([&controller, tileId, sampleName]()
                        { sampleName->set_label(controller.getDisplayValue(tileId, Core::ParameterId::SampleFile)); });
 

@@ -48,14 +48,5 @@ namespace Ui::Touch
           ctx->stroke();
           return true;
         });
-
-    add_events(Gdk::EventMask::BUTTON_PRESS_MASK | Gdk::EventMask::POINTER_MOTION_MASK);
-
-    signal_button_press_event().connect(
-        [&core, tileId](GdkEventButton*)
-        {
-          core.setParameter(tileId, Core::ParameterId::Selected, true);
-          return false;
-        });
   }
 }

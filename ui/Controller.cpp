@@ -140,6 +140,9 @@ namespace Ui
 
       case Ui::Toolbox::MainPlayground:
         return buildMapping<Toolbox::MainPlayground>();
+
+      case Ui::Toolbox::Mute:
+        return buildMapping<Toolbox::Mute>();
     }
     throw std::runtime_error("unknown toolbox");
   }
@@ -454,6 +457,63 @@ namespace Ui
     m_wizardMirror = !m_wizardMirror.get();
   }
 
+  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::LastMute>()
+  {
+    for(uint8_t i = 0; i < NUM_TILES; i++)
+    {
+      m_core.setParameter(i, Core::ParameterId::Mute, m_savedMute[i]);
+    }
+  }
+
+  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::SaveArmed>()
+  {
+    m_saveArmed = true;
+  }
+
+  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::SaveUnarmed>()
+  {
+    m_saveArmed = false;
+  }
+
+  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::Slot1>()
+  {
+    handleMuteSlot(0);
+  }
+
+  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::Slot2>()
+  {
+    handleMuteSlot(1);
+  }
+
+  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::Slot3>()
+  {
+    handleMuteSlot(2);
+  }
+
+  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::Slot4>()
+  {
+    handleMuteSlot(3);
+  }
+
+  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::Slot5>()
+  {
+    handleMuteSlot(4);
+  }
+
+  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::Slot6>()
+  {
+    handleMuteSlot(5);
+  }
+
+  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::UnmuteAll>()
+  {
+    for(uint8_t i = 0; i < NUM_TILES; i++)
+    {
+      m_savedMute[i] = std::get<bool>(m_core.getParameter(i, Core::ParameterId::Mute));
+      m_core.setParameter(i, Core::ParameterId::Mute, false);
+    }
+  }
+
   void Controller::onStepButtonEvent(Step b, ButtonEvent e)
   {
     if(e == ButtonEvent::Press)
@@ -527,6 +587,23 @@ namespace Ui
     return getDisplayValue(m_core.getSelectedTile(), id);
   }
 
+  void Controller::handleMuteSlot(int slot)
+  {
+    if(m_saveArmed.get())
+    {
+      MuteState s;
+      for(uint8_t i = 0; i < NUM_TILES; i++)
+        s[i] = std::get<bool>(m_core.getParameter(i, Core::ParameterId::Mute));
+      m_savedMutes[slot] = s;
+    }
+    else
+    {
+      MuteState s = m_savedMutes[slot];
+      for(uint8_t i = 0; i < NUM_TILES; i++)
+        m_core.setParameter(i, Core::ParameterId::Mute, s[i]);
+    }
+  }
+
   template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Waveform>::Zoom>()
   {
     if(auto p = m_touchUi.get())
@@ -571,6 +648,16 @@ namespace Ui
   template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Steps>::Mirror>()
   {
     return m_wizardMirror.get() ? "On" : "Off";
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Mute>::SaveArmed>()
+  {
+    return m_saveArmed.get() ? "Armed" : "";
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Mute>::SaveUnarmed>()
+  {
+    return m_saveArmed.get() ? "Armed" : "";
   }
 
 }

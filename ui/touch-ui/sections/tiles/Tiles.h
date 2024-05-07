@@ -28,6 +28,9 @@ namespace Ui::Touch
    public:
     Tiles(Touch::Interface& touch, Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp,
           Ui::Controller& controller);
+
+   private:
+    Tools::DeferredComputations m_computations;
   };
 
 }

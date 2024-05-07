@@ -94,12 +94,19 @@ namespace Ui
     std::array<bool, static_cast<size_t>(SoftButton::MAX_BUTTON_ID)> m_buttonState {};
     std::array<bool, static_cast<size_t>(Knob::NUM_KNOBS)> m_turnWhilePressed {};
 
-    /// Wizard
+    // Wizard
     Tools::ReactiveVar<int> m_oneFitsAllStepWizard { 0 };
     Tools::ReactiveVar<int> m_wizardSteps { 0 };
     Tools::ReactiveVar<int> m_wizardGaps { 0 };
     Tools::ReactiveVar<int> m_wizardRotation { 0 };
     Tools::ReactiveVar<bool> m_wizardInvert { false };
     Tools::ReactiveVar<bool> m_wizardMirror { false };
+
+    // Mute
+    using MuteState = std::array<bool, NUM_TILES>;
+    MuteState m_savedMute {};
+    Tools::ReactiveVar<bool> m_saveArmed { false };
+    std::array<Tools::ReactiveVar<MuteState>, 6> m_savedMutes;
+    void handleMuteSlot(int i);
   };
 }

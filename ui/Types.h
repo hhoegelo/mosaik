@@ -25,7 +25,8 @@ namespace Ui
     Waveform,
     Steps,
     Playground,
-    MainPlayground
+    MainPlayground,
+    Mute,
   };
 
   enum class Section

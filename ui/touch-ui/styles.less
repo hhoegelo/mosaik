@@ -12,6 +12,14 @@
   min-width: @screen-width * 1px;
   min-height: @screen-height * 1px;
 
+  .tiles.mute-toolbox .tile.muted {
+    background: red;
+
+    .waveform {
+      background: lighter(red);
+    }
+  }
+
   .tile {
     border: 3px solid gray;
     margin: 1px;
