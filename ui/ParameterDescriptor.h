@@ -25,6 +25,7 @@ namespace Ui
 
     constexpr static auto title = "Tempo";
     constexpr static Type defaultValue = 120;
+    constexpr static float acceleration = 5.f;
   };
 
   template <>
@@ -38,6 +39,7 @@ namespace Ui
 
     constexpr static auto title = "Volume";
     constexpr static Type defaultValue = 0;
+    constexpr static float acceleration = 5.f;
   };
 
   template <>
@@ -82,6 +84,7 @@ namespace Ui
 
     constexpr static auto title = "Balance";
     constexpr static Type defaultValue = 0;
+    constexpr static float acceleration = 5.f;
   };
 
   template <> struct ParameterDescriptor<Core::ParameterId::Gain> : Core::ParameterDescriptor<Core::ParameterId::Gain>
@@ -93,6 +96,7 @@ namespace Ui
 
     constexpr static auto title = "Gain";
     constexpr static Type defaultValue = 0;
+    constexpr static float acceleration = 5.f;
   };
 
   template <> struct ParameterDescriptor<Core::ParameterId::Speed> : Core::ParameterDescriptor<Core::ParameterId::Speed>
@@ -107,6 +111,7 @@ namespace Ui
 
     constexpr static auto title = "Speed";
     constexpr static Type defaultValue = 0;
+    constexpr static float acceleration = 10.f;
   };
 
   namespace detail
@@ -124,6 +129,7 @@ namespace Ui
   {
     static constexpr auto format = detail::formatFramePos;
     constexpr static auto title = "Fade In";
+    constexpr static float acceleration = 10.f;
   };
 
   template <>
@@ -132,6 +138,7 @@ namespace Ui
   {
     static constexpr auto format = detail::formatFramePos;
     constexpr static auto title = "Faded In";
+    constexpr static float acceleration = 10.f;
   };
 
   template <>
@@ -140,6 +147,7 @@ namespace Ui
   {
     static constexpr auto format = detail::formatFramePos;
     constexpr static auto title = "Fade Out";
+    constexpr static float acceleration = 10.f;
   };
 
   template <>
@@ -148,6 +156,7 @@ namespace Ui
   {
     static constexpr auto format = detail::formatFramePos;
     constexpr static auto title = "Faded Out";
+    constexpr static float acceleration = 10.f;
   };
 
   template <>
@@ -156,6 +165,7 @@ namespace Ui
   {
     static constexpr auto format = detail::formatFramePos;
     constexpr static auto title = "Hit Point";
+    constexpr static float acceleration = 10.f;
   };
 
   template <>
@@ -168,6 +178,7 @@ namespace Ui
 
     constexpr static auto title = "Shuffle";
     constexpr static Type defaultValue = 0;
+    constexpr static float acceleration = 5.f;
   };
 
   template <Core::ParameterId P> struct ParameterDescriptionPlayground : Core::ParameterDescriptor<P>
@@ -177,6 +188,7 @@ namespace Ui
       return Tools::format("%3.1f %%", std::round(100 * t));
     }
     constexpr static Core::ParameterDescriptor<P>::Type defaultValue = 120;
+    constexpr static float acceleration = 10.f;
   };
 
   template <>

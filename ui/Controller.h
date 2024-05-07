@@ -46,7 +46,10 @@ namespace Ui
     std::string getDisplayValue(Core::TileId tile, Core::ParameterId id);
     std::string getDisplayValue(Core::ParameterId id);
 
-    template <typename ID> std::string getDisplayValue();
+    template <typename ID> std::string getDisplayValue()
+    {
+      return "";
+    }
 
    private:
     void setLed(Led led, Color color);
@@ -64,11 +67,13 @@ namespace Ui
     Mapping createMapping(Ui::Toolbox t);
     template <Ui::Toolbox T> Mapping buildMapping();
 
-    template <Toolbox T, typename D> std::pair<Knob, std::function<void(int)>> bindKnobUiParameterAction();
+    template <Toolbox T, typename D>
+    std::pair<Knob, std::function<void(int)>> bindKnobUiParameterAction(float factor = 1.0f);
     template <Toolbox T, typename D> std::pair<SoftButton, std::function<void()>> bindButtonUiParameterAction();
     template <Toolbox T, typename D> std::pair<SoftButton, std::function<void()>> bindButtonUiInvokeAction();
     template <Toolbox T, typename D> std::pair<Knob, std::function<void(int)>> bindKnobUiInvokeAction();
     template <Toolbox T, typename D> std::pair<Knob, std::function<void()>> bindKnobUiClickAction();
+    template <Toolbox T, typename D> std::pair<Knob, std::function<void()>> bindKnobUiDefaultClickAction();
 
     template <Toolbox T, typename D> void invokeButtonAction();
     template <Toolbox T, typename D> void invokeKnobAction(int incs);
@@ -93,6 +98,8 @@ namespace Ui
     Tools::ReactiveVar<int> m_oneFitsAllStepWizard { 0 };
     Tools::ReactiveVar<int> m_wizardSteps { 0 };
     Tools::ReactiveVar<int> m_wizardGaps { 0 };
-    std::chrono::system_clock::time_point m_stepWizardLastUsage = std::chrono::system_clock::time_point::min();
+    Tools::ReactiveVar<int> m_wizardRotation { 0 };
+    Tools::ReactiveVar<bool> m_wizardInvert { false };
+    Tools::ReactiveVar<bool> m_wizardMirror { false };
   };
 }

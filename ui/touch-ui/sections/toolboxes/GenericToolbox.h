@@ -139,8 +139,10 @@ namespace Ui::Touch
               using B = decltype(a);
               if(std::holds_alternative<SoftButton>(B::position))
               {
-                lButtons->set(std::get<SoftButton>(B::position), B::ID::title, [&] { return ""; });
-                rButtons->set(std::get<SoftButton>(B::position), B::ID::title, [&] { return ""; });
+                lButtons->set(std::get<SoftButton>(B::position), B::ID::title,
+                              [&] { return controller.getDisplayValue<typename B::ID>(); });
+                rButtons->set(std::get<SoftButton>(B::position), B::ID::title,
+                              [&] { return controller.getDisplayValue<typename B::ID>(); });
               }
             });
 

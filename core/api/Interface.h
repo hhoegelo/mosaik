@@ -30,7 +30,5 @@ namespace Core::Api
     [[nodiscard]] Step loopPositionToStep(Dsp::FramePos pos) const;
     void incSelectedTilesParameter(ParameterId parameterId, int steps);
     void toggleSelectedTilesParameter(ParameterId parameterId);
-
-    void setStep(Step step, bool value);
   };
 }

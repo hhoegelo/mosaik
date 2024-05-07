@@ -90,16 +90,21 @@ namespace Core::Api
                .inc =
                    [&target, &core, &dsp, tileId](int steps)
                {
-                 const auto fadedInPos = std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadedInPos));
-                 const auto fadeOutPos = std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadeOutPos));
-                 const auto fadeInLen = fadedInPos - target;
-                 const FramePos min = 0;
-                 const FramePos max = fadeOutPos - fadeInLen;
                  const auto sample = std::get<Path>(core.getParameter(tileId, ParameterId::SampleFile));
                  const auto numSamples = static_cast<FramePos>(dsp.getSamples(sample)->size());
 
-                 target = std::clamp(target + steps, min, std::min(max, numSamples));
-                 core.loadParameter(tileId, ParameterId::EnvelopeFadedInPos, target.get() + fadeInLen);
+                 const auto fadedInPos = std::clamp<FramePos>(
+                     std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadedInPos)), 0, numSamples);
+
+                 const auto fadeOutPos = std::clamp<FramePos>(
+                     std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadeOutPos)), 0, numSamples);
+
+                 const auto fadeInLen = fadedInPos - target;
+                 const FramePos max = fadeOutPos - fadeInLen;
+
+                 target = std::clamp<FramePos>(target + steps, 0, max);
+                 core.loadParameter(tileId, ParameterId::EnvelopeFadedInPos,
+                                    std::min(target.get() + fadeInLen, numSamples));
                } };
     }
   };
@@ -116,11 +121,16 @@ namespace Core::Api
                .inc =
                    [&target, &core, &dsp, tileId](int steps)
                {
-                 const auto fadeInPos = std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadeInPos));
-                 const auto fadeOutPos = std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadeOutPos));
                  const auto sample = std::get<Path>(core.getParameter(tileId, ParameterId::SampleFile));
-                 const auto max = static_cast<FramePos>(dsp.getSamples(sample)->size());
-                 target = std::clamp(target + steps, fadeInPos, std::min(max, fadeOutPos));
+                 const auto numSamples = static_cast<FramePos>(dsp.getSamples(sample)->size());
+
+                 const auto fadeInPos = std::clamp<FramePos>(
+                     std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadeInPos)), 0, numSamples);
+
+                 const auto fadeOutPos = std::clamp<FramePos>(
+                     std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadeOutPos)), 0, numSamples);
+
+                 target = std::clamp(target + steps, fadeInPos, fadeOutPos);
                } };
     }
   };
@@ -137,12 +147,15 @@ namespace Core::Api
                .inc =
                    [&target, &core, &dsp, tileId](int steps)
                {
-                 const auto fadedInPos = std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadedInPos));
-                 const auto fadedOutPos
-                     = std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadedOutPos));
                  const auto sample = std::get<Path>(core.getParameter(tileId, ParameterId::SampleFile));
-                 const auto max = static_cast<FramePos>(dsp.getSamples(sample)->size());
-                 target = std::clamp(target + steps, fadedInPos, std::min(max, fadedOutPos));
+                 const auto numSamples = static_cast<FramePos>(dsp.getSamples(sample)->size());
+
+                 const auto fadedInPos = std::clamp<FramePos>(
+                     std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadedInPos)), 0, numSamples);
+                 const auto fadedOutPos = std::clamp<FramePos>(
+                     std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadedOutPos)), 0, numSamples);
+
+                 target = std::clamp(target + steps, fadedInPos, fadedOutPos);
                } };
     }
   };
@@ -171,7 +184,7 @@ namespace Core::Api
 
                  target = std::clamp(target + steps, min, max);
                  core.loadParameter(tileId, ParameterId::EnvelopeFadeOutPos,
-                                    std::clamp(target.get() - fadeOutLen, target.get(), max));
+                                    std::clamp(target.get() - fadeOutLen, fadedInPos, target.get()));
                } };
     }
   };
@@ -214,6 +227,21 @@ namespace Core::Api
           src.envelopeFadeInPos, src.envelopeFadedInPos, src.envelopeFadeOutPos, src.envelopeFadedOutPos,
           src.triggerFrame, src.shuffle, src.playground1, src.playground2, src.playground3, src.playground4,
           src.playground5, src.playground6, src.playground7);
+
+      m_sanitizeSamplePositions.add(
+          [&src, &dsp]
+          {
+            auto f = src.sample.get();
+            auto s = dsp.getSamples(f);
+            if(auto l = s->size())
+            {
+              src.envelopeFadeInPos = std::clamp<FramePos>(src.envelopeFadeInPos, 0, l);
+              src.envelopeFadedInPos = std::clamp<FramePos>(src.envelopeFadedInPos, 0, l);
+              src.envelopeFadeOutPos = std::clamp<FramePos>(src.envelopeFadeOutPos, 0, l);
+              src.envelopeFadedOutPos = std::clamp<FramePos>(src.envelopeFadedOutPos, 0, l);
+              src.triggerFrame = std::clamp<FramePos>(src.triggerFrame, 0, l);
+            }
+          });
     }
 
     m_kernelUpdate.add(

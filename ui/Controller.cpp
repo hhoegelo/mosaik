@@ -6,7 +6,7 @@
 #include "dsp/api/display/Interface.h"
 #include "ui/touch-ui/Interface.h"
 #include "ToolboxDefinition.h"
-#include <inttypes.h>
+#include <cinttypes>
 #include <cmath>
 
 #if(__GNUC__ > 12)
@@ -144,25 +144,26 @@ namespace Ui
     throw std::runtime_error("unknown toolbox");
   }
 
-  template <Toolbox T, typename D> std::pair<Knob, std::function<void(int)>> Controller::bindKnobUiParameterAction()
+  template <Toolbox T, typename D>
+  std::pair<Knob, std::function<void(int)>> Controller::bindKnobUiParameterAction(float factor)
   {
     constexpr bool isGlobal = Core::GlobalParameters<Core::NoWrap>::contains(D::id);
     if constexpr(D::action == UiAction::IncDec)
       return std::make_pair(std::get<Knob>(D::position),
-                            [this](int inc)
+                            [this, factor](int inc)
                             {
                               auto tile = isGlobal ? Core::TileId {} : m_core.getSelectedTile();
-                              m_core.incParameter(tile, D::id, inc);
+                              m_core.incParameter(tile, D::id, factor * inc);
                             });
     else if constexpr(D::action == UiAction::IncDecZoomed)
       return std::make_pair(std::get<Knob>(D::position),
-                            [this](int inc)
+                            [this, factor](int inc)
                             {
                               if(auto p = m_touchUi.get())
                               {
                                 auto tile = isGlobal ? Core::TileId {} : m_core.getSelectedTile();
                                 auto fpp = p->getToolboxes().getWaveform().getFramesPerPixel();
-                                m_core.incParameter(tile, D::id, fpp * inc);
+                                m_core.incParameter(tile, D::id, factor * fpp * inc);
                               }
                             });
     else
@@ -181,14 +182,18 @@ namespace Ui
 
   template <Toolbox T, typename D> std::pair<Knob, std::function<void()>> Controller::bindKnobUiClickAction()
   {
-    constexpr bool isGlobal = Core::GlobalParameters<Core::NoWrap>::contains(D::id);
-    auto tile = isGlobal ? Core::TileId {} : m_core.getSelectedTile();
-
     if constexpr(D::action == UiAction::Default)
-      return std::make_pair(std::get<Knob>(D::position), [this, tile]()
-                            { m_core.setParameter(tile, D::id, ParameterDescriptor<D::id>::defaultValue); });
+      return bindKnobUiDefaultClickAction<T, D>();
     else
       UNSUPPORTED_BRANCH();
+  }
+
+  template <Toolbox T, typename D> std::pair<Knob, std::function<void()>> Controller::bindKnobUiDefaultClickAction()
+  {
+    constexpr bool isGlobal = Core::GlobalParameters<Core::NoWrap>::contains(D::id);
+    auto tile = isGlobal ? Core::TileId {} : m_core.getSelectedTile();
+    return std::make_pair(std::get<Knob>(D::position), [this, tile]()
+                          { m_core.setParameter(tile, D::id, ParameterDescriptor<D::id>::defaultValue); });
   }
 
   template <Toolbox T, typename D> std::pair<SoftButton, std::function<void()>> Controller::bindButtonUiInvokeAction()
@@ -218,7 +223,21 @@ namespace Ui
         {
           using D = decltype(a);
           if constexpr(D::event == UiEvent::ReleasedKnobRotate)
+          {
             mapping.knobIncDecReleased.insert(bindKnobUiParameterAction<T, D>());
+
+            using P = ParameterDescriptor<D::id>;
+
+            if constexpr(requires(P) { P::defaultValue; })
+            {
+              mapping.knobClick.insert(bindKnobUiDefaultClickAction<T, D>());
+            }
+
+            if constexpr(requires(P) { P::acceleration; })
+            {
+              mapping.knobIncDecPressed.insert(bindKnobUiParameterAction<T, D>(P::acceleration));
+            }
+          }
           else if constexpr(D::event == UiEvent::PressedKnobRotate)
             mapping.knobIncDecPressed.insert(bindKnobUiParameterAction<T, D>());
           else if constexpr(D::event == UiEvent::ButtonPress)
@@ -319,9 +338,6 @@ namespace Ui
 
   template <> void Controller::invokeKnobAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::OneFitsAll>(int inc)
   {
-    auto now = std::chrono::system_clock::now();
-
-    m_stepWizardLastUsage = now;
     m_oneFitsAllStepWizard = std::clamp(m_oneFitsAllStepWizard + inc, 0, 255);
 
     auto sel = m_core.getSelectedTile();
@@ -359,6 +375,8 @@ namespace Ui
     else if(inc < 0)
       std::rotate(pattern.begin(), pattern.begin() + std::abs(inc), pattern.end());
 
+    m_wizardRotation = m_wizardRotation + inc;
+
     m_core.setParameter(sel, Core::ParameterId::Pattern, pattern);
   }
 
@@ -392,6 +410,18 @@ namespace Ui
 
         i += m_wizardGaps;
       }
+
+      if(m_wizardRotation > 0)
+        std::rotate(pattern.rbegin(), pattern.rbegin() + std::abs(m_wizardRotation), pattern.rend());
+      else if(m_wizardRotation < 0)
+        std::rotate(pattern.begin(), pattern.begin() + std::abs(m_wizardRotation), pattern.end());
+
+      if(m_wizardInvert.get())
+      {
+        for(auto &a : pattern)
+          a = !a;
+      }
+
       m_core.setParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern, pattern);
     }
   }
@@ -410,13 +440,39 @@ namespace Ui
     m_core.setParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern, pattern);
   }
 
+  template <> void Controller::invokeButtonAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::Invert>()
+  {
+    m_wizardInvert = !m_wizardInvert.get();
+    auto pattern = std::get<Core::Pattern>(m_core.getParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern));
+    for(auto &a : pattern)
+      a = !a;
+    m_core.setParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern, pattern);
+  }
+
+  template <> void Controller::invokeButtonAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::Mirror>()
+  {
+    m_wizardMirror = !m_wizardMirror.get();
+  }
+
   void Controller::onStepButtonEvent(Step b, ButtonEvent e)
   {
     if(e == ButtonEvent::Press)
     {
-      auto merged = std::get<Core::Pattern>(m_core.getParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern));
-      auto state = merged[b];
-      m_core.setStep(b, !state);
+      auto pattern = std::get<Core::Pattern>(m_core.getParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern));
+      auto state = pattern[b];
+      auto newState = !state;
+      auto idx = b;
+      pattern[idx] = newState;
+
+      if(m_wizardMirror.get())
+      {
+        idx = idx % 16;
+        pattern[idx] = newState;
+        pattern[idx + 16] = newState;
+        pattern[idx + 32] = newState;
+        pattern[idx + 48] = newState;
+      }
+      m_core.setParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern, pattern);
     }
   }
 
@@ -492,51 +548,6 @@ namespace Ui
         std::get<Core::FramePos>(m_core.getParameter(m_core.getSelectedTile(), Core::ParameterId::TriggerFrame)));
   }
 
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Global>::TapNSync>()
-  {
-    return "";
-  }
-
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Tile>::Up>()
-  {
-    return "";
-  }
-
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Tile>::Down>()
-  {
-    return "";
-  }
-
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Tile>::Enter>()
-  {
-    return "";
-  }
-
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Tile>::Leave>()
-  {
-    return "";
-  }
-
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Tile>::Load>()
-  {
-    return "";
-  }
-
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Tile>::Prelisten>()
-  {
-    return "";
-  }
-
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Steps>::OneFitsAll>()
-  {
-    return "";
-  }
-
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Steps>::All>()
-  {
-    return "";
-  }
-
   template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Steps>::Gaps>()
   {
     return std::to_string(m_wizardGaps);
@@ -549,11 +560,17 @@ namespace Ui
 
   template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Steps>::Rotate>()
   {
-    return "";
+    return std::to_string(m_wizardRotation);
   }
 
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Steps>::None>()
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Steps>::Invert>()
   {
-    return "";
+    return m_wizardInvert.get() ? "On" : "Off";
   }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Steps>::Mirror>()
+  {
+    return m_wizardMirror.get() ? "On" : "Off";
+  }
+
 }

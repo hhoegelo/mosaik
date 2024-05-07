@@ -162,13 +162,27 @@ namespace Ui
       static constexpr auto title = "None";
     };
 
+    struct Mirror
+    {
+      static constexpr auto title = "Mirror";
+    };
+
+    struct Invert
+    {
+      static constexpr auto title = "Invert";
+    };
+
     using MaximizedCustom = Entries<
         MaximizedCustomEntry<OneFitsAll, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Leftmost>,
         MaximizedCustomEntry<Rotate, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Center>,
         MaximizedCustomEntry<Steps, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::SouthWest>,
         MaximizedCustomEntry<Gaps, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::SouthEast>,
         MaximizedCustomEntry<All, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_NorthEast>,
-        MaximizedCustomEntry<None, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_North>>;
+        MaximizedCustomEntry<None, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_North>,
+        MaximizedCustomEntry<Invert, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthEast>,
+        MaximizedCustomEntry<Mirror, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthWest>
+
+        >;
   };
 
   template <> struct ToolboxDefinition<Toolbox::Tile>

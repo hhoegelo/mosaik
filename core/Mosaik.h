@@ -60,5 +60,7 @@ namespace Core::Api
     std::map<std::tuple<TileId, ParameterId>, ParamAccess> m_access;
     Dsp::Api::Control::Interface &m_dsp;
     std::vector<Path> getAllSamples(DataModel &model) const;
+
+    Tools::ImmediateComputations m_sanitizeSamplePositions;
   };
 }

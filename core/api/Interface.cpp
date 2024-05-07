@@ -55,14 +55,6 @@ namespace Core::Api
     std::ofstream(path) << j;
   }
 
-  void Interface::setStep(Step step, bool value)
-  {
-    auto tileId = getSelectedTile();
-    auto old = std::get<Pattern>(getParameter(tileId, ParameterId::Pattern));
-    old[step] = value;
-    setParameter(tileId, ParameterId::Pattern, old);
-  }
-
   void Interface::incSelectedTilesParameter(ParameterId parameterId, int steps)
   {
     auto tileId = getSelectedTile();
