@@ -22,32 +22,32 @@ namespace Ui::Touch
             get_style_context()->remove_class("mute-toolbox");
         });
 
-    for(Row r = 0; r < NUM_TILE_ROWS; r++)
+    for(uint8_t c = 0; c < NUM_CHANNELS; c++)
     {
-      for(Col c = 0; c < NUM_TILE_COLUMNS; c++)
+      for(uint8_t t = 0; t < NUM_TILES_PER_CHANNEL; t++)
       {
-        auto tileId = r * NUM_TILE_COLUMNS + c;
-        auto tile = Gtk::manage(new Tile(core, dsp, controller, tileId));
+        Core::Address address { c, t };
+        auto tile = Gtk::manage(new Tile(core, dsp, controller, address));
         auto e = Gtk::manage(new Gtk::EventBox());
         e->add_events(Gdk::EventMask::BUTTON_PRESS_MASK | Gdk::EventMask::POINTER_MOTION_MASK);
 
         e->signal_button_press_event().connect(
-            [&core, &touch, tileId](GdkEventButton*)
+            [&core, &touch, address](GdkEventButton*)
             {
               if(touch.getToolboxes().getSelectedToolbox() == Toolbox::Mute)
               {
-                auto muted = std::get<bool>(core.getParameter(tileId, Core::ParameterId::Mute));
-                core.setParameter(tileId, Core::ParameterId::Mute, !muted);
+                auto muted = std::get<bool>(core.getParameter(address, Core::ParameterId::Mute));
+                core.setParameter(address, Core::ParameterId::Mute, !muted);
               }
               else
               {
-                core.setParameter(tileId, Core::ParameterId::Selected, true);
+                core.setParameter(address, Core::ParameterId::Selected, true);
               }
               return false;
             });
 
         e->add(*tile);
-        attach(*e, r, c);
+        attach(*e, c, t);
       }
     }
   }

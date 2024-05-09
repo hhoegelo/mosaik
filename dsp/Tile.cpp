@@ -5,7 +5,7 @@
 
 namespace Dsp
 {
-  StereoFrame Tile::doAudio(AudioKernel::Tile &kernel, ToUi &ui, FramePos currentLoopPosition)
+  StereoFrame Tile::doAudio(AudioKernel::Channel::Tile &kernel, ToUi &ui, FramePos currentLoopPosition)
   {
     const auto &audio = *kernel.audio;
 
@@ -25,8 +25,8 @@ namespace Dsp
         result = audio[iFramePos];
     }
 
-    result = doPlayground(result, kernel.playground1, kernel.playground2, kernel.playground3, kernel.playground4,
-                          kernel.playground5, kernel.playground6, kernel.playground7);
+    /*result = doPlayground(result, kernel.playground1, kernel.playground2, kernel.playground3, kernel.playground4,
+                          kernel.playground5, kernel.playground6, kernel.playground7);*/
 
     auto target_dB = kernel.mute ? c_silenceDB : kernel.gain_dB + doEnvelope(kernel, iFramePos);
     auto targetGain = ::Tools::dBToFactor<c_silenceDB, c_maxDB>(target_dB);
@@ -44,11 +44,11 @@ namespace Dsp
     ui.levelLeft = std::max({ ui.levelLeft, std::abs(result.left) });
     ui.levelRight = std::max({ ui.levelRight, std::abs(result.right) });
     ui.frame = m_framePosition;
-    
+
     return result;
   }
 
-  float Tile::doEnvelope(AudioKernel::Tile &kernel, FramePos iFramePos) const
+  float Tile::doEnvelope(AudioKernel::Channel::Tile &kernel, FramePos iFramePos) const
   {
     if(iFramePos != c_invalidFramePosU64)
       for(auto &section : kernel.envelope)
@@ -56,7 +56,6 @@ namespace Dsp
           return section.b + m_framePosition * section.m;
     return c_silenceDB;
   }
-
 
   /*
    * @Daniel:
@@ -82,11 +81,13 @@ namespace Dsp
                                  float playgroundParam3, float playgroundParam4, float playgroundParam5,
                                  float playgroundParam6, float playgroundParam7)
   {
-    float m_cutoff = playgroundParam1*100;
-    if(m_cutoff < 17) m_cutoff = 17;
+    float m_cutoff = playgroundParam1 * 100;
+    if(m_cutoff < 17)
+      m_cutoff = 17;
 
     float m_reso = playgroundParam2;
-    if(m_reso > 0.99) m_reso = 0.99;
+    if(m_reso > 0.99)
+      m_reso = 0.99;
 
     float HP { 0.0f };
     float BP { 0.0f };
@@ -94,7 +95,8 @@ namespace Dsp
     float F = 8.17742 * pow(1.059, m_cutoff);
 
     float W = F * (6.28319 / SAMPLERATE);
-    if(W > 0.8) W = 0.8;
+    if(W > 0.8)
+      W = 0.8;
 
     float d = 2 * (1 - m_reso);
 

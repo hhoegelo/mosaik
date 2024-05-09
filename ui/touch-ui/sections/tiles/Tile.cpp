@@ -2,7 +2,6 @@
 #include <core/api/Interface.h>
 #include <core/ParameterDescriptor.h>
 #include <dsp/api/display/Interface.h>
-#include <ui/touch-ui/Display.h>
 #include <ui/Controller.h>
 
 #include "WaveformThumb.h"
@@ -27,7 +26,7 @@ namespace Ui::Touch
   }
 
   Tile::Tile(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Ui::Controller& controller,
-             Core::TileId tileId)
+             Core::Address address)
       : Glib::ObjectBase("Tile")
       , Gtk::Grid()
       , m_size(*this, "size", 50)
@@ -40,7 +39,7 @@ namespace Ui::Touch
 
     auto steps = addSteps();
     auto sampleName = addSampleName();
-    auto waveform = addWaveform(core, dsp, tileId);
+    auto waveform = addWaveform(core, dsp, address);
     auto seconds = addDurationLabel();
 
     attach(*Gtk::manage(new LevelMeter(
@@ -48,10 +47,10 @@ namespace Ui::Touch
            13, 4, 1, 8);
 
     attach(*Gtk::manage(new LevelMeter("gain",
-                                       [this, &core, tileId]
+                                       [this, &core, address]
                                        {
                                          using T = Core::ParameterDescriptor<Core::ParameterId::Gain>;
-                                         auto v = std::get<float>(core.getParameter(tileId, Core::ParameterId::Gain));
+                                         auto v = std::get<float>(core.getParameter(address, Core::ParameterId::Gain));
                                          return (v - T::min) / (T::max - T::min);
                                        })),
            14, 4, 1, 8);
@@ -61,47 +60,47 @@ namespace Ui::Touch
            15, 4, 1, 8);
 
     m_computations.add(
-        [this, &core, tileId]()
+        [this, &core, address]()
         {
-          auto muted = std::get<bool>(core.getParameter(tileId, Core::ParameterId::Mute));
+          auto muted = std::get<bool>(core.getParameter(address, Core::ParameterId::Mute));
           if(muted)
             get_style_context()->add_class("muted");
           else
             get_style_context()->remove_class("muted");
         });
 
-    m_computations.add([&controller, tileId, sampleName]()
-                       { sampleName->set_label(controller.getDisplayValue(tileId, Core::ParameterId::SampleFile)); });
+    m_computations.add([&controller, address, sampleName]()
+                       { sampleName->set_label(controller.getDisplayValue(address, Core::ParameterId::SampleFile)); });
 
     m_computations.add(
-        [this, &core, &dsp, tileId, seconds]()
+        [this, &core, &dsp, address, seconds]()
         {
-          auto file = std::get<Core::Path>(core.getParameter(tileId, Core::ParameterId::SampleFile));
+          auto file = std::get<Core::Path>(core.getParameter(address, Core::ParameterId::SampleFile));
           auto ms = dsp.getDuration(file).count();
           seconds->set_label(formatTime(ms));
         });
 
     m_computations.add(
-        [&core, tileId, this]()
+        [&core, address, this]()
         {
-          if(std::get<bool>(core.getParameter(tileId, Core::ParameterId::Selected)))
+          if(std::get<bool>(core.getParameter(address, Core::ParameterId::Selected)))
             get_style_context()->add_class("selected");
           else
             get_style_context()->remove_class("selected");
         });
 
     m_computations.add(
-        [&core, tileId, waveform]()
+        [&core, address, waveform]()
         {
-          auto _1 = core.getParameter(tileId, Core::ParameterId::SampleFile);
-          auto _2 = core.getSamples(tileId);
+          auto _1 = core.getParameter(address, Core::ParameterId::SampleFile);
+          auto _2 = core.getSamples(address);
           waveform->queue_draw();
         });
 
     m_computations.add(
-        [&core, tileId, this, steps]()
+        [&core, address, this, steps]()
         {
-          auto pattern = std::get<Core::Pattern>(core.getParameter(tileId, Core::ParameterId::Pattern));
+          auto pattern = std::get<Core::Pattern>(core.getParameter(address, Core::ParameterId::Pattern));
 
           for(size_t i = 0; i < 64; i++)
           {
@@ -113,9 +112,9 @@ namespace Ui::Touch
         });
 
     Glib::signal_timeout().connect(
-        [&dsp, tileId, this]
+        [&dsp, address, this]
         {
-          m_levels = dsp.getLevel(tileId);
+          m_levels = dsp.getLevel(address);
           return true;
         },
         20);
@@ -183,9 +182,9 @@ namespace Ui::Touch
   }
 
   WaveformThumb* Tile::addWaveform(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp,
-                                   const Core::TileId& tileId)
+                                   const Core::Address& address)
   {
-    auto waveform = Gtk::manage(new WaveformThumb(core, dsp, tileId));
+    auto waveform = Gtk::manage(new WaveformThumb(core, dsp, address));
     attach(*waveform, 2, 4, 10, 8);
     return waveform;
   }

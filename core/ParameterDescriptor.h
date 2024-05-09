@@ -26,6 +26,57 @@ namespace Core
     constexpr static Type coarse = 0.5f;
   };
 
+  template <> struct ParameterDescriptor<ParameterId::ChannelVolume>
+  {
+    constexpr static ParameterId id = ParameterId::ChannelVolume;
+    constexpr static auto name = "volume";
+    using Type = Float;
+    constexpr static Type min = -72.0f;
+    constexpr static Type max = 0.0f;
+    constexpr static Type coarse = 0.5f;
+  };
+
+  template <> struct ParameterDescriptor<ParameterId::ChannelReverbPrePost>
+  {
+    constexpr static ParameterId id = ParameterId::ChannelReverbPrePost;
+    constexpr static auto name = "reverb-pre-post";
+    using Type = PrePost;
+  };
+
+  template <> struct ParameterDescriptor<ParameterId::ChannelReverbSend>
+  {
+    constexpr static ParameterId id = ParameterId::ChannelReverbSend;
+    constexpr static auto name = "reverb-send";
+    using Type = Float;
+    constexpr static Type min = -72.0f;
+    constexpr static Type max = 0.0f;
+    constexpr static Type coarse = 0.5f;
+  };
+
+  template <> struct ParameterDescriptor<ParameterId::ChannelDelayPrePost>
+  {
+    constexpr static ParameterId id = ParameterId::ChannelDelayPrePost;
+    constexpr static auto name = "delay-pre-post";
+    using Type = PrePost;
+  };
+
+  template <> struct ParameterDescriptor<ParameterId::ChannelDelaySend>
+  {
+    constexpr static ParameterId id = ParameterId::ChannelDelaySend;
+    constexpr static auto name = "delay-send";
+    using Type = Float;
+    constexpr static Type min = -72.0f;
+    constexpr static Type max = 0.0f;
+    constexpr static Type coarse = 0.5f;
+  };
+
+  template <> struct ParameterDescriptor<ParameterId::ChannelOnOff>
+  {
+    constexpr static ParameterId id = ParameterId::ChannelOnOff;
+    constexpr static auto name = "on-off";
+    using Type = OnOff;
+  };
+
   template <> struct ParameterDescriptor<ParameterId::Selected>
   {
     constexpr static ParameterId id = ParameterId::Selected;
@@ -256,6 +307,11 @@ namespace Core
                    ParameterId::MainPlayground5, ParameterId::MainPlayground6, ParameterId::MainPlayground7>;
 
   template <template <ParameterId> typename Wrapper>
+  using ChannelParameters
+      = Parameters<Wrapper, ParameterId::ChannelOnOff, ParameterId::ChannelVolume, ParameterId::ChannelDelayPrePost,
+                   ParameterId::ChannelDelaySend, ParameterId::ChannelReverbPrePost, ParameterId::ChannelReverbSend>;
+
+  template <template <ParameterId> typename Wrapper>
   using TileParameters = Parameters<Wrapper, ParameterId::Selected, ParameterId::SampleFile, ParameterId::Reverse,
                                     ParameterId::Pattern, ParameterId::Balance, ParameterId::Gain, ParameterId::Mute,
                                     ParameterId::Speed, ParameterId::EnvelopeFadeInPos, ParameterId::EnvelopeFadedInPos,
@@ -275,5 +331,6 @@ namespace Core
   };
 
   using GlobalParameterDescriptors = GlobalParameters<WrapParameterDescriptor>::Wrapped;
+  using ChannelParameterDescriptors = ChannelParameters<WrapParameterDescriptor>::Wrapped;
   using TileParameterDescriptors = TileParameters<WrapParameterDescriptor>::Wrapped;
 }

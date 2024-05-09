@@ -19,6 +19,6 @@ namespace Ui::Touch
   class WaveformThumb : public Gtk::DrawingArea
   {
    public:
-    WaveformThumb(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Core::TileId tileId);
+    WaveformThumb(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Core::Address address);
   };
 }

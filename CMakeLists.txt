@@ -34,9 +34,8 @@ set(CMAKE_CXX_STANDARD 20)
 add_compile_definitions(SAMPLERATE=48000)
 add_compile_definitions(NUM_STEPS=64)
 
-add_compile_definitions(NUM_TILE_COLUMNS=6)
-add_compile_definitions(NUM_TILE_ROWS=6)
-add_compile_definitions(NUM_TILES=36)
+add_compile_definitions(NUM_CHANNELS=6)
+add_compile_definitions(NUM_TILES_PER_CHANNEL=6)
 
 find_package(PkgConfig REQUIRED)
 find_package(Boost REQUIRED program_options)

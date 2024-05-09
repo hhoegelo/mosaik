@@ -6,7 +6,7 @@
 
 namespace Ui::Touch
 {
-  WaveformThumb::WaveformThumb(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Core::TileId tileId)
+  WaveformThumb::WaveformThumb(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Core::Address address)
       : ObjectBase("WaveformThumb")
   {
     get_style_context()->add_class("waveform");
@@ -17,15 +17,15 @@ namespace Ui::Touch
           queue_draw();
           return true;
         },
-        30);
+        10);
 
     signal_draw().connect(
-        [this, tileId, &core, &dsp](const Cairo::RefPtr<Cairo::Context>& ctx)
+        [this, address, &core, &dsp](const Cairo::RefPtr<Cairo::Context>& ctx)
         {
           auto w = get_width();
           auto h = get_height();
 
-          auto isMuted = std::get<bool>(core.getParameter(tileId, Core::ParameterId::Mute));
+          auto isMuted = std::get<bool>(core.getParameter(address, Core::ParameterId::Mute));
           get_style_context()->render_background(ctx, 0, 0, w, h);
 
           ctx->set_line_width(1);
@@ -34,11 +34,11 @@ namespace Ui::Touch
           auto activeColor = get_style_context()->get_color(Gtk::StateFlags::STATE_FLAG_ACTIVE);
           auto vistedColor = get_style_context()->get_color(Gtk::StateFlags::STATE_FLAG_VISITED);
 
-          auto samples = core.getSamples(tileId);
+          auto samples = core.getSamples(address);
           auto adv = std::max<double>(1, samples.get()->size() / static_cast<double>(w));
           auto frame = 0.0;
 
-          auto pos = dsp.getPosition(tileId);
+          auto pos = dsp.getPosition(address);
 
           for(size_t i = 0; i < w; i++)
           {

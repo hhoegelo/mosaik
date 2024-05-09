@@ -29,39 +29,44 @@ namespace Dsp
     float mainPlayground6 { 0 };
     float mainPlayground7 { 0 };
 
-    struct Tile
+    struct Channel
     {
-      SharedSampleBuffer audio { std::make_shared<SampleBuffer>() };
-      std::vector<uint64_t> triggers;  // sample positions where to (re-)start the sample
-
-      float balance;  // -1 ... 1
-      float gain_dB;
-      bool mute;
-
-      bool reverse = false;
-      float playbackFrameIncrement { 0 };
-
-      // Playground
-      float playground1 { 0 };
-      float playground2 { 0 };
-      float playground3 { 0 };
-      float playground4 { 0 };
-      float playground5 { 0 };
-      float playground6 { 0 };
-      float playground7 { 0 };
-
-      // Envelope
-      struct LinearInterpolation
+      struct Tile
       {
-        FramePos pos {};
-        float m {};
-        float b {};
+        SharedSampleBuffer audio { std::make_shared<SampleBuffer>() };
+        std::vector<uint64_t> triggers;  // sample positions where to (re-)start the sample
+
+        float balance;  // -1 ... 1
+        float gain_dB;
+        bool mute;
+
+        bool reverse = false;
+        float playbackFrameIncrement { 0 };
+
+        // Playground
+        float playground1 { 0 };
+        float playground2 { 0 };
+        float playground3 { 0 };
+        float playground4 { 0 };
+        float playground5 { 0 };
+        float playground6 { 0 };
+        float playground7 { 0 };
+
+        // Envelope
+        struct LinearInterpolation
+        {
+          FramePos pos {};
+          float m {};
+          float b {};
+        };
+
+        // envelope section, desc sorted
+        std::array<LinearInterpolation, 5> envelope;  // faded-out, fade-out, faded-in, fade-in, pre fade-in
       };
 
-      // envelope section, desc sorted
-      std::array<LinearInterpolation, 5> envelope;  // faded-out, fade-out, faded-in, fade-in, pre fade-in
+      Tile tiles[NUM_TILES_PER_CHANNEL];
     };
 
-    Tile tiles[NUM_TILES];
+    Channel channels[NUM_CHANNELS];
   };
 }

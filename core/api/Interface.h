@@ -15,18 +15,18 @@ namespace Core::Api
     virtual void load(const Path &path);
     virtual void save(const Path &path);
 
-    virtual void setParameter(TileId tileId, ParameterId parameterId, const ParameterValue &value) = 0;
-    virtual void loadParameter(TileId tileId, ParameterId parameterId, const ParameterValue &value) = 0;
-    virtual void incParameter(TileId tileId, ParameterId parameterId, int steps) = 0;
+    virtual void setParameter(Address address, ParameterId parameterId, const ParameterValue &value) = 0;
+    virtual void loadParameter(Address address, ParameterId parameterId, const ParameterValue &value) = 0;
+    virtual void incParameter(Address address, ParameterId parameterId, int steps) = 0;
     virtual void setPrelistenSample(const Path &path) = 0;
 
-    [[nodiscard]] virtual ParameterValue getParameter(TileId tileId, ParameterId parameterId) const = 0;
-    [[nodiscard]] virtual Dsp::SharedSampleBuffer getSamples(TileId tileId) const = 0;
+    [[nodiscard]] virtual ParameterValue getParameter(Address address, ParameterId parameterId) const = 0;
+    [[nodiscard]] virtual Dsp::SharedSampleBuffer getSamples(Address address) const = 0;
     virtual void addTap() = 0;
     virtual void setOne() = 0;
 
     // Convenience
-    [[nodiscard]] TileId getSelectedTile() const;
+    [[nodiscard]] Address getSelectedTile() const;
     [[nodiscard]] Step loopPositionToStep(Dsp::FramePos pos) const;
     void incSelectedTilesParameter(ParameterId parameterId, int steps);
     void toggleSelectedTilesParameter(ParameterId parameterId);

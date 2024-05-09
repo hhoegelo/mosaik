@@ -34,8 +34,6 @@ add_library(mosaik-touchui STATIC
         sections/tiles/LevelMeter.h
         sections/toolboxes/Toolbox.cpp
         sections/toolboxes/Toolbox.h
-        Display.h
-        Display.cpp
         tools/WidgetTools.cpp
 )
 

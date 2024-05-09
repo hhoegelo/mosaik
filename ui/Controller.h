@@ -43,7 +43,7 @@ namespace Ui
     void onSoftButtonEvent(SoftButton b, ButtonEvent e);
     void onStepButtonEvent(Step b, ButtonEvent e);
 
-    std::string getDisplayValue(Core::TileId tile, Core::ParameterId id);
+    std::string getDisplayValue(Core::Address address, Core::ParameterId id);
     std::string getDisplayValue(Core::ParameterId id);
 
     template <typename ID> std::string getDisplayValue()
@@ -103,7 +103,8 @@ namespace Ui
     Tools::ReactiveVar<bool> m_wizardMirror { false };
 
     // Mute
-    using MuteState = std::array<bool, NUM_TILES>;
+    using MuteStatePerChannel = std::array<bool, NUM_TILES_PER_CHANNEL>;
+    using MuteState = std::array<MuteStatePerChannel, NUM_CHANNELS>;
     MuteState m_savedMute {};
     Tools::ReactiveVar<bool> m_saveArmed { false };
     std::array<Tools::ReactiveVar<MuteState>, 6> m_savedMutes;

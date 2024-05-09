@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Toolbox.h"
-#include "ui/touch-ui/Display.h"
 #include "KnobGrid.h"
 #include "SoftButtonGrid.h"
 #include <ui/ParameterDescriptor.h>

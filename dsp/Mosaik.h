@@ -7,6 +7,7 @@
 #include "Tile.h"
 #include "AudioKernel.h"
 #include "PointerExchange.h"
+#include "Channel.h"
 
 namespace Dsp
 {
@@ -18,7 +19,7 @@ namespace Dsp
     struct ToUi
     {
       FramePos currentLoopPosition = 0;
-      std::array<Tile::ToUi, NUM_TILES> tiles;
+      std::array<Channel::ToUi, NUM_CHANNELS> channels;
     };
 
     void set(AudioKernel *pKernel);
@@ -37,7 +38,7 @@ namespace Dsp
     int64_t m_prelistenSamplePosition = 0;
     std::chrono::system_clock::time_point m_sequencerStartTime;
 
-    std::array<Tile, NUM_TILES> m_tiles;
+    std::array<Channel, NUM_CHANNELS> m_channels;
     PointerExchange<AudioKernel> m_audioKernel;
   };
 

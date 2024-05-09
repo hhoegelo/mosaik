@@ -155,7 +155,7 @@ namespace Ui
       return std::make_pair(std::get<Knob>(D::position),
                             [this, factor](int inc)
                             {
-                              auto tile = isGlobal ? Core::TileId {} : m_core.getSelectedTile();
+                              auto tile = isGlobal ? Core::Address {} : m_core.getSelectedTile();
                               m_core.incParameter(tile, D::id, factor * inc);
                             });
     else if constexpr(D::action == UiAction::IncDecZoomed)
@@ -164,7 +164,7 @@ namespace Ui
                             {
                               if(auto p = m_touchUi.get())
                               {
-                                auto tile = isGlobal ? Core::TileId {} : m_core.getSelectedTile();
+                                auto tile = isGlobal ? Core::Address {} : m_core.getSelectedTile();
                                 auto fpp = p->getToolboxes().getWaveform().getFramesPerPixel();
                                 m_core.incParameter(tile, D::id, factor * fpp * inc);
                               }
@@ -194,7 +194,7 @@ namespace Ui
   template <Toolbox T, typename D> std::pair<Knob, std::function<void()>> Controller::bindKnobUiDefaultClickAction()
   {
     constexpr bool isGlobal = Core::GlobalParameters<Core::NoWrap>::contains(D::id);
-    auto tile = isGlobal ? Core::TileId {} : m_core.getSelectedTile();
+    auto tile = isGlobal ? Core::Address {} : m_core.getSelectedTile();
     return std::make_pair(std::get<Knob>(D::position), [this, tile]()
                           { m_core.setParameter(tile, D::id, ParameterDescriptor<D::id>::defaultValue); });
   }
@@ -459,9 +459,12 @@ namespace Ui
 
   template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::LastMute>()
   {
-    for(uint8_t i = 0; i < NUM_TILES; i++)
+    for(uint8_t c = 0; c < NUM_CHANNELS; c++)
     {
-      m_core.setParameter(i, Core::ParameterId::Mute, m_savedMute[i]);
+      for(uint8_t t = 0; t < NUM_TILES_PER_CHANNEL; t++)
+      {
+        m_core.setParameter(Core::Address { c, t }, Core::ParameterId::Mute, m_savedMute[c][t]);
+      }
     }
   }
 
@@ -507,10 +510,13 @@ namespace Ui
 
   template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::UnmuteAll>()
   {
-    for(uint8_t i = 0; i < NUM_TILES; i++)
+    for(uint8_t c = 0; c < NUM_CHANNELS; c++)
     {
-      m_savedMute[i] = std::get<bool>(m_core.getParameter(i, Core::ParameterId::Mute));
-      m_core.setParameter(i, Core::ParameterId::Mute, false);
+      for(uint8_t t = 0; t < NUM_TILES_PER_CHANNEL; t++)
+      {
+        m_savedMute[c][t] = std::get<bool>(m_core.getParameter(Core::Address { c, t }, Core::ParameterId::Mute));
+        m_core.setParameter(Core::Address { c, t }, Core::ParameterId::Mute, false);
+      }
     }
   }
 
@@ -556,29 +562,36 @@ namespace Ui
   };
 
   using GlobalParameters = Core::GlobalParameters<WrapParameterDescription>::Wrapped;
+  using ChannelParameters = Core::ChannelParameters<WrapParameterDescription>::Wrapped;
   using TileParameters = Core::TileParameters<WrapParameterDescription>::Wrapped;
 
   template <typename Description>
-  bool fillString(std::string &target, Core::Api::Interface &core, Core::TileId tile, Core::ParameterId id)
+  bool fillString(std::string &target, Core::Api::Interface &core, Core::Address address, Core::ParameterId id)
   {
     if(Description::id == id)
     {
-      target = Description::format(std::get<typename Description::Type>(core.getParameter(tile, id)));
+      target = Description::format(std::get<typename Description::Type>(core.getParameter(address, id)));
       return true;
     }
 
     return false;
   }
 
-  std::string Controller::getDisplayValue(Core::TileId tile, Core::ParameterId id)
+  std::string Controller::getDisplayValue(Core::Address address, Core::ParameterId id)
   {
+    if(Core::GlobalParameters<Core::NoWrap>::contains(id))
+      address = {};
+
+    if(Core::ChannelParameters<Core::NoWrap>::contains(id))
+      address.tile = {};
+
     std::string ret;
-    GlobalParameters globalParams {};
-
-    if(!std::apply([&](auto... a) { return (fillString<decltype(a)>(ret, m_core, {}, id) || ...); },
+    if(!std::apply([&](auto... a) { return (fillString<decltype(a)>(ret, m_core, address, id) || ...); },
                    GlobalParameters {}))
-      std::apply([&](auto... a) { return (fillString<decltype(a)>(ret, m_core, tile, id) || ...); }, TileParameters {});
-
+      if(!std::apply([&](auto... a) { return (fillString<decltype(a)>(ret, m_core, address, id) || ...); },
+                     ChannelParameters {}))
+        std::apply([&](auto... a) { return (fillString<decltype(a)>(ret, m_core, address, id) || ...); },
+                   TileParameters {});
     return ret;
   }
 
@@ -592,15 +605,17 @@ namespace Ui
     if(m_saveArmed.get())
     {
       MuteState s;
-      for(uint8_t i = 0; i < NUM_TILES; i++)
-        s[i] = std::get<bool>(m_core.getParameter(i, Core::ParameterId::Mute));
+      for(uint8_t c = 0; c < NUM_CHANNELS; c++)
+        for(uint8_t t = 0; t < NUM_TILES_PER_CHANNEL; t++)
+          s[c][t] = std::get<bool>(m_core.getParameter({ c, t }, Core::ParameterId::Mute));
       m_savedMutes[slot] = s;
     }
     else
     {
       MuteState s = m_savedMutes[slot];
-      for(uint8_t i = 0; i < NUM_TILES; i++)
-        m_core.setParameter(i, Core::ParameterId::Mute, s[i]);
+      for(uint8_t c = 0; c < NUM_CHANNELS; c++)
+        for(uint8_t t = 0; t < NUM_TILES_PER_CHANNEL; t++)
+          m_core.setParameter({ c, t }, Core::ParameterId::Mute, s[c][t]);
     }
   }
 

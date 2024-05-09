@@ -15,9 +15,6 @@ template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
 namespace Ui
 {
-  using Row = uint8_t;
-  using Col = uint8_t;
-
   enum class Toolbox
   {
     Global,
