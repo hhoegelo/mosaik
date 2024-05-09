@@ -20,6 +20,12 @@
     }
   }
 
+  .tiles .tile.muted {
+    .waveform {
+      color: gray;
+    }
+  }
+
   .tile {
     border: 3px solid gray;
     margin: 1px;
@@ -32,7 +38,15 @@
 
     .waveform {
       background-color: rgb(150, 150, 150);
-      color: rgb(250, 250, 250);
+      color: orange;
+    }
+
+    .waveform:visited {
+      color: orange;
+    }
+
+    .waveform:active {
+      color: white;
     }
 
     .sample-file {
@@ -84,6 +98,22 @@
       .header {
         color: white;
         font-size: x-large;
+      }
+
+      .waveform {
+        color: lightgray; // color of faded out audio frames
+      }
+
+      .waveform:active {
+        color: orange; // color of faded in audio frames
+      }
+
+      .waveform:checked {
+        color: white; // color of envelope stripes
+      }
+
+      .waveform:focus {
+        color: red; // color of hit point indicator
       }
 
       .minimized {

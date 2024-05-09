@@ -40,7 +40,8 @@ namespace Ui::Touch
 
    private:
     Gtk::Label *addSampleName();
-    Ui::Touch::WaveformThumb *addWaveform(Core::Api::Interface &core, const Core::TileId &tileId);
+    Ui::Touch::WaveformThumb *addWaveform(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp,
+                                          const Core::TileId &tileId);
     Gtk::Label *addDurationLabel();
     std::array<Gtk::Label *, 64> addSteps();
     std::string formatTime(long ms) const;

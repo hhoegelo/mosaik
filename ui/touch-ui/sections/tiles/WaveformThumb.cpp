@@ -1,31 +1,44 @@
-
 #include "WaveformThumb.h"
+#include <dsp/api/display/Interface.h>
 #include <gtkmm/stylecontext.h>
 #include <gtkmm/cssprovider.h>
+#include <glibmm/main.h>
 
 namespace Ui::Touch
 {
-  WaveformThumb::WaveformThumb(Core::Api::Interface& core, Core::TileId tileId)
+  WaveformThumb::WaveformThumb(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Core::TileId tileId)
       : ObjectBase("WaveformThumb")
   {
     get_style_context()->add_class("waveform");
 
+    Glib::MainContext::get_default()->signal_timeout().connect(
+        [this]
+        {
+          queue_draw();
+          return true;
+        },
+        30);
+
     signal_draw().connect(
-        [this, tileId, &core](const Cairo::RefPtr<Cairo::Context>& ctx)
+        [this, tileId, &core, &dsp](const Cairo::RefPtr<Cairo::Context>& ctx)
         {
           auto w = get_width();
           auto h = get_height();
 
+          auto isMuted = std::get<bool>(core.getParameter(tileId, Core::ParameterId::Mute));
           get_style_context()->render_background(ctx, 0, 0, w, h);
 
           ctx->set_line_width(1);
 
-          auto c = get_style_context()->get_color();
-          ctx->set_source_rgba(c.get_red(), c.get_green(), c.get_blue(), c.get_alpha());
+          auto normalColor = get_style_context()->get_color(Gtk::StateFlags::STATE_FLAG_NORMAL);
+          auto activeColor = get_style_context()->get_color(Gtk::StateFlags::STATE_FLAG_ACTIVE);
+          auto vistedColor = get_style_context()->get_color(Gtk::StateFlags::STATE_FLAG_VISITED);
 
           auto samples = core.getSamples(tileId);
           auto adv = std::max<double>(1, samples.get()->size() / static_cast<double>(w));
           auto frame = 0.0;
+
+          auto pos = dsp.getPosition(tileId);
 
           for(size_t i = 0; i < w; i++)
           {
@@ -40,12 +53,25 @@ namespace Ui::Touch
               }
             }
 
+            if(!isMuted && frame >= pos && pos >= 0)
+            {
+              ctx->set_source_rgb(activeColor.get_red(), activeColor.get_green(), activeColor.get_blue());
+            }
+            else if(!isMuted)
+            {
+              ctx->set_source_rgb(vistedColor.get_red(), vistedColor.get_green(), vistedColor.get_blue());
+            }
+            else
+            {
+              ctx->set_source_rgb(normalColor.get_red(), normalColor.get_green(), normalColor.get_blue());
+            }
+
             ctx->move_to(i, h / 2 + v * h / 2);
             ctx->line_to(i, h / 2 - v * h / 2);
+            ctx->stroke();
             frame += adv;
           }
 
-          ctx->stroke();
           return true;
         });
   }

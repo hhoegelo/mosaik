@@ -206,7 +206,9 @@ namespace Ui
                   MaximizedParameterEntry<Core::ParameterId::Shuffle, Color::Red, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::NorthEast>,
                   MaximizedParameterEntry<Core::ParameterId::Reverse, Color::Blue, UiEvent::ButtonPress,
-                                          UiAction::Toggle, SoftButton::Left_Center>>;
+                                          UiAction::Toggle, SoftButton::Left_Center>,
+                  MaximizedParameterEntry<Core::ParameterId::Mute, Color::Green, UiEvent::ButtonPress, UiAction::Toggle,
+                                          SoftButton::Left_South>>;
 
     struct Up
     {

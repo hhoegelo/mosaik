@@ -40,7 +40,7 @@ namespace Ui::Touch
 
     auto steps = addSteps();
     auto sampleName = addSampleName();
-    auto waveform = addWaveform(core, tileId);
+    auto waveform = addWaveform(core, dsp, tileId);
     auto seconds = addDurationLabel();
 
     attach(*Gtk::manage(new LevelMeter(
@@ -182,9 +182,10 @@ namespace Ui::Touch
     return seconds;
   }
 
-  WaveformThumb* Tile::addWaveform(Core::Api::Interface& core, const Core::TileId& tileId)
+  WaveformThumb* Tile::addWaveform(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp,
+                                   const Core::TileId& tileId)
   {
-    auto waveform = Gtk::manage(new WaveformThumb(core, tileId));
+    auto waveform = Gtk::manage(new WaveformThumb(core, dsp, tileId));
     attach(*waveform, 2, 4, 10, 8);
     return waveform;
   }
