@@ -1,5 +1,7 @@
+"./Core/Src/btn_enc.o"
 "./Core/Src/coos.o"
 "./Core/Src/main.o"
+"./Core/Src/rgb_leds.o"
 "./Core/Src/stm32f0xx_hal_msp.o"
 "./Core/Src/stm32f0xx_it.o"
 "./Core/Src/syscalls.o"

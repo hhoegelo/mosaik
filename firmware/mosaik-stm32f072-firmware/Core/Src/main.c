@@ -25,6 +25,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "coos.h"
+#include "rgb_leds.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,7 +62,7 @@ uint8_t datasentflag = 0;
 uint8_t TxData[3] = {0xAA,0xAA,0xAA};
 uint8_t LED_Data[MAX_LED][4];
 uint8_t RGBW_Data[MAX_LED][5];
-char text_buf[] = "L1 2 0 2\n";
+uint8_t text_buf[] = "Mosaik\n";
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -78,135 +79,17 @@ static void MX_TIM17_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void Set_LED (int LEDnum, int Red, int Green, int Blue)
-{
-	LED_Data[LEDnum][0] = LEDnum;
-	LED_Data[LEDnum][1] = Green;
-	LED_Data[LEDnum][2] = Red;
-	LED_Data[LEDnum][3] = Blue;
-}
-
-void RGBW_Set (uint8_t id, uint8_t red, uint8_t green, uint8_t blue, uint8_t white)
-{
-	RGBW_Data[id][0] = id;
-	RGBW_Data[id][1] = green;
-	RGBW_Data[id][2] = red;
-	RGBW_Data[id][3] = blue;
-	RGBW_Data[id][4] = white;
-}
-
-void RGBW_init()
-{
-	uint32_t indx=0;
-
-	for (int led= 0; led<MAX_LED; led++)
-	{
-		for (int i=31; i>=0; i--)
-		{
-			rgbw_pwm_data[indx] = 20;  // 1/3 => 0
-			indx++;
-		}
-	}
-
-	for (int i=0; i<50; i++)
-	{
-		rgbw_pwm_data[indx] = 0;
-		indx++;
-	}
-}
-
-void RGBW_set_led (uint8_t id, uint8_t red, uint8_t green, uint8_t blue, uint8_t white)
-{
-	uint32_t bit = 0;
-	uint32_t color = (green<<24) | (red<<16) | (blue<<8) | white;
-
-	for( int i=31; i>=0; i-- )
-	{
-		if( color & (1<<i) )
-			rgbw_pwm_data[ bit + id*32 ] = 40;  // 2/3 => 1
-		else
-			rgbw_pwm_data[ bit + id*32 ] = 20;  // 1/3 => 0
-
-		bit++;
-	}
-}
-
-void RGBW_Send (void)
-{
-	uint32_t indx=0;
-	uint32_t color=0;
-
-	HAL_GPIO_WritePin( SPI2_SAP_GPIO_Port, SPI2_SAP_Pin, GPIO_PIN_SET );
-	for (int led= 0; led<MAX_LED; led++)
-	{
-		color = (RGBW_Data[led][1]<<24) | (RGBW_Data[led][2]<<16) | (RGBW_Data[led][3]<<8) | (RGBW_Data[led][4]);
-
-		for (int i=31; i>=0; i--)
-		{
-			if (color&(1<<i))
-			{
-				rgbw_pwm_data[indx] = 40;  // 2/3 => 1
-			}
-			else rgbw_pwm_data[indx] = 20;  // 1/3 => 0
-
-			indx++;
-		}
-	}
-	HAL_GPIO_WritePin( SPI2_SAP_GPIO_Port, SPI2_SAP_Pin, GPIO_PIN_RESET );
-
-	for (int i=0; i<50; i++)
-	{
-		rgbw_pwm_data[indx] = 0;
-		indx++;
-	}
-
-	HAL_TIM_PWM_Start_DMA(&htim1, TIM_CHANNEL_1, (uint32_t *)rgbw_pwm_data, indx);
-}
-
-
-
-void WS2812_Send (void)
-{
-	uint32_t indx=0;
-	uint32_t color=0;
-
-	for (int i= 0; i<MAX_LED; i++)
-	{
-		color = ((LED_Data[i][1]<<16) | (LED_Data[i][2]<<8) | (LED_Data[i][3]));
-
-		for (int i=23; i>=0; i--)
-		{
-			if (color&(1<<i))
-			{
-				pwmData[indx] = 40;  // 2/3 of
-			}
-			else pwmData[indx] = 20;  // 1/3 of 90
-			indx++;
-		}
-	}
-	for (int i=0; i<50; i++)
-	{
-		pwmData[indx] = 0;
-		indx++;
-	}
-
-	HAL_TIM_PWM_Start_DMA(&htim1, TIM_CHANNEL_1, (uint32_t *)pwmData, indx);
-	//while (!datasentflag){};
-	//datasentflag = 0;
-}
-
-
-
+#if 0
 void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
 {
 	HAL_TIM_PWM_Stop_DMA(&htim1, TIM_CHANNEL_1);
 }
+#endif
 
 uint8_t FinalData[20];
 uint8_t RxData[20];
 uint8_t temp[2];
 int uart_rx_indx = 0;
-
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
@@ -228,18 +111,9 @@ void process_hb()
 }
 
 
-uint8_t spi_buf[13] = {0};
-void task_read_spi()
-{
-	HAL_GPIO_WritePin( SPI2_SAP_GPIO_Port, SPI2_SAP_Pin, GPIO_PIN_RESET );
-	HAL_SPI_Receive( &hspi2, spi_buf, sizeof(spi_buf), 10 );
-	HAL_GPIO_WritePin( SPI2_SAP_GPIO_Port, SPI2_SAP_Pin, GPIO_PIN_SET );
-}
-
-
 void task_write_uart()
 {
-	HAL_UART_Transmit_DMA( &huart1, (uint8_t *)text_buf, sizeof(text_buf)-1 );
+	HAL_UART_Transmit_DMA( &huart1, text_buf, sizeof(text_buf) );
 }
 
 void task_parse()
@@ -250,15 +124,11 @@ void task_parse()
         memcpy (FinalData, RxData, uart_rx_indx);
         uart_rx_indx = 0;
     	sscanf((char *)FinalData, "L%d %d %d %d", &id, &r, &g, &b);
+    	rgb_set_led(id,r,g,b);
+    	rgb_update();
     	//RGBW_Set(id, r, g, b, 0);
     	//RGBW_Send();
 	}
-}
-
-void task_update_rgb()
-{
-	RGBW_Set(1, 1, 1, 1, 1);
-	RGBW_Send();
 }
 
 /* USER CODE END 0 */
@@ -298,25 +168,18 @@ int main(void)
   MX_TIM17_Init();
   /* USER CODE BEGIN 2 */
 
+  rgb_init( &htim1 );
   coos_init();
   //coos_task_add( process_hb, 0, 500 );
-  coos_task_add( task_read_spi, 0, 1 );
-  coos_task_add( task_write_uart, 0, 100 );
-  coos_task_add( task_parse, 3, 5 );
+  //coos_task_add( task_read_spi, 0, 1 );
+  coos_task_add( task_write_uart, 0, 1000 );
+  coos_task_add( task_parse, 3, 10 );
   //coos_task_add( task_update_rgb, 7, 10 );
 
-  for( int i=0; i<MAX_LED; i++ )
-  {
-	  Set_LED(i,1,0,0);
-#if 0
-	  RGBW_Set(i, 0, 0, 0, 0);
-	  RGBW_Send();
-#endif
-  }
-  WS2812_Send();
 
   HAL_UART_Receive_IT(&huart1, temp, 1);
   HAL_TIM_Base_Start_IT( &htim17 );
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -332,7 +195,6 @@ int main(void)
 	}
 	coos_dispatch();
 	HAL_GPIO_TogglePin( LED_HB_GPIO_Port, LED_HB_Pin );
-
 
     /* USER CODE END WHILE */
 
@@ -355,7 +217,7 @@ void SystemClock_Config(void)
   * in the RCC_OscInitTypeDef structure.
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL12;

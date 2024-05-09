@@ -144,6 +144,19 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles RCC and CRS global interrupts.
+  */
+void RCC_CRS_IRQHandler(void)
+{
+  /* USER CODE BEGIN RCC_CRS_IRQn 0 */
+
+  /* USER CODE END RCC_CRS_IRQn 0 */
+  /* USER CODE BEGIN RCC_CRS_IRQn 1 */
+
+  /* USER CODE END RCC_CRS_IRQn 1 */
+}
+
+/**
   * @brief This function handles DMA1 channel 2 and 3 interrupts.
   */
 void DMA1_Channel2_3_IRQHandler(void)
