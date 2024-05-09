@@ -23,20 +23,39 @@ namespace Ui::Touch
     }
   }
 
-  TileTools::TileTools(Core::Api::Interface &core)
-      : GenericMaximized(core)
+  TileTools::TileTools(ToolboxesInterface &toolboxes, Core::Api::Interface &core, Ui::Controller &controller)
+      : GenericMaximized(controller)
       , m_core(core)
   {
     m_files = Gtk::manage(new Gtk::FileChooserWidget());
     auto home = getenv("HOME");
-    auto music = Tools::format("%s/Music/", home);
-    m_files->set_current_folder(music);
+    auto music = Tools::format("/%s/Music/", home);
+    m_selection = music;
 
-    pack_start(*m_files, true, true);
-
-    auto places = findChildWidget(this, "GtkPlacesSidebar");
+    auto places = findChildWidget(m_files, "places_sidebar");
     places->set_visible(false);
     places->set_no_show_all();
+
+    auto paths = findChildWidget(m_files, "browse_header_revealer");
+    paths->set_visible(false);
+    paths->set_no_show_all();
+    
+    pack_start(*m_files, true, true);
+
+    m_computations.add(
+        [this, &toolboxes, wasSelected = false]() mutable
+        {
+          auto isSelected = toolboxes.getSelectedToolbox() == Ui::Toolbox::Tile;
+          if(wasSelected && !isSelected)
+          {
+            m_selection = m_files->get_current_folder();
+          }
+          else if(!wasSelected && isSelected)
+          {
+            m_files->set_current_folder(m_selection);
+          }
+          wasSelected = isSelected;
+        });
   }
 
   void TileTools::up()
@@ -63,13 +82,11 @@ namespace Ui::Touch
 
   void TileTools::load()
   {
-    m_core.setParameter(m_core.getSelectedTiles().front(), Core::ParameterId::SampleFile,
-                        Core::Path(m_files->get_filename()));
+    m_core.setParameter(m_core.getSelectedTile(), Core::ParameterId::SampleFile, Core::Path(m_files->get_filename()));
   }
 
   void TileTools::prelisten()
   {
     m_core.setPrelistenSample(m_files->get_filename());
   }
-
 }

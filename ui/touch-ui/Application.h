@@ -15,6 +15,8 @@ namespace Dsp::Api::Display
 
 namespace Ui
 {
+  class Controller;
+
   namespace Touch
   {
     class Interface;
@@ -23,7 +25,7 @@ namespace Ui
     class Application
     {
      public:
-      Application(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp);
+      Application(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp, Ui::Controller &controller);
       ~Application();
 
       void attach(Gtk::Window &wnd);
@@ -32,10 +34,7 @@ namespace Ui
       Interface &getApi();
 
      private:
-      Core::Api::Interface &m_core;
-      Dsp::Api::Display::Interface &m_dsp;
       Glib::RefPtr<Gtk::Application> m_app;
-
       std::unique_ptr<Window> m_window;
     };
   }

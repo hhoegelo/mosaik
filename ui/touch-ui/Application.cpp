@@ -3,11 +3,9 @@
 
 namespace Ui::Touch
 {
-  Application::Application(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp)
-      : m_core(core)
-      , m_dsp(dsp)
-      , m_app(Gtk::Application::create("com.mosaik.v4"))
-      , m_window(std::make_unique<Window>(m_core, m_dsp))
+  Application::Application(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp, Ui::Controller &controller)
+      : m_app(Gtk::Application::create("com.mosaik.v4"))
+      , m_window(std::make_unique<Window>(core, dsp, controller))
   {
     auto s = Gtk::Settings::get_default();
     s->property_gtk_theme_name() = "Adwaita";

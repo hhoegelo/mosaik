@@ -20,7 +20,7 @@ namespace Ui::Touch
   class TileTools : public GenericMaximized<Ui::Toolbox::Tile>, public FileBrowserInterface
   {
    public:
-    explicit TileTools(Core::Api::Interface &core);
+    TileTools(ToolboxesInterface &toolboxes, Core::Api::Interface &core, Ui::Controller &controller);
 
     void up() override;
     void down() override;
@@ -32,5 +32,7 @@ namespace Ui::Touch
    private:
     Core::Api::Interface &m_core;
     Gtk::FileChooserWidget *m_files;
+    Tools::DeferredComputations m_computations;
+    std::string m_selection;
   };
 }

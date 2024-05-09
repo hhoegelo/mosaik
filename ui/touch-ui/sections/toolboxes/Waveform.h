@@ -27,6 +27,8 @@ namespace Ui
       void incZoom(int inc) override;
       void incScroll(int inc) override;
       double getFramesPerPixel() const override;
+      double getZoom() const override;
+      Core::FramePos getScroll() const override;
 
      private:
       bool drawWave(const Cairo::RefPtr<Cairo::Context> &ctx);

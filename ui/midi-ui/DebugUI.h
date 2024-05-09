@@ -20,14 +20,15 @@ namespace Ui
     class Interface;
   }
 
+  class Controller;
+
   namespace Midi
   {
-    class Controller;
-
     class DebugUI : public Gtk::Window, public Interface
     {
      public:
-      explicit DebugUI(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp, ::Ui::Touch::Interface &touchUi);
+      explicit DebugUI(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp, ::Ui::Touch::Interface &touchUi,
+                       ::Ui::Controller &controller);
       ~DebugUI() override;
 
      private:
@@ -40,7 +41,7 @@ namespace Ui
       Widget *buildButton(SoftButton button);
 
       Core::Api::Interface &m_core;
-      std::unique_ptr<Controller> m_ctrl;
+      ::Ui::Controller &m_ctrl;
 
       const Widget *findChild(const std::string &name);
     };

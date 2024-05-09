@@ -24,8 +24,6 @@ add_library(mosaik-touchui STATIC
         sections/toolboxes/SoftButtonGrid.h
         sections/toolboxes/KnobGrid.cpp
         sections/toolboxes/KnobGrid.h
-        sections/toolboxes/Playground.cpp
-        sections/toolboxes/Playground.h
         sections/SectionWrapper.h
         sections/main/Main.cpp
         sections/mixer/Mixer.cpp
@@ -36,14 +34,12 @@ add_library(mosaik-touchui STATIC
         sections/tiles/LevelMeter.h
         sections/toolboxes/Toolbox.cpp
         sections/toolboxes/Toolbox.h
-        Display.h
-        Display.cpp
         tools/WidgetTools.cpp
 )
 
 target_compile_options(mosaik-touchui PRIVATE)
 target_include_directories(mosaik-touchui PUBLIC ${CMAKE_SOURCE_DIR} ${LIBS_INCLUDE_DIRS} ${clessc_INCLUDE_DIRS})
-target_link_libraries(mosaik-touchui mosaik-core ${LIBS_LIBRARIES} less)
+target_link_libraries(mosaik-touchui mosaik-core mosaik-ui ${LIBS_LIBRARIES} less)
 
 if (ENABLE_TESTING)
     enable_testing()

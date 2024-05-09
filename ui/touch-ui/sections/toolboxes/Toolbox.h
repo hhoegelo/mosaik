@@ -13,7 +13,7 @@ namespace Ui::Touch
    public:
     Toolbox(ToolboxesInterface &toolboxes, Ui::Toolbox tool, Gtk::Widget *minimzed, Gtk::Widget *maximized);
 
-   private:
+   protected:
     Tools::DeferredComputations m_computations;
   };
 

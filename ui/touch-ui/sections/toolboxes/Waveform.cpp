@@ -11,10 +11,12 @@ namespace Ui::Touch
     styles->add_class("waveform");
     set_size_request(-1, 200);
 
+    signal_style_updated().connect([this] { queue_draw(); });
+
     m_staticComputations.add(
         [this]
         {
-          auto tileId = m_core.getSelectedTiles().front();
+          auto tileId = m_core.getSelectedTile();
           auto samples = *m_core.getSamples(tileId);
           m_scrollPos = 0;
           m_zoom = 1.0;
@@ -25,6 +27,8 @@ namespace Ui::Touch
 
   bool Waveform::drawWave(const Cairo::RefPtr<Cairo::Context>& ctx)
   {
+    get_style_context()->render_background(ctx, 0, 0, get_width(), get_height());
+
     m_computations = std::make_unique<Tools::DeferredComputations>(Glib::MainContext::get_default());
     m_computations->add(
         [this, ctx, init = true]() mutable
@@ -37,7 +41,7 @@ namespace Ui::Touch
 
           ctx->set_line_width(1);
 
-          auto tileId = m_core.getSelectedTiles().front();
+          auto tileId = m_core.getSelectedTile();
           auto samples = *m_core.getSamples(tileId);
           auto numFrames = static_cast<double>(samples.size());
           auto w = static_cast<double>(get_width());
@@ -66,25 +70,34 @@ namespace Ui::Touch
           auto fadedOutPos
               = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadedOutPos));
 
+          auto waveFadedOutColor = get_style_context()->get_color(Gtk::StateFlags::STATE_FLAG_NORMAL);
+          auto waveFadedInColor = get_style_context()->get_color(Gtk::StateFlags::STATE_FLAG_ACTIVE);
+
           for(size_t i = 0; i < get_width(); i++)
           {
             float v = 0;
+            double fade = 1.0;
+
             ctx->begin_new_path();
 
             auto frame = scrollPos + std::round(static_cast<double>(i) * numFramesPerPixel);
-            auto gray = 1.0;
-            if(frame < fadeInPos)
-              gray = 1.0;
-            else if(frame < fadedInPos)
-              gray = 1.0 - (frame - fadeInPos) / std::max<Core::FramePos>(1, fadedInPos - fadeInPos);
-            else if(frame < fadeOutPos)
-              gray = 0.0;
-            else if(frame < fadedOutPos)
-              gray = ((frame - fadeOutPos) / std::max<Core::FramePos>(1, fadedOutPos - fadeOutPos));
-            else
-              gray = 1.0;
 
-            ctx->set_source_rgb(gray, gray, gray);
+            if(frame < fadeInPos)
+              fade = 1.0;
+            else if(frame < fadedInPos)
+              fade = 1.0 - (frame - fadeInPos) / std::max<Core::FramePos>(1, fadedInPos - fadeInPos);
+            else if(frame < fadeOutPos)
+              fade = 0.0;
+            else if(frame < fadedOutPos)
+              fade = ((frame - fadeOutPos) / std::max<Core::FramePos>(1, fadedOutPos - fadeOutPos));
+            else
+              fade = 1.0;
+
+            auto o = 1.0 - fade;
+            auto a = fade;
+            ctx->set_source_rgb(o * waveFadedInColor.get_red() + a * waveFadedOutColor.get_red(),
+                                o * waveFadedInColor.get_green() + a * waveFadedOutColor.get_green(),
+                                o * waveFadedInColor.get_blue() + a * waveFadedOutColor.get_blue());
 
             for(size_t a = 0; a < static_cast<size_t>(numFramesPerPixel); a++)
             {
@@ -93,7 +106,6 @@ namespace Ui::Touch
               if(idx < samples.size())
               {
                 auto i = reverse ? samples.size() - 1 - idx : idx;
-
                 v = std::max(v, std::abs(std::max(samples[i].left, samples[i].right)));
               }
             }
@@ -103,16 +115,21 @@ namespace Ui::Touch
             ctx->stroke();
           }
 
+          auto envelopeColor = get_style_context()->get_color(Gtk::StateFlags::STATE_FLAG_CHECKED);
+
+          ctx->set_line_width(2);
           ctx->begin_new_path();
-          ctx->set_source_rgb(0, 0, 0);
+          ctx->set_source_rgb(envelopeColor.get_red(), envelopeColor.get_green(), envelopeColor.get_blue());
           ctx->move_to((fadeInPos - scrollPos) / numFramesPerPixel, h);
           ctx->line_to((fadedInPos - scrollPos) / numFramesPerPixel, 0);
           ctx->line_to((fadeOutPos - scrollPos) / numFramesPerPixel, 0);
           ctx->line_to((fadedOutPos - scrollPos) / numFramesPerPixel, h);
           ctx->stroke();
 
+          auto hitpointColor = get_style_context()->get_color(Gtk::StateFlags::STATE_FLAG_FOCUSED);
+
           ctx->begin_new_path();
-          ctx->set_source_rgb(1.0, 0, 0);
+          ctx->set_source_rgb(hitpointColor.get_red(), hitpointColor.get_green(), hitpointColor.get_blue());
           ctx->move_to((triggerPos - scrollPos) / numFramesPerPixel, h);
           ctx->line_to((triggerPos - scrollPos) / numFramesPerPixel, 0);
           ctx->stroke();
@@ -133,7 +150,7 @@ namespace Ui::Touch
 
   double Waveform::getSanitizedZoom() const
   {
-    auto tileId = m_core.getSelectedTiles().front();
+    auto tileId = m_core.getSelectedTile();
     auto samples = *m_core.getSamples(tileId);
     auto numFrames = static_cast<double>(samples.size());
     auto width = static_cast<double>(get_width());
@@ -146,7 +163,7 @@ namespace Ui::Touch
 
   Core::FramePos Waveform::getSanitizedScroll() const
   {
-    auto tileId = m_core.getSelectedTiles().front();
+    auto tileId = m_core.getSelectedTile();
     auto samples = *m_core.getSamples(tileId);
     auto numFrames = static_cast<double>(samples.size());
     auto width = static_cast<double>(get_width());
@@ -158,7 +175,7 @@ namespace Ui::Touch
 
   double Waveform::getFramesPerPixel() const
   {
-    auto tileId = m_core.getSelectedTiles().front();
+    auto tileId = m_core.getSelectedTile();
     auto samples = *m_core.getSamples(tileId);
     auto numFrames = static_cast<double>(samples.size());
     auto zoom = getSanitizedZoom();
@@ -168,4 +185,13 @@ namespace Ui::Touch
     return std::max<double>(1, numFrames / numPixels);
   }
 
+  double Waveform::getZoom() const
+  {
+    return m_zoom;
+  }
+
+  Core::FramePos Waveform::getScroll() const
+  {
+    return m_scrollPos;
+  }
 }

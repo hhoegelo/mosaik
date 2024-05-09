@@ -9,11 +9,16 @@ namespace Core::Api
   class Interface;
 }
 
+namespace Dsp::Api::Display
+{
+  class Interface;
+}
+
 namespace Ui::Touch
 {
   class WaveformThumb : public Gtk::DrawingArea
   {
    public:
-    WaveformThumb(Core::Api::Interface& core, Core::TileId tileId);
+    WaveformThumb(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Core::Address address);
   };
 }

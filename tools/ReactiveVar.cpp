@@ -119,6 +119,7 @@ namespace Tools
   DeferredComputations::~DeferredComputations()
   {
     m_timer.disconnect();
+    m_initTimer.disconnect();
   }
 
   void DeferredComputations::waitForAllScheduledComputationsDone()

@@ -1,5 +1,5 @@
 #include "DebugUI.h"
-#include "Controller.h"
+#include "ui/Controller.h"
 #include "Erp.h"
 #include <gtkmm/grid.h>
 
@@ -28,11 +28,12 @@ namespace Ui::Midi
 
   )";
 
-  DebugUI::DebugUI(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, ::Ui::Touch::Interface& touchUi)
+  DebugUI::DebugUI(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, ::Ui::Touch::Interface& touchUi,
+                   Ui::Controller& controller)
       : m_core(core)
+      , m_ctrl(controller)
   {
     build();
-    m_ctrl = std::make_unique<Controller>(core, dsp, touchUi, *this);
   }
 
   DebugUI::~DebugUI() = default;
@@ -95,8 +96,8 @@ namespace Ui::Midi
     btn->signal_clicked().connect(
         [this, i]
         {
-          m_ctrl->onStepButtonEvent(i, ButtonEvent::Press);
-          m_ctrl->onStepButtonEvent(i, ButtonEvent::Release);
+          m_ctrl.onStepButtonEvent(i, ButtonEvent::Press);
+          m_ctrl.onStepButtonEvent(i, ButtonEvent::Release);
         });
 
     return btn;
@@ -106,7 +107,9 @@ namespace Ui::Midi
   {
     auto w = Gtk::manage(new Erp());
     w->set_name(getKnobName(knob));
-    w->connect([this, knob](auto inc) { m_ctrl->onErpInc(knob, inc); });
+    w->connect([this, knob](auto inc) { m_ctrl.onErpInc(knob, inc); });
+    w->down([this, knob]() { m_ctrl.onSoftButtonEvent(getButtonForKnob(knob), ButtonEvent::Press); });
+    w->up([this, knob]() { m_ctrl.onSoftButtonEvent(getButtonForKnob(knob), ButtonEvent::Release); });
     auto r = Gtk::manage(new Gtk::EventBox());
     r->add(*w);
     r->add_events(Gdk::BUTTON1_MOTION_MASK | Gdk::BUTTON_PRESS_MASK);
@@ -117,8 +120,8 @@ namespace Ui::Midi
   {
     auto btn = Gtk::manage(new Gtk::Button("B"));
     btn->set_name(getSoftButtonName(button));
-    btn->signal_pressed().connect([this, button] { m_ctrl->onSoftButtonEvent(button, ButtonEvent::Press); });
-    btn->signal_released().connect([this, button] { m_ctrl->onSoftButtonEvent(button, ButtonEvent::Release); });
+    btn->signal_pressed().connect([this, button] { m_ctrl.onSoftButtonEvent(button, ButtonEvent::Press); });
+    btn->signal_released().connect([this, button] { m_ctrl.onSoftButtonEvent(button, ButtonEvent::Release); });
     return btn;
   }
 

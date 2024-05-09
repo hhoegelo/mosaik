@@ -4,6 +4,12 @@ Gtk::Widget *Ui::Touch::findChildWidget(const Gtk::Widget *p, const char *name)
 {
   auto pThis = const_cast<Gtk::Widget *>(p);
 
+  if(auto b = reinterpret_cast<const Gtk::Buildable *>(p))
+  {
+    if(b->get_name() == name)
+      return pThis;
+  }
+
   if(pThis->get_name() == name)
     return pThis;
 

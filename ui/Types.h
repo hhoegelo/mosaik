@@ -15,9 +15,6 @@ template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
 namespace Ui
 {
-  using Row = uint8_t;
-  using Col = uint8_t;
-
   enum class Toolbox
   {
     Global,
@@ -25,7 +22,8 @@ namespace Ui
     Waveform,
     Steps,
     Playground,
-    MainPlayground
+    MainPlayground,
+    Mute,
   };
 
   enum class Section
@@ -79,6 +77,8 @@ namespace Ui
     SouthEast = 4,
     NorthEast = 5,
     Rightmost = 6,
+
+    NUM_KNOBS
   };
 
   inline SoftButton getButtonForKnob(Knob k)
@@ -89,6 +89,12 @@ namespace Ui
   inline Knob getKnobForButton(SoftButton k)
   {
     return static_cast<Knob>(static_cast<int>(k) - 88);
+  }
+
+  inline bool isKnob(SoftButton k)
+  {
+    auto i = static_cast<int>(k);
+    return i >= 88 && i <= 94;
   }
 
   enum class Led

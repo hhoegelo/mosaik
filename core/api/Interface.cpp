@@ -19,19 +19,31 @@ namespace Core::Api
         nlohmann::json j;
         std::ifstream(path) >> j;
 
-        auto loadParameter = [&](auto json, TileId id, auto p)
+        auto loadParameter = [&](auto json, Address address, auto p)
         {
           if(json.contains(p.name))
-            this->loadParameter(id, p.id, static_cast<typename decltype(p)::Type>(json[p.name]));
+            this->loadParameter(address, p.id, static_cast<typename decltype(p)::Type>(json[p.name]));
         };
 
         if(j.contains("globals"))
           std::apply([&](auto... a) { (loadParameter(j["globals"], {}, a), ...); }, GlobalParameterDescriptors {});
 
-        if(j.contains("tiles"))
-          for(uint8_t i = 0; i < NUM_TILES; i++)
-            std::apply([&](auto... a) { (loadParameter(j["tiles"][i], TileId { i }, a), ...); },
-                       TileParameterDescriptors {});
+        if(j.contains("channels"))
+        {
+          for(uint8_t c = 0; c < NUM_CHANNELS; c++)
+          {
+            const auto &channelJson = j["channels"][c];
+            std::apply([&](auto... a) { (loadParameter(channelJson, Address { c, {} }, a), ...); },
+                       ChannelParameterDescriptors {});
+
+            for(uint8_t t = 0; t < NUM_TILES_PER_CHANNEL; t++)
+            {
+              const auto &tileJson = channelJson["tiles"][t];
+              std::apply([&](auto... a) { (loadParameter(tileJson, Address { c, t }, a), ...); },
+                         TileParameterDescriptors {});
+            }
+          }
+        }
       }
       catch(...)
       {
@@ -44,48 +56,38 @@ namespace Core::Api
   {
     nlohmann::json j;
 
-    auto saveParameter = [&](auto &json, TileId id, auto p)
+    auto saveParameter = [&](auto &json, Address id, auto p)
     { json[p.name] = std::get<typename decltype(p)::Type>(getParameter(id, p.id)); };
 
-    std::apply([&](auto... a) { (saveParameter(j["globals"], {}, a), ...); }, GlobalParameterDescriptors {});
+    std::apply([&](auto... a) { (saveParameter(j["globals"], Address {}, a), ...); }, GlobalParameterDescriptors {});
 
-    for(uint8_t i = 0; i < NUM_TILES; i++)
-      std::apply([&](auto... a) { (saveParameter(j["tiles"][i], TileId { i }, a), ...); }, TileParameterDescriptors {});
+    for(uint8_t c = 0; c < NUM_CHANNELS; c++)
+    {
+      auto &channelJson = j["channels"][c];
+      std::apply([&](auto... a) { (saveParameter(channelJson, Address { c, {} }, a), ...); },
+                 ChannelParameterDescriptors {});
+
+      for(uint8_t t = 0; t < NUM_TILES_PER_CHANNEL; t++)
+      {
+        auto &tileJson = channelJson["tiles"][t];
+        std::apply([&](auto... a) { (saveParameter(tileJson, Address { c, t }, a), ...); },
+                   TileParameterDescriptors {});
+      }
+    }
 
     std::ofstream(path) << j;
   }
 
-  std::vector<TileId> Interface::getSelectedTiles() const
-  {
-    std::vector<TileId> ret;
-
-    for(auto c = 0; c < NUM_TILES; c++)
-      if(get<bool>(getParameter(c, ParameterId::Selected)))
-        ret.emplace_back(c);
-
-    return ret;
-  }
-
-  void Interface::setStep(Step step, bool value)
-  {
-    for(const auto &tileId : getSelectedTiles())
-    {
-      auto old = std::get<Pattern>(getParameter(tileId, ParameterId::Pattern));
-      old[step] = value;
-      setParameter(tileId, ParameterId::Pattern, old);
-    }
-  }
-
   void Interface::incSelectedTilesParameter(ParameterId parameterId, int steps)
   {
-    for(const auto &tileId : getSelectedTiles())
-      incParameter(tileId, parameterId, steps);
+    auto tileId = getSelectedTile();
+    incParameter(tileId, parameterId, steps);
   }
 
   void Interface::toggleSelectedTilesParameter(ParameterId parameterId)
   {
-    for(const auto &tileId : getSelectedTiles())
-      setParameter(tileId, parameterId, !std::get<bool>(getParameter(tileId, parameterId)));
+    auto tileId = getSelectedTile();
+    setParameter(tileId, parameterId, !std::get<bool>(getParameter(tileId, parameterId)));
   }
 
   Step Interface::loopPositionToStep(Dsp::FramePos pos) const
@@ -96,9 +98,14 @@ namespace Core::Api
     return static_cast<Step>(std::round(static_cast<double>(pos) / framesPer16th));
   }
 
-  TileId Interface::getSelectedTile() const
+  Address Interface::getSelectedTile() const
   {
-    return getSelectedTiles().front();
+    for(auto c = 0; c < NUM_CHANNELS; c++)
+      for(auto t = 0; t < NUM_TILES_PER_CHANNEL; t++)
+        if(get<bool>(getParameter({ c, t }, ParameterId::Selected)))
+          return { c, t };
+
+    return { 0, 0 };
   }
 
   void Interface::addTap()

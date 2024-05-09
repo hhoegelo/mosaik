@@ -17,6 +17,8 @@ add_library(${PROJECT_NAME} STATIC
         Mosaik.h
         Tile.cpp
         Tile.h
+        Channel.cpp
+        Channel.h
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS_LIBRARIES})

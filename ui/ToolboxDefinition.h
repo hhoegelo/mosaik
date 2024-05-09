@@ -18,7 +18,8 @@ namespace Ui
     ReleasedKnobRotate,
     PressedKnobRotate,
     ButtonPress,
-    ButtonRelease
+    ButtonRelease,
+    KnobClick  // no turn between press and release
   };
 
   enum class UiAction
@@ -28,6 +29,7 @@ namespace Ui
     Set,
     Toggle,
     Invoke,
+    Default
   };
 
   template <Core::ParameterId ID, Color C, UiEvent E, UiAction A, auto P> struct MaximizedParameterEntry
@@ -129,12 +131,58 @@ namespace Ui
     constexpr static auto title = "Step Wizard";
     using Minimized = Entries<>;
     using MaximizedParameters = Entries<>;
-    struct Wizard
+
+    struct OneFitsAll
     {
-      static constexpr auto title = "Wizard";
+      static constexpr auto title = "One Fits All";
     };
+
+    struct Rotate
+    {
+      static constexpr auto title = "Rotate";
+    };
+
+    struct Steps
+    {
+      static constexpr auto title = "Steps";
+    };
+
+    struct Gaps
+    {
+      static constexpr auto title = "Gaps";
+    };
+
+    struct All
+    {
+      static constexpr auto title = "All";
+    };
+
+    struct None
+    {
+      static constexpr auto title = "None";
+    };
+
+    struct Mirror
+    {
+      static constexpr auto title = "Mirror";
+    };
+
+    struct Invert
+    {
+      static constexpr auto title = "Invert";
+    };
+
     using MaximizedCustom = Entries<
-        MaximizedCustomEntry<Wizard, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Center>>;
+        MaximizedCustomEntry<OneFitsAll, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Leftmost>,
+        MaximizedCustomEntry<Rotate, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Center>,
+        MaximizedCustomEntry<Steps, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::SouthWest>,
+        MaximizedCustomEntry<Gaps, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::SouthEast>,
+        MaximizedCustomEntry<All, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_NorthEast>,
+        MaximizedCustomEntry<None, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_North>,
+        MaximizedCustomEntry<Invert, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthEast>,
+        MaximizedCustomEntry<Mirror, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthWest>
+
+        >;
   };
 
   template <> struct ToolboxDefinition<Toolbox::Tile>
@@ -145,17 +193,22 @@ namespace Ui
         = Entries<MinimizedParameterEntry<Core::ParameterId::Gain>, MinimizedParameterEntry<Core::ParameterId::Mute>,
                   MinimizedParameterEntry<Core::ParameterId::Balance>,
                   MinimizedParameterEntry<Core::ParameterId::Speed>>;
+
     using MaximizedParameters
         = Entries<MaximizedParameterEntry<Core::ParameterId::Gain, Color::Green, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::Center>,
                   MaximizedParameterEntry<Core::ParameterId::Speed, Color::Blue, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::Rightmost>,
+                  MaximizedParameterEntry<Core::ParameterId::Speed, Color::Blue, UiEvent::KnobClick, UiAction::Default,
+                                          Knob::Rightmost>,
                   MaximizedParameterEntry<Core::ParameterId::Balance, Color::Purple, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::Leftmost>,
                   MaximizedParameterEntry<Core::ParameterId::Shuffle, Color::Red, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::NorthEast>,
                   MaximizedParameterEntry<Core::ParameterId::Reverse, Color::Blue, UiEvent::ButtonPress,
-                                          UiAction::Toggle, SoftButton::Left_Center>>;
+                                          UiAction::Toggle, SoftButton::Left_Center>,
+                  MaximizedParameterEntry<Core::ParameterId::Mute, Color::Green, UiEvent::ButtonPress, UiAction::Toggle,
+                                          SoftButton::Left_South>>;
 
     struct Up
     {
@@ -230,5 +283,77 @@ namespace Ui
         MaximizedCustomEntry<Zoom, Color::Purple, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Leftmost>,
         MaximizedCustomEntry<Scroll, Color::Purple, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Rightmost>,
         MaximizedCustomEntry<HitPoint, Color::Purple, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Center>>;
+  };
+
+  template <> struct ToolboxDefinition<Toolbox::Mute>
+  {
+    constexpr static auto title = "Mute";
+    using Minimized = Entries<>;
+    using MaximizedParameters = Entries<>;
+
+    struct SaveArmed
+    {
+      static constexpr auto title = "Save";
+    };
+
+    struct SaveUnarmed
+    {
+      static constexpr auto title = "Save";
+    };
+
+    struct Slot1
+    {
+      static constexpr auto title = "Slot 1";
+    };
+
+    struct Slot2
+    {
+      static constexpr auto title = "Slot 2";
+    };
+
+    struct Slot3
+    {
+      static constexpr auto title = "Slot 3";
+    };
+
+    struct Slot4
+    {
+      static constexpr auto title = "Slot 4";
+    };
+
+    struct Slot5
+    {
+      static constexpr auto title = "Slot 5";
+    };
+
+    struct Slot6
+    {
+      static constexpr auto title = "Slot 6";
+    };
+
+    struct UnmuteAll
+    {
+      static constexpr auto title = "Unmute All";
+    };
+
+    struct LastMute
+    {
+      static constexpr auto title = "Last Mute";
+    };
+
+    using MaximizedCustom = Entries<
+        MaximizedCustomEntry<UnmuteAll, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke,
+                             SoftButton::Left_SouthWest>,
+        MaximizedCustomEntry<LastMute, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_South>,
+        MaximizedCustomEntry<SaveArmed, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_North>,
+        MaximizedCustomEntry<SaveUnarmed, Color::Purple, UiEvent::ButtonRelease, UiAction::Invoke,
+                             SoftButton::Right_North>,
+        MaximizedCustomEntry<Slot1, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_West>,
+        MaximizedCustomEntry<Slot2, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_Center>,
+        MaximizedCustomEntry<Slot3, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_East>,
+        MaximizedCustomEntry<Slot4, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthWest>,
+        MaximizedCustomEntry<Slot5, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_South>,
+        MaximizedCustomEntry<Slot6, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke,
+                             SoftButton::Right_SouthEast>>;
   };
 }

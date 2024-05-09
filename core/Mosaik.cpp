@@ -12,7 +12,7 @@ namespace Core::Api
 
   template <ParameterId id, typename V> struct Binder
   {
-    static Mosaik::ParamAccess bind(ICore &, IDsp &, TileId, Tools::ReactiveVar<V> &target)
+    static Mosaik::ParamAccess bind(ICore &, IDsp &, Address, Tools::ReactiveVar<V> &target)
     {
       using T = ParameterDescriptor<id>;
       return { .set = [&target](const auto &v) { target = std::get<V>(v); },
@@ -24,7 +24,7 @@ namespace Core::Api
 
   template <ParameterId id> struct Binder<id, float>
   {
-    static Mosaik::ParamAccess bind(ICore &, IDsp &, TileId, Tools::ReactiveVar<float> &target)
+    static Mosaik::ParamAccess bind(ICore &, IDsp &, Address, Tools::ReactiveVar<float> &target)
     {
       using T = ParameterDescriptor<id>;
       return { .set = [&target](const auto &v) { target = std::clamp(std::get<float>(v), T::min, T::max); },
@@ -37,7 +37,7 @@ namespace Core::Api
 
   template <ParameterId id> struct Binder<id, bool>
   {
-    static Mosaik::ParamAccess bind(ICore &, IDsp &, TileId, Tools::ReactiveVar<bool> &target)
+    static Mosaik::ParamAccess bind(ICore &, IDsp &, Address, Tools::ReactiveVar<bool> &target)
     {
       using T = ParameterDescriptor<id>;
       return { .set = [&target](const auto &v) { target = std::get<bool>(v); },
@@ -54,22 +54,24 @@ namespace Core::Api
 
   template <> struct Binder<ParameterId::Selected, bool>
   {
-    static Mosaik::ParamAccess bind(ICore &core, IDsp &, TileId tileId, Tools::ReactiveVar<bool> &target)
+    static Mosaik::ParamAccess bind(ICore &core, IDsp &, Address address, Tools::ReactiveVar<bool> &target)
     {
       using T = ParameterDescriptor<ParameterId::Selected>;
       return { .set =
-                   [&target, &core, tileId](const auto &v)
+                   [&target, &core, address](const auto &v)
                {
                  target = std::get<bool>(v);
                  if(target.get())
                  {
-                   for(uint8_t t = 0; t < NUM_TILES; t++)
-                   {
-                     if(t != tileId && std::get<bool>(core.getParameter(t, ParameterId::Selected)))
+                   for(uint8_t c = 0; c < NUM_CHANNELS; c++)
+                     for(uint8_t t = 0; t < NUM_TILES_PER_CHANNEL; t++)
                      {
-                       core.setParameter(t, ParameterId::Selected, false);
+                       if((address.tile != t || address.channel != c)
+                          && std::get<bool>(core.getParameter({ c, t }, ParameterId::Selected)))
+                       {
+                         core.setParameter({ c, t }, ParameterId::Selected, false);
+                       }
                      }
-                   }
                  }
                },
                .load = [&target](const auto &v) { target = std::get<bool>(v); },
@@ -80,7 +82,7 @@ namespace Core::Api
 
   template <> struct Binder<ParameterId::EnvelopeFadeInPos, FramePos>
   {
-    static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, TileId tileId, Tools::ReactiveVar<FramePos> &target)
+    static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, Address address, Tools::ReactiveVar<FramePos> &target)
     {
       using T = ParameterDescriptor<ParameterId::EnvelopeFadeInPos>;
 
@@ -88,23 +90,30 @@ namespace Core::Api
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
                .get = [&target]() -> ParameterValue { return target.get(); },
                .inc =
-                   [&target, &core, tileId](int steps)
+                   [&target, &core, &dsp, address](int steps)
                {
-                 const auto fadedInPos = std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadedInPos));
-                 const auto fadeOutPos = std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadeOutPos));
+                 const auto sample = std::get<Path>(core.getParameter(address, ParameterId::SampleFile));
+                 const auto numSamples = static_cast<FramePos>(dsp.getSamples(sample)->size());
+
+                 const auto fadedInPos = std::clamp<FramePos>(
+                     std::get<FramePos>(core.getParameter(address, ParameterId::EnvelopeFadedInPos)), 0, numSamples);
+
+                 const auto fadeOutPos = std::clamp<FramePos>(
+                     std::get<FramePos>(core.getParameter(address, ParameterId::EnvelopeFadeOutPos)), 0, numSamples);
+
                  const auto fadeInLen = fadedInPos - target;
-                 const FramePos min = 0;
                  const FramePos max = fadeOutPos - fadeInLen;
 
-                 target = std::clamp(target + steps, min, max);
-                 core.loadParameter(tileId, ParameterId::EnvelopeFadedInPos, target.get() + fadeInLen);
+                 target = std::clamp<FramePos>(target + steps, 0, max);
+                 core.loadParameter(address, ParameterId::EnvelopeFadedInPos,
+                                    std::min(target.get() + fadeInLen, numSamples));
                } };
     }
   };
 
   template <> struct Binder<ParameterId::EnvelopeFadedInPos, FramePos>
   {
-    static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, TileId tileId, Tools::ReactiveVar<FramePos> &target)
+    static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, Address address, Tools::ReactiveVar<FramePos> &target)
     {
       using T = ParameterDescriptor<ParameterId::EnvelopeFadedInPos>;
 
@@ -112,10 +121,17 @@ namespace Core::Api
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
                .get = [&target]() -> ParameterValue { return target.get(); },
                .inc =
-                   [&target, &core, tileId](int steps)
+                   [&target, &core, &dsp, address](int steps)
                {
-                 const auto fadeInPos = std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadeInPos));
-                 const auto fadeOutPos = std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadeOutPos));
+                 const auto sample = std::get<Path>(core.getParameter(address, ParameterId::SampleFile));
+                 const auto numSamples = static_cast<FramePos>(dsp.getSamples(sample)->size());
+
+                 const auto fadeInPos = std::clamp<FramePos>(
+                     std::get<FramePos>(core.getParameter(address, ParameterId::EnvelopeFadeInPos)), 0, numSamples);
+
+                 const auto fadeOutPos = std::clamp<FramePos>(
+                     std::get<FramePos>(core.getParameter(address, ParameterId::EnvelopeFadeOutPos)), 0, numSamples);
+
                  target = std::clamp(target + steps, fadeInPos, fadeOutPos);
                } };
     }
@@ -123,7 +139,7 @@ namespace Core::Api
 
   template <> struct Binder<ParameterId::EnvelopeFadeOutPos, FramePos>
   {
-    static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, TileId tileId, Tools::ReactiveVar<FramePos> &target)
+    static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, Address address, Tools::ReactiveVar<FramePos> &target)
     {
       using T = ParameterDescriptor<ParameterId::EnvelopeFadeOutPos>;
 
@@ -131,11 +147,16 @@ namespace Core::Api
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
                .get = [&target]() -> ParameterValue { return target.get(); },
                .inc =
-                   [&target, &core, tileId](int steps)
+                   [&target, &core, &dsp, address](int steps)
                {
-                 const auto fadedInPos = std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadedInPos));
-                 const auto fadedOutPos
-                     = std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadedOutPos));
+                 const auto sample = std::get<Path>(core.getParameter(address, ParameterId::SampleFile));
+                 const auto numSamples = static_cast<FramePos>(dsp.getSamples(sample)->size());
+
+                 const auto fadedInPos = std::clamp<FramePos>(
+                     std::get<FramePos>(core.getParameter(address, ParameterId::EnvelopeFadedInPos)), 0, numSamples);
+                 const auto fadedOutPos = std::clamp<FramePos>(
+                     std::get<FramePos>(core.getParameter(address, ParameterId::EnvelopeFadedOutPos)), 0, numSamples);
+
                  target = std::clamp(target + steps, fadedInPos, fadedOutPos);
                } };
     }
@@ -143,7 +164,7 @@ namespace Core::Api
 
   template <> struct Binder<ParameterId::EnvelopeFadedOutPos, FramePos>
   {
-    static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, TileId tileId, Tools::ReactiveVar<FramePos> &target)
+    static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, Address address, Tools::ReactiveVar<FramePos> &target)
     {
       using T = ParameterDescriptor<ParameterId::EnvelopeFadedOutPos>;
 
@@ -151,27 +172,30 @@ namespace Core::Api
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
                .get = [&target]() -> ParameterValue { return target.get(); },
                .inc =
-                   [&target, &core, &dsp, tileId](int steps)
+                   [&target, &core, &dsp, address](int steps)
                {
-                 const auto fadedInPos = std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadedInPos));
-                 const auto fadeOutPos = std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadeOutPos));
+                 const auto sample = std::get<Path>(core.getParameter(address, ParameterId::SampleFile));
+                 const auto max = static_cast<FramePos>(dsp.getSamples(sample)->size());
+
+                 const auto fadedInPos
+                     = std::get<FramePos>(core.getParameter(address, ParameterId::EnvelopeFadedInPos));
+                 const auto fadeOutPos
+                     = std::get<FramePos>(core.getParameter(address, ParameterId::EnvelopeFadeOutPos));
                  const auto fadedOutPos
-                     = std::get<FramePos>(core.getParameter(tileId, ParameterId::EnvelopeFadedOutPos));
+                     = std::get<FramePos>(core.getParameter(address, ParameterId::EnvelopeFadedOutPos));
                  const auto fadeOutLen = fadedOutPos - fadeOutPos;
                  const FramePos min = fadedInPos + fadeOutLen;
 
-                 const auto sample = std::get<Path>(core.getParameter(tileId, ParameterId::SampleFile));
-                 const auto max = static_cast<FramePos>(dsp.getSamples(sample)->size());
-
                  target = std::clamp(target + steps, min, max);
-                 core.loadParameter(tileId, ParameterId::EnvelopeFadeOutPos, target.get() - fadeOutLen);
+                 core.loadParameter(address, ParameterId::EnvelopeFadeOutPos,
+                                    std::clamp(target.get() - fadeOutLen, fadedInPos, target.get()));
                } };
     }
   };
 
   template <> struct Binder<ParameterId::TriggerFrame, FramePos>
   {
-    static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, TileId tileId, Tools::ReactiveVar<FramePos> &target)
+    static Mosaik::ParamAccess bind(ICore &core, IDsp &dsp, Address address, Tools::ReactiveVar<FramePos> &target)
     {
       using T = ParameterDescriptor<ParameterId::TriggerFrame>;
 
@@ -179,10 +203,10 @@ namespace Core::Api
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
                .get = [&target]() -> ParameterValue { return target.get(); },
                .inc =
-                   [&target, &core, &dsp, tileId](int steps)
+                   [&target, &core, &dsp, address](int steps)
                {
                  const FramePos min = 0;
-                 const auto sample = std::get<Path>(core.getParameter(tileId, ParameterId::SampleFile));
+                 const auto sample = std::get<Path>(core.getParameter(address, ParameterId::SampleFile));
                  const auto max = static_cast<FramePos>(dsp.getSamples(sample)->size());
                  target = std::clamp(target + steps, min, max);
                } };
@@ -195,18 +219,41 @@ namespace Core::Api
       , m_kernelUpdate(std::move(ctx), 0)
   {
     bindParameters<GlobalParameterDescriptors>(
-        TileId {}, m_model.globals.tempo, m_model.globals.volume, m_model.globals.playground1,
-        m_model.globals.playground2, m_model.globals.playground3, m_model.globals.playground4,
-        m_model.globals.playground5, m_model.globals.playground6, m_model.globals.playground7);
+        {}, m_model.globals.tempo, m_model.globals.volume, m_model.globals.playground1, m_model.globals.playground2,
+        m_model.globals.playground3, m_model.globals.playground4, m_model.globals.playground5,
+        m_model.globals.playground6, m_model.globals.playground7);
 
-    for(auto c = 0; c < NUM_TILES; c++)
+    for(auto c = 0; c < NUM_CHANNELS; c++)
     {
-      auto &src = m_model.tiles[c];
-      bindParameters<TileParameterDescriptors>(
-          c, src.selected, src.sample, src.reverse, src.pattern, src.balance, src.gain, src.muted, src.speed,
-          src.envelopeFadeInPos, src.envelopeFadedInPos, src.envelopeFadeOutPos, src.envelopeFadedOutPos,
-          src.triggerFrame, src.shuffle, src.playground1, src.playground2, src.playground3, src.playground4,
-          src.playground5, src.playground6, src.playground7);
+      auto &channelSrc = m_model.channels[c];
+      bindParameters<ChannelParameterDescriptors>({ c, {} }, channelSrc.onOff, channelSrc.volume,
+                                                  channelSrc.delayPrePost, channelSrc.delaySend,
+                                                  channelSrc.reverbPrePost, channelSrc.reverbSend);
+
+      for(auto t = 0; t < NUM_TILES_PER_CHANNEL; t++)
+      {
+        auto &src = channelSrc.tiles[t];
+        bindParameters<TileParameterDescriptors>(
+            { c, t }, src.selected, src.sample, src.reverse, src.pattern, src.balance, src.gain, src.muted, src.speed,
+            src.envelopeFadeInPos, src.envelopeFadedInPos, src.envelopeFadeOutPos, src.envelopeFadedOutPos,
+            src.triggerFrame, src.shuffle, src.playground1, src.playground2, src.playground3, src.playground4,
+            src.playground5, src.playground6, src.playground7);
+
+        m_sanitizeSamplePositions.add(
+            [&src, &dsp]
+            {
+              auto f = src.sample.get();
+              auto s = dsp.getSamples(f);
+              if(auto l = s->size())
+              {
+                src.envelopeFadeInPos = std::clamp<FramePos>(src.envelopeFadeInPos, 0, l);
+                src.envelopeFadedInPos = std::clamp<FramePos>(src.envelopeFadedInPos, 0, l);
+                src.envelopeFadeOutPos = std::clamp<FramePos>(src.envelopeFadeOutPos, 0, l);
+                src.envelopeFadedOutPos = std::clamp<FramePos>(src.envelopeFadedOutPos, 0, l);
+                src.triggerFrame = std::clamp<FramePos>(src.triggerFrame, 0, l);
+              }
+            });
+      }
     }
 
     m_kernelUpdate.add(
@@ -217,19 +264,19 @@ namespace Core::Api
         });
   }
 
-  void Mosaik::setParameter(TileId tileId, ParameterId parameterId, const ParameterValue &v)
+  void Mosaik::setParameter(Address address, ParameterId parameterId, const ParameterValue &v)
   {
-    m_access.find({ tileId, parameterId })->second.set(v);
+    m_access.find({ address, parameterId })->second.set(v);
   }
 
-  void Mosaik::loadParameter(TileId tileId, ParameterId parameterId, const ParameterValue &value)
+  void Mosaik::loadParameter(Address address, ParameterId parameterId, const ParameterValue &value)
   {
-    m_access.find({ tileId, parameterId })->second.load(value);
+    m_access.find({ address, parameterId })->second.load(value);
   }
 
-  void Mosaik::incParameter(TileId tileId, ParameterId parameterId, int steps)
+  void Mosaik::incParameter(Address address, ParameterId parameterId, int steps)
   {
-    m_access.find({ tileId, parameterId })->second.inc(steps);
+    m_access.find({ address, parameterId })->second.inc(steps);
   }
 
   void Mosaik::setPrelistenSample(const Path &path)
@@ -238,17 +285,27 @@ namespace Core::Api
     m_model.prelistenInteractionCounter = m_model.prelistenInteractionCounter + 1;
   }
 
-  ParameterValue Mosaik::getParameter(TileId tileId, ParameterId parameterId) const
+  ParameterValue Mosaik::getParameter(Address address, ParameterId parameterId) const
   {
-    return m_access.find({ tileId, parameterId })->second.get();
+    return m_access.find({ address, parameterId })->second.get();
   }
 
-  Dsp::SharedSampleBuffer Mosaik::getSamples(TileId tileId) const
+  Dsp::SharedSampleBuffer Mosaik::getSamples(Address address) const
   {
-    return m_dsp.getSamples(get<std::filesystem::path>(getParameter(tileId, ParameterId::SampleFile)));
+    return m_dsp.getSamples(get<std::filesystem::path>(getParameter(address, ParameterId::SampleFile)));
   }
 
-  void Mosaik::translateTile(const DataModel &dataModel, Dsp::AudioKernel::Tile &tgt, const DataModel::Tile &src) const
+  void Mosaik::translateChannel(const DataModel &dataModel, Dsp::AudioKernel::Channel &tgt,
+                                const DataModel::Channel &src) const
+  {
+    for(uint8_t t = 0; t < NUM_TILES_PER_CHANNEL; t++)
+    {
+      translateTile(dataModel, tgt.tiles[t], src.tiles[t]);
+    }
+  }
+
+  void Mosaik::translateTile(const DataModel &dataModel, Dsp::AudioKernel::Channel::Tile &tgt,
+                             const DataModel::Channel::Tile &src) const
   {
     auto numFramesPerMinute = SAMPLERATE * 60.0f;
     auto num16thPerMinute = dataModel.globals.tempo * 4;
@@ -361,11 +418,11 @@ namespace Core::Api
     auto r = std::make_unique<Dsp::AudioKernel>();
     translateGlobals(r.get(), dataModel);
 
-    for(auto c = 0; c < NUM_TILES; c++)
+    for(auto c = 0; c < NUM_CHANNELS; c++)
     {
-      const auto &src = dataModel.tiles[c];
-      auto &tgt = r->tiles[c];
-      translateTile(dataModel, tgt, src);
+      const auto &src = dataModel.channels[c];
+      auto &tgt = r->channels[c];
+      translateChannel(dataModel, tgt, src);
     }
 
     return r.release();
@@ -375,8 +432,9 @@ namespace Core::Api
   {
     std::vector<Path> ret { model.prelistenSample };
 
-    for(const auto &t : model.tiles)
-      ret.push_back(t.sample);
+    for(const auto &c : model.channels)
+      for(const auto &t : c.tiles)
+        ret.push_back(t.sample);
 
     return ret;
   }
@@ -403,27 +461,32 @@ namespace Core::Api
     }
   }
 
-  template <typename Parameters, typename Targets, size_t idx>
-  void Mosaik::bindParameter(TileId tileId, Targets targets)
+  void Mosaik::setOne()
   {
-    using D = typename std::tuple_element_t<idx, Parameters>;
-    bindParameter<D::id>(tileId, std::get<idx>(targets));
+    m_model.tappedOne = std::chrono::system_clock::now();
   }
 
-  template <ParameterId id, typename T> void Mosaik::bindParameter(TileId tileId, Tools::ReactiveVar<T> &target)
+  template <typename Parameters, typename Targets, size_t idx>
+  void Mosaik::bindParameter(Address address, Targets targets)
   {
-    m_access[{ tileId, id }] = Binder<id, T>::bind(*this, m_dsp, tileId, target);
+    using D = typename std::tuple_element_t<idx, Parameters>;
+    bindParameter<D::id>(address, std::get<idx>(targets));
+  }
+
+  template <ParameterId id, typename T> void Mosaik::bindParameter(Address address, Tools::ReactiveVar<T> &target)
+  {
+    m_access[{ address, id }] = Binder<id, T>::bind(*this, m_dsp, address, target);
   }
 
   template <typename Parameters, typename Targets, size_t... idx>
-  void Mosaik::bindParameters(std::integer_sequence<size_t, idx...> int_seq, TileId tileId, Targets targets)
+  void Mosaik::bindParameters(std::integer_sequence<size_t, idx...> int_seq, Address address, Targets targets)
   {
-    (bindParameter<Parameters, Targets, idx>(tileId, targets), ...);
+    (bindParameter<Parameters, Targets, idx>(address, targets), ...);
   }
 
-  template <typename Parameters, typename... Args> void Mosaik::bindParameters(TileId tileId, Args &...target)
+  template <typename Parameters, typename... Args> void Mosaik::bindParameters(Address address, Args &...target)
   {
     using Indizes = std::make_index_sequence<std::tuple_size_v<Parameters>>;
-    bindParameters<Parameters>(Indizes {}, tileId, std::make_tuple(std::ref(target)...));
+    bindParameters<Parameters>(Indizes {}, address, std::make_tuple(std::ref(target)...));
   }
 }

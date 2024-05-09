@@ -10,26 +10,29 @@ namespace Ui::Touch
   class WaveformToolbox : public GenericMaximized<Ui::Toolbox::Waveform>
   {
    public:
-    WaveformToolbox(Core::Api::Interface &core)
-        : GenericMaximized<Ui::Toolbox::Waveform>(core)
+    WaveformToolbox(Core::Api::Interface &core, Ui::Controller &controller)
+        : GenericMaximized<Ui::Toolbox::Waveform>(controller)
     {
       pack_start(*Gtk::manage(new Touch::Waveform(core)));
     }
   };
 
-  Toolboxes::Toolboxes(Touch::Interface &touch, Core::Api::Interface &core)
+  Toolboxes::Toolboxes(Touch::Interface &touch, Core::Api::Interface &core, Ui::Controller &controller)
       : SectionWrapper(touch)
   {
     get_style_context()->add_class("toolboxes");
 
     auto box = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL));
 
-    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Global>(*this, core)));
-    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Tile>(*this, core, new TileTools(core))));
-    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Waveform>(*this, core, new WaveformToolbox(core))));
-    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Steps>(*this, core)));
-    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Playground>(*this, core)));
-    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::MainPlayground>(*this, core)));
+    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Global>(*this, controller)));
+    box->pack_start(
+        *Gtk::manage(new GenericToolbox<Ui::Toolbox::Tile>(*this, controller, new TileTools(*this, core, controller))));
+    box->pack_start(*Gtk::manage(
+        new GenericToolbox<Ui::Toolbox::Waveform>(*this, controller, new WaveformToolbox(core, controller))));
+    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Steps>(*this, controller)));
+    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Mute>(*this, controller)));
+    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Playground>(*this, controller)));
+    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::MainPlayground>(*this, controller)));
 
     add(*box);
 

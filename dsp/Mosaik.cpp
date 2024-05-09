@@ -43,8 +43,8 @@ namespace Dsp
 
     OutFrame frame {};
 
-    for(auto c = 0; c < NUM_TILES; c++)
-      frame.main = frame.main + m_tiles[c].doAudio(kernel->tiles[c], m_toUi.tiles[c], currentLoopPosition);
+    for(auto c = 0; c < NUM_CHANNELS; c++)
+      frame.main = frame.main + m_channels[c].doAudio(kernel->channels[c], m_toUi.channels[c], currentLoopPosition);
 
     m_volume += std::clamp(::Tools::dBToFactor<c_silenceDB, c_maxDB>(kernel->volume_dB) - m_volume, -c_maxVolStep,
                            c_maxVolStep);
@@ -55,6 +55,8 @@ namespace Dsp
 
     if(m_prelistenSamplePosition < kernel->prelistenSample->size())
       frame.pre = frame.pre + kernel->prelistenSample->at(m_prelistenSamplePosition++);
+
+    return frame * m_volume;
 
     return doMainPlayground(frame, kernel->mainPlayground1, kernel->mainPlayground2, kernel->mainPlayground3,
                             kernel->mainPlayground4, kernel->mainPlayground5, kernel->mainPlayground6,

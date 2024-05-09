@@ -4,7 +4,7 @@
 #include <sigc++/connection.h>
 #include <map>
 #include "MidiEventDispatcher.h"
-#include "Controller.h"
+#include "ui/Controller.h"
 
 namespace Core::Api
 {
@@ -24,6 +24,8 @@ namespace Dsp::Api::Display
 
 namespace Ui
 {
+  class Controller;
+
   namespace Touch
   {
     class Interface;
@@ -35,7 +37,7 @@ namespace Ui
     {
      public:
       Ui(std::string midiDevice, Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp,
-         ::Ui::Touch::Interface &touchUi);
+         ::Ui::Touch::Interface &touchUi, ::Ui::Controller &controller);
       ~Ui() override;
 
       void setLed(Led l, Color c) override;
@@ -44,10 +46,10 @@ namespace Ui
       bool checkForMidiDevices();
 
       std::string m_midiDevice;
+      ::Ui::Controller &m_controller;
       std::unique_ptr<::Midi::Monitor> m_monitor;
       sigc::connection m_timer;
       std::map<std::string, std::unique_ptr<::Midi::Alsa>> m_inputDevices;
-      Controller m_controller;
       MidiEventDispatcher m_dispatcher;
     };
   }

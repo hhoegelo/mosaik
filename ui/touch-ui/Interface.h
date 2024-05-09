@@ -12,6 +12,8 @@ namespace Ui::Touch
     virtual ~WaveformInterface() = default;
     virtual void incScroll(int inc) = 0;
     virtual void incZoom(int inc) = 0;
+    [[nodiscard]] virtual double getZoom() const = 0;
+    [[nodiscard]] virtual Core::FramePos getScroll() const = 0;
     [[nodiscard]] virtual double getFramesPerPixel() const = 0;
   };
 

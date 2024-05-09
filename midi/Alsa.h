@@ -18,9 +18,14 @@ namespace Midi
     void send(const MidiEvent &event);
 
    private:
+    void processInput();
+
     snd_rawmidi_t *m_input = nullptr;
     snd_rawmidi_t *m_output = nullptr;
     unsigned int m_id = -1;
     Callback m_cb;
+
+    snd_midi_event_t *m_encoder = nullptr;
+    snd_midi_event_t *m_decoder = nullptr;
   };
 }

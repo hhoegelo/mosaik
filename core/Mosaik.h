@@ -25,13 +25,14 @@ namespace Core::Api
     Mosaik(Glib::RefPtr<Glib::MainContext> ctx, DataModel &model, Dsp::Api::Control::Interface &dsp);
     ~Mosaik() override = default;
 
-    void setParameter(TileId tileId, ParameterId parameterId, const ParameterValue &v) override;
-    void loadParameter(TileId tileId, ParameterId parameterId, const ParameterValue &value) override;
-    void incParameter(TileId tileId, ParameterId parameterId, int steps) override;
+    void setParameter(Address address, ParameterId parameterId, const ParameterValue &v) override;
+    void loadParameter(Address address, ParameterId parameterId, const ParameterValue &value) override;
+    void incParameter(Address address, ParameterId parameterId, int steps) override;
     void setPrelistenSample(const Path &path) override;
-    [[nodiscard]] ParameterValue getParameter(TileId tileId, ParameterId parameterId) const override;
-    [[nodiscard]] Dsp::SharedSampleBuffer getSamples(TileId tileId) const override;
+    [[nodiscard]] ParameterValue getParameter(Address address, ParameterId parameterId) const override;
+    [[nodiscard]] Dsp::SharedSampleBuffer getSamples(Address address) const override;
     void addTap() override;
+    void setOne() override;
 
     struct ParamAccess
     {
@@ -42,22 +43,27 @@ namespace Core::Api
     };
 
    private:
-    template <typename Parameters, typename... Args> void bindParameters(TileId tileId, Args &...target);
+    template <typename Parameters, typename... Args> void bindParameters(Address address, Args &...target);
     template <typename Parameters, typename Targets, size_t... idx>
-    void bindParameters(std::integer_sequence<size_t, idx...> int_seq, TileId tileId, Targets targets);
-    template <typename Parameters, typename Targets, size_t idx> void bindParameter(TileId tileId, Targets targets);
+    void bindParameters(std::integer_sequence<size_t, idx...> int_seq, Address address, Targets targets);
+    template <typename Parameters, typename Targets, size_t idx> void bindParameter(Address address, Targets targets);
     template <ParameterId id, typename T = ParameterDescriptor<id>::Type>
-    void bindParameter(TileId tileId, Tools::ReactiveVar<T> &target);
+    void bindParameter(Address address, Tools::ReactiveVar<T> &target);
 
     [[nodiscard]] Dsp::AudioKernel *newDspKernel(const DataModel &dataModel) const;
 
     void translateGlobals(Dsp::AudioKernel *target, const DataModel &source) const;
-    void translateTile(const DataModel &dataModel, Dsp::AudioKernel::Tile &tgt, const DataModel::Tile &src) const;
+    void translateChannel(const DataModel &dataModel, Dsp::AudioKernel::Channel &tgt,
+                          const DataModel::Channel &src) const;
+    void translateTile(const DataModel &dataModel, Dsp::AudioKernel::Channel::Tile &tgt,
+                       const DataModel::Channel::Tile &src) const;
 
     DataModel &m_model;
     std::vector<std::chrono::system_clock::time_point> m_taps;
-    std::map<std::tuple<TileId, ParameterId>, ParamAccess> m_access;
+    std::map<std::tuple<Address, ParameterId>, ParamAccess> m_access;
     Dsp::Api::Control::Interface &m_dsp;
     std::vector<Path> getAllSamples(DataModel &model) const;
+
+    Tools::ImmediateComputations m_sanitizeSamplePositions;
   };
 }

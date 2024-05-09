@@ -98,8 +98,8 @@ namespace Dsp
         Mosaik(::Dsp::Mosaik &dsp, Control::Interface &ctrl);
         ~Mosaik() override = default;
         [[nodiscard]] FramePos getCurrentLoopPosition() const override;
-        [[nodiscard]] std::tuple<float, float> getLevel(Core::TileId tileId) override;
-        [[nodiscard]] FramePos getPosition(Core::TileId tileId) override;
+        [[nodiscard]] std::tuple<float, float> getLevel(Core::Address address) override;
+        [[nodiscard]] FramePos getPosition(Core::Address address) override;
         [[nodiscard]] std::chrono::milliseconds getDuration(const std::filesystem::path &file) const override;
 
        private:
@@ -118,10 +118,12 @@ namespace Dsp
         return m_dsp.getUiInfo().currentLoopPosition;
       }
 
-      std::tuple<float, float> Mosaik::getLevel(Core::TileId tileId)
+      std::tuple<float, float> Mosaik::getLevel(Core::Address address)
       {
-        return { std::exchange(m_dsp.getUiInfo().tiles[tileId.value()].levelLeft, 0.f),
-                 std::exchange(m_dsp.getUiInfo().tiles[tileId.value()].levelRight, 0.f) };
+        return {
+          std::exchange(m_dsp.getUiInfo().channels[address.channel.value()].tiles[address.tile.value()].levelLeft, 0.f),
+          std::exchange(m_dsp.getUiInfo().channels[address.channel.value()].tiles[address.tile.value()].levelRight, 0.f)
+        };
       }
 
       std::chrono::milliseconds Mosaik::getDuration(const std::filesystem::path &file) const
@@ -129,9 +131,9 @@ namespace Dsp
         return std::chrono::milliseconds(1000 * m_ctrl.getSamples(file)->size() / SAMPLERATE);
       }
 
-      FramePos Mosaik::getPosition(Core::TileId tileId)
+      FramePos Mosaik::getPosition(Core::Address address)
       {
-        return m_dsp.getUiInfo().tiles[tileId.value()].frame;
+        return m_dsp.getUiInfo().channels[address.channel.value()].tiles[address.tile.value()].frame;
       }
     }
 

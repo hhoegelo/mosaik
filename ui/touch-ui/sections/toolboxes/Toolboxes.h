@@ -11,6 +11,11 @@ namespace Core::Api
   class Interface;
 }
 
+namespace Ui
+{
+  class Controller;
+}
+
 namespace Ui::Touch
 {
   class Waveform;
@@ -21,7 +26,7 @@ namespace Ui::Touch
   class Toolboxes : public SectionWrapper<Section::Toolboxes, Gtk::Box>, public ToolboxesInterface
   {
    public:
-    Toolboxes(Touch::Interface &touch, Core::Api::Interface &core);
+    Toolboxes(Touch::Interface &touch, Core::Api::Interface &core, Ui::Controller &controller);
 
     WaveformInterface &getWaveform() const override;
     FileBrowserInterface &getFileBrowser() const override;

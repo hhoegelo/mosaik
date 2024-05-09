@@ -1,9 +1,11 @@
+#include <gtkmm/eventbox.h>
 #include "Tiles.h"
 #include "Tile.h"
 
 namespace Ui::Touch
 {
-  Tiles::Tiles(Touch::Interface& touch, Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp)
+  Tiles::Tiles(Touch::Interface& touch, Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp,
+               Ui::Controller& controller)
       : SectionWrapper(touch)
   {
     get_style_context()->add_class("tiles");
@@ -11,12 +13,41 @@ namespace Ui::Touch
     set_column_homogeneous(true);
     set_row_homogeneous(true);
 
-    for(Row r = 0; r < NUM_TILE_ROWS; r++)
+    m_computations.add(
+        [this, &touch]
+        {
+          if(touch.getToolboxes().getSelectedToolbox() == Ui::Toolbox::Mute)
+            get_style_context()->add_class("mute-toolbox");
+          else
+            get_style_context()->remove_class("mute-toolbox");
+        });
+
+    for(uint8_t c = 0; c < NUM_CHANNELS; c++)
     {
-      for(Col c = 0; c < NUM_TILE_COLUMNS; c++)
+      for(uint8_t t = 0; t < NUM_TILES_PER_CHANNEL; t++)
       {
-        auto tile = Gtk::manage(new Tile(core, dsp, r * NUM_TILE_COLUMNS + c));
-        attach(*tile, r, c);
+        Core::Address address { c, t };
+        auto tile = Gtk::manage(new Tile(core, dsp, controller, address));
+        auto e = Gtk::manage(new Gtk::EventBox());
+        e->add_events(Gdk::EventMask::BUTTON_PRESS_MASK | Gdk::EventMask::POINTER_MOTION_MASK);
+
+        e->signal_button_press_event().connect(
+            [&core, &touch, address](GdkEventButton*)
+            {
+              if(touch.getToolboxes().getSelectedToolbox() == Toolbox::Mute)
+              {
+                auto muted = std::get<bool>(core.getParameter(address, Core::ParameterId::Mute));
+                core.setParameter(address, Core::ParameterId::Mute, !muted);
+              }
+              else
+              {
+                core.setParameter(address, Core::ParameterId::Selected, true);
+              }
+              return false;
+            });
+
+        e->add(*tile);
+        attach(*e, c, t);
       }
     }
   }

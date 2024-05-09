@@ -20,12 +20,18 @@ namespace Dsp::Api::Display
   class Interface;
 }
 
+namespace Ui
+{
+  class Controller;
+}
+
 namespace Ui::Touch
 {
   class Tile : public Gtk::Grid
   {
    public:
-    Tile(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp, Core::TileId tileId);
+    Tile(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp, Ui::Controller &controller,
+         Core::Address address);
 
    protected:
     Gtk::SizeRequestMode get_request_mode_vfunc() const override;
@@ -34,7 +40,8 @@ namespace Ui::Touch
 
    private:
     Gtk::Label *addSampleName();
-    Ui::Touch::WaveformThumb *addWaveform(Core::Api::Interface &core, const Core::TileId &tileId);
+    Ui::Touch::WaveformThumb *addWaveform(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp,
+                                          const Core::Address &address);
     Gtk::Label *addDurationLabel();
     std::array<Gtk::Label *, 64> addSteps();
     std::string formatTime(long ms) const;
