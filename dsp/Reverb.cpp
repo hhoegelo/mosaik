@@ -66,7 +66,7 @@ namespace Dsp
     //***************************** Delay Buffer *****************************//
     m_buffer_indx = 0;
 
-    const unsigned buffer_size = REVERB_BUFFER_SIZE * SAMPLERATE;
+    const unsigned buffer_size = REVERB_BUFFER_SIZE;
 
     m_buffer_sz_m1 = buffer_size - 1;
     m_buffer_sz_m2 = buffer_size - 2;
