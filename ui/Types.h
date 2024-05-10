@@ -24,6 +24,8 @@ namespace Ui
     Playground,
     MainPlayground,
     Mute,
+    MixerChannel,
+    Reverb
   };
 
   enum class Section

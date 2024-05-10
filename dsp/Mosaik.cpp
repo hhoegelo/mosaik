@@ -41,10 +41,10 @@ namespace Dsp
     auto currentLoopPosition = (m_position++ % kernel->framesPerLoop);
     m_toUi.currentLoopPosition = currentLoopPosition;
 
-    OutFrame frame {};
+    Busses busses;
 
     for(auto c = 0; c < NUM_CHANNELS; c++)
-      frame.main = frame.main + m_channels[c].doAudio(kernel->channels[c], m_toUi.channels[c], currentLoopPosition);
+      m_channels[c].doAudio(busses, kernel->channels[c], m_toUi.channels[c], currentLoopPosition);
 
     m_volume += std::clamp(::Tools::dBToFactor<c_silenceDB, c_maxDB>(kernel->volume_dB) - m_volume, -c_maxVolStep,
                            c_maxVolStep);
@@ -54,14 +54,14 @@ namespace Dsp
       m_prelistenSamplePosition = 0;
 
     if(m_prelistenSamplePosition < kernel->prelistenSample->size())
-      frame.pre = frame.pre + kernel->prelistenSample->at(m_prelistenSamplePosition++);
+      busses.pre = busses.pre + kernel->prelistenSample->at(m_prelistenSamplePosition++);
 
-    return frame * m_volume;
-
+    return { busses.main * m_volume, busses.pre };
+    /*
     return doMainPlayground(frame, kernel->mainPlayground1, kernel->mainPlayground2, kernel->mainPlayground3,
                             kernel->mainPlayground4, kernel->mainPlayground5, kernel->mainPlayground6,
                             kernel->mainPlayground7)
-        * m_volume;
+        * m_volume;*/
   }
 
   void Mosaik::set(AudioKernel *pKernel)

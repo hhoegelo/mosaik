@@ -23,9 +23,24 @@ namespace Dsp
     StereoFrame pre;
   };
 
+  struct Busses
+  {
+    StereoFrame main {};
+    StereoFrame delay {};
+    StereoFrame reverb {};
+    StereoFrame pre {};
+  };
+
   inline StereoFrame operator+(const StereoFrame &lhs, const StereoFrame &rhs)
   {
     return { lhs.left + rhs.left, lhs.right + rhs.right };
+  }
+
+  inline StereoFrame &operator+=(StereoFrame &lhs, const StereoFrame &rhs)
+  {
+    lhs.left += rhs.left;
+    lhs.right += rhs.right;
+    return lhs;
   }
 
   inline StereoFrame operator*(const StereoFrame &lhs, float f)

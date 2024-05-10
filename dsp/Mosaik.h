@@ -8,6 +8,7 @@
 #include "AudioKernel.h"
 #include "PointerExchange.h"
 #include "Channel.h"
+#include "Reverb.h"
 
 namespace Dsp
 {
@@ -33,6 +34,8 @@ namespace Dsp
     FramePos m_position = 0;
     FramePos m_knownFramesPerLoop = 0;
     float m_volume = 1.0f;
+
+    Reverb m_reverb;
 
     uint8_t m_prelistenInteractionCounter = 0;
     int64_t m_prelistenSamplePosition = 0;

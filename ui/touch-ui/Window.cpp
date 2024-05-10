@@ -14,7 +14,7 @@ namespace Ui::Touch
       : m_toolboxes(std::make_unique<Touch::Toolboxes>(*this, core, controller))
       , m_tiles(std::make_unique<Tiles>(*this, core, dsp, controller))
       , m_main(std::make_unique<Main>(*this))
-      , m_mixer(std::make_unique<Mixer>(*this))
+      , m_mixer(std::make_unique<Mixer>(*this, core, dsp, controller))
   {
 #if 0
     set_title("Mosaik");
@@ -61,6 +61,7 @@ namespace Ui::Touch
     set_resizable(false);
     set_position(Gtk::WindowPosition::WIN_POS_CENTER);
 
+    auto fixedBox = Gtk::manage(new Gtk::Fixed());
     auto vBox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL));
     vBox->get_style_context()->add_class("root");
     auto upperBox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
@@ -71,15 +72,18 @@ namespace Ui::Touch
     vBox->add(*upperBox);
     vBox->add(*lowerBox);
 
-    auto fixed = Gtk::manage(new Gtk::Fixed());
-    fixed->add(*m_tiles);
-    upperBox->pack_start(*fixed, false, false);
+    auto fixedTiles = Gtk::manage(new Gtk::Fixed());
+    fixedTiles->add(*m_tiles);
+    upperBox->pack_start(*fixedTiles, false, false);
     upperBox->pack_start(*m_toolboxes, Gtk::PackOptions::PACK_EXPAND_WIDGET);
 
-    lowerBox->pack_start(*m_mixer);
+    auto fixedMixer = Gtk::manage(new Gtk::Fixed());
+    fixedMixer->add(*m_mixer);
+    lowerBox->pack_start(*fixedMixer, false, false);
     lowerBox->pack_start(*m_main, Gtk::PackOptions::PACK_EXPAND_WIDGET);
 
-    add(*vBox);
+    fixedBox->add(*vBox);
+    add(*fixedBox);
     loadCss();
     show_all();
   }

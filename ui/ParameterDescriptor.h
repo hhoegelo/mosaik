@@ -270,6 +270,7 @@ namespace Ui
   {
     constexpr static auto title = "Playground 6";
   };
+
   template <>
   struct ParameterDescriptor<Core::ParameterId::Playground7>
       : ParameterDescriptionPlayground<Core::ParameterId::Playground7>
@@ -277,4 +278,137 @@ namespace Ui
     constexpr static auto title = "Playground 7";
   };
 
+  template <>
+  struct ParameterDescriptor<Core::ParameterId::ChannelOnOff>
+      : Core::ParameterDescriptor<Core::ParameterId::ChannelOnOff>
+  {
+    static std::string format(Type t)
+    {
+      return t == Core::OnOffValues::On ? "On" : "Off";
+    }
+
+    constexpr static auto title = "On / Off";
+  };
+
+  template <>
+  struct ParameterDescriptor<Core::ParameterId::ChannelVolume>
+      : Core::ParameterDescriptor<Core::ParameterId::ChannelVolume>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%3.2f dB", t);
+    }
+
+    constexpr static auto title = "Volume";
+    constexpr static Type defaultValue = 0;
+    constexpr static float acceleration = 5.f;
+  };
+
+  template <>
+  struct ParameterDescriptor<Core::ParameterId::ChannelDelayPrePost>
+      : Core::ParameterDescriptor<Core::ParameterId::ChannelDelayPrePost>
+  {
+    static std::string format(Type t)
+    {
+      return t == Core::PrePostValues::Pre ? "Pre" : "Post";
+    }
+
+    constexpr static auto title = "Delay Pre/Post";
+  };
+
+  template <>
+  struct ParameterDescriptor<Core::ParameterId::ChannelReverbPrePost>
+      : Core::ParameterDescriptor<Core::ParameterId::ChannelReverbPrePost>
+  {
+    static std::string format(Type t)
+    {
+      return t == Core::PrePostValues::Pre ? "Pre" : "Post";
+    }
+
+    constexpr static auto title = "Reverb Pre/Post";
+  };
+
+  template <>
+  struct ParameterDescriptor<Core::ParameterId::ChannelDelaySend>
+      : Core::ParameterDescriptor<Core::ParameterId::ChannelDelaySend>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%3.2f dB", t);
+    }
+
+    constexpr static auto title = "Delay Send";
+    constexpr static Type defaultValue = 0;
+    constexpr static float acceleration = 5.f;
+  };
+
+  template <>
+  struct ParameterDescriptor<Core::ParameterId::ChannelReverbSend>
+      : Core::ParameterDescriptor<Core::ParameterId::ChannelReverbSend>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%3.2f dB", t);
+    }
+
+    constexpr static auto title = "Reverb Send";
+    constexpr static Type defaultValue = 0;
+    constexpr static float acceleration = 5.f;
+  };
+
+  template <>
+  struct ParameterDescriptor<Core::ParameterId::GlobalReverbRoomSize>
+      : Core::ParameterDescriptor<Core::ParameterId::GlobalReverbRoomSize>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%3.2f %%", t * 100);
+    }
+
+    constexpr static auto title = "Room Size";
+    constexpr static Type defaultValue = 0;
+    constexpr static float acceleration = 5.f;
+  };
+
+  template <>
+  struct ParameterDescriptor<Core::ParameterId::GlobalReverbColor>
+      : Core::ParameterDescriptor<Core::ParameterId::GlobalReverbColor>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%3.2f %%", t * 100);
+    }
+
+    constexpr static auto title = "Color";
+    constexpr static Type defaultValue = 0;
+    constexpr static float acceleration = 5.f;
+  };
+
+  template <>
+  struct ParameterDescriptor<Core::ParameterId::GlobalReverbPreDelay>
+      : Core::ParameterDescriptor<Core::ParameterId::GlobalReverbPreDelay>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%3.2f %%", t * 100);
+    }
+
+    constexpr static auto title = "Pre Delay";
+    constexpr static Type defaultValue = 0;
+    constexpr static float acceleration = 5.f;
+  };
+
+  template <>
+  struct ParameterDescriptor<Core::ParameterId::GlobalReverbChorus>
+      : Core::ParameterDescriptor<Core::ParameterId::GlobalReverbChorus>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%3.2f %%", t * 100);
+    }
+
+    constexpr static auto title = "Chorus";
+    constexpr static Type defaultValue = 0;
+    constexpr static float acceleration = 5.f;
+  };
 }

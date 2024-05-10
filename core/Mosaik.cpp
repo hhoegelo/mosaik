@@ -7,6 +7,9 @@ using namespace std::chrono_literals;
 
 namespace Core::Api
 {
+  constexpr int c_silenceDB = -60.f;
+  constexpr int c_zeroDB = 0.f;
+
   using IDsp = Dsp::Api::Control::Interface;
   using ICore = Interface;
 
@@ -219,9 +222,10 @@ namespace Core::Api
       , m_kernelUpdate(std::move(ctx), 0)
   {
     bindParameters<GlobalParameterDescriptors>(
-        {}, m_model.globals.tempo, m_model.globals.volume, m_model.globals.playground1, m_model.globals.playground2,
-        m_model.globals.playground3, m_model.globals.playground4, m_model.globals.playground5,
-        m_model.globals.playground6, m_model.globals.playground7);
+        {}, m_model.globals.tempo, m_model.globals.volume, m_model.globals.reverbRoomSize, m_model.globals.reverbColor,
+        m_model.globals.reverbPreDelay, m_model.globals.reverbChorus, m_model.globals.playground1,
+        m_model.globals.playground2, m_model.globals.playground3, m_model.globals.playground4,
+        m_model.globals.playground5, m_model.globals.playground6, m_model.globals.playground7);
 
     for(auto c = 0; c < NUM_CHANNELS; c++)
     {
@@ -264,19 +268,30 @@ namespace Core::Api
         });
   }
 
+  const Mosaik::ParamAccess &Mosaik::findAccess(Address address, ParameterId parameterId) const
+  {
+    if(Core::GlobalParameters<Core::NoWrap>::contains(parameterId))
+      address = {};
+
+    if(Core::ChannelParameters<Core::NoWrap>::contains(parameterId))
+      address.tile = {};
+
+    return m_access.find({ address, parameterId })->second;
+  }
+
   void Mosaik::setParameter(Address address, ParameterId parameterId, const ParameterValue &v)
   {
-    m_access.find({ address, parameterId })->second.set(v);
+    findAccess(address, parameterId).set(v);
   }
 
   void Mosaik::loadParameter(Address address, ParameterId parameterId, const ParameterValue &value)
   {
-    m_access.find({ address, parameterId })->second.load(value);
+    findAccess(address, parameterId).load(value);
   }
 
   void Mosaik::incParameter(Address address, ParameterId parameterId, int steps)
   {
-    m_access.find({ address, parameterId })->second.inc(steps);
+    findAccess(address, parameterId).inc(steps);
   }
 
   void Mosaik::setPrelistenSample(const Path &path)
@@ -287,7 +302,7 @@ namespace Core::Api
 
   ParameterValue Mosaik::getParameter(Address address, ParameterId parameterId) const
   {
-    return m_access.find({ address, parameterId })->second.get();
+    return findAccess(address, parameterId).get();
   }
 
   Dsp::SharedSampleBuffer Mosaik::getSamples(Address address) const
@@ -298,6 +313,13 @@ namespace Core::Api
   void Mosaik::translateChannel(const DataModel &dataModel, Dsp::AudioKernel::Channel &tgt,
                                 const DataModel::Channel &src) const
   {
+    tgt.volume_dB = src.volume;
+    tgt.muteFactor = src.onOff == OnOffValues::On ? 1.0f : 0.0f;
+    tgt.preReverbFactor = src.reverbPrePost == PrePostValues::Pre ? 1.f : 0.f;
+    tgt.postReverbFactor = src.reverbPrePost == PrePostValues::Post ? 1.f : 0.f;
+    tgt.preDelayFactor = src.delayPrePost == PrePostValues::Pre ? 1.f : 0.f;
+    tgt.postDelayFactor = src.delayPrePost == PrePostValues::Post ? 1.f : 0.f;
+
     for(uint8_t t = 0; t < NUM_TILES_PER_CHANNEL; t++)
     {
       translateTile(dataModel, tgt.tiles[t], src.tiles[t]);
@@ -363,9 +385,6 @@ namespace Core::Api
     auto calcB = [&](float startY, float endY, FramePos p, FramePos l)
     { return startY - calcM(startY, endY, l) * static_cast<float>(p); };
 
-    constexpr int c_silenceDB = -60;
-    constexpr int c_zeroDB = 0.f;
-
     auto &fadedOutSection = tgt.envelope[0];
     auto &fadeOutSection = tgt.envelope[1];
     auto &fadedInSection = tgt.envelope[2];
@@ -400,6 +419,11 @@ namespace Core::Api
 
     target->prelistenSample = m_dsp.getSamples(source.prelistenSample);
     target->prelistenInteractionCounter = source.prelistenInteractionCounter;
+
+    target->reverbRoomSize = source.globals.reverbRoomSize;
+    target->reverbColor = source.globals.reverbColor;
+    target->reverbPreDelay = source.globals.reverbPreDelay;
+    target->reverbChorus = source.globals.reverbChorus;
 
     target->mainPlayground1 = source.globals.playground1;
     target->mainPlayground2 = source.globals.playground2;

@@ -26,6 +26,46 @@ namespace Core
     constexpr static Type coarse = 0.5f;
   };
 
+  template <> struct ParameterDescriptor<ParameterId::GlobalReverbRoomSize>
+  {
+    constexpr static ParameterId id = ParameterId::GlobalReverbRoomSize;
+    constexpr static auto name = "reverb-room-size";
+    using Type = Float;
+    constexpr static Type min = 0.0f;
+    constexpr static Type max = 1.0f;
+    constexpr static Type coarse = 0.01f;
+  };
+
+  template <> struct ParameterDescriptor<ParameterId::GlobalReverbColor>
+  {
+    constexpr static ParameterId id = ParameterId::GlobalReverbColor;
+    constexpr static auto name = "reverb-color";
+    using Type = Float;
+    constexpr static Type min = 0.0f;
+    constexpr static Type max = 1.0f;
+    constexpr static Type coarse = 0.01f;
+  };
+
+  template <> struct ParameterDescriptor<ParameterId::GlobalReverbPreDelay>
+  {
+    constexpr static ParameterId id = ParameterId::GlobalReverbPreDelay;
+    constexpr static auto name = "reverb-pre-delay";
+    using Type = Float;
+    constexpr static Type min = 0.0f;
+    constexpr static Type max = 1.0f;
+    constexpr static Type coarse = 0.01f;
+  };
+
+  template <> struct ParameterDescriptor<ParameterId::GlobalReverbChorus>
+  {
+    constexpr static ParameterId id = ParameterId::GlobalReverbChorus;
+    constexpr static auto name = "reverb-chorus";
+    using Type = Float;
+    constexpr static Type min = 0.0f;
+    constexpr static Type max = 1.0f;
+    constexpr static Type coarse = 0.01f;
+  };
+
   template <> struct ParameterDescriptor<ParameterId::ChannelVolume>
   {
     constexpr static ParameterId id = ParameterId::ChannelVolume;
@@ -302,9 +342,11 @@ namespace Core
 
   template <template <ParameterId> typename Wrapper>
   using GlobalParameters
-      = Parameters<Wrapper, ParameterId::GlobalTempo, ParameterId::GlobalVolume, ParameterId::MainPlayground1,
-                   ParameterId::MainPlayground2, ParameterId::MainPlayground3, ParameterId::MainPlayground4,
-                   ParameterId::MainPlayground5, ParameterId::MainPlayground6, ParameterId::MainPlayground7>;
+      = Parameters<Wrapper, ParameterId::GlobalTempo, ParameterId::GlobalVolume, ParameterId::GlobalReverbRoomSize,
+                   ParameterId::GlobalReverbColor, ParameterId::GlobalReverbPreDelay, ParameterId::GlobalReverbChorus,
+                   ParameterId::MainPlayground1, ParameterId::MainPlayground2, ParameterId::MainPlayground3,
+                   ParameterId::MainPlayground4, ParameterId::MainPlayground5, ParameterId::MainPlayground6,
+                   ParameterId::MainPlayground7>;
 
   template <template <ParameterId> typename Wrapper>
   using ChannelParameters

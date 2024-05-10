@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.16.3)
 
 find_package(PkgConfig REQUIRED)
+set(CMAKE_FIND_STATIC FIRST)
 pkg_check_modules(LIBS REQUIRED IMPORTED_TARGET gtkmm-3.0)
 
 CPMAddPackage("gh:BramvdKroef/clessc#4176967fdfcb9ed571fbad659f8bec77e06a9d12")
@@ -35,6 +36,8 @@ add_library(mosaik-touchui STATIC
         sections/toolboxes/Toolbox.cpp
         sections/toolboxes/Toolbox.h
         tools/WidgetTools.cpp
+        sections/mixer/Channel.cpp
+        sections/mixer/Channel.h
 )
 
 target_compile_options(mosaik-touchui PRIVATE)

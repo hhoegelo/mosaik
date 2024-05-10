@@ -19,6 +19,8 @@ add_library(${PROJECT_NAME} STATIC
         Tile.h
         Channel.cpp
         Channel.h
+        Reverb.cpp
+        Reverb.h
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS_LIBRARIES})

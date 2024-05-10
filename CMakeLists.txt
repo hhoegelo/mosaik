@@ -38,7 +38,8 @@ add_compile_definitions(NUM_CHANNELS=6)
 add_compile_definitions(NUM_TILES_PER_CHANNEL=6)
 
 find_package(PkgConfig REQUIRED)
-find_package(Boost REQUIRED program_options)
+set(Boost_USE_STATIC_LIBS ON)
+find_package(Boost COMPONENTS program_options REQUIRED)
 
 pkg_check_modules(LIBS IMPORTED_TARGET alsa glibmm-2.4 giomm-2.4 gtkmm-3.0 gstreamermm-1.0)
 

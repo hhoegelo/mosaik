@@ -5,7 +5,7 @@ RUN apt -y install libgstreamermm-1.0-dev libgtkmm-3.0-dev libboost-all-dev cmak
 RUN apt -y install libasound2-dev
 RUN apt -y install alsa-utils dbus-x11
 RUN apt -y install adwaita-icon-theme-full gnome-icon-theme-nuovo tango-icon-theme
-RUN apt -y install gtk-update-icon-cache
+RUN apt -y install gtk-update-icon-cache git
 
 
 

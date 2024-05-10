@@ -20,6 +20,12 @@ namespace Dsp
     SharedSampleBuffer prelistenSample { std::make_shared<SampleBuffer>() };
     uint8_t prelistenInteractionCounter = 0;
 
+    // Reverb
+    float reverbRoomSize { 0 };
+    float reverbColor { 0 };
+    float reverbPreDelay { 0 };
+    float reverbChorus { 0 };
+
     // Playground
     float mainPlayground1 { 0 };
     float mainPlayground2 { 0 };
@@ -65,6 +71,12 @@ namespace Dsp
       };
 
       Tile tiles[NUM_TILES_PER_CHANNEL];
+      float volume_dB { 0 };
+      float preReverbFactor = 1.0f;
+      float postReverbFactor = 0.0f;
+      float preDelayFactor = 1.0f;
+      float postDelayFactor = 0.0f;
+      float muteFactor = 1.0f;
     };
 
     Channel channels[NUM_CHANNELS];

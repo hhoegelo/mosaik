@@ -143,6 +143,12 @@ namespace Ui
 
       case Ui::Toolbox::Mute:
         return buildMapping<Toolbox::Mute>();
+
+      case Ui::Toolbox::MixerChannel:
+        return buildMapping<Toolbox::MixerChannel>();
+
+      case Ui::Toolbox::Reverb:
+        return buildMapping<Toolbox::Reverb>();
     }
     throw std::runtime_error("unknown toolbox");
   }
@@ -179,6 +185,8 @@ namespace Ui
     if constexpr(D::action == UiAction::Toggle)
       return std::make_pair(std::get<SoftButton>(D::position),
                             [this]() { m_core.toggleSelectedTilesParameter(D::id); });
+    else if constexpr(D::action == UiAction::Invoke)
+      return bindButtonUiInvokeAction<T, D>();
     else
       UNSUPPORTED_BRANCH();
   }
@@ -579,12 +587,6 @@ namespace Ui
 
   std::string Controller::getDisplayValue(Core::Address address, Core::ParameterId id)
   {
-    if(Core::GlobalParameters<Core::NoWrap>::contains(id))
-      address = {};
-
-    if(Core::ChannelParameters<Core::NoWrap>::contains(id))
-      address.tile = {};
-
     std::string ret;
     if(!std::apply([&](auto... a) { return (fillString<decltype(a)>(ret, m_core, address, id) || ...); },
                    GlobalParameters {}))

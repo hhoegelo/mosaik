@@ -1,5 +1,6 @@
 
 .root {
+  font-size: 12px;
   @screen-width: 1200;
   @screen-height: 720;
 
@@ -34,7 +35,6 @@
     -gtkmm__CustomObject_Tile-size: @tile-width;
 
     @string-margin: 3px;
-    font-size: 10px;
 
     .waveform {
       background-color: rgb(150, 150, 150);
@@ -97,7 +97,7 @@
     .toolbox {
       .header {
         color: white;
-        font-size: x-large;
+        font-size: large;
       }
 
       .waveform {
@@ -139,6 +139,19 @@
         border: 3px solid orange;
       }
     }
+
+  }
+
+  .section.mixer {
+    .channel {
+      -gtkmm__CustomObject_Channel-size: @tile-width;
+      border: 3px solid gray;
+      margin: 1px;
+    }
+
+    .channel.selected {
+      border-color: orange;
+    }
   }
 
   .knobs {
@@ -148,7 +161,7 @@
     .knob {
       border: 1px solid gray;
       padding: 2mm;
-      font-size: 10px;
+      font-size: 8px;
     }
   }
 

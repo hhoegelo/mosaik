@@ -8,16 +8,18 @@
 
 namespace Core
 {
-  enum class PrePost
+  using PrePost = bool;
+  struct PrePostValues
   {
-    Pre,
-    Post
+    static constexpr PrePost Pre = true;
+    static constexpr PrePost Post = false;
   };
 
-  enum class OnOff
+  using OnOff = bool;
+  struct OnOffValues
   {
-    On,
-    Off
+    static constexpr OnOff On = true;
+    static constexpr OnOff Off = false;
   };
 
   enum class ParameterId
@@ -25,6 +27,11 @@ namespace Core
     // Globals
     GlobalTempo,
     GlobalVolume,
+
+    GlobalReverbRoomSize,
+    GlobalReverbColor,
+    GlobalReverbPreDelay,
+    GlobalReverbChorus,
 
     // Per Channel
     ChannelVolume,
@@ -104,34 +111,5 @@ namespace Core
 
   using FramePos = int64_t;
 
-  using ParameterValue = std::variant<Bool, Float, Path, Pattern, FramePos, uint8_t, PrePost, OnOff>;
-}
-
-namespace nlohmann
-{
-  template <> struct adl_serializer<Core::PrePost>
-  {
-    static void to_json(json &j, const Core::PrePost &v)
-    {
-      j = static_cast<int>(v);
-    }
-
-    static void from_json(const json &j, Core::PrePost &v)
-    {
-      v = static_cast<Core::PrePost>(v);
-    }
-  };
-
-  template <> struct adl_serializer<Core::OnOff>
-  {
-    static void to_json(json &j, const Core::OnOff &v)
-    {
-      j = static_cast<int>(v);
-    }
-
-    static void from_json(const json &j, Core::OnOff &v)
-    {
-      v = static_cast<Core::OnOff>(v);
-    }
-  };
+  using ParameterValue = std::variant<Bool, Float, Path, Pattern, FramePos, uint8_t>;
 }

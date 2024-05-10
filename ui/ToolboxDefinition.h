@@ -356,4 +356,42 @@ namespace Ui
         MaximizedCustomEntry<Slot6, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke,
                              SoftButton::Right_SouthEast>>;
   };
+
+  template <> struct ToolboxDefinition<Toolbox::MixerChannel>
+  {
+    constexpr static auto title = "Mixer Channel";
+    using Minimized = Entries<MinimizedParameterEntry<Core::ParameterId::ChannelOnOff>,
+                              MinimizedParameterEntry<Core::ParameterId::ChannelVolume>>;
+    using MaximizedParameters
+        = Entries<MaximizedParameterEntry<Core::ParameterId::ChannelOnOff, Color::Blue, UiEvent::ButtonPress,
+                                          UiAction::Toggle, SoftButton::Right_Center>,
+                  MaximizedParameterEntry<Core::ParameterId::ChannelVolume, Color::Blue, UiEvent::ReleasedKnobRotate,
+                                          UiAction::IncDec, Knob::Center>,
+                  MaximizedParameterEntry<Core::ParameterId::ChannelDelaySend, Color::Blue, UiEvent::ReleasedKnobRotate,
+                                          UiAction::IncDec, Knob::NorthWest>,
+                  MaximizedParameterEntry<Core::ParameterId::ChannelReverbSend, Color::Blue,
+                                          UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthEast>,
+                  MaximizedParameterEntry<Core::ParameterId::ChannelDelayPrePost, Color::Blue, UiEvent::ButtonPress,
+                                          UiAction::Toggle, SoftButton::Right_North>,
+                  MaximizedParameterEntry<Core::ParameterId::ChannelReverbPrePost, Color::Blue, UiEvent::ButtonPress,
+                                          UiAction::Toggle, SoftButton::Left_North>>;
+    using MaximizedCustom = Entries<>;
+  };
+
+  template <> struct ToolboxDefinition<Toolbox::Reverb>
+  {
+    constexpr static auto title = "Reverb";
+    using Minimized = Entries<MinimizedParameterEntry<Core::ParameterId::GlobalReverbRoomSize>,
+                              MinimizedParameterEntry<Core::ParameterId::GlobalReverbColor>>;
+    using MaximizedParameters
+        = Entries<MaximizedParameterEntry<Core::ParameterId::GlobalReverbRoomSize, Color::Blue,
+                                          UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::SouthWest>,
+                  MaximizedParameterEntry<Core::ParameterId::GlobalReverbPreDelay, Color::Blue,
+                                          UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthWest>,
+                  MaximizedParameterEntry<Core::ParameterId::GlobalReverbColor, Color::Blue,
+                                          UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::SouthEast>,
+                  MaximizedParameterEntry<Core::ParameterId::GlobalReverbChorus, Color::Blue,
+                                          UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthEast>>;
+    using MaximizedCustom = Entries<>;
+  };
 }

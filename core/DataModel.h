@@ -52,11 +52,11 @@ namespace Core
       };
 
       Reactive<ParameterId::ChannelVolume> volume { 0 };
-      Reactive<ParameterId::ChannelReverbPrePost> reverbPrePost { PrePost::Post };
+      Reactive<ParameterId::ChannelReverbPrePost> reverbPrePost { PrePostValues::Post };
       Reactive<ParameterId::ChannelReverbSend> reverbSend { 0.f };
-      Reactive<ParameterId::ChannelDelayPrePost> delayPrePost { PrePost::Post };
+      Reactive<ParameterId::ChannelDelayPrePost> delayPrePost { PrePostValues::Post };
       Reactive<ParameterId::ChannelDelaySend> delaySend { 0.f };
-      Reactive<ParameterId::ChannelOnOff> onOff { OnOff::On };
+      Reactive<ParameterId::ChannelOnOff> onOff { OnOffValues::On };
 
       std::array<Tile, NUM_TILES_PER_CHANNEL> tiles;
     };
@@ -67,6 +67,10 @@ namespace Core
     {
       Reactive<ParameterId::GlobalTempo> tempo { 120.f };
       Reactive<ParameterId::GlobalVolume> volume { 0 };
+      Reactive<ParameterId::GlobalReverbRoomSize> reverbRoomSize { 0 };
+      Reactive<ParameterId::GlobalReverbColor> reverbColor { 0 };
+      Reactive<ParameterId::GlobalReverbPreDelay> reverbPreDelay { 0 };
+      Reactive<ParameterId::GlobalReverbChorus> reverbChorus { 0 };
       Reactive<ParameterId::MainPlayground1> playground1 { 0.f };
       Reactive<ParameterId::MainPlayground2> playground2 { 0.f };
       Reactive<ParameterId::MainPlayground3> playground3 { 0.f };

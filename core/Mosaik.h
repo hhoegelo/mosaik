@@ -43,6 +43,8 @@ namespace Core::Api
     };
 
    private:
+    const Mosaik::ParamAccess &findAccess(Address address, ParameterId parameterId) const;
+
     template <typename Parameters, typename... Args> void bindParameters(Address address, Args &...target);
     template <typename Parameters, typename Targets, size_t... idx>
     void bindParameters(std::integer_sequence<size_t, idx...> int_seq, Address address, Targets targets);

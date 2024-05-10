@@ -5,7 +5,7 @@
 
 namespace Dsp
 {
-  StereoFrame Tile::doAudio(AudioKernel::Channel::Tile &kernel, ToUi &ui, FramePos currentLoopPosition)
+  StereoFrame Tile::doAudio(const AudioKernel::Channel::Tile &kernel, ToUi &ui, FramePos currentLoopPosition)
   {
     const auto &audio = *kernel.audio;
 
@@ -48,7 +48,7 @@ namespace Dsp
     return result;
   }
 
-  float Tile::doEnvelope(AudioKernel::Channel::Tile &kernel, FramePos iFramePos) const
+  float Tile::doEnvelope(const AudioKernel::Channel::Tile &kernel, FramePos iFramePos) const
   {
     if(iFramePos != c_invalidFramePosU64)
       for(auto &section : kernel.envelope)
