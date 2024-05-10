@@ -381,6 +381,8 @@ namespace Ui
     auto sel = m_core.getSelectedTile();
     auto pattern = std::get<Core::Pattern>(m_core.getParameter(sel, Core::ParameterId::Pattern));
 
+    inc = std::clamp(inc, -(NUM_STEPS - 1), (NUM_STEPS - 1));
+
     if(inc > 0)
       std::rotate(pattern.rbegin(), pattern.rbegin() + std::abs(inc), pattern.rend());
     else if(inc < 0)

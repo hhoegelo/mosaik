@@ -137,13 +137,13 @@ namespace Ui::Touch
       m -= 60 * h;
 
     if(h > 0)
-      sprintf(txt, "%2d:%02d h", h, m);
+      sprintf(txt, "%2ld:%02ld h", h, m);
     else if(m > 0)
-      sprintf(txt, "%2d:%02d m", m, s);
+      sprintf(txt, "%2ld:%02ld m", m, s);
     else if(s > 0)
-      sprintf(txt, "%2d.%03d s", s, ms);
+      sprintf(txt, "%2ld.%03ld s", s, ms);
     else
-      sprintf(txt, "%03d ms", ms);
+      sprintf(txt, "%03ld ms", ms);
     return txt;
   }
 
