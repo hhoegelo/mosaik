@@ -35,7 +35,7 @@ namespace Dsp
    public:
     Reverb();
 
-    void set(float size, float chorus, float bal, float pre, float lpf, float hpf);
+    void set(float size, float chorus, float bal, float pre, float color);
     void apply(float _rawSample_L, float _rawSample_R, float send, float feedback, float dry, float wet);
     void resetDSP();
 

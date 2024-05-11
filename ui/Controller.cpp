@@ -373,6 +373,11 @@ namespace Ui
     for(size_t i = 0; i < NUM_STEPS; i++)
       pattern[i] = w & (m << i);
 
+    if(m_wizardRotation > 0)
+      std::rotate(pattern.rbegin(), pattern.rbegin() + std::abs(m_wizardRotation) % NUM_STEPS, pattern.rend());
+    else if(m_wizardRotation < 0)
+      std::rotate(pattern.begin(), pattern.begin() + std::abs(m_wizardRotation) % NUM_STEPS, pattern.end());
+
     m_core.setParameter(sel, Core::ParameterId::Pattern, pattern);
   }
 
@@ -384,9 +389,9 @@ namespace Ui
     inc = std::clamp(inc, -(NUM_STEPS - 1), (NUM_STEPS - 1));
 
     if(inc > 0)
-      std::rotate(pattern.rbegin(), pattern.rbegin() + std::abs(inc), pattern.rend());
+      std::rotate(pattern.rbegin(), pattern.rbegin() + std::abs(inc) % NUM_STEPS, pattern.rend());
     else if(inc < 0)
-      std::rotate(pattern.begin(), pattern.begin() + std::abs(inc), pattern.end());
+      std::rotate(pattern.begin(), pattern.begin() + std::abs(inc) % NUM_STEPS, pattern.end());
 
     m_wizardRotation = m_wizardRotation + inc;
 
@@ -425,9 +430,9 @@ namespace Ui
       }
 
       if(m_wizardRotation > 0)
-        std::rotate(pattern.rbegin(), pattern.rbegin() + std::abs(m_wizardRotation), pattern.rend());
+        std::rotate(pattern.rbegin(), pattern.rbegin() + std::abs(m_wizardRotation) % NUM_STEPS, pattern.rend());
       else if(m_wizardRotation < 0)
-        std::rotate(pattern.begin(), pattern.begin() + std::abs(m_wizardRotation), pattern.end());
+        std::rotate(pattern.begin(), pattern.begin() + std::abs(m_wizardRotation) % NUM_STEPS, pattern.end());
 
       if(m_wizardInvert.get())
       {

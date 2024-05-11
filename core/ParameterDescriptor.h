@@ -14,6 +14,7 @@ namespace Core
     constexpr static Type min = 20.0f;
     constexpr static Type max = 400.0f;
     constexpr static Type coarse = 1.0f;
+    constexpr static Type defaultValue = 120;
   };
 
   template <> struct ParameterDescriptor<ParameterId::GlobalVolume>
@@ -24,6 +25,7 @@ namespace Core
     constexpr static Type min = -72.0f;
     constexpr static Type max = 0.0f;
     constexpr static Type coarse = 0.5f;
+    constexpr static Type defaultValue = 0;
   };
 
   template <> struct ParameterDescriptor<ParameterId::GlobalReverbRoomSize>
@@ -34,6 +36,7 @@ namespace Core
     constexpr static Type min = 0.0f;
     constexpr static Type max = 1.0f;
     constexpr static Type coarse = 0.01f;
+    constexpr static Type defaultValue = 0;
   };
 
   template <> struct ParameterDescriptor<ParameterId::GlobalReverbColor>
@@ -44,6 +47,7 @@ namespace Core
     constexpr static Type min = 0.0f;
     constexpr static Type max = 1.0f;
     constexpr static Type coarse = 0.01f;
+    constexpr static Type defaultValue = 0;
   };
 
   template <> struct ParameterDescriptor<ParameterId::GlobalReverbPreDelay>
@@ -54,6 +58,7 @@ namespace Core
     constexpr static Type min = 0.0f;
     constexpr static Type max = 1.0f;
     constexpr static Type coarse = 0.01f;
+    constexpr static Type defaultValue = 0;
   };
 
   template <> struct ParameterDescriptor<ParameterId::GlobalReverbChorus>
@@ -64,6 +69,26 @@ namespace Core
     constexpr static Type min = 0.0f;
     constexpr static Type max = 1.0f;
     constexpr static Type coarse = 0.01f;
+    constexpr static Type defaultValue = 0;
+  };
+
+  template <> struct ParameterDescriptor<ParameterId::GlobalReverbReturn>
+  {
+    constexpr static ParameterId id = ParameterId::GlobalReverbReturn;
+    constexpr static auto name = "reverb-return";
+    using Type = Float;
+    constexpr static Type min = -72.0f;
+    constexpr static Type max = 0.0f;
+    constexpr static Type coarse = 0.5f;
+    constexpr static Type defaultValue = 0;
+  };
+
+  template <> struct ParameterDescriptor<ParameterId::GlobalReverbOnOff>
+  {
+    constexpr static ParameterId id = ParameterId::GlobalReverbOnOff;
+    constexpr static auto name = "reverb-on-off";
+    using Type = OnOff;
+    constexpr static Type defaultValue = OnOffValues::On;
   };
 
   template <> struct ParameterDescriptor<ParameterId::ChannelVolume>
@@ -74,6 +99,7 @@ namespace Core
     constexpr static Type min = -72.0f;
     constexpr static Type max = 0.0f;
     constexpr static Type coarse = 0.5f;
+    constexpr static Type defaultValue = 0;
   };
 
   template <> struct ParameterDescriptor<ParameterId::ChannelReverbPrePost>
@@ -81,6 +107,7 @@ namespace Core
     constexpr static ParameterId id = ParameterId::ChannelReverbPrePost;
     constexpr static auto name = "reverb-pre-post";
     using Type = PrePost;
+    constexpr static Type defaultValue = PrePostValues::Post;
   };
 
   template <> struct ParameterDescriptor<ParameterId::ChannelReverbSend>
@@ -91,6 +118,7 @@ namespace Core
     constexpr static Type min = -72.0f;
     constexpr static Type max = 0.0f;
     constexpr static Type coarse = 0.5f;
+    constexpr static Type defaultValue = -72.f;
   };
 
   template <> struct ParameterDescriptor<ParameterId::ChannelDelayPrePost>
@@ -98,6 +126,7 @@ namespace Core
     constexpr static ParameterId id = ParameterId::ChannelDelayPrePost;
     constexpr static auto name = "delay-pre-post";
     using Type = PrePost;
+    constexpr static Type defaultValue = PrePostValues::Post;
   };
 
   template <> struct ParameterDescriptor<ParameterId::ChannelDelaySend>
@@ -108,6 +137,7 @@ namespace Core
     constexpr static Type min = -72.0f;
     constexpr static Type max = 0.0f;
     constexpr static Type coarse = 0.5f;
+    constexpr static Type defaultValue = -72.f;
   };
 
   template <> struct ParameterDescriptor<ParameterId::ChannelOnOff>
@@ -115,6 +145,7 @@ namespace Core
     constexpr static ParameterId id = ParameterId::ChannelOnOff;
     constexpr static auto name = "on-off";
     using Type = OnOff;
+    constexpr static Type defaultValue = OnOffValues::On;
   };
 
   template <> struct ParameterDescriptor<ParameterId::Selected>
@@ -160,7 +191,7 @@ namespace Core
     constexpr static Type min = -1.0f;
     constexpr static Type max = 1.0f;
     constexpr static Type coarse = 0.01f;
-    constexpr static auto unit = "%";
+    constexpr static Type defaultValue = 0;
   };
 
   template <> struct ParameterDescriptor<ParameterId::Gain>
@@ -171,7 +202,7 @@ namespace Core
     constexpr static Type min = -48.0f;
     constexpr static Type max = 6.0f;
     constexpr static Type coarse = 0.1f;
-    constexpr static auto unit = "dB";
+    constexpr static Type defaultValue = 0;
   };
 
   template <> struct ParameterDescriptor<ParameterId::Speed>
@@ -182,6 +213,7 @@ namespace Core
     constexpr static Type min = -6.0f;
     constexpr static Type max = 6.0f;
     constexpr static Type coarse = 0.01f;
+    constexpr static Type defaultValue = 0;
   };
 
   template <> struct ParameterDescriptor<ParameterId::EnvelopeFadeInPos>
@@ -189,6 +221,7 @@ namespace Core
     constexpr static ParameterId id = ParameterId::EnvelopeFadeInPos;
     constexpr static auto name = "envelopeFadeInPos";
     using Type = FramePos;
+    constexpr static Type defaultValue = 0;
   };
 
   template <> struct ParameterDescriptor<ParameterId::EnvelopeFadedInPos>
@@ -196,6 +229,7 @@ namespace Core
     constexpr static ParameterId id = ParameterId::EnvelopeFadedInPos;
     constexpr static auto name = "envelopeFadedInPos";
     using Type = FramePos;
+    constexpr static Type defaultValue = 0;
   };
 
   template <> struct ParameterDescriptor<ParameterId::EnvelopeFadeOutPos>
@@ -203,6 +237,7 @@ namespace Core
     constexpr static ParameterId id = ParameterId::EnvelopeFadeOutPos;
     constexpr static auto name = "envelopeFadeOutPos";
     using Type = FramePos;
+    constexpr static Type defaultValue = std::numeric_limits<FramePos>::max();
   };
 
   template <> struct ParameterDescriptor<ParameterId::EnvelopeFadedOutPos>
@@ -210,6 +245,7 @@ namespace Core
     constexpr static ParameterId id = ParameterId::EnvelopeFadedOutPos;
     constexpr static auto name = "envelopeFadedOutPos";
     using Type = FramePos;
+    constexpr static Type defaultValue = std::numeric_limits<FramePos>::max();
   };
 
   template <> struct ParameterDescriptor<ParameterId::TriggerFrame>
@@ -217,6 +253,7 @@ namespace Core
     constexpr static ParameterId id = ParameterId::TriggerFrame;
     constexpr static auto name = "triggerFrame";
     using Type = FramePos;
+    constexpr static Type defaultValue = 0;
   };
 
   template <> struct ParameterDescriptor<ParameterId::Shuffle>
@@ -227,7 +264,7 @@ namespace Core
     constexpr static Type min = -1.0f;
     constexpr static Type max = 1.0f;
     constexpr static Type coarse = 0.01f;
-    constexpr static auto unit = "%";
+    constexpr static Type defaultValue = 0;
   };
 
   template <ParameterId P> struct ParameterDescriptionPlayground
@@ -237,6 +274,7 @@ namespace Core
     constexpr static Type min = 0.0f;
     constexpr static Type max = 1.0f;
     constexpr static Type coarse = 0.01f;
+    constexpr static Type defaultValue = 0;
   };
 
   template <>
@@ -338,15 +376,20 @@ namespace Core
     {
       return ((ids == id) || ...);
     }
+
+    template <typename T> static void forEach(T cb)
+    {
+      (cb(ParameterDescriptor<ids> {}), ...);
+    }
   };
 
   template <template <ParameterId> typename Wrapper>
   using GlobalParameters
       = Parameters<Wrapper, ParameterId::GlobalTempo, ParameterId::GlobalVolume, ParameterId::GlobalReverbRoomSize,
                    ParameterId::GlobalReverbColor, ParameterId::GlobalReverbPreDelay, ParameterId::GlobalReverbChorus,
-                   ParameterId::MainPlayground1, ParameterId::MainPlayground2, ParameterId::MainPlayground3,
-                   ParameterId::MainPlayground4, ParameterId::MainPlayground5, ParameterId::MainPlayground6,
-                   ParameterId::MainPlayground7>;
+                   ParameterId::GlobalReverbReturn, ParameterId::GlobalReverbOnOff, ParameterId::MainPlayground1,
+                   ParameterId::MainPlayground2, ParameterId::MainPlayground3, ParameterId::MainPlayground4,
+                   ParameterId::MainPlayground5, ParameterId::MainPlayground6, ParameterId::MainPlayground7>;
 
   template <template <ParameterId> typename Wrapper>
   using ChannelParameters

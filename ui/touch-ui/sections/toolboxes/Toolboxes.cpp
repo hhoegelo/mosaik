@@ -18,9 +18,17 @@ namespace Ui::Touch
   };
 
   Toolboxes::Toolboxes(Touch::Interface &touch, Core::Api::Interface &core, Ui::Controller &controller)
-      : SectionWrapper(touch)
+      : Glib::ObjectBase("Toolboxes")
+      , SectionWrapper(touch)
+      , m_height(*this, "height", 50)
   {
     get_style_context()->add_class("toolboxes");
+
+    auto scroll = Gtk::manage(new Gtk::ScrolledWindow());
+    scroll->set_propagate_natural_width();
+    scroll->set_policy(Gtk::PolicyType::POLICY_NEVER, Gtk::PolicyType::POLICY_AUTOMATIC);
+
+    signal_style_updated().connect([this] { set_size_request(-1, m_height); });
 
     auto box = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL));
 
@@ -36,7 +44,8 @@ namespace Ui::Touch
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::MixerChannel>(*this, controller)));
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Reverb>(*this, controller)));
 
-    add(*box);
+    scroll->add(*box);
+    add(*scroll);
 
     set_valign(Gtk::Align::ALIGN_START);
   }

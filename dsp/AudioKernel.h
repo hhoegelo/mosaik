@@ -25,6 +25,8 @@ namespace Dsp
     float reverbColor { 0 };
     float reverbPreDelay { 0 };
     float reverbChorus { 0 };
+    float reverbReturn { 0 };
+    float reverbOnOff { 0 };
 
     // Playground
     float mainPlayground1 { 0 };
@@ -72,10 +74,10 @@ namespace Dsp
 
       Tile tiles[NUM_TILES_PER_CHANNEL];
       float volume_dB { 0 };
-      float preReverbFactor = 1.0f;
-      float postReverbFactor = 0.0f;
-      float preDelayFactor = 1.0f;
-      float postDelayFactor = 0.0f;
+      float preReverbDb = 0.0f;
+      float postReverbDb = c_silenceDB;
+      float preDelayDb = 0.0f;
+      float postDelayDb = c_silenceDB;
       float muteFactor = 1.0f;
     };
 

@@ -4,6 +4,8 @@ project(mosaik)
 
 include(cmake/CPM.cmake)
 
+set(CMAKE_CXX_STANDARD 20)
+
 add_subdirectory(dockerized)
 
 option(ENABLE_TESTING OFF)
@@ -28,8 +30,6 @@ if (ENABLE_TESTING)
     target_link_libraries(mosaik-tests PRIVATE Catch2::Catch2WithMain)
     catch_discover_tests(mosaik-tests)
 endif ()
-
-set(CMAKE_CXX_STANDARD 20)
 
 add_compile_definitions(SAMPLERATE=48000)
 add_compile_definitions(NUM_STEPS=64)

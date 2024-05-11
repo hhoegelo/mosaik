@@ -9,10 +9,26 @@
 #include <set>
 #include <chrono>
 #include <vector>
+#include <concepts>
 
 namespace Core
 {
   template <ParameterId ID> using Reactive = Tools::ReactiveVar<typename ParameterDescriptor<ID>::Type>;
+
+  template <ParameterId ID>
+  concept HasDefault = requires() { ParameterDescriptor<ID>::defaultValue; };
+
+  template <ParameterId ID> typename ParameterDescriptor<ID>::Type getDefaultValue()
+  {
+    return {};
+  }
+
+  template <ParameterId ID>
+    requires HasDefault<ID>
+  typename ParameterDescriptor<ID>::Type getDefaultValue()
+  {
+    return ParameterDescriptor<ID>::defaultValue;
+  }
 
   struct DataModel
   {
@@ -25,38 +41,49 @@ namespace Core
     {
       struct Tile
       {
-        Reactive<ParameterId::SampleFile> sample { "" };
-        Reactive<ParameterId::Pattern> pattern { {} };
-        Reactive<ParameterId::Gain> gain { 0.f };
-        Reactive<ParameterId::Balance> balance { 0.f };
-        Reactive<ParameterId::Shuffle> shuffle { 0.f };
-        Reactive<ParameterId::Mute> muted { false };
-        Reactive<ParameterId::Reverse> reverse { false };
-        Reactive<ParameterId::Selected> selected { false };
+        Reactive<ParameterId::SampleFile> sample { getDefaultValue<ParameterId::SampleFile>() };
+        Reactive<ParameterId::Pattern> pattern { getDefaultValue<ParameterId::Pattern>() };
+        Reactive<ParameterId::Gain> gain { getDefaultValue<ParameterId::Gain>() };
+        Reactive<ParameterId::Balance> balance { getDefaultValue<ParameterId::Balance>() };
+        Reactive<ParameterId::Shuffle> shuffle { getDefaultValue<ParameterId::Shuffle>() };
+        Reactive<ParameterId::Mute> muted { getDefaultValue<ParameterId::Mute>() };
+        Reactive<ParameterId::Reverse> reverse { getDefaultValue<ParameterId::Reverse>() };
+        Reactive<ParameterId::Selected> selected { getDefaultValue<ParameterId::Selected>() };
 
-        Reactive<ParameterId::EnvelopeFadeInPos> envelopeFadeInPos { 0 };
-        Reactive<ParameterId::EnvelopeFadedInPos> envelopeFadedInPos { 0 };
-        Reactive<ParameterId::EnvelopeFadeOutPos> envelopeFadeOutPos { std::numeric_limits<FramePos>::max() };
-        Reactive<ParameterId::EnvelopeFadedOutPos> envelopeFadedOutPos { std::numeric_limits<FramePos>::max() };
-        Reactive<ParameterId::TriggerFrame> triggerFrame { 0 };
+        Reactive<ParameterId::EnvelopeFadeInPos> envelopeFadeInPos {
+          getDefaultValue<ParameterId::EnvelopeFadeInPos>()
+        };
+        Reactive<ParameterId::EnvelopeFadedInPos> envelopeFadedInPos {
+          getDefaultValue<ParameterId::EnvelopeFadedInPos>()
+        };
+        Reactive<ParameterId::EnvelopeFadeOutPos> envelopeFadeOutPos {
+          getDefaultValue<ParameterId::EnvelopeFadeOutPos>()
+        };
+        Reactive<ParameterId::EnvelopeFadedOutPos> envelopeFadedOutPos {
+          getDefaultValue<ParameterId::EnvelopeFadedOutPos>()
+        };
+        Reactive<ParameterId::TriggerFrame> triggerFrame { getDefaultValue<ParameterId::TriggerFrame>() };
 
-        Reactive<ParameterId::Speed> speed { 0 };
+        Reactive<ParameterId::Speed> speed { getDefaultValue<ParameterId::Speed>() };
 
-        Reactive<ParameterId::Playground1> playground1 { 0.f };
-        Reactive<ParameterId::Playground2> playground2 { 0.f };
-        Reactive<ParameterId::Playground3> playground3 { 0.f };
-        Reactive<ParameterId::Playground4> playground4 { 0.f };
-        Reactive<ParameterId::Playground5> playground5 { 0.f };
-        Reactive<ParameterId::Playground6> playground6 { 0.f };
-        Reactive<ParameterId::Playground7> playground7 { 0.f };
+        Reactive<ParameterId::Playground1> playground1 { getDefaultValue<ParameterId::Playground1>() };
+        Reactive<ParameterId::Playground2> playground2 { getDefaultValue<ParameterId::Playground2>() };
+        Reactive<ParameterId::Playground3> playground3 { getDefaultValue<ParameterId::Playground3>() };
+        Reactive<ParameterId::Playground4> playground4 { getDefaultValue<ParameterId::Playground4>() };
+        Reactive<ParameterId::Playground5> playground5 { getDefaultValue<ParameterId::Playground5>() };
+        Reactive<ParameterId::Playground6> playground6 { getDefaultValue<ParameterId::Playground6>() };
+        Reactive<ParameterId::Playground7> playground7 { getDefaultValue<ParameterId::Playground7>() };
       };
 
-      Reactive<ParameterId::ChannelVolume> volume { 0 };
-      Reactive<ParameterId::ChannelReverbPrePost> reverbPrePost { PrePostValues::Post };
-      Reactive<ParameterId::ChannelReverbSend> reverbSend { 0.f };
-      Reactive<ParameterId::ChannelDelayPrePost> delayPrePost { PrePostValues::Post };
-      Reactive<ParameterId::ChannelDelaySend> delaySend { 0.f };
-      Reactive<ParameterId::ChannelOnOff> onOff { OnOffValues::On };
+      Reactive<ParameterId::ChannelVolume> volume { getDefaultValue<ParameterId::ChannelVolume>() };
+      Reactive<ParameterId::ChannelDelayPrePost> delayPrePost { getDefaultValue<ParameterId::ChannelDelayPrePost>() };
+      Reactive<ParameterId::ChannelDelaySend> delaySend { getDefaultValue<ParameterId::ChannelDelaySend>() };
+      Reactive<ParameterId::ChannelReverbPrePost> reverbPrePost {
+        getDefaultValue<ParameterId::ChannelReverbPrePost>()
+      };
+      Reactive<ParameterId::ChannelReverbSend> reverbSend { getDefaultValue<ParameterId::ChannelReverbSend>() };
+
+      Reactive<ParameterId::ChannelOnOff> onOff { getDefaultValue<ParameterId::ChannelOnOff>() };
 
       std::array<Tile, NUM_TILES_PER_CHANNEL> tiles;
     };
@@ -65,19 +92,25 @@ namespace Core
 
     struct Globals
     {
-      Reactive<ParameterId::GlobalTempo> tempo { 120.f };
-      Reactive<ParameterId::GlobalVolume> volume { 0 };
-      Reactive<ParameterId::GlobalReverbRoomSize> reverbRoomSize { 0 };
-      Reactive<ParameterId::GlobalReverbColor> reverbColor { 0 };
-      Reactive<ParameterId::GlobalReverbPreDelay> reverbPreDelay { 0 };
-      Reactive<ParameterId::GlobalReverbChorus> reverbChorus { 0 };
-      Reactive<ParameterId::MainPlayground1> playground1 { 0.f };
-      Reactive<ParameterId::MainPlayground2> playground2 { 0.f };
-      Reactive<ParameterId::MainPlayground3> playground3 { 0.f };
-      Reactive<ParameterId::MainPlayground4> playground4 { 0.f };
-      Reactive<ParameterId::MainPlayground5> playground5 { 0.f };
-      Reactive<ParameterId::MainPlayground6> playground6 { 0.f };
-      Reactive<ParameterId::MainPlayground7> playground7 { 0.f };
+      Reactive<ParameterId::GlobalTempo> tempo { getDefaultValue<ParameterId::GlobalTempo>() };
+      Reactive<ParameterId::GlobalVolume> volume { getDefaultValue<ParameterId::GlobalVolume>() };
+      Reactive<ParameterId::GlobalReverbRoomSize> reverbRoomSize {
+        getDefaultValue<ParameterId::GlobalReverbRoomSize>()
+      };
+      Reactive<ParameterId::GlobalReverbColor> reverbColor { getDefaultValue<ParameterId::GlobalReverbColor>() };
+      Reactive<ParameterId::GlobalReverbPreDelay> reverbPreDelay {
+        getDefaultValue<ParameterId::GlobalReverbPreDelay>()
+      };
+      Reactive<ParameterId::GlobalReverbChorus> reverbChorus { getDefaultValue<ParameterId::GlobalReverbChorus>() };
+      Reactive<ParameterId::GlobalReverbReturn> reverbReturn { getDefaultValue<ParameterId::GlobalReverbReturn>() };
+      Reactive<ParameterId::GlobalReverbOnOff> reverbOnOff { getDefaultValue<ParameterId::GlobalReverbOnOff>() };
+      Reactive<ParameterId::MainPlayground1> playground1 { getDefaultValue<ParameterId::MainPlayground1>() };
+      Reactive<ParameterId::MainPlayground2> playground2 { getDefaultValue<ParameterId::MainPlayground2>() };
+      Reactive<ParameterId::MainPlayground3> playground3 { getDefaultValue<ParameterId::MainPlayground3>() };
+      Reactive<ParameterId::MainPlayground4> playground4 { getDefaultValue<ParameterId::MainPlayground4>() };
+      Reactive<ParameterId::MainPlayground5> playground5 { getDefaultValue<ParameterId::MainPlayground5>() };
+      Reactive<ParameterId::MainPlayground6> playground6 { getDefaultValue<ParameterId::MainPlayground6>() };
+      Reactive<ParameterId::MainPlayground7> playground7 { getDefaultValue<ParameterId::MainPlayground7>() };
     };
 
     Globals globals;

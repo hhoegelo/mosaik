@@ -2,6 +2,7 @@
 
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/box.h>
+#include <gtkmm/styleproperty.h>
 #include "ui/touch-ui/sections/SectionWrapper.h"
 #include "ui/Types.h"
 #include "ui/touch-ui/Interface.h"
@@ -36,5 +37,6 @@ namespace Ui::Touch
 
    private:
     Tools::ReactiveVar<::Ui::Toolbox> m_selectedToolbox;
+    Gtk::StyleProperty<int> m_height;
   };
 }

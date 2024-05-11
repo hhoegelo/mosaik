@@ -2,6 +2,7 @@
 #include "Interface.h"
 #include "ui/midi-ui/Interface.h"
 #include <core/ParameterDescriptor.h>
+#include <core/DataModel.h>
 
 #define JSON_ASSERT(x)
 #include <tools/json.h>
@@ -10,6 +11,31 @@
 
 namespace Core::Api
 {
+  void Interface::init()
+  {
+    auto i = [this](Address a, auto desc)
+    {
+      using P = decltype(desc);
+      loadParameter(a, desc.id, static_cast<typename P::Type>(getDefaultValue<P::id>()));
+    };
+
+    GlobalParameters<NoWrap>::forEach([this, &i](auto desc) { i({}, desc); });
+    ChannelParameters<NoWrap>::forEach(
+        [this, &i](auto desc)
+        {
+          for(auto c = 0; c < NUM_CHANNELS; c++)
+            i({ c, {} }, desc);
+        });
+
+    TileParameters<NoWrap>::forEach(
+        [this, &i](auto desc)
+        {
+          for(auto c = 0; c < NUM_CHANNELS; c++)
+            for(auto t = 0; t < NUM_TILES_PER_CHANNEL; t++)
+              i({ c, t }, desc);
+        });
+  }
+
   void Interface::load(const Path &path)
   {
     if(exists(path))
@@ -108,7 +134,4 @@ namespace Core::Api
     return { 0, 0 };
   }
 
-  void Interface::addTap()
-  {
-  }
 }

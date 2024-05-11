@@ -14,10 +14,14 @@ void Dsp::Channel::doAudio(Busses &busses, const Dsp::AudioKernel::Channel &kern
 
   auto post = pre * m_volume;
 
-  m_preReverbFactor += std::clamp(kernel.preReverbFactor - m_preReverbFactor, -c_maxVolStep, c_maxVolStep);
-  m_preDelayFactor += std::clamp(kernel.preDelayFactor - m_preDelayFactor, -c_maxVolStep, c_maxVolStep);
-  m_postReverbFactor += std::clamp(kernel.postReverbFactor - m_postReverbFactor, -c_maxVolStep, c_maxVolStep);
-  m_postDelayFactor += std::clamp(kernel.postDelayFactor - m_postDelayFactor, -c_maxVolStep, c_maxVolStep);
+  m_preReverbFactor += std::clamp(::Tools::dBToFactor<c_silenceDB, c_maxDB>(kernel.preReverbDb) - m_preReverbFactor,
+                                  -c_maxVolStep, c_maxVolStep);
+  m_preDelayFactor += std::clamp(::Tools::dBToFactor<c_silenceDB, c_maxDB>(kernel.preDelayDb) - m_preDelayFactor,
+                                 -c_maxVolStep, c_maxVolStep);
+  m_postReverbFactor += std::clamp(::Tools::dBToFactor<c_silenceDB, c_maxDB>(kernel.postReverbDb) - m_postReverbFactor,
+                                   -c_maxVolStep, c_maxVolStep);
+  m_postDelayFactor += std::clamp(::Tools::dBToFactor<c_silenceDB, c_maxDB>(kernel.postDelayDb) - m_postDelayFactor,
+                                  -c_maxVolStep, c_maxVolStep);
   m_muteFactor += std::clamp(kernel.muteFactor - m_muteFactor, -c_maxVolStep, c_maxVolStep);
 
   busses.reverb += pre * m_preReverbFactor + post * m_postReverbFactor;

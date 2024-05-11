@@ -220,12 +220,14 @@ namespace Core::Api
       : m_model(model)
       , m_dsp(dsp)
       , m_kernelUpdate(std::move(ctx), 0)
+      , m_sanitizeSamplePositions(Glib::MainContext::get_default(), 1)
   {
     bindParameters<GlobalParameterDescriptors>(
         {}, m_model.globals.tempo, m_model.globals.volume, m_model.globals.reverbRoomSize, m_model.globals.reverbColor,
-        m_model.globals.reverbPreDelay, m_model.globals.reverbChorus, m_model.globals.playground1,
-        m_model.globals.playground2, m_model.globals.playground3, m_model.globals.playground4,
-        m_model.globals.playground5, m_model.globals.playground6, m_model.globals.playground7);
+        m_model.globals.reverbPreDelay, m_model.globals.reverbChorus, m_model.globals.reverbReturn,
+        m_model.globals.reverbOnOff, m_model.globals.playground1, m_model.globals.playground2,
+        m_model.globals.playground3, m_model.globals.playground4, m_model.globals.playground5,
+        m_model.globals.playground6, m_model.globals.playground7);
 
     for(auto c = 0; c < NUM_CHANNELS; c++)
     {
@@ -315,10 +317,10 @@ namespace Core::Api
   {
     tgt.volume_dB = src.volume;
     tgt.muteFactor = src.onOff == OnOffValues::On ? 1.0f : 0.0f;
-    tgt.preReverbFactor = src.reverbPrePost == PrePostValues::Pre ? 1.f : 0.f;
-    tgt.postReverbFactor = src.reverbPrePost == PrePostValues::Post ? 1.f : 0.f;
-    tgt.preDelayFactor = src.delayPrePost == PrePostValues::Pre ? 1.f : 0.f;
-    tgt.postDelayFactor = src.delayPrePost == PrePostValues::Post ? 1.f : 0.f;
+    tgt.preReverbDb = src.reverbPrePost == PrePostValues::Pre ? src.reverbSend.get() : c_silenceDB;
+    tgt.postReverbDb = src.reverbPrePost == PrePostValues::Post ? src.reverbSend.get() : c_silenceDB;
+    tgt.preDelayDb = src.delayPrePost == PrePostValues::Pre ? src.reverbSend.get() : c_silenceDB;
+    tgt.postDelayDb = src.delayPrePost == PrePostValues::Post ? src.reverbSend.get() : c_silenceDB;
 
     for(uint8_t t = 0; t < NUM_TILES_PER_CHANNEL; t++)
     {
@@ -424,6 +426,8 @@ namespace Core::Api
     target->reverbColor = source.globals.reverbColor;
     target->reverbPreDelay = source.globals.reverbPreDelay;
     target->reverbChorus = source.globals.reverbChorus;
+    target->reverbReturn = source.globals.reverbReturn;
+    target->reverbOnOff = source.globals.reverbOnOff == OnOffValues::On ? 1.0f : 0.0f;
 
     target->mainPlayground1 = source.globals.playground1;
     target->mainPlayground2 = source.globals.playground2;

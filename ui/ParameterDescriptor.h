@@ -24,7 +24,6 @@ namespace Ui
     }
 
     constexpr static auto title = "Tempo";
-    constexpr static Type defaultValue = 120;
     constexpr static float acceleration = 5.f;
   };
 
@@ -38,7 +37,6 @@ namespace Ui
     }
 
     constexpr static auto title = "Volume";
-    constexpr static Type defaultValue = 0;
     constexpr static float acceleration = 5.f;
   };
 
@@ -83,7 +81,6 @@ namespace Ui
     }
 
     constexpr static auto title = "Balance";
-    constexpr static Type defaultValue = 0;
     constexpr static float acceleration = 5.f;
   };
 
@@ -95,7 +92,6 @@ namespace Ui
     }
 
     constexpr static auto title = "Gain";
-    constexpr static Type defaultValue = 0;
     constexpr static float acceleration = 5.f;
   };
 
@@ -110,7 +106,6 @@ namespace Ui
     }
 
     constexpr static auto title = "Speed";
-    constexpr static Type defaultValue = 0;
     constexpr static float acceleration = 10.f;
   };
 
@@ -173,11 +168,10 @@ namespace Ui
   {
     static std::string format(Type t)
     {
-      return Tools::format("%3.2f %s", 100 * t, unit);
+      return Tools::format("%3.2f %%", 100 * t);
     }
 
     constexpr static auto title = "Shuffle";
-    constexpr static Type defaultValue = 0;
     constexpr static float acceleration = 5.f;
   };
 
@@ -187,7 +181,7 @@ namespace Ui
     {
       return Tools::format("%3.1f %%", std::round(100 * t));
     }
-    constexpr static Core::ParameterDescriptor<P>::Type defaultValue = 120;
+
     constexpr static float acceleration = 10.f;
   };
 
@@ -300,7 +294,6 @@ namespace Ui
     }
 
     constexpr static auto title = "Volume";
-    constexpr static Type defaultValue = 0;
     constexpr static float acceleration = 5.f;
   };
 
@@ -338,7 +331,6 @@ namespace Ui
     }
 
     constexpr static auto title = "Delay Send";
-    constexpr static Type defaultValue = 0;
     constexpr static float acceleration = 5.f;
   };
 
@@ -352,7 +344,6 @@ namespace Ui
     }
 
     constexpr static auto title = "Reverb Send";
-    constexpr static Type defaultValue = 0;
     constexpr static float acceleration = 5.f;
   };
 
@@ -366,7 +357,6 @@ namespace Ui
     }
 
     constexpr static auto title = "Room Size";
-    constexpr static Type defaultValue = 0;
     constexpr static float acceleration = 5.f;
   };
 
@@ -380,7 +370,6 @@ namespace Ui
     }
 
     constexpr static auto title = "Color";
-    constexpr static Type defaultValue = 0;
     constexpr static float acceleration = 5.f;
   };
 
@@ -394,7 +383,6 @@ namespace Ui
     }
 
     constexpr static auto title = "Pre Delay";
-    constexpr static Type defaultValue = 0;
     constexpr static float acceleration = 5.f;
   };
 
@@ -408,7 +396,31 @@ namespace Ui
     }
 
     constexpr static auto title = "Chorus";
-    constexpr static Type defaultValue = 0;
     constexpr static float acceleration = 5.f;
+  };
+
+  template <>
+  struct ParameterDescriptor<Core::ParameterId::GlobalReverbReturn>
+      : Core::ParameterDescriptor<Core::ParameterId::GlobalReverbReturn>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%3.2f db", t);
+    }
+
+    constexpr static auto title = "Return";
+    constexpr static float acceleration = 5.f;
+  };
+
+  template <>
+  struct ParameterDescriptor<Core::ParameterId::GlobalReverbOnOff>
+      : Core::ParameterDescriptor<Core::ParameterId::GlobalReverbOnOff>
+  {
+    static std::string format(Type t)
+    {
+      return t == Core::OnOffValues::On ? "On" : "Off";
+    }
+
+    constexpr static auto title = "On/Off";
   };
 }

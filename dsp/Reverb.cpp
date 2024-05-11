@@ -1,6 +1,8 @@
 #include "Reverb.h"
 #include <cmath>
 #include <algorithm>
+#include <stdlib.h>
+#include <cstdio>
 
 namespace Dsp
 {
@@ -9,6 +11,42 @@ namespace Dsp
   constexpr auto REV_G_2 = 0.630809f;
   constexpr auto REV_G_3 = 0.64093f;
   constexpr auto REV_G_4 = 0.653011f;
+
+  struct Curve
+  {
+    float m_Factor1, m_Factor2;
+    float m_Startpoint, m_Breakpoint, m_Endpoint;
+    float m_Split = 1.f / 2.f;
+
+    Curve(float _startpoint, float _breakpoint, float _endpoint)
+    {
+      m_Factor1 = (_breakpoint - _startpoint) / (m_Split - 0.f);
+      m_Factor2 = (_endpoint - _breakpoint) / (1.f - m_Split);
+
+      m_Startpoint = _startpoint;
+      m_Breakpoint = _breakpoint;
+      m_Endpoint = _endpoint;
+    }
+
+    float applyCurve(float _in)
+    {
+      float out;
+
+      if(_in <= m_Split)
+      {
+        out = (_in * m_Factor1) + m_Startpoint;
+      }
+      else
+      {
+        out = ((_in - m_Split) * m_Factor2) + m_Breakpoint;
+      }
+
+      return out;
+    }
+  };
+
+  Curve c_reverb_color_curve_1(66.0f, 137.0f, 130.0f);
+  Curve c_reverb_color_curve_2(29.0f, 29.0f, 85.0f);
 
   inline float interpolRT(float fract, float sample_tm1, float sample_t0, float sample_tp1, float sample_tp2)
   {
@@ -140,8 +178,17 @@ namespace Dsp
     // todo: pack settings like this into c15_config.h (for example)
   }
 
-  void Reverb::set(float size, float chorus, float bal, float pre, float lpf, float hpf)
+  static float pitchToFrequency(float pitch)
   {
+    return 440.f * powf(2, (pitch - 69.f) / 12.f);
+  }
+
+  void Reverb::set(float size, float chorus, float bal, float pre, float color)
+  {
+
+    auto lpf = std::clamp(pitchToFrequency(c_reverb_color_curve_1.applyCurve(color)), 0.f, SAMPLERATE / 2.f);
+    auto hpf = std::clamp(pitchToFrequency(c_reverb_color_curve_2.applyCurve(color)), 0.f, SAMPLERATE / 2.f);
+
     float tmpVar;
     float tmp_target;
     tmpVar = size;

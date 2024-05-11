@@ -372,9 +372,9 @@ namespace Ui
                   MaximizedParameterEntry<Core::ParameterId::ChannelReverbSend, Color::Blue,
                                           UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthEast>,
                   MaximizedParameterEntry<Core::ParameterId::ChannelDelayPrePost, Color::Blue, UiEvent::ButtonPress,
-                                          UiAction::Toggle, SoftButton::Right_North>,
+                                          UiAction::Toggle, SoftButton::Left_North>,
                   MaximizedParameterEntry<Core::ParameterId::ChannelReverbPrePost, Color::Blue, UiEvent::ButtonPress,
-                                          UiAction::Toggle, SoftButton::Left_North>>;
+                                          UiAction::Toggle, SoftButton::Right_North>>;
     using MaximizedCustom = Entries<>;
   };
 
@@ -391,7 +391,11 @@ namespace Ui
                   MaximizedParameterEntry<Core::ParameterId::GlobalReverbColor, Color::Blue,
                                           UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::SouthEast>,
                   MaximizedParameterEntry<Core::ParameterId::GlobalReverbChorus, Color::Blue,
-                                          UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthEast>>;
+                                          UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthEast>,
+                  MaximizedParameterEntry<Core::ParameterId::GlobalReverbReturn, Color::Blue,
+                                          UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::Center>,
+                  MaximizedParameterEntry<Core::ParameterId::GlobalReverbOnOff, Color::Blue, UiEvent::ButtonPress,
+                                          UiAction::Toggle, SoftButton::Right_Center>>;
     using MaximizedCustom = Entries<>;
   };
 }

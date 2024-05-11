@@ -12,6 +12,8 @@ namespace Core::Api
    public:
     virtual ~Interface() = default;
 
+    virtual void init();
+
     virtual void load(const Path &path);
     virtual void save(const Path &path);
 

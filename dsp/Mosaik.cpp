@@ -56,6 +56,22 @@ namespace Dsp
     if(m_prelistenSamplePosition < kernel->prelistenSample->size())
       busses.pre = busses.pre + kernel->prelistenSample->at(m_prelistenSamplePosition++);
 
+    auto reverbSize = kernel->reverbRoomSize * (2 - kernel->reverbRoomSize);
+
+    m_reverb.set(reverbSize, kernel->reverbChorus, 0, (200.f * SAMPLERATE / 1000.f) * kernel->reverbPreDelay,
+                 kernel->reverbColor);
+
+    m_reverb.apply(busses.reverb.left, busses.reverb.right, 1.0, 0.5f, 0.0f, 1.0f);
+
+    auto revL = m_reverb.m_out_L;
+    auto revR = m_reverb.m_out_R;
+
+    m_reverbReturnFactor
+        += std::clamp(::Tools::dBToFactor<c_silenceDB, c_maxDB>(kernel->reverbReturn) - m_reverbReturnFactor,
+                      -c_maxVolStep, c_maxVolStep);
+
+    busses.main.left += revL * m_reverbReturnFactor * kernel->reverbOnOff;
+    busses.main.right += revR * m_reverbReturnFactor * kernel->reverbOnOff;
     return { busses.main * m_volume, busses.pre };
     /*
     return doMainPlayground(frame, kernel->mainPlayground1, kernel->mainPlayground2, kernel->mainPlayground3,

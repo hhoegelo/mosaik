@@ -86,6 +86,18 @@ namespace Ui::Touch
     add(*fixedBox);
     loadCss();
     show_all();
+
+    add_events(Gdk::KEY_PRESS_MASK);
+    signal_key_press_event().connect(
+        [&](GdkEventKey* e)
+        {
+          if(e->keyval == GDK_KEY_Escape)
+            get_application()->quit();
+          if(e->keyval == GDK_KEY_i)
+            core.init();
+
+          return false;
+        });
   }
 
   Window::~Window() = default;

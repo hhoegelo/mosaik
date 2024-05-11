@@ -66,6 +66,6 @@ namespace Core::Api
     Dsp::Api::Control::Interface &m_dsp;
     std::vector<Path> getAllSamples(DataModel &model) const;
 
-    Tools::ImmediateComputations m_sanitizeSamplePositions;
+    Tools::DeferredComputations m_sanitizeSamplePositions;
   };
 }

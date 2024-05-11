@@ -32,6 +32,8 @@ namespace Core
     GlobalReverbColor,
     GlobalReverbPreDelay,
     GlobalReverbChorus,
+    GlobalReverbReturn,
+    GlobalReverbOnOff,
 
     // Per Channel
     ChannelVolume,
