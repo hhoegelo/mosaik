@@ -10,6 +10,8 @@ namespace Dsp
    public:
     struct ToUi
     {
+      float levelLeft { 0.0f };
+      float levelRight { 0.0f };
       std::array<Tile::ToUi, NUM_TILES_PER_CHANNEL> tiles;
     };
 

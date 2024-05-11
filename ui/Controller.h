@@ -52,7 +52,10 @@ namespace Ui
     }
 
    private:
-    void setLed(Led led, Color color);
+    void setLed(Step step, Color color);
+    void setLed(SoftButton button, Color color);
+    void setLed(Knob knob, Color color);
+
     void showPattern();
 
     struct Mapping
@@ -89,7 +92,9 @@ namespace Ui
     Mapping m_inputMapping;
 
     Tools::ReactiveVar<Step> m_currentStep { 0 };
-    std::array<Color, static_cast<size_t>(Led::NUM_LEDS)> m_ledLatch {};
+    std::array<Color, static_cast<size_t>(NUM_STEPS)> m_stepsLedLatch {};
+    std::array<Color, static_cast<size_t>(SoftButton::MAX_BUTTON_ID)> m_softButtonLedLatch {};
+    std::array<Color, static_cast<size_t>(Knob::NUM_KNOBS)> m_knobsLedLatch {};
 
     std::array<bool, static_cast<size_t>(SoftButton::MAX_BUTTON_ID)> m_buttonState {};
     std::array<bool, static_cast<size_t>(Knob::NUM_KNOBS)> m_turnWhilePressed {};

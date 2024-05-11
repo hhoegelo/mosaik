@@ -13,6 +13,42 @@
   min-width: @screen-width * 1px;
   min-height: @screen-height * 1px;
 
+  @color-red: red;
+  @color-blue: blue;
+  @color-green: green;
+  @color-white: white;
+  @color-purple: purple;
+  @color-off: gray;
+
+  .knobs, .buttons {
+    color: white;
+
+    .red {
+      background-color: @color-red;
+    }
+
+    .blue {
+      background-color: @color-blue;
+    }
+
+    .green {
+      background-color: @color-green;
+    }
+
+    .white {
+      background-color: @color-white;
+      color: black;
+    }
+
+    .purple {
+      background-color: @color-purple;
+    }
+
+    .off {
+      background-color: @color-off;
+    }
+  }
+
   .tiles.mute-toolbox .tile.muted {
     background: red;
 
@@ -25,6 +61,18 @@
     .waveform {
       color: gray;
     }
+  }
+
+  .level-meter {
+    background-color: rgb(150, 150, 150);
+    color: red;
+    border: none;
+    outline-width: 0;
+    outline-offset: 0;
+  }
+
+  .level-meter.gain {
+    color: white;
   }
 
   .tile {
@@ -70,18 +118,6 @@
 
     .step.selected {
       background-color: white;
-    }
-
-    .level-meter {
-      background-color: rgb(150, 150, 150);
-      color: red;
-      border: none;
-      outline-width: 0;
-      outline-offset: 0;
-    }
-
-    .level-meter.gain {
-      color: white;
     }
   }
 
@@ -147,6 +183,8 @@
       -gtkmm__CustomObject_Channel-size: @tile-width;
       border: 3px solid gray;
       margin: 1px;
+      padding-top: 5px;
+      padding-bottom: 5px;
     }
 
     .channel.selected {

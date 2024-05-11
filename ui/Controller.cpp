@@ -19,11 +19,6 @@ using namespace std::chrono_literals;
 
 namespace Ui
 {
-  static Led stepToLed(Step s)
-  {
-    return static_cast<Led>(s);
-  }
-
   Controller::Controller(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp)
       : m_core(core)
   {
@@ -54,7 +49,14 @@ namespace Ui
 
   void Controller::addUi(Midi::Interface &midiUI)
   {
+    m_stepsLedLatch.fill(Color::Off);
+    m_knobsLedLatch.fill(Color::Off);
+    m_softButtonLedLatch.fill(Color::Off);
+
     m_midiUi.push_back(&midiUI);
+
+    if(auto p = m_touchUi.get())
+      m_inputMapping = createMapping(p->getToolboxes().getSelectedToolbox());
   }
 
   void Controller::showPattern()
@@ -66,7 +68,7 @@ namespace Ui
     {
       auto isCurrentStep = m_currentStep == i;
       auto isProgrammed = pattern[i];
-      setLed(stepToLed(i), isCurrentStep ? Color::White : isProgrammed ? Color::Green : Color::Off);
+      setLed(i, isCurrentStep ? Color::White : isProgrammed ? Color::Green : Color::Off);
     }
   }
 
@@ -229,6 +231,12 @@ namespace Ui
   {
     Controller::Mapping mapping;
 
+    for(auto a = static_cast<int>(Knob::FirstKnob); a <= static_cast<int>(Knob::LastKnob); a++)
+      setLed(static_cast<Knob>(a), Color::None);
+
+    for(auto a = static_cast<int>(SoftButton::FirstButton); a <= static_cast<int>(SoftButton::LastButton); a++)
+      setLed(static_cast<SoftButton>(a), Color::None);
+
     ToolboxDefinition<T>::MaximizedParameters::forEach(
         [&](auto a)
         {
@@ -236,6 +244,7 @@ namespace Ui
           if constexpr(D::event == UiEvent::ReleasedKnobRotate)
           {
             mapping.knobIncDecReleased.insert(bindKnobUiParameterAction<T, D>());
+            setLed(std::get<Knob>(D::position), D::color);
 
             using P = ParameterDescriptor<D::id>;
 
@@ -250,13 +259,25 @@ namespace Ui
             }
           }
           else if constexpr(D::event == UiEvent::PressedKnobRotate)
+          {
             mapping.knobIncDecPressed.insert(bindKnobUiParameterAction<T, D>());
+            setLed(std::get<Knob>(D::position), D::color);
+          }
           else if constexpr(D::event == UiEvent::ButtonPress)
+          {
             mapping.buttonPressed.insert(bindButtonUiParameterAction<T, D>());
+            setLed(std::get<SoftButton>(D::position), D::color);
+          }
           else if constexpr(D::event == UiEvent::ButtonRelease)
+          {
             mapping.buttonReleased.insert(bindButtonUiParameterAction<T, D>());
+            setLed(std::get<SoftButton>(D::position), D::color);
+          }
           else if constexpr(D::event == UiEvent::KnobClick)
+          {
             mapping.knobClick.insert(bindKnobUiClickAction<T, D>());
+            setLed(std::get<Knob>(D::position), D::color);
+          }
           else
             throw std::runtime_error("Unsupported ui binding");
         });
@@ -267,13 +288,25 @@ namespace Ui
           using D = decltype(a);
 
           if constexpr(D::event == UiEvent::ButtonPress)
+          {
             mapping.buttonPressed.insert(bindButtonUiInvokeAction<T, D>());
+            setLed(std::get<SoftButton>(D::position), D::color);
+          }
           else if constexpr(D::event == UiEvent::ButtonRelease)
+          {
             mapping.buttonReleased.insert(bindButtonUiInvokeAction<T, D>());
+            setLed(std::get<SoftButton>(D::position), D::color);
+          }
           else if constexpr(D::event == UiEvent::ReleasedKnobRotate)
+          {
             mapping.knobIncDecReleased.insert(bindKnobUiInvokeAction<T, D>());
+            setLed(std::get<Knob>(D::position), D::color);
+          }
           else if constexpr(D::event == UiEvent::PressedKnobRotate)
+          {
             mapping.knobIncDecPressed.insert(bindKnobUiInvokeAction<T, D>());
+            setLed(std::get<Knob>(D::position), D::color);
+          }
           else
             UNSUPPORTED_BRANCH();
         });
@@ -557,14 +590,36 @@ namespace Ui
     }
   }
 
-  void Controller::setLed(Led led, Color color)
+  void Controller::setLed(Knob knob, Color color)
   {
-    auto idx = static_cast<size_t>(led);
+    auto idx = static_cast<size_t>(knob);
 
-    if(std::exchange(m_ledLatch[idx], color) != color)
+    if(std::exchange(m_knobsLedLatch[idx], color) != color)
     {
       for(auto a : m_midiUi)
-        a->setLed(led, color);
+        a->setLed(knob, color);
+    }
+  }
+
+  void Controller::setLed(SoftButton s, Color color)
+  {
+    auto idx = static_cast<size_t>(s);
+
+    if(std::exchange(m_softButtonLedLatch[idx], color) != color)
+    {
+      for(auto a : m_midiUi)
+        a->setLed(s, color);
+    }
+  }
+
+  void Controller::setLed(Step s, Color color)
+  {
+    auto idx = static_cast<size_t>(s);
+
+    if(std::exchange(m_stepsLedLatch[idx], color) != color)
+    {
+      for(auto a : m_midiUi)
+        a->setLed(s, color);
     }
   }
 

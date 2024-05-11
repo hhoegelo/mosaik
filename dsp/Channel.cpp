@@ -27,4 +27,7 @@ void Dsp::Channel::doAudio(Busses &busses, const Dsp::AudioKernel::Channel &kern
   busses.reverb += pre * m_preReverbFactor + post * m_postReverbFactor;
   busses.delay += pre * m_preDelayFactor + post * m_postDelayFactor;
   busses.main += post * m_muteFactor;
+
+  ui.levelLeft = std::max({ ui.levelLeft, std::abs(post.left) });
+  ui.levelRight = std::max({ ui.levelRight, std::abs(post.right) });
 }

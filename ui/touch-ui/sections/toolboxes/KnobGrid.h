@@ -10,7 +10,7 @@ namespace Ui::Touch
   {
    public:
     KnobGrid();
-    void set(Ui::Knob btn, const char *title, std::function<std::string()> cb);
+    void set(Ui::Knob btn, const char *title, Ui::Color color, std::function<std::string()> cb);
 
    private:
     Tools::DeferredComputations m_computations;

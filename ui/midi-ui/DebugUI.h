@@ -33,8 +33,12 @@ namespace Ui
 
      private:
       void build();
-      void setLed(Led l, Color c) override;
+      void setLed(Knob l, Color c) override;
+      void setLed(SoftButton s, Color c) override;
+      void setLed(Step s, Color c) override;
+
       void setColor(const std::string &widgetName, Color c);
+      void setColor(const Gtk::Widget *widget, Color c);
 
       Widget *buildStep(Step step);
       Widget *buildKnob(Knob knob);

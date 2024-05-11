@@ -98,7 +98,7 @@ namespace Ui::Touch
             {
               using B = decltype(a);
               if(std::holds_alternative<Knob>(B::position))
-                knobs->set(std::get<Knob>(B::position), ParameterDescriptor<B::id>::title,
+                knobs->set(std::get<Knob>(B::position), ParameterDescriptor<B::id>::title, B::color,
                            [&] { return controller.getDisplayValue(B::id); });
             });
 
@@ -107,7 +107,7 @@ namespace Ui::Touch
             {
               using B = decltype(a);
               if(std::holds_alternative<Knob>(B::position))
-                knobs->set(std::get<Knob>(B::position), B::ID::title,
+                knobs->set(std::get<Knob>(B::position), B::ID::title, B::color,
                            [&] { return controller.getDisplayValue<typename B::ID>(); });
             });
 
@@ -125,9 +125,9 @@ namespace Ui::Touch
               using B = decltype(a);
               if(std::holds_alternative<SoftButton>(B::position))
               {
-                lButtons->set(std::get<SoftButton>(B::position), ParameterDescriptor<B::id>::title,
+                lButtons->set(std::get<SoftButton>(B::position), ParameterDescriptor<B::id>::title, B::color,
                               [&] { return controller.getDisplayValue(B::id); });
-                rButtons->set(std::get<SoftButton>(B::position), ParameterDescriptor<B::id>::title,
+                rButtons->set(std::get<SoftButton>(B::position), ParameterDescriptor<B::id>::title, B::color,
                               [&] { return controller.getDisplayValue(B::id); });
               }
             });
@@ -138,9 +138,9 @@ namespace Ui::Touch
               using B = decltype(a);
               if(std::holds_alternative<SoftButton>(B::position))
               {
-                lButtons->set(std::get<SoftButton>(B::position), B::ID::title,
+                lButtons->set(std::get<SoftButton>(B::position), B::ID::title, B::color,
                               [&] { return controller.getDisplayValue<typename B::ID>(); });
-                rButtons->set(std::get<SoftButton>(B::position), B::ID::title,
+                rButtons->set(std::get<SoftButton>(B::position), B::ID::title, B::color,
                               [&] { return controller.getDisplayValue<typename B::ID>(); });
               }
             });

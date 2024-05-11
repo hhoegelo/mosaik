@@ -40,7 +40,9 @@ namespace Ui
          ::Ui::Touch::Interface &touchUi, ::Ui::Controller &controller);
       ~Ui() override;
 
-      void setLed(Led l, Color c) override;
+      void setLed(Knob k, Color c) override;
+      void setLed(SoftButton s, Color c) override;
+      void setLed(Step s, Color c) override;
 
      private:
       bool checkForMidiDevices();

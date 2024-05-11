@@ -185,7 +185,6 @@ namespace Dsp
 
   void Reverb::set(float size, float chorus, float bal, float pre, float color)
   {
-
     auto lpf = std::clamp(pitchToFrequency(c_reverb_color_curve_1.applyCurve(color)), 0.f, SAMPLERATE / 2.f);
     auto hpf = std::clamp(pitchToFrequency(c_reverb_color_curve_2.applyCurve(color)), 0.f, SAMPLERATE / 2.f);
 

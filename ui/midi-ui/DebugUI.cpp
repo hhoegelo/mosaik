@@ -1,6 +1,7 @@
 #include "DebugUI.h"
 #include "ui/Controller.h"
 #include "Erp.h"
+#include <tools/Format.h>
 #include <gtkmm/grid.h>
 
 namespace Ui::Midi
@@ -20,6 +21,10 @@ namespace Ui::Midi
 
     .color-white {
       background: white;
+    }
+
+    .color-purple {
+      background: purple;
     }
 
     button.current-step {
@@ -106,7 +111,7 @@ namespace Ui::Midi
   Gtk::Widget* DebugUI::buildKnob(Knob knob)
   {
     auto w = Gtk::manage(new Erp());
-    w->set_name(getKnobName(knob));
+    w->set_name(Tools::format("Knob-%d", static_cast<int>(knob)));
     w->connect([this, knob](auto inc) { m_ctrl.onErpInc(knob, inc); });
     w->down([this, knob]() { m_ctrl.onSoftButtonEvent(getButtonForKnob(knob), ButtonEvent::Press); });
     w->up([this, knob]() { m_ctrl.onSoftButtonEvent(getButtonForKnob(knob), ButtonEvent::Release); });
@@ -119,44 +124,81 @@ namespace Ui::Midi
   Gtk::Widget* DebugUI::buildButton(SoftButton button)
   {
     auto btn = Gtk::manage(new Gtk::Button("B"));
-    btn->set_name(getSoftButtonName(button));
+    btn->set_name(Tools::format("SoftButton-%d", static_cast<int>(button)));
     btn->signal_pressed().connect([this, button] { m_ctrl.onSoftButtonEvent(button, ButtonEvent::Press); });
     btn->signal_released().connect([this, button] { m_ctrl.onSoftButtonEvent(button, ButtonEvent::Release); });
     return btn;
   }
 
+  static Gtk::Widget* findChildWidget(const Gtk::Widget* p, const char* name)
+  {
+    auto pThis = const_cast<Gtk::Widget*>(p);
+
+    if(auto b = reinterpret_cast<const Gtk::Buildable*>(p))
+    {
+      if(b->get_name() == name)
+        return pThis;
+    }
+
+    if(pThis->get_name() == name)
+      return pThis;
+
+    if(auto c = dynamic_cast<const Gtk::Container*>(pThis))
+      for(auto child : c->get_children())
+        if(auto found = findChildWidget(child, name))
+          return found;
+
+    return nullptr;
+  }
+
   const Gtk::Widget* DebugUI::findChild(const std::string& name)
   {
-    auto grid = dynamic_cast<const Gtk::Grid*>(get_child());
-    const auto& children = grid->get_children();
-    auto widgetIt
-        = std::find_if(children.begin(), children.end(), [&](const Gtk::Widget* c) { return c->get_name() == name; });
-    return widgetIt != children.end() ? *widgetIt : nullptr;
+    return findChildWidget(this, name.c_str());
   }
 
   void DebugUI::setColor(const std::string& widgetName, Color c)
   {
-    auto cssClass = "color-" + getColorName(c);
-
     if(auto widget = findChild(widgetName))
     {
-      auto style = widget->get_style_context();
-      for(const auto& color : style->list_classes())
-      {
-        if(color.find("color-") == 0)
-          if(color != cssClass)
-            style->remove_class(color);
-      }
-      style->add_class(cssClass);
+      setColor(widget, c);
     }
   }
 
-  void DebugUI::setLed(Led l, Color c)
+  void DebugUI::setColor(const Gtk::Widget* widget, Color c)
   {
-    if(l <= Led::Step_63)
+    auto cssClass = "color-" + getColorName(c);
+
+    auto style = widget->get_style_context();
+    for(const auto& color : style->list_classes())
+    {
+      if(color.find("color-") == 0)
+        if(color != cssClass)
+          style->remove_class(color);
+    }
+    style->add_class(cssClass);
+  }
+
+  void DebugUI::setLed(Knob l, Color c)
+  {
+    if(auto k = findChild(Tools::format("Knob-%d", static_cast<int>(l))))
+    {
+      setColor(k, c);
+    }
+  }
+
+  void DebugUI::setLed(SoftButton l, Color c)
+  {
+    if(auto sb = findChild(Tools::format("SoftButton-%d", static_cast<int>(l))))
+    {
+      setColor(sb, c);
+    }
+  }
+
+  void DebugUI::setLed(Step l, Color c)
+  {
+    if(l <= static_cast<Step>(Led::Step_63))
     {
       setColor("step-" + std::to_string(static_cast<int>(l)), c);
     }
   }
-
 }

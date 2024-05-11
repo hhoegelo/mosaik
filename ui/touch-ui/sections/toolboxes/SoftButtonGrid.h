@@ -16,7 +16,7 @@ namespace Ui::Touch
     };
 
     explicit SoftButtonGrid(Where w);
-    void set(Ui::SoftButton btn, const char *title, std::function<std::string()> cb);
+    void set(Ui::SoftButton btn, const char *title, Ui::Color color, std::function<std::string()> cb);
 
    private:
     Where m_where;

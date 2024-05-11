@@ -32,9 +32,22 @@ namespace Ui::Touch
           queue_draw();
         });
   }
+
   void LevelMeter::on_size_allocate(Gtk::Allocation &allocation)
   {
     allocation.set_width(2);
     Widget::on_size_allocate(allocation);
+  }
+
+  float LevelMeter::ampToLevelMeter(float amp)
+  {
+    return std::clamp(amp, 0.f, 1.f);
+    auto minDb = Dsp::c_silenceDB;
+
+    if(amp == 0.f)
+      return 0.f;
+
+    auto db = log10f(amp) * 20.f;
+    return std::clamp(1.f - db / minDb, 0.f, 1.f);
   }
 }

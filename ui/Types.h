@@ -38,8 +38,9 @@ namespace Ui
 
   enum class SoftButton
   {
+    FirstButton = 64,
     // Left hand side buttons
-    Left_NorthWest = 64,
+    Left_NorthWest = FirstButton,
     Left_North = 65,
     Left_West = 66,
     Left_Center = 67,
@@ -47,6 +48,15 @@ namespace Ui
     Left_SouthWest = 69,
     Left_South = 70,
     Left_SouthEast = 71,
+
+    // Knobs are Buttons, too
+    Center_Leftmost = 88,
+    Center_NorthWest = 89,
+    Center_SouthWest = 90,
+    Center_Center = 91,
+    Center_SouthEast = 92,
+    Center_NorthEast = 93,
+    Center_Rightmost = 94,
 
     // Right hand side buttons
     Right_North = 96,
@@ -58,27 +68,24 @@ namespace Ui
     Right_South = 102,
     Right_SouthEast = 103,
 
-    // Knobs are Buttons, too
-    Center_Leftmost = 88,
-    Center_NorthWest = 89,
-    Center_SouthWest = 90,
-    Center_Center = 91,
-    Center_SouthEast = 92,
-    Center_NorthEast = 93,
-    Center_Rightmost = 94,
+    LastButton = Right_SouthEast,
 
     MAX_BUTTON_ID = 103
   };
 
   enum class Knob
   {
-    Leftmost = 0,
+    FirstKnob = 0,
+
+    Leftmost = FirstKnob,
     NorthWest = 1,
     SouthWest = 2,
     Center = 3,
     SouthEast = 4,
     NorthEast = 5,
     Rightmost = 6,
+
+    LastKnob = Rightmost,
 
     NUM_KNOBS
   };

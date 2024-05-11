@@ -5,25 +5,12 @@
 #include <ui/Controller.h>
 
 #include "WaveformThumb.h"
-#include "LevelMeter.h"
+#include "ui/touch-ui/sections/LevelMeter.h"
 
 #include <gtkmm/label.h>
 
 namespace Ui::Touch
 {
-  namespace
-  {
-    float ampToLevelMeter(float amp)
-    {
-      auto minDb = -72.f;
-
-      if(amp == 0.f)
-        return 0.f;
-
-      auto db = log10f(amp) * 20.f;
-      return std::clamp(1.f - db / minDb, 0.f, 1.f);
-    }
-  }
 
   Tile::Tile(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Ui::Controller& controller,
              Core::Address address)
@@ -31,8 +18,6 @@ namespace Ui::Touch
       , Gtk::Grid()
       , m_size(*this, "size", 50)
   {
-    constexpr auto levelMeterDecay = 0.98f;
-
     get_style_context()->add_class("tile");
     set_column_homogeneous(true);
     set_row_homogeneous(true);
@@ -43,7 +28,8 @@ namespace Ui::Touch
     auto seconds = addDurationLabel();
 
     attach(*Gtk::manage(new LevelMeter(
-               "level left", [this] { return ampToLevelMeter(std::get<0>(m_levels.get())); }, levelMeterDecay)),
+               "level left", [this] { return LevelMeter::ampToLevelMeter(std::get<0>(m_levels.get())); },
+               LevelMeter::c_levelMeterDecay)),
            13, 4, 1, 8);
 
     attach(*Gtk::manage(new LevelMeter("gain",
@@ -56,7 +42,8 @@ namespace Ui::Touch
            14, 4, 1, 8);
 
     attach(*Gtk::manage(new LevelMeter(
-               "level right", [this] { return ampToLevelMeter(std::get<1>(m_levels.get())); }, levelMeterDecay)),
+               "level right", [this] { return LevelMeter::ampToLevelMeter(std::get<1>(m_levels.get())); },
+               LevelMeter::c_levelMeterDecay)),
            15, 4, 1, 8);
 
     m_computations.add(

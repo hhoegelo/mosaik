@@ -120,10 +120,21 @@ namespace Dsp
 
       std::tuple<float, float> Mosaik::getLevel(Core::Address address)
       {
-        return {
-          std::exchange(m_dsp.getUiInfo().channels[address.channel.value()].tiles[address.tile.value()].levelLeft, 0.f),
-          std::exchange(m_dsp.getUiInfo().channels[address.channel.value()].tiles[address.tile.value()].levelRight, 0.f)
-        };
+        if(address.channel.has_value())
+        {
+          if(address.tile.has_value())
+            return {
+              std::exchange(m_dsp.getUiInfo().channels[address.channel.value()].tiles[address.tile.value()].levelLeft,
+                            0.f),
+              std::exchange(m_dsp.getUiInfo().channels[address.channel.value()].tiles[address.tile.value()].levelRight,
+                            0.f)
+            };
+
+          return { std::exchange(m_dsp.getUiInfo().channels[address.channel.value()].levelLeft, 0.f),
+                   std::exchange(m_dsp.getUiInfo().channels[address.channel.value()].levelRight, 0.f) };
+        }
+
+        return {};
       }
 
       std::chrono::milliseconds Mosaik::getDuration(const std::filesystem::path &file) const

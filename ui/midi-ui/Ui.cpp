@@ -41,10 +41,31 @@ namespace Ui::Midi
     m_timer.disconnect();
   }
 
-  void Ui::setLed(Led l, Color c)
+  void Ui::setLed(Knob k, Color c)
+  {
+    uint8_t firstLed = static_cast<uint8_t>(Led::Center_Leftmost_North);
+    uint8_t numKnob = static_cast<uint8_t>(k);
+    uint8_t numLedsPerKnob = 4;
+    uint8_t led = firstLed + numKnob * numLedsPerKnob;
+
+    for(auto &a : m_inputDevices)
+      a.second->send({ 0x94, led, static_cast<uint8_t>(c) });
+  }
+
+  void Ui::setLed(SoftButton k, Color c)
+  {
+    uint8_t firstButton = static_cast<uint8_t>(Led::Left_NorthWest);
+    uint8_t numButton = static_cast<uint8_t>(k) - static_cast<uint8_t>(SoftButton::Left_NorthWest);
+    uint8_t led = firstButton + numButton;
+
+    for(auto &a : m_inputDevices)
+      a.second->send({ 0x94, led, static_cast<uint8_t>(c) });
+  }
+
+  void Ui::setLed(Step k, Color c)
   {
     for(auto &a : m_inputDevices)
-      a.second->send({ 0x94, static_cast<uint8_t>(l), static_cast<uint8_t>(c) });
+      a.second->send({ 0x94, k, static_cast<uint8_t>(c) });
   }
 
 }

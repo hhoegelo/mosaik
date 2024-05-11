@@ -10,6 +10,8 @@ namespace Ui::Midi
    public:
     virtual ~Interface();
 
-    virtual void setLed(Led l, Color c) = 0;
+    virtual void setLed(Knob k, Color c) = 0;
+    virtual void setLed(SoftButton s, Color c) = 0;
+    virtual void setLed(Step s, Color c) = 0;
   };
 }

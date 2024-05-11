@@ -10,6 +10,7 @@ namespace Ui::Midi
     set_size_request(50, 50);
     add_events(Gdk::BUTTON_PRESS_MASK | Gdk::BUTTON_RELEASE_MASK | Gdk::POINTER_MOTION_MASK);
   }
+
   bool Erp::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
   {
     Gtk::Allocation allocation = get_allocation();
@@ -56,7 +57,7 @@ namespace Ui::Midi
 
     if(event->button > 1)
       m_up.emit();
-    
+
     return true;
   }
   bool Erp::on_motion_notify_event(GdkEventMotion *event)

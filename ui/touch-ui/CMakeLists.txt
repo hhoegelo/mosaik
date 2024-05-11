@@ -31,8 +31,8 @@ add_library(mosaik-touchui STATIC
         LessToCss.cpp
         LessToCss.h
         sections/tiles/WaveformThumb.cpp
-        sections/tiles/LevelMeter.cpp
-        sections/tiles/LevelMeter.h
+        sections/LevelMeter.cpp
+        sections/LevelMeter.h
         sections/toolboxes/Toolbox.cpp
         sections/toolboxes/Toolbox.h
         tools/WidgetTools.cpp

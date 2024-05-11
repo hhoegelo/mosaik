@@ -1,6 +1,6 @@
 #pragma once
-#include <gtkmm/grid.h>
 #include <gtkmm/styleproperty.h>
+#include <gtkmm/box.h>
 #include "core/Types.h"
 #include "tools/ReactiveVar.h"
 
@@ -21,7 +21,7 @@ namespace Ui
 
 namespace Ui::Touch
 {
-  class Channel : public Gtk::Grid
+  class Channel : public Gtk::Box
   {
    public:
     Channel(Core::Api::Interface &core, Dsp::Api::Display::Interface &dsp, Ui::Controller &controller,
@@ -34,5 +34,6 @@ namespace Ui::Touch
    private:
     Tools::DeferredComputations m_computations;
     Gtk::StyleProperty<int> m_size;
+    Tools::ReactiveVar<std::tuple<float, float>> m_levels {};
   };
 }
