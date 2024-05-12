@@ -44,21 +44,21 @@ namespace Ui::Midi
 
   void Ui::setLed(Knob k, Color c)
   {
-    printf("set led for %s  with color %s", getKnobName(k).c_str(), getColorName(c).c_str());
+    printf("set led for %s  with color %s\n", getKnobName(k).c_str(), getColorName(c).c_str());
     uint8_t firstLed = static_cast<uint8_t>(Led::FirstCenterKnob);
-    printf("first led for a knob is %d", firstLed);
+    printf("first led for a knob is %d\n", firstLed);
     uint8_t numKnob = static_cast<uint8_t>(k);
-    printf("the order number of the knob is %d", numKnob);
+    printf("the order number of the knob is %d\n", numKnob);
     uint8_t numLedsPerKnob = 4;
     uint8_t led = firstLed + numKnob * numLedsPerKnob;
-    printf("so the first led number for the knob is %d", led);
+    printf("so the first led number for the knob is %d\n", led);
 
     for(auto &a : m_inputDevices)
     {
       for(uint8_t b = 0; b < numLedsPerKnob; b++)
       {
         auto l = static_cast<uint8_t>(led + b);
-        printf("sending led number %d", l);
+        printf("sending led number %d\n", l);
         a.second->send({ 0x94, l, static_cast<uint8_t>(c) });
       }
     }
