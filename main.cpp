@@ -29,6 +29,7 @@ int main(int args, char** argv)
     o = o("bits", value<int>(), "16 or 32 bit");
     o = o("midi-ui", value<std::string>(), "alsa midi device for the mosaik hardware UI");
     o = o("midi-sync-in", value<std::string>(), "alsa midi device for receiving midi clock and song position");
+    //o = o("midi-sync-in", value<std::string>(), "alsa midi device for receiving midi clock and song position");
     o = o("channels", value<int>(), "number of audio channel: 2 or 4");
 
     store(parse_command_line(args, argv, desc), vm);

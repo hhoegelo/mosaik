@@ -69,9 +69,12 @@ namespace Ui::Touch
     {
       get_style_context()->add_class("maximized");
       auto headline = Gtk::manage(new Gtk::Label(ToolboxDefinition<T>::title));
-      headline->get_style_context()->add_class("header");
-
-      pack_start(*headline);
+      auto headlineBox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
+      headlineBox->get_style_context()->add_class("header");
+      headline->set_halign(Gtk::Align::ALIGN_FILL);
+      headline->set_justify(Gtk::JUSTIFY_LEFT);
+      headlineBox->add(*headline);
+      pack_start(*headlineBox);
 
       bool hasKnobs = false;
       bool hasButtons = false;

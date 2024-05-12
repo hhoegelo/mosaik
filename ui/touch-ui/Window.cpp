@@ -62,27 +62,23 @@ namespace Ui::Touch
     set_position(Gtk::WindowPosition::WIN_POS_CENTER);
 
     auto fixedBox = Gtk::manage(new Gtk::Fixed());
-    auto vBox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL));
-    vBox->get_style_context()->add_class("root");
-    auto upperBox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
-    upperBox->get_style_context()->add_class("upper");
-    auto lowerBox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
-    lowerBox->get_style_context()->add_class("lower");
+    auto hBox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
+    hBox->get_style_context()->add_class("root");
 
-    vBox->add(*upperBox);
-    vBox->add(*lowerBox);
+    auto left = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL));
+    left->get_style_context()->add_class("left");
+
+    hBox->pack_start(*left, false, false);
+    hBox->pack_start(*m_toolboxes, true, false);
 
     auto fixedTiles = Gtk::manage(new Gtk::Fixed());
     fixedTiles->add(*m_tiles);
-    upperBox->pack_start(*fixedTiles, false, false);
-    upperBox->pack_start(*m_toolboxes, Gtk::PackOptions::PACK_EXPAND_WIDGET);
-
+    left->pack_start(*fixedTiles, false, false);
     auto fixedMixer = Gtk::manage(new Gtk::Fixed());
     fixedMixer->add(*m_mixer);
-    lowerBox->pack_start(*fixedMixer, false, false);
-    lowerBox->pack_start(*m_main, Gtk::PackOptions::PACK_EXPAND_WIDGET);
+    left->pack_start(*fixedMixer, false, false);
 
-    fixedBox->add(*vBox);
+    fixedBox->add(*hBox);
     add(*fixedBox);
     loadCss();
     show_all();

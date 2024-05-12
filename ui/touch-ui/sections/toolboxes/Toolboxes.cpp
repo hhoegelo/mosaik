@@ -47,7 +47,8 @@ namespace Ui::Touch
     scroll->add(*box);
     add(*scroll);
 
-    set_valign(Gtk::Align::ALIGN_START);
+    set_valign(Gtk::Align::ALIGN_FILL);
+    set_resize_mode(Gtk::ResizeMode::RESIZE_QUEUE);
   }
 
   Ui::Toolbox Toolboxes::getSelectedToolbox() const

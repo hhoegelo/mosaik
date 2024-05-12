@@ -13,25 +13,29 @@ namespace Ui::Midi
 
   void MidiEventDispatcher::dispatch(const ::Midi::Alsa::MidiEvent &event) const
   {
-    if(event[0] == 0x90)
+    constexpr auto noteOn = 0x90;
+    constexpr auto noteOff = 0x80;
+
+    if(event[0] == noteOn)
     {
       if(event[1] < 64)
       {
-        if(event[2] == 1)
-        {
-          m_stepButtonEvent(static_cast<Step>(event[1]), ButtonEvent::Press);
-          // fake it as long as HW does not send the release
-          m_stepButtonEvent(static_cast<Step>(event[1]), ButtonEvent::Release);
-        }
+        m_stepButtonEvent(static_cast<Step>(event[1]), ButtonEvent::Press);
       }
       else
       {
-        if(event[2] == 1)
-        {
-          m_softButtonEvent(static_cast<SoftButton>(event[1]), ButtonEvent::Press);
-          // fake it as long as HW does not send the release
-          m_softButtonEvent(static_cast<SoftButton>(event[1]), ButtonEvent::Release);
-        }
+        m_softButtonEvent(static_cast<SoftButton>(event[1]), ButtonEvent::Press);
+      }
+    }
+    else if(event[0] == noteOff)
+    {
+      if(event[1] < 64)
+      {
+        m_stepButtonEvent(static_cast<Step>(event[1]), ButtonEvent::Release);
+      }
+      else
+      {
+        m_softButtonEvent(static_cast<SoftButton>(event[1]), ButtonEvent::Release);
       }
     }
     else if(event[0] == 0xb0)

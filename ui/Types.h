@@ -175,8 +175,8 @@ namespace Ui
     Red = 0,
     Blue = 1,
     Green = 2,
-    White = 3,
-    Purple = 4,
+    Purple = 3,
+    White = 4,
     Off = 5,
   };
 
