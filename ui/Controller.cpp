@@ -204,7 +204,7 @@ namespace Ui
   template <Toolbox T, typename D> std::pair<Knob, std::function<void()>> Controller::bindKnobUiDefaultClickAction()
   {
     printf("set default\n");
-    
+
     constexpr bool isGlobal = Core::GlobalParameters<Core::NoWrap>::contains(D::id);
     auto tile = isGlobal ? Core::Address {} : m_core.getSelectedTile();
     return std::make_pair(std::get<Knob>(D::position), [this, tile]()
@@ -234,10 +234,10 @@ namespace Ui
     Controller::Mapping mapping;
 
     for(auto a = static_cast<int>(Knob::FirstKnob); a <= static_cast<int>(Knob::LastKnob); a++)
-      setLed(static_cast<Knob>(a), Color::None);
+      setLed(static_cast<Knob>(a), Color::Off);
 
     for(auto a = static_cast<int>(SoftButton::FirstButton); a <= static_cast<int>(SoftButton::LastButton); a++)
-      setLed(static_cast<SoftButton>(a), Color::None);
+      setLed(static_cast<SoftButton>(a), Color::Off);
 
     ToolboxDefinition<T>::MaximizedParameters::forEach(
         [&](auto a)
