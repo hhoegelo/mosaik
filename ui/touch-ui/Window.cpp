@@ -1,7 +1,6 @@
 #include "Window.h"
 #include "ui/touch-ui/sections/tiles/Tiles.h"
 #include "ui/touch-ui/sections/toolboxes/Toolboxes.h"
-#include "ui/touch-ui/sections/main/Main.h"
 #include "ui/touch-ui/sections/mixer/Mixer.h"
 #include "LessToCss.h"
 #include <gtkmm/grid.h>
@@ -13,7 +12,6 @@ namespace Ui::Touch
   Window::Window(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Ui::Controller& controller)
       : m_toolboxes(std::make_unique<Touch::Toolboxes>(*this, core, controller))
       , m_tiles(std::make_unique<Tiles>(*this, core, dsp, controller))
-      , m_main(std::make_unique<Main>(*this))
       , m_mixer(std::make_unique<Mixer>(*this, core, dsp, controller))
   {
 #if 0
