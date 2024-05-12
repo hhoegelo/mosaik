@@ -26,7 +26,6 @@ add_library(mosaik-touchui STATIC
         sections/toolboxes/KnobGrid.cpp
         sections/toolboxes/KnobGrid.h
         sections/SectionWrapper.h
-        sections/main/Main.cpp
         sections/mixer/Mixer.cpp
         LessToCss.cpp
         LessToCss.h
