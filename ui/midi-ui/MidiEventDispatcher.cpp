@@ -33,7 +33,7 @@ namespace Ui::Midi
     }
     else if(event[0] == noteOff)
     {
-      printf("Note on...\n");
+      printf("Note off...\n");
 
       if(event[1] < 64)
       {
