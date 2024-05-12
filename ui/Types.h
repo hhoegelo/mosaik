@@ -48,26 +48,26 @@ namespace Ui
     Left_South = 70,
     Left_SouthEast = 71,
 
-    // Knobs are Buttons, too
-    Center_Leftmost = 88,
-    Center_NorthWest = 89,
-    Center_SouthWest = 90,
-    Center_Center = 91,
-    Center_SouthEast = 92,
-    Center_NorthEast = 93,
-    Center_Rightmost = 94,
-
     // Right hand side buttons
-    Right_North = 96,
-    Right_NorthEast = 97,
-    Right_West = 98,
-    Right_Center = 99,
-    Right_East = 100,
-    Right_SouthWest = 101,
-    Right_South = 102,
-    Right_SouthEast = 103,
+    Right_North = 72,
+    Right_NorthEast = 73,
+    Right_West = 74,
+    Right_Center = 75,
+    Right_East = 76,
+    Right_SouthWest = 77,
+    Right_South = 78,
+    Right_SouthEast = 79,
 
-    LastButton = Right_SouthEast,
+    // Knobs are Buttons, too
+    Center_Leftmost = 80,
+    Center_NorthWest = 81,
+    Center_SouthWest = 82,
+    Center_Center = 83,
+    Center_SouthEast = 84,
+    Center_NorthEast = 85,
+    Center_Rightmost = 86,
+
+    LastButton = Center_Rightmost,
 
     MAX_BUTTON_ID = 103
   };
