@@ -93,11 +93,11 @@ namespace Ui
 
     Tools::ReactiveVar<Step> m_currentStep { 0 };
     std::array<Color, static_cast<size_t>(NUM_STEPS)> m_stepsLedLatch {};
-    std::array<Color, static_cast<size_t>(SoftButton::MAX_BUTTON_ID)> m_softButtonLedLatch {};
-    std::array<Color, static_cast<size_t>(Knob::NUM_KNOBS)> m_knobsLedLatch {};
+    std::array<Color, static_cast<size_t>(SoftButton::LastButton) + 1> m_softButtonLedLatch {};
+    std::array<Color, static_cast<size_t>(Knob::LastKnob) + 1> m_knobsLedLatch {};
 
-    std::array<bool, static_cast<size_t>(SoftButton::MAX_BUTTON_ID)> m_buttonState {};
-    std::array<bool, static_cast<size_t>(Knob::NUM_KNOBS)> m_turnWhilePressed {};
+    std::array<bool, static_cast<size_t>(SoftButton::LastButton) + 1> m_buttonState {};
+    std::array<bool, static_cast<size_t>(Knob::LastKnob) + 1> m_turnWhilePressed {};
 
     // Wizard
     Tools::ReactiveVar<int> m_oneFitsAllStepWizard { 0 };

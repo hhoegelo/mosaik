@@ -46,11 +46,13 @@ namespace Ui
 
      private:
       bool checkForMidiDevices();
+      void scheduleLedUpdate();
 
       std::string m_midiDevice;
       ::Ui::Controller &m_controller;
       std::unique_ptr<::Midi::Monitor> m_monitor;
       sigc::connection m_timer;
+      sigc::connection m_ledUpdater;
       std::map<std::string, std::unique_ptr<::Midi::Alsa>> m_inputDevices;
       MidiEventDispatcher m_dispatcher;
     };

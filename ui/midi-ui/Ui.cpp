@@ -39,33 +39,64 @@ namespace Ui::Midi
       a.second->send({ 0x97, 0, 0 });
 
     m_timer.disconnect();
+    m_ledUpdater.disconnect();
   }
 
   void Ui::setLed(Knob k, Color c)
   {
-    uint8_t firstLed = static_cast<uint8_t>(Led::Center_Leftmost_North);
+    uint8_t firstLed = static_cast<uint8_t>(Led::FirstCenterKnob);
     uint8_t numKnob = static_cast<uint8_t>(k);
     uint8_t numLedsPerKnob = 4;
     uint8_t led = firstLed + numKnob * numLedsPerKnob;
 
     for(auto &a : m_inputDevices)
-      a.second->send({ 0x94, led, static_cast<uint8_t>(c) });
+      for(uint8_t b = 0; b < numLedsPerKnob; b++)
+        a.second->send({ 0x94, led, static_cast<uint8_t>(static_cast<uint8_t>(c) + b) });
+
+    scheduleLedUpdate();
   }
 
   void Ui::setLed(SoftButton k, Color c)
   {
-    uint8_t firstButton = static_cast<uint8_t>(Led::Left_NorthWest);
-    uint8_t numButton = static_cast<uint8_t>(k) - static_cast<uint8_t>(SoftButton::Left_NorthWest);
-    uint8_t led = firstButton + numButton;
+    uint8_t led = 0;
+
+    if((k >= SoftButton::FirstLeftButton && k <= SoftButton::LastLeftButton))
+    {
+      uint8_t offset = static_cast<uint8_t>(k) - static_cast<uint8_t>(SoftButton::FirstLeftButton);
+      led = static_cast<uint8_t>(Led::FirstLeftButton) + offset;
+    }
+
+    if((k >= SoftButton::FirstRightButton && k <= SoftButton::LastRightButton))
+    {
+      uint8_t offset = static_cast<uint8_t>(k) - static_cast<uint8_t>(SoftButton::FirstRightButton);
+      led = static_cast<uint8_t>(Led::FirstRightButton) + offset;
+    }
 
     for(auto &a : m_inputDevices)
       a.second->send({ 0x94, led, static_cast<uint8_t>(c) });
+
+    scheduleLedUpdate();
   }
 
   void Ui::setLed(Step k, Color c)
   {
     for(auto &a : m_inputDevices)
       a.second->send({ 0x94, k, static_cast<uint8_t>(c) });
+
+    scheduleLedUpdate();
+  }
+
+  void Ui::scheduleLedUpdate()
+  {
+    if(!m_ledUpdater.connected())
+      m_ledUpdater = Glib::signal_timeout().connect(
+          [this]
+          {
+            for(auto &a : m_inputDevices)
+              a.second->send({ 0x95, 0, 0 });
+            return false;
+          },
+          1);
   }
 
 }

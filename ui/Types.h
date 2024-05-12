@@ -37,9 +37,10 @@ namespace Ui
 
   enum class SoftButton
   {
-    FirstButton = 64,
     // Left hand side buttons
-    Left_NorthWest = FirstButton,
+    Left_NorthWest = 64,
+    FirstButton = Left_NorthWest,
+    FirstLeftButton = Left_NorthWest,
     Left_North = 65,
     Left_West = 66,
     Left_Center = 67,
@@ -47,9 +48,11 @@ namespace Ui
     Left_SouthWest = 69,
     Left_South = 70,
     Left_SouthEast = 71,
+    LastLeftButton = Left_SouthEast,
 
     // Right hand side buttons
     Right_North = 72,
+    FirstRightButton = Right_North,
     Right_NorthEast = 73,
     Right_West = 74,
     Right_Center = 75,
@@ -57,6 +60,7 @@ namespace Ui
     Right_SouthWest = 77,
     Right_South = 78,
     Right_SouthEast = 79,
+    LastRightButton = Right_SouthEast,
 
     // Knobs are Buttons, too
     Center_Leftmost = 80,
@@ -70,8 +74,6 @@ namespace Ui
     LastKnob = Center_Rightmost,
 
     LastButton = Center_Rightmost,
-
-    MAX_BUTTON_ID = 103
   };
 
   enum class Knob
@@ -87,8 +89,6 @@ namespace Ui
     Rightmost = 6,
 
     LastKnob = Rightmost,
-
-    NUM_KNOBS
   };
 
   inline SoftButton getButtonForKnob(Knob k)
@@ -114,6 +114,7 @@ namespace Ui
 
     // Soft Buttons
     Left_NorthWest = 64,
+    FirstLeftButton = Left_NorthWest,
     Left_North = 65,
     Left_West = 66,
     Left_Center = 67,
@@ -121,8 +122,10 @@ namespace Ui
     Left_SouthWest = 69,
     Left_South = 70,
     Left_SouthEast = 71,
+    LastLeftButton = Left_SouthEast,
 
     Center_Leftmost_North = 72,
+    FirstCenterKnob = Center_Leftmost_North,
     Center_Leftmost_East = 73,
     Center_Leftmost_South = 74,
     Center_Leftmost_West = 75,
@@ -157,7 +160,10 @@ namespace Ui
     Center_Rightmost_South = 98,
     Center_Rightmost_West = 99,
 
+    LastCenterKnob = Center_Rightmost_West,
+
     Right_North = 100,
+    FirstRightButton = Right_North,
     Right_NorthEast = 101,
     Right_West = 102,
     Right_Center = 103,
@@ -165,6 +171,7 @@ namespace Ui
     Right_SouthWest = 105,
     Right_South = 106,
     Right_SouthEast = 107,
+    LastRightButton = Right_SouthEast,
 
     NUM_LEDS = 108
   };
