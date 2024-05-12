@@ -53,7 +53,7 @@ if (LIBS_FOUND)
     add_compile_definitions(SOURCES_DIR="${SOURCES_DIR}")
     add_compile_definitions(DEBUG_BUILD=$<IF:$<CONFIG:Debug>,true,false>)
     add_compile_definitions(RELEASE_BUILD=$<IF:$<CONFIG:Debug>,false,true>)
-    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
 
     add_subdirectory(core)
     add_subdirectory(dsp)

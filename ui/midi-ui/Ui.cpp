@@ -51,7 +51,7 @@ namespace Ui::Midi
 
     for(auto &a : m_inputDevices)
       for(uint8_t b = 0; b < numLedsPerKnob; b++)
-        a.second->send({ 0x94, led, static_cast<uint8_t>(static_cast<uint8_t>(c) + b) });
+        a.second->send({ 0x94, static_cast<uint8_t>(led + b), static_cast<uint8_t>(c) });
 
     scheduleLedUpdate();
   }
