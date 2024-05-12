@@ -203,6 +203,8 @@ namespace Ui
 
   template <Toolbox T, typename D> std::pair<Knob, std::function<void()>> Controller::bindKnobUiDefaultClickAction()
   {
+    printf("set default\n");
+    
     constexpr bool isGlobal = Core::GlobalParameters<Core::NoWrap>::contains(D::id);
     auto tile = isGlobal ? Core::Address {} : m_core.getSelectedTile();
     return std::make_pair(std::get<Knob>(D::position), [this, tile]()
