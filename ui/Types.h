@@ -60,12 +60,14 @@ namespace Ui
 
     // Knobs are Buttons, too
     Center_Leftmost = 80,
+    FirstKnob = Center_Leftmost,
     Center_NorthWest = 81,
     Center_SouthWest = 82,
     Center_Center = 83,
     Center_SouthEast = 84,
     Center_NorthEast = 85,
     Center_Rightmost = 86,
+    LastKnob = Center_Rightmost,
 
     LastButton = Center_Rightmost,
 
@@ -91,18 +93,17 @@ namespace Ui
 
   inline SoftButton getButtonForKnob(Knob k)
   {
-    return static_cast<SoftButton>(static_cast<int>(k) + 88);
+    return static_cast<SoftButton>(static_cast<int>(k) + static_cast<int>(SoftButton::FirstKnob));
   }
 
   inline Knob getKnobForButton(SoftButton k)
   {
-    return static_cast<Knob>(static_cast<int>(k) - 88);
+    return static_cast<Knob>(static_cast<int>(k) - static_cast<int>(SoftButton::FirstKnob));
   }
 
   inline bool isKnob(SoftButton k)
   {
-    auto i = static_cast<int>(k);
-    return i >= 88 && i <= 94;
+    return k >= SoftButton::FirstKnob && k <= SoftButton::LastKnob;
   }
 
   enum class Led
