@@ -72,10 +72,10 @@ Adafruit_NeoPixel rgb = Adafruit_NeoPixel( N_RGB, PIN_RGB, NEO_GRB + NEO_KHZ800 
 
 uint8_t col_table[6][3] = {
 	{ 50, 0, 0}, // 0 red	relsub0
-	{ 0, 0, 60}, // 1 blue	relsub1
-	{ 0, 50, 0},	// 2 green	relsub2
-	{ 25, 25, 0},	// 3 purple	relsub3
-	{ 20, 20, 20},	// 4 white	stepled
+	{ 0, 0, 80}, // 1 blue	relsub1
+	{ 0, 40, 0},	// 2 green	relsub2
+	{ 20, 0, 20},	// 3 purple	relsub3
+	{ 50, 50, 50},	// 4 white	stepled
 	{ 0, 0, 0}	// 5 off
 };
 
@@ -105,20 +105,13 @@ void setup(void)
 	SPI.beginTransaction( SPISettings( 1000000, MSBFIRST, SPI_MODE3 ));  
 	SPI.begin();
 
-	// init serial
-	Serial1.begin( 115200 );
-	Serial1.println( "\n## Mosaik Midi Controller | Version: " __DATE__ "-" __TIME__ " ##");
-	Serial1.println( );
-
 	// init scheduler
 	coos_init();
 	coos_task_add( process_hb, 0, 500 );
 	coos_task_add( spi_read, 0, 1 );
 	coos_task_add( spi_parse, 0, 1 );
 	coos_task_add( btn_check, 0, 1 );
-	//coos_task_add( enc_check, 0, 1 );
-	//coos_task_add( rgb_test, 5, 10 );
-	coos_task_add( process_midi_buf_rx_read, 1, 2 );
+	coos_task_add( enc_check, 0, 1 );
 
 	// start scheduler
 	Timer1.initialize(2000); // in µs
@@ -135,7 +128,8 @@ void loop(void)
 		digitalWrite( PIN_SYSTICK, !digitalRead( PIN_SYSTICK ));
 	}
 	coos_dispatch();
-	digitalWrite( PIN_CPU_IDLE, !digitalRead( PIN_CPU_IDLE ));
+	process_midi_buf_rx_read();
+	//digitalWrite( PIN_CPU_IDLE, !digitalRead( PIN_CPU_IDLE ));
 }
 
 
@@ -148,16 +142,6 @@ void timer1_irq()
 void process_hb(void)
 {
 	digitalWrite( PIN_LED_HB, !digitalRead( PIN_LED_HB ));
-}
-
-
-void rgb_test(void)
-{
-	for( int id=0; id<N_RGB; id++ )
-	{
-		rgb.setPixelColor( id, rgb.Color(0, 1, 0) );
-	}
-	rgb.show();
 }
 
 
@@ -278,18 +262,17 @@ void enc_check(void)
 	for( int cnt=0; cnt<N_ENC; cnt++)
 	{
 		int8_t val = encoder[cnt].delta_value;
+		encoder[cnt].delta_value = val & 1;
+		val >>= 1;
+
 		if( val != 0 )
 		{
 			midiEventPacket_t event = {0x0B, 0xB0, cnt, 64+val};
 			usb_midi_tx_msg_cnt++;
 			MidiUSB.sendMIDI(event);
-			//Serial1.print( "enc_");
-			//Serial1.print(cnt);
-			//Serial1.print(" val:");
-			//Serial1.println( val );
 		}
 	}
-	//if ( usb_midi_tx_msg_cnt > 0 )
+	if ( usb_midi_tx_msg_cnt > 0 )
 	{
 		MidiUSB.flush();
 		usb_midi_tx_msg_cnt = 0;
@@ -309,13 +292,9 @@ void btn_check(void)
 				{
 					button[btn_id].dcnt = BTN_DEADTIME_MS;
 					button[btn_id].state = STATE_PRESS_DCNT;
-					// send button pressed
 					midiEventPacket_t event = { 0x09, 0x90, btn_id, 1 };
 					MidiUSB.sendMIDI( event );
 					usb_midi_tx_msg_cnt++;
-					//Serial1.print( "b");
-					//Serial1.print(btn_id);
-					//Serial1.println(": 1");
 				}
 				break;
 			}
@@ -334,10 +313,6 @@ void btn_check(void)
 				{
 					button[btn_id].dcnt = BTN_DEADTIME_MS;
 					button[btn_id].state = STATE_RELEASE_DCNT;
-					// send( btn_id, released )
-					//Serial1.print( "b");
-					//Serial1.print(btn_id);
-					//Serial1.println(": 0");
 					midiEventPacket_t event = { 0x08, 0x80, btn_id, 0 };
 					MidiUSB.sendMIDI( event );
 					usb_midi_tx_msg_cnt++;
@@ -357,7 +332,7 @@ void btn_check(void)
 				break;
 		}
 	}
-	//if ( usb_midi_tx_msg_cnt > 0 )
+	if ( usb_midi_tx_msg_cnt > 0 )
 	{
 		MidiUSB.flush();
 		usb_midi_tx_msg_cnt = 0;
@@ -374,10 +349,8 @@ void process_midi_buf_rx_read(void)
 	{
 		uint8_t color = rx.byte1 & 0b00001111;
 		uint8_t id = rx.byte2;
-		//uint8_t brightness = rx.byte3 << 1;
 		uint8_t col_tab_pos = rx.byte3 & 0b01111111;
 
-		// set pixel color
 		switch (color)
 		{
 			case 4: // color table
@@ -385,7 +358,6 @@ void process_midi_buf_rx_read(void)
 				if( rx.byte3 < 6 )
 				{
 					rgb.setPixelColor( id, rgb.Color( col_table[col_tab_pos][0], col_table[col_tab_pos][1], col_table[col_tab_pos][2] ));
-					//rgb.show();
 				}
 				break;
 			}
