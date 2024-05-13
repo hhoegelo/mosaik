@@ -50,8 +50,10 @@ namespace Ui::Touch
   {
     auto box = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
     box->get_style_context()->add_class("button");
-    box->get_style_context()->add_class(getColorName(color));
-    box->add(*Gtk::manage(new Gtk::Label(title)));
+    auto label = new Gtk::Label(title);
+    label->get_style_context()->add_class(getColorName(color));
+
+    box->add(*Gtk::manage(label));
     auto level = Gtk::manage(new Gtk::Label());
     box->add(*level);
     m_computations.add([level, cb] { level->set_label(cb()); });
