@@ -25,7 +25,10 @@ namespace Ui
     MainPlayground,
     Mute,
     MixerChannel,
-    Reverb
+    Reverb,
+    ColorAdjust,
+
+    NUM_TOOLBOXES
   };
 
   enum class Section

@@ -42,7 +42,32 @@ namespace Ui
         [this]
         {
           if(auto p = m_touchUi.get())
-            m_inputMapping = createMapping(p->getToolboxes().getSelectedToolbox());
+          {
+            auto toolbox = p->getToolboxes().getSelectedToolbox();
+            m_inputMapping = createMapping(toolbox);
+
+            if(toolbox == Ui::Toolbox::ColorAdjust)
+            {
+              m_colorAdjustmentComputations = std::make_unique<Tools::DeferredComputations>();
+              m_colorAdjustmentComputations->add(
+                  [this]
+                  {
+                    for(auto button : { SoftButton::Left_SouthWest, SoftButton::Left_South, SoftButton::Left_SouthEast,
+                                        SoftButton::Left_West, SoftButton::Left_Center, SoftButton::Left_East })
+                    {
+                      for(auto m : m_midiUi)
+                        m->setLed(button, m_led_R, m_led_G, m_led_B);
+                    }
+
+                    if(auto t = m_touchUi.get())
+                      t->setColorAdjustmentColor(m_screen_R, m_screen_G, m_screen_B);
+                  });
+            }
+            else
+            {
+              m_colorAdjustmentComputations.reset();
+            }
+          }
         });
     m_computations.add([this] { showPattern(); });
   }
@@ -121,38 +146,22 @@ namespace Ui
     }
   }
 
+  template <Ui::Toolbox T> Controller::Mapping Controller::buildMapping(Ui::Toolbox t)
+  {
+    if(t == T)
+      return buildMapping<T>();
+    else
+      return buildMapping<static_cast<Ui::Toolbox>(static_cast<int>(T) + 1)>(t);
+  }
+
+  template <> Controller::Mapping Controller::buildMapping<Ui::Toolbox::NUM_TOOLBOXES>(Ui::Toolbox t)
+  {
+    throw std::invalid_argument("No such toolbox");
+  }
+
   Controller::Mapping Controller::createMapping(Ui::Toolbox t)
   {
-    switch(t)
-    {
-      case Ui::Toolbox::Global:
-        return buildMapping<Toolbox::Global>();
-
-      case Ui::Toolbox::Tile:
-        return buildMapping<Toolbox::Tile>();
-
-      case Ui::Toolbox::Waveform:
-        return buildMapping<Toolbox::Waveform>();
-
-      case Ui::Toolbox::Steps:
-        return buildMapping<Toolbox::Steps>();
-
-      case Ui::Toolbox::Playground:
-        return buildMapping<Toolbox::Playground>();
-
-      case Ui::Toolbox::MainPlayground:
-        return buildMapping<Toolbox::MainPlayground>();
-
-      case Ui::Toolbox::Mute:
-        return buildMapping<Toolbox::Mute>();
-
-      case Ui::Toolbox::MixerChannel:
-        return buildMapping<Toolbox::MixerChannel>();
-
-      case Ui::Toolbox::Reverb:
-        return buildMapping<Toolbox::Reverb>();
-    }
-    throw std::runtime_error("unknown toolbox");
+    return buildMapping<static_cast<Ui::Toolbox>(0)>(t);
   }
 
   template <Toolbox T, typename D>
@@ -741,4 +750,70 @@ namespace Ui
     return m_saveArmed.get() ? "Armed" : "";
   }
 
+  // Color Adjustment
+  template <>
+  void Controller::invokeKnobAction<Toolbox::ColorAdjust, ToolboxDefinition<Toolbox::ColorAdjust>::Led_R>(int inc)
+  {
+    m_led_R = std::clamp(m_led_R.get() + inc, 0, 127);
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::ColorAdjust>::Led_R>()
+  {
+    return std::to_string(m_led_R.get());
+  }
+
+  template <>
+  void Controller::invokeKnobAction<Toolbox::ColorAdjust, ToolboxDefinition<Toolbox::ColorAdjust>::Led_G>(int inc)
+  {
+    m_led_G = std::clamp(m_led_G.get() + inc, 0, 127);
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::ColorAdjust>::Led_G>()
+  {
+    return std::to_string(m_led_G.get());
+  }
+
+  template <>
+  void Controller::invokeKnobAction<Toolbox::ColorAdjust, ToolboxDefinition<Toolbox::ColorAdjust>::Led_B>(int inc)
+  {
+    m_led_B = std::clamp(m_led_B.get() + inc, 0, 127);
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::ColorAdjust>::Led_B>()
+  {
+    return std::to_string(m_led_B.get());
+  }
+
+  template <>
+  void Controller::invokeKnobAction<Toolbox::ColorAdjust, ToolboxDefinition<Toolbox::ColorAdjust>::Screen_R>(int inc)
+  {
+    m_screen_R = std::clamp(m_screen_R.get() + inc, 0, 255);
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::ColorAdjust>::Screen_R>()
+  {
+    return std::to_string(m_screen_R.get());
+  }
+
+  template <>
+  void Controller::invokeKnobAction<Toolbox::ColorAdjust, ToolboxDefinition<Toolbox::ColorAdjust>::Screen_G>(int inc)
+  {
+    m_screen_G = std::clamp(m_screen_G.get() + inc, 0, 255);
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::ColorAdjust>::Screen_G>()
+  {
+    return std::to_string(m_screen_G.get());
+  }
+
+  template <>
+  void Controller::invokeKnobAction<Toolbox::ColorAdjust, ToolboxDefinition<Toolbox::ColorAdjust>::Screen_B>(int inc)
+  {
+    m_screen_B = std::clamp(m_screen_B.get() + inc, 0, 255);
+  }
+
+  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::ColorAdjust>::Screen_B>()
+  {
+    return std::to_string(m_screen_B.get());
+  }
 }

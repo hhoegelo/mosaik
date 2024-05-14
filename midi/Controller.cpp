@@ -4,6 +4,7 @@
 #include "Alsa.h"
 #include "Monitor.h"
 #include <core/api/Interface.h>
+#include <core/ParameterDescriptor.h>
 
 namespace Midi
 {
@@ -41,7 +42,12 @@ namespace Midi
       auto v = e[2];
 
       if(c < NUM_CHANNELS)
-        m_core.setParameter({ c, {} }, Core::ParameterId::ChannelVolume, v / 127.0f);
+      {
+        using T = Core::ParameterDescriptor<Core::ParameterId::ChannelVolume>;
+        auto r = v / 127.0f;
+        auto range = T::max - T::min;
+        m_core.setParameter({ c, {} }, Core::ParameterId::ChannelVolume, T::min + range * r);
+      }
     }
   }
 

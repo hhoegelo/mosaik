@@ -43,6 +43,7 @@ namespace Ui
       void setLed(Knob k, Color c) override;
       void setLed(SoftButton s, Color c) override;
       void setLed(Step s, Color c) override;
+      void setLed(SoftButton s, uint8_t r, uint8_t g, uint8_t b) override;
 
      private:
       bool checkForMidiDevices();

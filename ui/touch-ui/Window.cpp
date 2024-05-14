@@ -6,6 +6,7 @@
 #include <gtkmm/grid.h>
 #include <iostream>
 #include <ui/Controller.h>
+#include <tools/Format.h>
 
 namespace Ui::Touch
 {
@@ -104,6 +105,10 @@ namespace Ui::Touch
     if(!loadAndMonitor(SOURCES_DIR "/ui/touch-ui/styles.less"))
       if(!loadAndMonitor(RESOURCES_DIR "/styles.less"))
         throw std::runtime_error("Could not find or parse style sheet");
+
+    m_userStyle = Gtk::CssProvider::create();
+    get_style_context()->add_provider_for_screen(Gdk::Screen::get_default(), m_userStyle,
+                                                 GTK_STYLE_PROVIDER_PRIORITY_USER);
   }
 
   bool Window::loadAndMonitor(const char* fileName)
@@ -162,5 +167,20 @@ namespace Ui::Touch
   void Window::selectSection(Section s)
   {
     m_section = s;
+  }
+
+  void Window::setColorAdjustmentColor(int r, int g, int b)
+  {
+    static std::map<const Gtk::Widget*, Glib::RefPtr<Gtk::CssProvider>> s_providers;
+
+    auto css = Tools::format(R"(
+.tile {
+  background-image: none;
+  background-color: rgb(%d, %d, %d);
+}
+)",
+                             r, g, b);
+
+    m_userStyle->load_from_data(css);
   }
 }

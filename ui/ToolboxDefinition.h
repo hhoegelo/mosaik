@@ -397,4 +397,51 @@ namespace Ui
                                           UiAction::Toggle, SoftButton::Right_Center>>;
     using MaximizedCustom = Entries<>;
   };
+
+  template <> struct ToolboxDefinition<Toolbox::ColorAdjust>
+  {
+    struct Led_R
+    {
+      static constexpr auto title = "LED Red";
+    };
+
+    struct Led_G
+    {
+      static constexpr auto title = "LED Green";
+    };
+
+    struct Led_B
+    {
+      static constexpr auto title = "LED Blue";
+    };
+
+    struct Screen_R
+    {
+      static constexpr auto title = "Screen Red";
+    };
+
+    struct Screen_G
+    {
+      static constexpr auto title = "Screen Green";
+    };
+
+    struct Screen_B
+    {
+      static constexpr auto title = "Screen Blue";
+    };
+
+    constexpr static auto title = "Color Adjustment";
+    using Minimized = Entries<>;
+    using MaximizedParameters = Entries<>;
+    using MaximizedCustom = Entries<
+        MaximizedCustomEntry<Led_R, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Leftmost>,
+        MaximizedCustomEntry<Led_G, Color::Green, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::NorthWest>,
+        MaximizedCustomEntry<Led_B, Color::Blue, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::SouthWest>,
+
+        MaximizedCustomEntry<Screen_R, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Rightmost>,
+        MaximizedCustomEntry<Screen_G, Color::Green, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::NorthEast>,
+        MaximizedCustomEntry<Screen_B, Color::Blue, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::SouthEast>
+
+        >;
+  };
 }
