@@ -27,6 +27,7 @@ namespace Core
     // Globals
     GlobalTempo,
     GlobalVolume,
+    GlobalPrelistenVolume,
 
     GlobalReverbRoomSize,
     GlobalReverbColor,

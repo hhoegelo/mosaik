@@ -94,6 +94,9 @@ namespace Core
     {
       Reactive<ParameterId::GlobalTempo> tempo { getDefaultValue<ParameterId::GlobalTempo>() };
       Reactive<ParameterId::GlobalVolume> volume { getDefaultValue<ParameterId::GlobalVolume>() };
+      Reactive<ParameterId::GlobalPrelistenVolume> prelistenVolume {
+        getDefaultValue<ParameterId::GlobalPrelistenVolume>()
+      };
       Reactive<ParameterId::GlobalReverbRoomSize> reverbRoomSize {
         getDefaultValue<ParameterId::GlobalReverbRoomSize>()
       };

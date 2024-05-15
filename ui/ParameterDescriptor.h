@@ -37,6 +37,19 @@ namespace Ui
   };
 
   template <>
+  struct ParameterDescriptor<Core::ParameterId::GlobalPrelistenVolume>
+      : Core::ParameterDescriptor<Core::ParameterId::GlobalPrelistenVolume>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%2.1f dB", t);
+    }
+
+    constexpr static auto title = "Pre. Vol.";
+    constexpr static float acceleration = 5.f;
+  };
+
+  template <>
   struct ParameterDescriptor<Core::ParameterId::SampleFile> : Core::ParameterDescriptor<Core::ParameterId::SampleFile>
   {
     static std::string format(Core::Path t)
@@ -332,7 +345,7 @@ namespace Ui
       return t == Core::PrePostValues::Pre ? "Pre" : "Post";
     }
 
-    constexpr static auto title = "Reverb Pre/Post";
+    constexpr static auto title = "Rev. Pre/Post";
   };
 
   template <>

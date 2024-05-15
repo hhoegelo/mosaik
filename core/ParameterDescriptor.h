@@ -28,6 +28,17 @@ namespace Core
     constexpr static Type defaultValue = 0;
   };
 
+  template <> struct ParameterDescriptor<ParameterId::GlobalPrelistenVolume>
+  {
+    constexpr static ParameterId id = ParameterId::GlobalPrelistenVolume;
+    constexpr static auto name = "prelisten-volume";
+    using Type = Float;
+    constexpr static Type min = -72.0f;
+    constexpr static Type max = 0.0f;
+    constexpr static Type coarse = 0.5f;
+    constexpr static Type defaultValue = 0;
+  };
+
   template <> struct ParameterDescriptor<ParameterId::GlobalReverbRoomSize>
   {
     constexpr static ParameterId id = ParameterId::GlobalReverbRoomSize;
@@ -385,11 +396,12 @@ namespace Core
 
   template <template <ParameterId> typename Wrapper>
   using GlobalParameters
-      = Parameters<Wrapper, ParameterId::GlobalTempo, ParameterId::GlobalVolume, ParameterId::GlobalReverbRoomSize,
-                   ParameterId::GlobalReverbColor, ParameterId::GlobalReverbPreDelay, ParameterId::GlobalReverbChorus,
-                   ParameterId::GlobalReverbReturn, ParameterId::GlobalReverbOnOff, ParameterId::MainPlayground1,
-                   ParameterId::MainPlayground2, ParameterId::MainPlayground3, ParameterId::MainPlayground4,
-                   ParameterId::MainPlayground5, ParameterId::MainPlayground6, ParameterId::MainPlayground7>;
+      = Parameters<Wrapper, ParameterId::GlobalTempo, ParameterId::GlobalVolume, ParameterId::GlobalPrelistenVolume,
+                   ParameterId::GlobalReverbRoomSize, ParameterId::GlobalReverbColor, ParameterId::GlobalReverbPreDelay,
+                   ParameterId::GlobalReverbChorus, ParameterId::GlobalReverbReturn, ParameterId::GlobalReverbOnOff,
+                   ParameterId::MainPlayground1, ParameterId::MainPlayground2, ParameterId::MainPlayground3,
+                   ParameterId::MainPlayground4, ParameterId::MainPlayground5, ParameterId::MainPlayground6,
+                   ParameterId::MainPlayground7>;
 
   template <template <ParameterId> typename Wrapper>
   using ChannelParameters

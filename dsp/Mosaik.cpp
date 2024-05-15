@@ -49,6 +49,10 @@ namespace Dsp
     m_volume += std::clamp(::Tools::dBToFactor<c_silenceDB, c_maxDB>(kernel->volume_dB) - m_volume, -c_maxVolStep,
                            c_maxVolStep);
 
+    m_prelistenVolume
+        += std::clamp(::Tools::dBToFactor<c_silenceDB, c_maxDB>(kernel->prelistenVolume_dB) - m_prelistenVolume,
+                      -c_maxVolStep, c_maxVolStep);
+
     if(std::exchange(m_prelistenInteractionCounter, kernel->prelistenInteractionCounter)
        != kernel->prelistenInteractionCounter)
       m_prelistenSamplePosition = 0;
@@ -72,7 +76,7 @@ namespace Dsp
 
     busses.main.left += revL * m_reverbReturnFactor * kernel->reverbOnOff;
     busses.main.right += revR * m_reverbReturnFactor * kernel->reverbOnOff;
-    return { busses.main * m_volume, busses.pre };
+    return { busses.main * m_volume, busses.pre * m_prelistenVolume };
     /*
     return doMainPlayground(frame, kernel->mainPlayground1, kernel->mainPlayground2, kernel->mainPlayground3,
                             kernel->mainPlayground4, kernel->mainPlayground5, kernel->mainPlayground6,

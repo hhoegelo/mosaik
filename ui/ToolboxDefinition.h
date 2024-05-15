@@ -72,6 +72,8 @@ namespace Ui
     using MaximizedParameters
         = Entries<MaximizedParameterEntry<Core::ParameterId::GlobalVolume, Color::Green, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::Center>,
+                  MaximizedParameterEntry<Core::ParameterId::GlobalPrelistenVolume, Color::Purple,
+                                          UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::Rightmost>,
                   MaximizedParameterEntry<Core::ParameterId::GlobalTempo, Color::Blue, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::Leftmost>>;
     using MaximizedCustom = Entries<
@@ -199,8 +201,8 @@ namespace Ui
                                           UiAction::IncDec, Knob::Center>,
                   MaximizedParameterEntry<Core::ParameterId::Speed, Color::Purple, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::Rightmost>,
-                  MaximizedParameterEntry<Core::ParameterId::Speed, Color::Purple, UiEvent::KnobClick, UiAction::Default,
-                                          Knob::Rightmost>,
+                  MaximizedParameterEntry<Core::ParameterId::Speed, Color::Purple, UiEvent::KnobClick,
+                                          UiAction::Default, Knob::Rightmost>,
                   MaximizedParameterEntry<Core::ParameterId::Balance, Color::Purple, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::Leftmost>,
                   MaximizedParameterEntry<Core::ParameterId::Shuffle, Color::Purple, UiEvent::ReleasedKnobRotate,
@@ -245,7 +247,7 @@ namespace Ui
         MaximizedCustomEntry<Down, Color::Blue, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_South>,
         MaximizedCustomEntry<Leave, Color::Blue, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthWest>,
         MaximizedCustomEntry<Enter, Color::Blue, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthEast>,
-        MaximizedCustomEntry<Load, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton:: Right_North>,
+        MaximizedCustomEntry<Load, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_North>,
         MaximizedCustomEntry<Prelisten, Color::Green, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_East>>;
   };
 

@@ -223,11 +223,12 @@ namespace Core::Api
       , m_sanitizeSamplePositions(Glib::MainContext::get_default(), 1)
   {
     bindParameters<GlobalParameterDescriptors>(
-        {}, m_model.globals.tempo, m_model.globals.volume, m_model.globals.reverbRoomSize, m_model.globals.reverbColor,
-        m_model.globals.reverbPreDelay, m_model.globals.reverbChorus, m_model.globals.reverbReturn,
-        m_model.globals.reverbOnOff, m_model.globals.playground1, m_model.globals.playground2,
-        m_model.globals.playground3, m_model.globals.playground4, m_model.globals.playground5,
-        m_model.globals.playground6, m_model.globals.playground7);
+        {}, m_model.globals.tempo, m_model.globals.volume, m_model.globals.prelistenVolume,
+        m_model.globals.reverbRoomSize, m_model.globals.reverbColor, m_model.globals.reverbPreDelay,
+        m_model.globals.reverbChorus, m_model.globals.reverbReturn, m_model.globals.reverbOnOff,
+        m_model.globals.playground1, m_model.globals.playground2, m_model.globals.playground3,
+        m_model.globals.playground4, m_model.globals.playground5, m_model.globals.playground6,
+        m_model.globals.playground7);
 
     for(auto c = 0; c < NUM_CHANNELS; c++)
     {
@@ -310,6 +311,40 @@ namespace Core::Api
   Dsp::SharedSampleBuffer Mosaik::getSamples(Address address) const
   {
     return m_dsp.getSamples(get<std::filesystem::path>(getParameter(address, ParameterId::SampleFile)));
+  }
+
+  void Core::Api::Mosaik::translateGlobals(Dsp::AudioKernel *target, const DataModel &source) const
+  {
+    static auto firstCompilation = std::chrono::system_clock::now();
+
+    auto numFramesPerMinute = SAMPLERATE * 60.0f;
+    auto num16thPerMinute = source.globals.tempo * 4;
+
+    target->framesPer16th = numFramesPerMinute / num16thPerMinute;
+    target->framesPerLoop = target->framesPer16th * NUM_STEPS;
+    target->volume_dB = source.globals.volume;
+    target->prelistenVolume_dB = source.globals.prelistenVolume;
+
+    target->prelistenSample = m_dsp.getSamples(source.prelistenSample);
+    target->prelistenInteractionCounter = source.prelistenInteractionCounter;
+
+    target->reverbRoomSize = source.globals.reverbRoomSize;
+    target->reverbColor = source.globals.reverbColor;
+    target->reverbPreDelay = source.globals.reverbPreDelay;
+    target->reverbChorus = source.globals.reverbChorus;
+    target->reverbReturn = source.globals.reverbReturn;
+    target->reverbOnOff = source.globals.reverbOnOff == OnOffValues::On ? 1.0f : 0.0f;
+
+    target->mainPlayground1 = source.globals.playground1;
+    target->mainPlayground2 = source.globals.playground2;
+    target->mainPlayground3 = source.globals.playground3;
+    target->mainPlayground4 = source.globals.playground4;
+    target->mainPlayground5 = source.globals.playground5;
+    target->mainPlayground6 = source.globals.playground6;
+    target->mainPlayground7 = source.globals.playground7;
+
+    auto one = source.tappedOne.get();
+    target->sequencerStartTime = one.has_value() ? one.value() : firstCompilation;
   }
 
   void Mosaik::translateChannel(const DataModel &dataModel, Dsp::AudioKernel::Channel &tgt,
@@ -406,39 +441,6 @@ namespace Core::Api
                       calcB(c_silenceDB, c_zeroDB, src.envelopeFadeInPos, fadeInLen) };
 
     preFadeInSection = { 0, 0, c_silenceDB };
-  }
-
-  void Core::Api::Mosaik::translateGlobals(Dsp::AudioKernel *target, const DataModel &source) const
-  {
-    static auto firstCompilation = std::chrono::system_clock::now();
-
-    auto numFramesPerMinute = SAMPLERATE * 60.0f;
-    auto num16thPerMinute = source.globals.tempo * 4;
-
-    target->framesPer16th = numFramesPerMinute / num16thPerMinute;
-    target->framesPerLoop = target->framesPer16th * NUM_STEPS;
-    target->volume_dB = source.globals.volume;
-
-    target->prelistenSample = m_dsp.getSamples(source.prelistenSample);
-    target->prelistenInteractionCounter = source.prelistenInteractionCounter;
-
-    target->reverbRoomSize = source.globals.reverbRoomSize;
-    target->reverbColor = source.globals.reverbColor;
-    target->reverbPreDelay = source.globals.reverbPreDelay;
-    target->reverbChorus = source.globals.reverbChorus;
-    target->reverbReturn = source.globals.reverbReturn;
-    target->reverbOnOff = source.globals.reverbOnOff == OnOffValues::On ? 1.0f : 0.0f;
-
-    target->mainPlayground1 = source.globals.playground1;
-    target->mainPlayground2 = source.globals.playground2;
-    target->mainPlayground3 = source.globals.playground3;
-    target->mainPlayground4 = source.globals.playground4;
-    target->mainPlayground5 = source.globals.playground5;
-    target->mainPlayground6 = source.globals.playground6;
-    target->mainPlayground7 = source.globals.playground7;
-
-    auto one = source.tappedOne.get();
-    target->sequencerStartTime = one.has_value() ? one.value() : firstCompilation;
   }
 
   Dsp::AudioKernel *Core::Api::Mosaik::newDspKernel(const DataModel &dataModel) const

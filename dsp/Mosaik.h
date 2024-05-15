@@ -34,6 +34,7 @@ namespace Dsp
     FramePos m_position = 0;
     FramePos m_knownFramesPerLoop = 0;
     float m_volume = 1.0f;
+    float m_prelistenVolume = 1.0f;
     float m_reverbReturnFactor = 0;
 
     Reverb m_reverb;
