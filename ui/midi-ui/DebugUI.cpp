@@ -178,6 +178,48 @@ namespace Ui::Midi
     style->add_class(cssClass);
   }
 
+  void DebugUI::setColor(const Gtk::Widget* widget, uint8_t r, uint8_t g, uint8_t b)
+  {
+    auto ctx = widget->get_style_context();
+    auto id = std::to_string(reinterpret_cast<uint64_t>(widget));
+    ctx->add_class(id);
+
+    auto style = widget->get_style_context();
+    for(const auto& color : style->list_classes())
+    {
+      if(color.find("color-") == 0)
+        style->remove_class(color);
+    }
+
+    GdkRGBA color;
+    color.red = r / 127.0;
+    color.green = g / 127.0;
+    color.blue = b / 127.0;
+    color.alpha = 0.0f;
+
+    static std::map<const Gtk::Widget*, Glib::RefPtr<Gtk::CssProvider>> s_providers;
+
+    auto css = Tools::format(R"(
+.%s {
+  background-image: none;
+  background-color: rgb(%d, %d, %d);
+}
+)",
+                             id.c_str(), 2 * r, 2 * g, 2 * b);
+
+    if(!s_providers.count(widget))
+    {
+      auto p = Gtk::CssProvider::create();
+      s_providers[widget] = p;
+      ctx->add_provider_for_screen(Gdk::Screen::get_default(), p, GTK_STYLE_PROVIDER_PRIORITY_USER);
+      p->load_from_data(css);
+    }
+    else
+    {
+      s_providers.at(widget)->load_from_data(css);
+    }
+  }
+
   void DebugUI::setLed(Knob l, Color c)
   {
     if(auto k = findChild(Tools::format("Knob-%d", static_cast<int>(l))))
@@ -199,6 +241,14 @@ namespace Ui::Midi
     if(l <= static_cast<Step>(Led::Step_63))
     {
       setColor("step-" + std::to_string(static_cast<int>(l)), c);
+    }
+  }
+
+  void DebugUI::setLed(SoftButton s, uint8_t r, uint8_t g, uint8_t b)
+  {
+    if(auto sb = findChild(Tools::format("SoftButton-%d", static_cast<int>(s))))
+    {
+      setColor(sb, r, g, b);
     }
   }
 }

@@ -39,10 +39,11 @@ namespace Ui::Touch
         new GenericToolbox<Ui::Toolbox::Waveform>(*this, controller, new WaveformToolbox(core, controller))));
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Steps>(*this, controller)));
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Mute>(*this, controller)));
-    //box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Playground>(*this, controller)));
-    //box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::MainPlayground>(*this, controller)));
+    // box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Playground>(*this, controller)));
+    // box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::MainPlayground>(*this, controller)));
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::MixerChannel>(*this, controller)));
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Reverb>(*this, controller)));
+    // box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::ColorAdjust>(*this, controller)));
 
     scroll->add(*box);
     add(*scroll);

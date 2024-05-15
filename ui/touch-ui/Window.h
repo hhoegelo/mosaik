@@ -34,6 +34,8 @@ namespace Ui::Touch
     Section getCurrentSection() const;
     void selectSection(Section s);
 
+    void setColorAdjustmentColor(int r, int g, int b) override;
+
    private:
     void loadCss();
     bool loadAndMonitor(const char *file);
@@ -48,5 +50,7 @@ namespace Ui::Touch
     Glib::RefPtr<Gtk::StyleContext> m_context;
     Glib::RefPtr<Gio::FileMonitor> m_cssMonitor;
     Glib::RefPtr<Gtk::CssProvider> m_cssProvider;
+
+    Glib::RefPtr<Gtk::CssProvider> m_userStyle;
   };
 }

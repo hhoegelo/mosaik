@@ -46,5 +46,7 @@ namespace Ui::Touch
 
     virtual Ui::Section getCurrentSection() const = 0;
     virtual void selectSection(Ui::Section s) = 0;
+
+    virtual void setColorAdjustmentColor(int r, int g, int b) = 0;
   };
 }

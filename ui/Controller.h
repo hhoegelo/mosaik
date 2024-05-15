@@ -68,6 +68,7 @@ namespace Ui
     };
 
     Mapping createMapping(Ui::Toolbox t);
+    template <Ui::Toolbox T> Mapping buildMapping(Ui::Toolbox t);
     template <Ui::Toolbox T> Mapping buildMapping();
 
     template <Toolbox T, typename D>
@@ -114,5 +115,15 @@ namespace Ui
     Tools::ReactiveVar<bool> m_saveArmed { false };
     std::array<Tools::ReactiveVar<MuteState>, 6> m_savedMutes;
     void handleMuteSlot(int i);
+
+    // Color Adjustment
+    std::unique_ptr<Tools::DeferredComputations> m_colorAdjustmentComputations;
+    Tools::ReactiveVar<int> m_led_R;
+    Tools::ReactiveVar<int> m_led_G;
+    Tools::ReactiveVar<int> m_led_B;
+
+    Tools::ReactiveVar<int> m_screen_R;
+    Tools::ReactiveVar<int> m_screen_G;
+    Tools::ReactiveVar<int> m_screen_B;
   };
 }

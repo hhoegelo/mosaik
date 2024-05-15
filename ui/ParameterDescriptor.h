@@ -9,10 +9,6 @@ namespace Ui
 {
   template <Core::ParameterId id> struct ParameterDescriptor : Core::ParameterDescriptor<id>
   {
-    static std::string format(typename Core::ParameterDescriptor<id>::Type t)
-    {
-      return "";
-    }
   };
 
   template <>
@@ -38,6 +34,24 @@ namespace Ui
 
     constexpr static auto title = "Volume";
     constexpr static float acceleration = 5.f;
+  };
+
+  template <>
+  struct ParameterDescriptor<Core::ParameterId::SampleFile> : Core::ParameterDescriptor<Core::ParameterId::SampleFile>
+  {
+    static std::string format(Core::Path t)
+    {
+      return t.generic_string();
+    }
+  };
+
+  template <>
+  struct ParameterDescriptor<Core::ParameterId::Pattern> : Core::ParameterDescriptor<Core::ParameterId::Pattern>
+  {
+    static std::string format(Core::Pattern t)
+    {
+      return "";
+    }
   };
 
   template <>

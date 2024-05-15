@@ -36,9 +36,11 @@ namespace Ui
       void setLed(Knob l, Color c) override;
       void setLed(SoftButton s, Color c) override;
       void setLed(Step s, Color c) override;
+      void setLed(SoftButton s, uint8_t r, uint8_t g, uint8_t b) override;
 
       void setColor(const std::string &widgetName, Color c);
       void setColor(const Gtk::Widget *widget, Color c);
+      void setColor(const Widget *widget, uint8_t r, uint8_t g, uint8_t b);
 
       Widget *buildStep(Step step);
       Widget *buildKnob(Knob knob);

@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 20)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBS REQUIRED IMPORTED_TARGET alsa glibmm-2.4 giomm-2.4)
 
-add_library(${PROJECT_NAME} STATIC Alsa.cpp Monitor.cpp
+add_library(${PROJECT_NAME} STATIC Alsa.cpp Monitor.cpp Controller.cpp Controller.h
         Sync.cpp
         Sync.h)
 target_include_directories(${PROJECT_NAME} PRIVATE ${LIBS_INCLUDE_DIRS})
