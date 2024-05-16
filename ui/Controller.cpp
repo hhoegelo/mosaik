@@ -38,6 +38,7 @@ namespace Ui
 
   void Controller::run()
   {
+
     m_computations.add(
         [this]
         {
@@ -45,7 +46,7 @@ namespace Ui
           {
             auto toolbox = p->getToolboxes().getSelectedToolbox();
             m_inputMapping = createMapping(toolbox);
-
+            /*
             if(toolbox == Ui::Toolbox::ColorAdjust)
             {
               m_colorAdjustmentComputations = std::make_unique<Tools::DeferredComputations>();
@@ -67,8 +68,10 @@ namespace Ui
             {
               m_colorAdjustmentComputations.reset();
             }
+            */
           }
         });
+
     m_computations.add([this] { showPattern(); });
   }
 
@@ -224,7 +227,7 @@ namespace Ui
   {
     if constexpr(D::action == UiAction::Invoke)
       return std::make_pair(std::get<SoftButton>(D::position),
-                            [this]() { this->invokeButtonAction<T, typename D::ID>(); });
+                            [this]() { this->invokeButtonAction<typename D::ID>(); });
     else
       UNSUPPORTED_BRANCH();
   }
@@ -325,42 +328,42 @@ namespace Ui
     return mapping;
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Global, ToolboxDefinition<Toolbox::Global>::TapNSync>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Global>::TapNSync>()
   {
     m_core.addTap();
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Tile, ToolboxDefinition<Toolbox::Tile>::Up>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Tile>::Up>()
   {
     if(auto p = m_touchUi.get())
       p->getToolboxes().getFileBrowser().dec();
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Tile, ToolboxDefinition<Toolbox::Tile>::Down>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Tile>::Down>()
   {
     if(auto p = m_touchUi.get())
       p->getToolboxes().getFileBrowser().inc();
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Tile, ToolboxDefinition<Toolbox::Tile>::Leave>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Tile>::Leave>()
   {
     if(auto p = m_touchUi.get())
       p->getToolboxes().getFileBrowser().up();
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Tile, ToolboxDefinition<Toolbox::Tile>::Enter>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Tile>::Enter>()
   {
     if(auto p = m_touchUi.get())
       p->getToolboxes().getFileBrowser().down();
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Tile, ToolboxDefinition<Toolbox::Tile>::Prelisten>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Tile>::Prelisten>()
   {
     if(auto p = m_touchUi.get())
       p->getToolboxes().getFileBrowser().prelisten();
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Tile, ToolboxDefinition<Toolbox::Tile>::Load>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Tile>::Load>()
   {
     if(auto p = m_touchUi.get())
       p->getToolboxes().getFileBrowser().load();
@@ -488,21 +491,21 @@ namespace Ui
     }
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::All>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Steps>::All>()
   {
     Core::Pattern pattern = {};
     pattern.fill(true);
     m_core.setParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern, pattern);
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::None>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Steps>::None>()
   {
     Core::Pattern pattern = {};
     pattern.fill(false);
     m_core.setParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern, pattern);
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::Invert>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Steps>::Invert>()
   {
     m_wizardInvert = !m_wizardInvert.get();
     auto pattern = std::get<Core::Pattern>(m_core.getParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern));
@@ -511,12 +514,12 @@ namespace Ui
     m_core.setParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern, pattern);
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::Mirror>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Steps>::Mirror>()
   {
     m_wizardMirror = !m_wizardMirror.get();
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::LastMute>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Mute>::LastMute>()
   {
     for(uint8_t c = 0; c < NUM_CHANNELS; c++)
     {
@@ -527,47 +530,47 @@ namespace Ui
     }
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::SaveArmed>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Mute>::SaveArmed>()
   {
     m_saveArmed = true;
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::SaveUnarmed>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Mute>::SaveUnarmed>()
   {
     m_saveArmed = false;
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::Slot1>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Mute>::Slot1>()
   {
     handleMuteSlot(0);
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::Slot2>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Mute>::Slot2>()
   {
     handleMuteSlot(1);
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::Slot3>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Mute>::Slot3>()
   {
     handleMuteSlot(2);
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::Slot4>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Mute>::Slot4>()
   {
     handleMuteSlot(3);
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::Slot5>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Mute>::Slot5>()
   {
     handleMuteSlot(4);
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::Slot6>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Mute>::Slot6>()
   {
     handleMuteSlot(5);
   }
 
-  template <> void Controller::invokeButtonAction<Toolbox::Mute, ToolboxDefinition<Toolbox::Mute>::UnmuteAll>()
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Mute>::UnmuteAll>()
   {
     for(uint8_t c = 0; c < NUM_CHANNELS; c++)
     {
@@ -749,7 +752,7 @@ namespace Ui
   {
     return m_saveArmed.get() ? "Armed" : "";
   }
-
+  /*
   // Color Adjustment
   template <>
   void Controller::invokeKnobAction<Toolbox::ColorAdjust, ToolboxDefinition<Toolbox::ColorAdjust>::Led_R>(int inc)
@@ -815,5 +818,33 @@ namespace Ui
   template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::ColorAdjust>::Screen_B>()
   {
     return std::to_string(m_screen_B.get());
+  }
+*/
+  template <> void Controller::invokeButtonAction<PreviousToolbox>()
+  {
+    if(auto t = m_touchUi.get())
+    {
+      auto s = static_cast<int>(t->getToolboxes().getSelectedToolbox());
+      if(s == 0)
+        s = static_cast<int>(Ui::Toolbox::NUM_TOOLBOXES) - 1;
+      else
+        s = s - 1;
+
+      t->getToolboxes().selectToolbox(static_cast<Ui::Toolbox>(s));
+    }
+  }
+
+  template <> void Controller::invokeButtonAction<NextToolbox>()
+  {
+    if(auto t = m_touchUi.get())
+    {
+      auto s = static_cast<int>(t->getToolboxes().getSelectedToolbox());
+      if(s == static_cast<int>(Ui::Toolbox::NUM_TOOLBOXES) - 1)
+        s = 0;
+      else
+        s = s + 1;
+
+      t->getToolboxes().selectToolbox(static_cast<Ui::Toolbox>(s));
+    }
   }
 }

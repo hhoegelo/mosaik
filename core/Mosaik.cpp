@@ -89,7 +89,7 @@ namespace Core::Api
     {
       using T = ParameterDescriptor<ParameterId::EnvelopeFadeInPos>;
 
-      return { .set = [](const ParameterValue &) { throw std::runtime_error("should not be called"); },
+      return { .set = [&target](const ParameterValue &v) { target = std::get<FramePos>(v); },
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
                .get = [&target]() -> ParameterValue { return target.get(); },
                .inc =
@@ -120,7 +120,7 @@ namespace Core::Api
     {
       using T = ParameterDescriptor<ParameterId::EnvelopeFadedInPos>;
 
-      return { .set = [](const ParameterValue &) { throw std::runtime_error("should not be called"); },
+      return { .set = [&target](const ParameterValue &v) { target = std::get<FramePos>(v); },
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
                .get = [&target]() -> ParameterValue { return target.get(); },
                .inc =
@@ -146,7 +146,7 @@ namespace Core::Api
     {
       using T = ParameterDescriptor<ParameterId::EnvelopeFadeOutPos>;
 
-      return { .set = [](const ParameterValue &) { throw std::runtime_error("should not be called"); },
+      return { .set = [&target](const ParameterValue &v) { target = std::get<FramePos>(v); },
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
                .get = [&target]() -> ParameterValue { return target.get(); },
                .inc =
@@ -171,7 +171,7 @@ namespace Core::Api
     {
       using T = ParameterDescriptor<ParameterId::EnvelopeFadedOutPos>;
 
-      return { .set = [](const ParameterValue &) { throw std::runtime_error("should not be called"); },
+      return { .set = [&target](const ParameterValue &v) { target = std::get<FramePos>(v); },
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
                .get = [&target]() -> ParameterValue { return target.get(); },
                .inc =
@@ -202,7 +202,7 @@ namespace Core::Api
     {
       using T = ParameterDescriptor<ParameterId::TriggerFrame>;
 
-      return { .set = [](const ParameterValue &) { throw std::runtime_error("should not be called"); },
+      return { .set = [&target](const ParameterValue &v) { target = std::get<FramePos>(v); },
                .load = [&target](const auto &v) { target = std::get<FramePos>(v); },
                .get = [&target]() -> ParameterValue { return target.get(); },
                .inc =

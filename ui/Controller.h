@@ -79,7 +79,7 @@ namespace Ui
     template <Toolbox T, typename D> std::pair<Knob, std::function<void()>> bindKnobUiClickAction();
     template <Toolbox T, typename D> std::pair<Knob, std::function<void()>> bindKnobUiDefaultClickAction();
 
-    template <Toolbox T, typename D> void invokeButtonAction();
+    template <typename D> void invokeButtonAction();
     template <Toolbox T, typename D> void invokeKnobAction(int incs);
 
     void processStepsGapsWizard();

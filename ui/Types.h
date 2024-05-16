@@ -21,12 +21,12 @@ namespace Ui
     Tile,
     Waveform,
     Steps,
-    Playground,
-    MainPlayground,
+    //Playground,
+    //MainPlayground,
     Mute,
     MixerChannel,
     Reverb,
-    ColorAdjust,
+    //ColorAdjust,
 
     NUM_TOOLBOXES
   };
