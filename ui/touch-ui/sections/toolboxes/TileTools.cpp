@@ -4,6 +4,8 @@
 #include <gtkmm/treepath.h>
 #include <gtkmm/treeview.h>
 
+using namespace std::chrono_literals;
+
 namespace Ui::Touch
 {
   namespace
@@ -26,6 +28,7 @@ namespace Ui::Touch
   TileTools::TileTools(ToolboxesInterface &toolboxes, Core::Api::Interface &core, Ui::Controller &controller)
       : GenericMaximized(controller)
       , m_core(core)
+      , m_prelistenDelay([this] { prelisten(); })
   {
     m_files = Gtk::manage(new Gtk::FileChooserWidget());
     auto home = getenv("HOME");
@@ -39,7 +42,7 @@ namespace Ui::Touch
     auto paths = findChildWidget(m_files, "browse_header_revealer");
     paths->set_visible(false);
     paths->set_no_show_all();
-    
+
     pack_start(*m_files, true, true);
 
     m_computations.add(
@@ -67,17 +70,34 @@ namespace Ui::Touch
   void TileTools::down()
   {
     if(auto f = m_files->get_file())
-      m_files->set_current_folder_file(f);
+    {
+      if(f->query_file_type() == Gio::FILE_TYPE_DIRECTORY)
+      {
+        m_files->set_current_folder_file(f);
+      }
+    }
+
+    m_prelistenDelay.refresh(10ms);
   }
 
   void TileTools::inc()
   {
-    navigate(m_files, [](auto &p) { p.next(); });
+    navigate(m_files,
+             [this](auto &p)
+             {
+               p.next();
+               m_prelistenDelay.refresh(200ms);
+             });
   }
 
   void TileTools::dec()
   {
-    navigate(m_files, [](auto &p) { p.prev(); });
+    navigate(m_files,
+             [this](auto &p)
+             {
+               p.prev();
+               m_prelistenDelay.refresh(200ms);
+             });
   }
 
   void TileTools::load()

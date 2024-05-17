@@ -2,6 +2,7 @@
 
 #include <ui/Types.h>
 #include "GenericToolbox.h"
+#include "tools/Expiration.h"
 #include <ui/touch-ui/Interface.h>
 
 namespace Gtk
@@ -27,12 +28,14 @@ namespace Ui::Touch
     void inc() override;
     void dec() override;
     void load() override;
-    void prelisten() override;
 
    private:
+    void prelisten();
+
     Core::Api::Interface &m_core;
     Gtk::FileChooserWidget *m_files;
     Tools::DeferredComputations m_computations;
     std::string m_selection;
+    Tools::Expiration m_prelistenDelay;
   };
 }

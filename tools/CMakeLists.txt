@@ -8,6 +8,8 @@ pkg_check_modules(LIBS REQUIRED IMPORTED_TARGET glibmm-2.4)
 add_library(${PROJECT_NAME}
         ReactiveVar.h
         ReactiveVar.cpp
+        Expiration.cpp
+        Expiration.h
         Math.h
         Format.cpp
         Format.h)

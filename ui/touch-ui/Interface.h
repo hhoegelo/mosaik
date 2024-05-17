@@ -23,7 +23,6 @@ namespace Ui::Touch
     virtual ~FileBrowserInterface() = default;
     virtual void inc() = 0;
     virtual void dec() = 0;
-    virtual void prelisten() = 0;
     virtual void load() = 0;
     virtual void up() = 0;
     virtual void down() = 0;

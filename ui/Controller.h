@@ -71,16 +71,16 @@ namespace Ui
     template <Ui::Toolbox T> Mapping buildMapping(Ui::Toolbox t);
     template <Ui::Toolbox T> Mapping buildMapping();
 
-    template <Toolbox T, typename D>
-    std::pair<Knob, std::function<void(int)>> bindKnobUiParameterAction(float factor = 1.0f);
-    template <Toolbox T, typename D> std::pair<SoftButton, std::function<void()>> bindButtonUiParameterAction();
-    template <Toolbox T, typename D> std::pair<SoftButton, std::function<void()>> bindButtonUiInvokeAction();
-    template <Toolbox T, typename D> std::pair<Knob, std::function<void(int)>> bindKnobUiInvokeAction();
-    template <Toolbox T, typename D> std::pair<Knob, std::function<void()>> bindKnobUiClickAction();
-    template <Toolbox T, typename D> std::pair<Knob, std::function<void()>> bindKnobUiDefaultClickAction();
+    template <typename D> std::pair<Knob, std::function<void(int)>> bindKnobUiParameterAction(float factor = 1.0f);
+    template <typename D> std::pair<SoftButton, std::function<void()>> bindButtonUiParameterAction();
+    template <typename D> std::pair<SoftButton, std::function<void()>> bindButtonUiInvokeAction();
+    template <typename D> std::pair<Knob, std::function<void(int)>> bindKnobUiInvokeAction();
+    template <typename D> std::pair<Knob, std::function<void()>> bindKnobUiClickAction();
+    template <typename D> std::pair<Knob, std::function<void()>> bindKnobUiDefaultClickAction();
 
     template <typename D> void invokeButtonAction();
-    template <Toolbox T, typename D> void invokeKnobAction(int incs);
+    template <typename D> void invokeKnobAction(int incs);
+    template <typename D> void invokeKnobClickAction();
 
     void processStepsGapsWizard();
 

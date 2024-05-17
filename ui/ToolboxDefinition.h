@@ -258,9 +258,9 @@ namespace Ui
       static constexpr auto title = "Load";
     };
 
-    struct Prelisten
+    struct IncDec
     {
-      static constexpr auto title = "Prelisten";
+      static constexpr auto title = "Inc/Dec";
     };
 
     using MaximizedCustom = Entries<
@@ -269,11 +269,12 @@ namespace Ui
         MaximizedCustomEntry<Leave, Color::Blue, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthWest>,
         MaximizedCustomEntry<Enter, Color::Blue, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthEast>,
         MaximizedCustomEntry<Load, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_North>,
-        MaximizedCustomEntry<Prelisten, Color::Green, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_East>,
 
         MaximizedCustomEntry<PreviousToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke,
                              SoftButton::Left_NorthWest>,
-        MaximizedCustomEntry<NextToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_North>>;
+        MaximizedCustomEntry<NextToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_North>,
+        MaximizedCustomEntry<IncDec, Color::Blue, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::SouthEast>,
+        MaximizedCustomEntry<Load, Color::Blue, UiEvent::KnobClick, UiAction::Invoke, Knob::SouthEast>>;
   };
 
   template <> struct ToolboxDefinition<Toolbox::Waveform>

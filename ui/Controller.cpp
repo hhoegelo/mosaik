@@ -167,8 +167,7 @@ namespace Ui
     return buildMapping<static_cast<Ui::Toolbox>(0)>(t);
   }
 
-  template <Toolbox T, typename D>
-  std::pair<Knob, std::function<void(int)>> Controller::bindKnobUiParameterAction(float factor)
+  template <typename D> std::pair<Knob, std::function<void(int)>> Controller::bindKnobUiParameterAction(float factor)
   {
     constexpr bool isGlobal = Core::GlobalParameters<Core::NoWrap>::contains(D::id);
     if constexpr(D::action == UiAction::IncDec)
@@ -193,37 +192,36 @@ namespace Ui
       UNSUPPORTED_BRANCH();
   }
 
-  template <Toolbox T, typename D>
-  std::pair<SoftButton, std::function<void()>> Controller::bindButtonUiParameterAction()
+  template <typename D> std::pair<SoftButton, std::function<void()>> Controller::bindButtonUiParameterAction()
   {
     if constexpr(D::action == UiAction::Toggle)
       return std::make_pair(std::get<SoftButton>(D::position),
                             [this]() { m_core.toggleSelectedTilesParameter(D::id); });
     else if constexpr(D::action == UiAction::Invoke)
-      return bindButtonUiInvokeAction<T, D>();
+      return bindButtonUiInvokeAction<D>();
     else
       UNSUPPORTED_BRANCH();
   }
 
-  template <Toolbox T, typename D> std::pair<Knob, std::function<void()>> Controller::bindKnobUiClickAction()
+  template <typename D> std::pair<Knob, std::function<void()>> Controller::bindKnobUiClickAction()
   {
     if constexpr(D::action == UiAction::Default)
-      return bindKnobUiDefaultClickAction<T, D>();
+      return bindKnobUiDefaultClickAction<D>();
+    else if constexpr(D::action == UiAction::Invoke)
+      return std::make_pair(std::get<Knob>(D::position), [this]() { this->invokeKnobClickAction<typename D::ID>(); });
     else
       UNSUPPORTED_BRANCH();
   }
 
-  template <Toolbox T, typename D> std::pair<Knob, std::function<void()>> Controller::bindKnobUiDefaultClickAction()
+  template <typename D> std::pair<Knob, std::function<void()>> Controller::bindKnobUiDefaultClickAction()
   {
-    printf("set default\n");
-
     constexpr bool isGlobal = Core::GlobalParameters<Core::NoWrap>::contains(D::id);
     auto tile = isGlobal ? Core::Address {} : m_core.getSelectedTile();
     return std::make_pair(std::get<Knob>(D::position), [this, tile]()
                           { m_core.setParameter(tile, D::id, ParameterDescriptor<D::id>::defaultValue); });
   }
 
-  template <Toolbox T, typename D> std::pair<SoftButton, std::function<void()>> Controller::bindButtonUiInvokeAction()
+  template <typename D> std::pair<SoftButton, std::function<void()>> Controller::bindButtonUiInvokeAction()
   {
     if constexpr(D::action == UiAction::Invoke)
       return std::make_pair(std::get<SoftButton>(D::position),
@@ -232,11 +230,10 @@ namespace Ui
       UNSUPPORTED_BRANCH();
   }
 
-  template <Toolbox T, typename D> std::pair<Knob, std::function<void(int)>> Controller::bindKnobUiInvokeAction()
+  template <typename D> std::pair<Knob, std::function<void(int)>> Controller::bindKnobUiInvokeAction()
   {
     if constexpr(D::action == UiAction::Invoke)
-      return std::make_pair(std::get<Knob>(D::position),
-                            [this](int i) { this->invokeKnobAction<T, typename D::ID>(i); });
+      return std::make_pair(std::get<Knob>(D::position), [this](int i) { this->invokeKnobAction<typename D::ID>(i); });
     else
       UNSUPPORTED_BRANCH();
   }
@@ -257,39 +254,39 @@ namespace Ui
           using D = decltype(a);
           if constexpr(D::event == UiEvent::ReleasedKnobRotate)
           {
-            mapping.knobIncDecReleased.insert(bindKnobUiParameterAction<T, D>());
+            mapping.knobIncDecReleased.insert(bindKnobUiParameterAction<D>());
             setLed(std::get<Knob>(D::position), D::color);
 
             using P = ParameterDescriptor<D::id>;
 
             if constexpr(requires(P) { P::defaultValue; })
             {
-              mapping.knobClick.insert(bindKnobUiDefaultClickAction<T, D>());
+              mapping.knobClick.insert(bindKnobUiDefaultClickAction<D>());
             }
 
             if constexpr(requires(P) { P::acceleration; })
             {
-              mapping.knobIncDecPressed.insert(bindKnobUiParameterAction<T, D>(P::acceleration));
+              mapping.knobIncDecPressed.insert(bindKnobUiParameterAction<D>(P::acceleration));
             }
           }
           else if constexpr(D::event == UiEvent::PressedKnobRotate)
           {
-            mapping.knobIncDecPressed.insert(bindKnobUiParameterAction<T, D>());
+            mapping.knobIncDecPressed.insert(bindKnobUiParameterAction<D>());
             setLed(std::get<Knob>(D::position), D::color);
           }
           else if constexpr(D::event == UiEvent::ButtonPress)
           {
-            mapping.buttonPressed.insert(bindButtonUiParameterAction<T, D>());
+            mapping.buttonPressed.insert(bindButtonUiParameterAction<D>());
             setLed(std::get<SoftButton>(D::position), D::color);
           }
           else if constexpr(D::event == UiEvent::ButtonRelease)
           {
-            mapping.buttonReleased.insert(bindButtonUiParameterAction<T, D>());
+            mapping.buttonReleased.insert(bindButtonUiParameterAction<D>());
             setLed(std::get<SoftButton>(D::position), D::color);
           }
           else if constexpr(D::event == UiEvent::KnobClick)
           {
-            mapping.knobClick.insert(bindKnobUiClickAction<T, D>());
+            mapping.knobClick.insert(bindKnobUiClickAction<D>());
             setLed(std::get<Knob>(D::position), D::color);
           }
           else
@@ -303,22 +300,27 @@ namespace Ui
 
           if constexpr(D::event == UiEvent::ButtonPress)
           {
-            mapping.buttonPressed.insert(bindButtonUiInvokeAction<T, D>());
+            mapping.buttonPressed.insert(bindButtonUiInvokeAction<D>());
             setLed(std::get<SoftButton>(D::position), D::color);
           }
           else if constexpr(D::event == UiEvent::ButtonRelease)
           {
-            mapping.buttonReleased.insert(bindButtonUiInvokeAction<T, D>());
+            mapping.buttonReleased.insert(bindButtonUiInvokeAction<D>());
             setLed(std::get<SoftButton>(D::position), D::color);
           }
           else if constexpr(D::event == UiEvent::ReleasedKnobRotate)
           {
-            mapping.knobIncDecReleased.insert(bindKnobUiInvokeAction<T, D>());
+            mapping.knobIncDecReleased.insert(bindKnobUiInvokeAction<D>());
             setLed(std::get<Knob>(D::position), D::color);
           }
           else if constexpr(D::event == UiEvent::PressedKnobRotate)
           {
-            mapping.knobIncDecPressed.insert(bindKnobUiInvokeAction<T, D>());
+            mapping.knobIncDecPressed.insert(bindKnobUiInvokeAction<D>());
+            setLed(std::get<Knob>(D::position), D::color);
+          }
+          else if constexpr(D::event == UiEvent::KnobClick)
+          {
+            mapping.knobClick.insert(bindKnobUiClickAction<D>());
             setLed(std::get<Knob>(D::position), D::color);
           }
           else
@@ -357,33 +359,43 @@ namespace Ui
       p->getToolboxes().getFileBrowser().down();
   }
 
-  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Tile>::Prelisten>()
-  {
-    if(auto p = m_touchUi.get())
-      p->getToolboxes().getFileBrowser().prelisten();
-  }
-
   template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Tile>::Load>()
   {
     if(auto p = m_touchUi.get())
       p->getToolboxes().getFileBrowser().load();
   }
 
-  template <> void Controller::invokeKnobAction<Toolbox::Waveform, ToolboxDefinition<Toolbox::Waveform>::Zoom>(int inc)
+  template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::Tile>::IncDec>(int inc)
+  {
+    if(auto p = m_touchUi.get())
+    {
+      while(inc > 0)
+      {
+        p->getToolboxes().getFileBrowser().inc();
+        inc--;
+      }
+
+      while(inc < 0)
+      {
+        p->getToolboxes().getFileBrowser().dec();
+        inc++;
+      }
+    }
+  }
+
+  template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::Waveform>::Zoom>(int inc)
   {
     if(auto p = m_touchUi.get())
       p->getToolboxes().getWaveform().incZoom(inc);
   }
 
-  template <>
-  void Controller::invokeKnobAction<Toolbox::Waveform, ToolboxDefinition<Toolbox::Waveform>::Scroll>(int inc)
+  template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::Waveform>::Scroll>(int inc)
   {
     if(auto p = m_touchUi.get())
       p->getToolboxes().getWaveform().incScroll(inc);
   }
 
-  template <>
-  void Controller::invokeKnobAction<Toolbox::Waveform, ToolboxDefinition<Toolbox::Waveform>::HitPoint>(int inc)
+  template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::Waveform>::HitPoint>(int inc)
   {
     if(auto p = m_touchUi.get())
     {
@@ -394,7 +406,7 @@ namespace Ui
     }
   }
 
-  template <> void Controller::invokeKnobAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::OneFitsAll>(int inc)
+  template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::Steps>::OneFitsAll>(int inc)
   {
     m_oneFitsAllStepWizard = std::clamp(m_oneFitsAllStepWizard + inc, 0, 255);
 
@@ -428,7 +440,7 @@ namespace Ui
     m_core.setParameter(sel, Core::ParameterId::Pattern, pattern);
   }
 
-  template <> void Controller::invokeKnobAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::Rotate>(int inc)
+  template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::Steps>::Rotate>(int inc)
   {
     auto sel = m_core.getSelectedTile();
     auto pattern = std::get<Core::Pattern>(m_core.getParameter(sel, Core::ParameterId::Pattern));
@@ -445,13 +457,13 @@ namespace Ui
     m_core.setParameter(sel, Core::ParameterId::Pattern, pattern);
   }
 
-  template <> void Controller::invokeKnobAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::Steps>(int inc)
+  template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::Steps>::Steps>(int inc)
   {
     m_wizardSteps = std::clamp(m_wizardSteps + inc, 0, 64);
     processStepsGapsWizard();
   }
 
-  template <> void Controller::invokeKnobAction<Toolbox::Steps, ToolboxDefinition<Toolbox::Steps>::Gaps>(int inc)
+  template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::Steps>::Gaps>(int inc)
   {
     m_wizardGaps = std::clamp(m_wizardGaps + inc, 0, 64);
     processStepsGapsWizard();
@@ -846,5 +858,11 @@ namespace Ui
 
       t->getToolboxes().selectToolbox(static_cast<Ui::Toolbox>(s));
     }
+  }
+
+  template <> void Controller::invokeKnobClickAction<ToolboxDefinition<Toolbox::Tile>::Load>()
+  {
+    if(auto p = m_touchUi.get())
+      p->getToolboxes().getFileBrowser().load();
   }
 }
