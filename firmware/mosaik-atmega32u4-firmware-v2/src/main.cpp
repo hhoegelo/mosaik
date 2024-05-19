@@ -359,33 +359,29 @@ void process_midi_buf_rx_read(void)
 		uint8_t prevColor[3] = {};
 		uint8_t brightness = rx.byte3 << 1;
 
+		uint32_t prevCol = rgb.getPixelColor(id);
+		prevColor[_BLU] = (uint8_t)  prevCol;
+		prevColor[_GRN] = (uint8_t) (prevCol >> 8);
+		prevColor[_RED] = (uint8_t) (prevCol >> 16);
+		//prevColor[_WHT] = (uint8_t) (prevCol >> 24);
+
 		switch (color)
 		{
 			case 0: // red
 			{
 				rgb.setPixelColor(id, rgb.Color(brightness, prevColor[_GRN], prevColor[_BLU]));
-				//rgb.show();
 				break;
 			}
 			case 1: // green
 			{
 				rgb.setPixelColor(id, rgb.Color(prevColor[_RED], brightness, prevColor[_BLU]));
-				//rgb.show();
 				break;
 			}
 			case 2: // blue
 			{
 				rgb.setPixelColor(id, rgb.Color(prevColor[_RED], prevColor[_GRN], brightness));
-				//rgb.show();
 				break;
 			}
-			case 3: // white
-			{
-				rgb.setPixelColor(id, rgb.Color( brightness, brightness, brightness));
-				//rgb.show();
-				break;
-			}
-
 			case 4: // color table
 			{
 				if( rx.byte3 < 6 )
