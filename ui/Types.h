@@ -26,7 +26,7 @@ namespace Ui
     Mute,
     MixerChannel,
     Reverb,
-    //ColorAdjust,
+    ColorAdjust,
 
     NUM_TOOLBOXES
   };

@@ -43,7 +43,7 @@ namespace Ui::Touch
     // box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::MainPlayground>(*this, controller)));
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::MixerChannel>(*this, controller)));
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Reverb>(*this, controller)));
-    // box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::ColorAdjust>(*this, controller)));
+    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::ColorAdjust>(*this, controller)));
 
     scroll->add(*box);
     add(*scroll);

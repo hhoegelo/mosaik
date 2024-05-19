@@ -46,7 +46,7 @@ namespace Ui
           {
             auto toolbox = p->getToolboxes().getSelectedToolbox();
             m_inputMapping = createMapping(toolbox);
-            /*
+
             if(toolbox == Ui::Toolbox::ColorAdjust)
             {
               m_colorAdjustmentComputations = std::make_unique<Tools::DeferredComputations>();
@@ -68,7 +68,6 @@ namespace Ui
             {
               m_colorAdjustmentComputations.reset();
             }
-            */
           }
         });
 
@@ -764,10 +763,9 @@ namespace Ui
   {
     return m_saveArmed.get() ? "Armed" : "";
   }
-  /*
+
   // Color Adjustment
-  template <>
-  void Controller::invokeKnobAction<Toolbox::ColorAdjust, ToolboxDefinition<Toolbox::ColorAdjust>::Led_R>(int inc)
+  template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::ColorAdjust>::Led_R>(int inc)
   {
     m_led_R = std::clamp(m_led_R.get() + inc, 0, 127);
   }
@@ -777,8 +775,7 @@ namespace Ui
     return std::to_string(m_led_R.get());
   }
 
-  template <>
-  void Controller::invokeKnobAction<Toolbox::ColorAdjust, ToolboxDefinition<Toolbox::ColorAdjust>::Led_G>(int inc)
+  template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::ColorAdjust>::Led_G>(int inc)
   {
     m_led_G = std::clamp(m_led_G.get() + inc, 0, 127);
   }
@@ -788,8 +785,7 @@ namespace Ui
     return std::to_string(m_led_G.get());
   }
 
-  template <>
-  void Controller::invokeKnobAction<Toolbox::ColorAdjust, ToolboxDefinition<Toolbox::ColorAdjust>::Led_B>(int inc)
+  template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::ColorAdjust>::Led_B>(int inc)
   {
     m_led_B = std::clamp(m_led_B.get() + inc, 0, 127);
   }
@@ -799,8 +795,7 @@ namespace Ui
     return std::to_string(m_led_B.get());
   }
 
-  template <>
-  void Controller::invokeKnobAction<Toolbox::ColorAdjust, ToolboxDefinition<Toolbox::ColorAdjust>::Screen_R>(int inc)
+  template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::ColorAdjust>::Screen_R>(int inc)
   {
     m_screen_R = std::clamp(m_screen_R.get() + inc, 0, 255);
   }
@@ -810,8 +805,7 @@ namespace Ui
     return std::to_string(m_screen_R.get());
   }
 
-  template <>
-  void Controller::invokeKnobAction<Toolbox::ColorAdjust, ToolboxDefinition<Toolbox::ColorAdjust>::Screen_G>(int inc)
+  template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::ColorAdjust>::Screen_G>(int inc)
   {
     m_screen_G = std::clamp(m_screen_G.get() + inc, 0, 255);
   }
@@ -821,8 +815,7 @@ namespace Ui
     return std::to_string(m_screen_G.get());
   }
 
-  template <>
-  void Controller::invokeKnobAction<Toolbox::ColorAdjust, ToolboxDefinition<Toolbox::ColorAdjust>::Screen_B>(int inc)
+  template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::ColorAdjust>::Screen_B>(int inc)
   {
     m_screen_B = std::clamp(m_screen_B.get() + inc, 0, 255);
   }
@@ -831,7 +824,7 @@ namespace Ui
   {
     return std::to_string(m_screen_B.get());
   }
-*/
+
   template <> void Controller::invokeButtonAction<PreviousToolbox>()
   {
     if(auto t = m_touchUi.get())
