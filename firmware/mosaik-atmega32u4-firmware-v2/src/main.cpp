@@ -5,6 +5,12 @@
 #include "MIDIUSB.h"
 #include "Adafruit_NeoPixel.h"
 
+// colors
+#define _RED 1
+#define _GRN 2
+#define _BLU 3
+#define _WHT 0
+
 // gpios
 #define PIN_LED_HB 5
 #define PIN_SYSTICK 6
@@ -350,9 +356,36 @@ void process_midi_buf_rx_read(void)
 		uint8_t color = rx.byte1 & 0b00001111;
 		uint8_t id = rx.byte2;
 		uint8_t col_tab_pos = rx.byte3 & 0b01111111;
+		uint8_t prevColor[3] = {};
+		uint8_t brightness = rx.byte3 << 1;
 
 		switch (color)
 		{
+			case 0: // red
+			{
+				rgb.setPixelColor(id, rgb.Color(brightness, prevColor[_GRN], prevColor[_BLU]));
+				//rgb.show();
+				break;
+			}
+			case 1: // green
+			{
+				rgb.setPixelColor(id, rgb.Color(prevColor[_RED], brightness, prevColor[_BLU]));
+				//rgb.show();
+				break;
+			}
+			case 2: // blue
+			{
+				rgb.setPixelColor(id, rgb.Color(prevColor[_RED], prevColor[_GRN], brightness));
+				//rgb.show();
+				break;
+			}
+			case 3: // white
+			{
+				rgb.setPixelColor(id, rgb.Color( brightness, brightness, brightness));
+				//rgb.show();
+				break;
+			}
+
 			case 4: // color table
 			{
 				if( rx.byte3 < 6 )
