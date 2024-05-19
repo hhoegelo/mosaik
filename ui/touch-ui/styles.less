@@ -13,6 +13,8 @@
   min-width: @screen-width * 1px;
   min-height: @screen-height * 1px;
 
+  background-color: rgb(10, 10, 10);
+
   @color-red: red;
   @color-blue: blue;
   @color-green: green;
@@ -87,16 +89,16 @@
   }
 
   .tile {
-    border: 3px solid rgb(80, 80, 80);
+    border: 2px solid rgb(50, 50, 50);
     margin: 1px;
     border-radius: 0;
-    background-color: rgb(80, 80, 80);
+	background-color: rgb(50, 50, 50);
     -gtkmm__CustomObject_Tile-size: @tile-width;
 
     @string-margin: 3px;
 
     .waveform {
-      background-color: rgb(150, 150, 150);
+	  background-color: rgb(50, 50, 50);
       color: orange;
     }
 
@@ -105,7 +107,7 @@
     }
 
     .waveform:active {
-      color: white;
+	  color: rgb(170, 170, 170);
     }
 
     .sample-file {
@@ -122,14 +124,14 @@
     }
 
     .step {
-      border: 1px solid rgb(100, 100, 100);
-      background-color: rgb(60, 60, 60);
+	  border: 1px solid rgb(50, 50, 50);
+	  background-color: rgb(20, 20, 20);
       padding: 0;
       margin: 0;
     }
 
     .step.selected {
-      background-color: white;
+	  background-color: rgb(190, 190, 190);
     }
   }
 
