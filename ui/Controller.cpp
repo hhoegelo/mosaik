@@ -780,7 +780,7 @@ namespace Ui
 
   std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Led_R) const
   {
-    return std::to_string(m_led_R.get());
+    return std::to_string(m_led_R.get()*2);
   }
 
   template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::ColorAdjust>::Led_G>(int inc)
@@ -790,7 +790,7 @@ namespace Ui
 
   std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Led_G) const
   {
-    return std::to_string(m_led_G.get());
+    return std::to_string(m_led_G.get()*2);
   }
 
   template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::ColorAdjust>::Led_B>(int inc)
@@ -800,7 +800,7 @@ namespace Ui
 
   std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Led_B) const
   {
-    return std::to_string(m_led_B.get());
+    return std::to_string(m_led_B.get()*2);
   }
 
   template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::ColorAdjust>::Screen_R>(int inc)
