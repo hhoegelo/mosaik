@@ -443,32 +443,38 @@ namespace Ui
   {
     struct Led_R
     {
-      static constexpr auto title = "LED Red";
+      constexpr static auto title = "LED Red";
+      constexpr static float acceleration = 10.f;
     };
 
     struct Led_G
     {
-      static constexpr auto title = "LED Green";
+      constexpr static auto title = "LED Green";
+      constexpr static float acceleration = 10.f;
     };
 
     struct Led_B
     {
-      static constexpr auto title = "LED Blue";
+      constexpr static auto title = "LED Blue";
+      constexpr static float acceleration = 10.f;
     };
 
     struct Screen_R
     {
-      static constexpr auto title = "Screen Red";
+      constexpr static auto title = "Screen Red";
+      constexpr static float acceleration = 10.f;
     };
 
     struct Screen_G
     {
-      static constexpr auto title = "Screen Green";
+      constexpr static auto title = "Screen Green";
+      constexpr static float acceleration = 10.f;
     };
 
     struct Screen_B
     {
-      static constexpr auto title = "Screen Blue";
+      constexpr static auto title = "Screen Blue";
+      constexpr static float acceleration = 10.f;
     };
 
     constexpr static auto title = "Color Adjustment";

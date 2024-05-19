@@ -111,7 +111,7 @@ namespace Ui::Touch
               using B = decltype(a);
               if(std::holds_alternative<Knob>(B::position))
                 knobs->set(std::get<Knob>(B::position), B::ID::title, B::color,
-                           [&] { return controller.getDisplayValue<typename B::ID>(); });
+                           [&] { return controller.getDisplayValue(typename B::ID {}); });
             });
 
         pack_start(*knobs);
@@ -142,9 +142,9 @@ namespace Ui::Touch
               if(std::holds_alternative<SoftButton>(B::position))
               {
                 lButtons->set(std::get<SoftButton>(B::position), B::ID::title, B::color,
-                              [&] { return controller.getDisplayValue<typename B::ID>(); });
+                              [&] { return controller.getDisplayValue(typename B::ID {}); });
                 rButtons->set(std::get<SoftButton>(B::position), B::ID::title, B::color,
-                              [&] { return controller.getDisplayValue<typename B::ID>(); });
+                              [&] { return controller.getDisplayValue(typename B::ID {}); });
               }
             });
 

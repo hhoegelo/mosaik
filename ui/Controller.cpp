@@ -229,10 +229,11 @@ namespace Ui
       UNSUPPORTED_BRANCH();
   }
 
-  template <typename D> std::pair<Knob, std::function<void(int)>> Controller::bindKnobUiInvokeAction()
+  template <typename D> std::pair<Knob, std::function<void(int)>> Controller::bindKnobUiInvokeAction(float factor)
   {
     if constexpr(D::action == UiAction::Invoke)
-      return std::make_pair(std::get<Knob>(D::position), [this](int i) { this->invokeKnobAction<typename D::ID>(i); });
+      return std::make_pair(std::get<Knob>(D::position),
+                            [this, factor](int i) { this->invokeKnobAction<typename D::ID>(factor * i); });
     else
       UNSUPPORTED_BRANCH();
   }
@@ -310,6 +311,12 @@ namespace Ui
           else if constexpr(D::event == UiEvent::ReleasedKnobRotate)
           {
             mapping.knobIncDecReleased.insert(bindKnobUiInvokeAction<D>());
+
+            if constexpr(requires(D::ID) { D::ID::acceleration; })
+            {
+              mapping.knobIncDecPressed.insert(bindKnobUiInvokeAction<D>(D::ID::acceleration));
+            }
+
             setLed(std::get<Knob>(D::position), D::color);
           }
           else if constexpr(D::event == UiEvent::PressedKnobRotate)
@@ -672,7 +679,7 @@ namespace Ui
     return false;
   }
 
-  std::string Controller::getDisplayValue(Core::Address address, Core::ParameterId id)
+  std::string Controller::getDisplayValue(Core::Address address, Core::ParameterId id) const
   {
     std::string ret;
     if(!std::apply([&](auto... a) { return (fillString<decltype(a)>(ret, m_core, address, id) || ...); },
@@ -684,7 +691,7 @@ namespace Ui
     return ret;
   }
 
-  std::string Controller::getDisplayValue(Core::ParameterId id)
+  std::string Controller::getDisplayValue(Core::ParameterId id) const
   {
     return getDisplayValue(m_core.getSelectedTile(), id);
   }
@@ -708,58 +715,58 @@ namespace Ui
     }
   }
 
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Waveform>::Zoom>()
+  std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::Waveform>::Zoom) const
   {
     if(auto p = m_touchUi.get())
       return Tools::format("x %3.2f", p->getToolboxes().getWaveform().getZoom());
     return "";
   }
 
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Waveform>::Scroll>()
+  std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::Waveform>::Scroll) const
   {
     if(auto p = m_touchUi.get())
       return Tools::format("%" PRId64 " frames", p->getToolboxes().getWaveform().getScroll());
     return "";
   }
 
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Waveform>::HitPoint>()
+  std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::Waveform>::HitPoint) const
   {
     return Tools::format(
         "%" PRId64 " frames",
         std::get<Core::FramePos>(m_core.getParameter(m_core.getSelectedTile(), Core::ParameterId::TriggerFrame)));
   }
 
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Steps>::Gaps>()
+  std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::Steps>::Gaps) const
   {
     return std::to_string(m_wizardGaps);
   }
 
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Steps>::Steps>()
+  std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::Steps>::Steps) const
   {
     return std::to_string(m_wizardSteps);
   }
 
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Steps>::Rotate>()
+  std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::Steps>::Rotate) const
   {
     return std::to_string(m_wizardRotation);
   }
 
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Steps>::Invert>()
+  std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::Steps>::Invert) const
   {
     return m_wizardInvert.get() ? "On" : "Off";
   }
 
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Steps>::Mirror>()
+  std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::Steps>::Mirror) const
   {
     return m_wizardMirror.get() ? "On" : "Off";
   }
 
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Mute>::SaveArmed>()
+  std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::Mute>::SaveArmed) const
   {
     return m_saveArmed.get() ? "Armed" : "";
   }
 
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::Mute>::SaveUnarmed>()
+  std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::Mute>::SaveUnarmed) const
   {
     return m_saveArmed.get() ? "Armed" : "";
   }
@@ -770,7 +777,7 @@ namespace Ui
     m_led_R = std::clamp(m_led_R.get() + inc, 0, 127);
   }
 
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::ColorAdjust>::Led_R>()
+  std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Led_R) const
   {
     return std::to_string(m_led_R.get());
   }
@@ -780,7 +787,7 @@ namespace Ui
     m_led_G = std::clamp(m_led_G.get() + inc, 0, 127);
   }
 
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::ColorAdjust>::Led_G>()
+  std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Led_G) const
   {
     return std::to_string(m_led_G.get());
   }
@@ -790,7 +797,7 @@ namespace Ui
     m_led_B = std::clamp(m_led_B.get() + inc, 0, 127);
   }
 
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::ColorAdjust>::Led_B>()
+  std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Led_B) const
   {
     return std::to_string(m_led_B.get());
   }
@@ -800,7 +807,7 @@ namespace Ui
     m_screen_R = std::clamp(m_screen_R.get() + inc, 0, 255);
   }
 
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::ColorAdjust>::Screen_R>()
+  std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Screen_R) const
   {
     return std::to_string(m_screen_R.get());
   }
@@ -810,7 +817,7 @@ namespace Ui
     m_screen_G = std::clamp(m_screen_G.get() + inc, 0, 255);
   }
 
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::ColorAdjust>::Screen_G>()
+  std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Screen_G) const
   {
     return std::to_string(m_screen_G.get());
   }
@@ -820,7 +827,7 @@ namespace Ui
     m_screen_B = std::clamp(m_screen_B.get() + inc, 0, 255);
   }
 
-  template <> std::string Controller::getDisplayValue<ToolboxDefinition<Toolbox::ColorAdjust>::Screen_B>()
+  std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Screen_B) const
   {
     return std::to_string(m_screen_B.get());
   }

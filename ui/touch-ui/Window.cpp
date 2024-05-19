@@ -174,7 +174,7 @@ namespace Ui::Touch
     static std::map<const Gtk::Widget*, Glib::RefPtr<Gtk::CssProvider>> s_providers;
 
     auto css = Tools::format(R"(
-.tile {
+.color-adjust {
   background-image: none;
   background-color: rgb(%d, %d, %d);
 }

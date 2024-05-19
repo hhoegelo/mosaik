@@ -5,6 +5,7 @@
 #include "tools/ReactiveVar.h"
 #include "ui/midi-ui/Interface.h"
 #include "tools/ReactiveVar.h"
+#include "ToolboxDefinition.h"
 #include <map>
 
 namespace Core::Api
@@ -43,13 +44,30 @@ namespace Ui
     void onSoftButtonEvent(SoftButton b, ButtonEvent e);
     void onStepButtonEvent(Step b, ButtonEvent e);
 
-    std::string getDisplayValue(Core::Address address, Core::ParameterId id);
-    std::string getDisplayValue(Core::ParameterId id);
+    std::string getDisplayValue(Core::Address address, Core::ParameterId id) const;
+    std::string getDisplayValue(Core::ParameterId id) const;
 
-    template <typename ID> std::string getDisplayValue()
+    template <typename Any> std::string getDisplayValue(const Any &) const
     {
-      return "";
+      return {};
     }
+
+    std::string getDisplayValue(Ui::ToolboxDefinition<Toolbox::Waveform>::Zoom) const;
+    std::string getDisplayValue(ToolboxDefinition<Toolbox::Waveform>::Scroll) const;
+    std::string getDisplayValue(ToolboxDefinition<Toolbox::Waveform>::HitPoint) const;
+    std::string getDisplayValue(ToolboxDefinition<Toolbox::Steps>::Gaps) const;
+    std::string getDisplayValue(ToolboxDefinition<Toolbox::Steps>::Steps) const;
+    std::string getDisplayValue(ToolboxDefinition<Toolbox::Steps>::Rotate) const;
+    std::string getDisplayValue(ToolboxDefinition<Toolbox::Steps>::Invert) const;
+    std::string getDisplayValue(ToolboxDefinition<Toolbox::Steps>::Mirror) const;
+    std::string getDisplayValue(ToolboxDefinition<Toolbox::Mute>::SaveArmed) const;
+    std::string getDisplayValue(ToolboxDefinition<Toolbox::Mute>::SaveUnarmed) const;
+    std::string getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Led_R) const;
+    std::string getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Led_G) const;
+    std::string getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Led_B) const;
+    std::string getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Screen_R) const;
+    std::string getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Screen_G) const;
+    std::string getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Screen_B) const;
 
    private:
     void setLed(Step step, Color color);
@@ -74,7 +92,7 @@ namespace Ui
     template <typename D> std::pair<Knob, std::function<void(int)>> bindKnobUiParameterAction(float factor = 1.0f);
     template <typename D> std::pair<SoftButton, std::function<void()>> bindButtonUiParameterAction();
     template <typename D> std::pair<SoftButton, std::function<void()>> bindButtonUiInvokeAction();
-    template <typename D> std::pair<Knob, std::function<void(int)>> bindKnobUiInvokeAction();
+    template <typename D> std::pair<Knob, std::function<void(int)>> bindKnobUiInvokeAction(float factor = 1.0f);
     template <typename D> std::pair<Knob, std::function<void()>> bindKnobUiClickAction();
     template <typename D> std::pair<Knob, std::function<void()>> bindKnobUiDefaultClickAction();
 
@@ -126,4 +144,5 @@ namespace Ui
     Tools::ReactiveVar<int> m_screen_G;
     Tools::ReactiveVar<int> m_screen_B;
   };
+
 }
