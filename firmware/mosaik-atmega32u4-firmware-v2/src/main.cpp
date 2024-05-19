@@ -363,23 +363,25 @@ void process_midi_buf_rx_read(void)
 		prevColor[_BLU] = (uint8_t)  prevCol;
 		prevColor[_GRN] = (uint8_t) (prevCol >> 8);
 		prevColor[_RED] = (uint8_t) (prevCol >> 16);
-		//prevColor[_WHT] = (uint8_t) (prevCol >> 24);
 
 		switch (color)
 		{
-			case 0: // red
+			case 1: // red
 			{
 				rgb.setPixelColor(id, rgb.Color(brightness, prevColor[_GRN], prevColor[_BLU]));
+				rgb.show();
 				break;
 			}
-			case 1: // green
+			case 2: // green
 			{
 				rgb.setPixelColor(id, rgb.Color(prevColor[_RED], brightness, prevColor[_BLU]));
+				rgb.show();
 				break;
 			}
-			case 2: // blue
+			case 3: // blue
 			{
 				rgb.setPixelColor(id, rgb.Color(prevColor[_RED], prevColor[_GRN], brightness));
+				rgb.show();
 				break;
 			}
 			case 4: // color table
@@ -401,7 +403,6 @@ void process_midi_buf_rx_read(void)
 				{
 					rgb.setPixelColor(i, rgb.Color( 0, 0, 0 ));
 				}
-				//rgb_leds_update_flag = true;
 				rgb.show();
 				break;
 			}
