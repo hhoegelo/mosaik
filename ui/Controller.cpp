@@ -53,8 +53,9 @@ namespace Ui
               m_colorAdjustmentComputations->add(
                   [this]
                   {
-                    for(auto button : { SoftButton::Left_SouthWest, SoftButton::Left_South, SoftButton::Left_SouthEast,
-                                        SoftButton::Left_West, SoftButton::Left_Center, SoftButton::Left_East })
+                    for(auto button : { SoftButton::Right_SouthWest, SoftButton::Right_South, SoftButton::Right_SouthEast,
+                                        SoftButton::Right_West, SoftButton::Right_Center, SoftButton::Right_East,
+                                        SoftButton::Right_North, SoftButton::Right_NorthEast })
                     {
                       for(auto m : m_midiUi)
                         m->setLed(button, m_led_R, m_led_G, m_led_B);
