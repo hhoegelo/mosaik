@@ -438,7 +438,7 @@ namespace Ui
                              SoftButton::Left_NorthWest>,
         MaximizedCustomEntry<NextToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_North>>;
   };
-  /*
+
   template <> struct ToolboxDefinition<Toolbox::ColorAdjust>
   {
     struct Led_R
@@ -486,5 +486,5 @@ namespace Ui
         MaximizedCustomEntry<PreviousToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke,
                              SoftButton::Left_NorthWest>,
         MaximizedCustomEntry<NextToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_North>>;
-  };*/
+  };
 }
