@@ -13,7 +13,7 @@
   min-width: @screen-width * 1px;
   min-height: @screen-height * 1px;
 
-  background-color: rgb(10, 10, 10);
+  background-color: rgb(6, 6, 6);
 
   @color-yellow: rgb(255, 245, 20);
   @color-orange: rgb(255, 152, 0);
@@ -111,16 +111,16 @@
   }
 
   .tile {
-    border: 2px solid rgb(50, 50, 50);
+    border: 2px solid rgb(20, 20, 20);
     margin: 1px;
     border-radius: 0;
-    background-color: rgb(50, 50, 50);
+	background-color: rgb(20, 20, 20);
     -gtkmm__CustomObject_Tile-size: @tile-width;
 
     @string-margin: 3px;
 
     .waveform {
-      background-color: rgb(50, 50, 50);
+	  background-color: rgb(20, 20, 20);
       color: orange;
     }
 
@@ -146,14 +146,14 @@
     }
 
     .step {
-      border: 1px solid rgb(50, 50, 50);
-      background-color: rgb(20, 20, 20);
+	  border: 1px solid rgb(20, 20, 20);
+	  background-color: rgb(10, 10, 10);
       padding: 0;
       margin: 0;
     }
 
     .step.selected {
-      background-color: rgb(190, 190, 190);
+	  background-color: rgb(190, 190, 190);
     }
   }
 
