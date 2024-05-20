@@ -78,8 +78,12 @@ namespace Midi
   void Alsa::send(const Alsa::MidiEvent &event)
   {
     if(m_output)
-    {
       snd_rawmidi_write(m_output, event.data(), event.size());
-    }
+  }
+
+  void Alsa::send(const uint8_t &event)
+  {
+    if(m_output)
+      snd_rawmidi_write(m_output, &event, 1);
   }
 }

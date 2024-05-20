@@ -16,6 +16,7 @@ namespace Midi
     ~Alsa();
 
     void send(const MidiEvent &event);
+    void send(const uint8_t &event);
 
    private:
     void processInput();

@@ -4,36 +4,79 @@
 #include "Alsa.h"
 #include <core/Types.h>
 #include <core/api/Interface.h>
+#include <future>
+#include <atomic>
 
 namespace Midi
 {
-  Sync::Sync(Core::Api::Interface &core, const std::string &device)
+  struct Sync::Sender
+  {
+    Sender(Core::Api::Interface &core, const std::string &device)
+        : m_device(std::make_unique<::Midi::Alsa>(device, [this](const Alsa::MidiEvent &event) {}))
+    {
+      m_clockSender
+          = std::async(std::launch::async,
+                       [this, &core]
+                       {
+                         while(!m_stopSender)
+                         {
+                           m_device->send(0xF8);
+                           auto bpm = 24 * std::get<float>(core.getParameter({}, Core::ParameterId::GlobalTempo));
+                           auto diff = std::chrono::nanoseconds(static_cast<uint64_t>(60 * std::nano::den / bpm));
+                           std::this_thread::sleep_for(diff);
+                         }
+                       });
+    }
+
+    ~Sender()
+    {
+      m_stopSender = true;
+      m_clockSender.wait();
+    }
+
+    std::unique_ptr<Alsa> m_device;
+    std::atomic_bool m_stopSender { false };
+    std::future<void> m_clockSender;
+  };
+
+  Sync::Sync(Core::Api::Interface &core, const std::string &inDevice, const std::string &outDevice)
       : m_core(core)
-      , m_deviceName(device)
+      , m_inDeviceName(inDevice)
+      , m_outDeviceName(outDevice)
       , m_monitor(std::make_unique<::Midi::Monitor>())
       , m_timer(Glib::signal_timeout().connect_seconds(sigc::mem_fun(*this, &Sync::checkForMidiDevices), 1))
   {
   }
+
+  Sync::~Sync() = default;
 
   bool Sync::checkForMidiDevices()
   {
     m_monitor->poll(
         [this](auto &foundDevice)
         {
-          if(foundDevice == m_deviceName)
-            m_device = std::make_unique<::Midi::Alsa>(foundDevice,
-                                                      [this](const Alsa::MidiEvent &event)
-                                                      {
-                                                        if(event.data()[0] == 0xF8)
-                                                          onMidiClock();
-                                                        else if(event.data()[0] == 0xFA)
-                                                          one();
-                                                      });
+          if(foundDevice == m_inDeviceName)
+          {
+            m_inDevice = std::make_unique<::Midi::Alsa>(foundDevice,
+                                                        [this](const Alsa::MidiEvent &event)
+                                                        {
+                                                          if(event.data()[0] == 0xF8)
+                                                            onMidiClock();
+                                                          else if(event.data()[0] == 0xFA)
+                                                            one();
+                                                        });
+          }
+          if(foundDevice == m_outDeviceName)
+          {
+            m_sender = std::make_unique<Sender>(m_core, foundDevice);
+          }
         },
         [this](auto lostDevice)
         {
-          if(lostDevice == m_deviceName)
-            m_device.reset();
+          if(lostDevice == m_inDeviceName)
+            m_inDevice.reset();
+          if(lostDevice == m_outDeviceName)
+            m_sender.reset();
         });
     return true;
   }

@@ -30,6 +30,7 @@ int main(int args, char** argv)
     o = o("bits", value<int>(), "16 or 32 bit");
     o = o("midi-ui", value<std::string>(), "alsa midi device for the mosaik hardware UI");
     o = o("midi-sync-in", value<std::string>(), "alsa midi device for receiving midi clock and song position");
+    o = o("midi-sync-out", value<std::string>(), "alsa midi device for sending midi clock");
     o = o("midi-controller", value<std::string>(), "alsa midi device for receiving midi controller data");
     o = o("channels", value<int>(), "number of audio channel: 2 or 4");
 
@@ -58,8 +59,10 @@ int main(int args, char** argv)
 
   Dsp::Dsp dsp;
   Core::Core core(dsp.getControlApi(), Glib::MainContext::get_default());
-  Midi::Sync sync(core.getApi(), vm.count("midi-sync-in") ? vm["midi-sync-in"].as<std::string>() : "");
+
   Audio::AlsaOut audioOut(dsp.getRealtimeApi(), alsaOut, bits, channels, switchMainAndPre);
+  Midi::Sync sync(core.getApi(), vm.count("midi-sync-in") ? vm["midi-sync-in"].as<std::string>() : "",
+                  vm.count("midi-sync-out") ? vm["midi-sync-out"].as<std::string>() : "");
 
   Ui::Controller controller(core.getApi(), dsp.getDisplayApi());
   Ui::Touch::Application touchUI(core.getApi(), dsp.getDisplayApi(), controller);
