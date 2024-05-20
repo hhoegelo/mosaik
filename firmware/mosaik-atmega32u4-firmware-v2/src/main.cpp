@@ -85,6 +85,54 @@ uint8_t col_table[6][3] = {
 	{ 0, 0, 0}	// 5 off
 };
 
+#define N_COLORS 40 // see color table
+uint8_t col_table_new[N_COLORS][3] = {
+	// full brightness
+	{   0,   0,   0},	// off
+	{ 255, 255, 255},	// white 
+	{ 255, 255,   0}, 	// yellow
+	{ 255,  80,   0},	// orange
+	{ 255,   0,   0},	// red
+	{ 248,   0,  70},	// magenta
+	{   0,   0, 255},	// blue
+	{   0, 255, 255},	// light blue
+	{   0, 255, 120},	// light green
+	{   0, 255,   0},	// green
+	// 1/2 brightness
+	{   0,   0,   0},	// off
+	{ 127, 127, 127},	// white 
+	{ 127, 127,   0}, 	// yellow
+	{ 127,  80,   0},	// orange
+	{ 127,   0,   0},	// red
+	{ 124,   0,  35},	// magenta
+	{   0,   0, 127},	// blue
+	{   0, 127, 127},	// light blue
+	{   0, 127,  60},	// light green
+	{   0, 127,   0},	// green
+	// 1/3 brightness
+	{   0,   0,   0},	// off
+	{  85,  85,  85},	// white 
+	{  85,  85,   0}, 	// yellow
+	{  85,  27,   0},	// orange
+	{  85,   0,   0},	// red
+	{  83,   0,  23},	// magenta
+	{   0,   0,  85},	// blue
+	{   0,  85,  85},	// light blue
+	{   0,  85,  40},	// light green
+	{   0,  85,   0},	// green
+	// 1/4 brightness
+	{   0,   0,   0},	// off
+	{  64,  64,  64},	// white 
+	{  64,  64,   0}, 	// yellow
+	{  64,  80,   0},	// orange
+	{  64,   0,   0},	// red
+	{  62,   0,  18},	// magenta
+	{   0,   0,  64},	// blue
+	{   0,  64,  64},	// light blue
+	{   0,  64,  30},	// light green
+	{   0,  64,   0}	// green
+};
+
 void setup(void) 
 {
 	// init GPIOs
@@ -148,6 +196,72 @@ void timer1_irq()
 void process_hb(void)
 {
 	digitalWrite( PIN_LED_HB, !digitalRead( PIN_LED_HB ));
+}
+
+
+void process_midi_buf_rx_read(void)
+{
+	midiEventPacket_t rx;
+	rx = MidiUSB.read();
+
+	if (rx.header == 0x9) // NOTE ON
+	{
+		uint8_t color = rx.byte1 & 0b00001111;
+		uint8_t id = rx.byte2;
+		uint8_t col_tab_pos = rx.byte3 & 0b01111111;
+		uint8_t prevColor[3] = {};
+		uint8_t brightness = rx.byte3 << 1;
+
+		uint32_t prevCol = rgb.getPixelColor(id);
+		prevColor[_BLU] = (uint8_t)  prevCol;
+		prevColor[_GRN] = (uint8_t) (prevCol >> 8);
+		prevColor[_RED] = (uint8_t) (prevCol >> 16);
+
+		switch (color)
+		{
+			case 1: // 91: red channel
+			{
+				rgb.setPixelColor(id, rgb.Color(brightness, prevColor[_GRN], prevColor[_BLU]));
+				rgb.show();
+				break;
+			}
+			case 2: // 92: green channel
+			{
+				rgb.setPixelColor(id, rgb.Color(prevColor[_RED], brightness, prevColor[_BLU]));
+				rgb.show();
+				break;
+			}
+			case 3: // 93: blue channel
+			{
+				rgb.setPixelColor(id, rgb.Color(prevColor[_RED], prevColor[_GRN], brightness));
+				rgb.show();
+				break;
+			}
+			case 4: // 94: color table
+			{
+				if( rx.byte3 < N_COLORS )
+				{
+					//rgb.setPixelColor( id, rgb.Color( col_table[col_tab_pos][0], col_table[col_tab_pos][1], col_table[col_tab_pos][2] ));
+					rgb.setPixelColor( id, rgb.Color( col_table_new[col_tab_pos][0], col_table_new[col_tab_pos][1], col_table_new[col_tab_pos][2] ));
+				}
+				break;
+			}
+			case 5: // 95: color table: update leds
+			{
+				rgb.show();
+				break;
+			}
+			case 7: // 96: all leds off
+			{
+				for( uint8_t i = 0; i < N_RGB; i++ )
+				{
+					rgb.setPixelColor(i, rgb.Color( 0, 0, 0 ));
+				}
+				rgb.show();
+				break;
+			}
+		}
+	}
 }
 
 
@@ -346,66 +460,3 @@ void btn_check(void)
 }
 
 
-void process_midi_buf_rx_read(void)
-{
-	midiEventPacket_t rx;
-	rx = MidiUSB.read();
-
-	if (rx.header == 0x9) // NOTE ON
-	{
-		uint8_t color = rx.byte1 & 0b00001111;
-		uint8_t id = rx.byte2;
-		uint8_t col_tab_pos = rx.byte3 & 0b01111111;
-		uint8_t prevColor[3] = {};
-		uint8_t brightness = rx.byte3 << 1;
-
-		uint32_t prevCol = rgb.getPixelColor(id);
-		prevColor[_BLU] = (uint8_t)  prevCol;
-		prevColor[_GRN] = (uint8_t) (prevCol >> 8);
-		prevColor[_RED] = (uint8_t) (prevCol >> 16);
-
-		switch (color)
-		{
-			case 1: // red
-			{
-				rgb.setPixelColor(id, rgb.Color(brightness, prevColor[_GRN], prevColor[_BLU]));
-				rgb.show();
-				break;
-			}
-			case 2: // green
-			{
-				rgb.setPixelColor(id, rgb.Color(prevColor[_RED], brightness, prevColor[_BLU]));
-				rgb.show();
-				break;
-			}
-			case 3: // blue
-			{
-				rgb.setPixelColor(id, rgb.Color(prevColor[_RED], prevColor[_GRN], brightness));
-				rgb.show();
-				break;
-			}
-			case 4: // color table
-			{
-				if( rx.byte3 < 6 )
-				{
-					rgb.setPixelColor( id, rgb.Color( col_table[col_tab_pos][0], col_table[col_tab_pos][1], col_table[col_tab_pos][2] ));
-				}
-				break;
-			}
-			case 5: // update
-			{
-				rgb.show();
-				break;
-			}
-			case 7: // ALL OFF
-			{
-				for( uint8_t i = 0; i < N_RGB; i++ )
-				{
-					rgb.setPixelColor(i, rgb.Color( 0, 0, 0 ));
-				}
-				rgb.show();
-				break;
-			}
-		}
-	}
-}
