@@ -42,6 +42,9 @@ namespace Ui::Touch
               else
               {
                 core.setParameter(address, Core::ParameterId::Selected, true);
+                auto sample = std::get<Core::Path>(core.getParameter(address, Core::ParameterId::SampleFile));
+                if(exists(sample))
+                  core.setPrelistenSample(sample);
               }
               return false;
             });

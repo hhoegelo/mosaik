@@ -223,12 +223,12 @@ namespace Core::Api
       , m_sanitizeSamplePositions(Glib::MainContext::get_default(), 1)
   {
     bindParameters<GlobalParameterDescriptors>(
-        {}, m_model.globals.tempo, m_model.globals.volume, m_model.globals.prelistenVolume,
-        m_model.globals.reverbRoomSize, m_model.globals.reverbColor, m_model.globals.reverbPreDelay,
-        m_model.globals.reverbChorus, m_model.globals.reverbReturn, m_model.globals.reverbOnOff,
-        m_model.globals.playground1, m_model.globals.playground2, m_model.globals.playground3,
-        m_model.globals.playground4, m_model.globals.playground5, m_model.globals.playground6,
-        m_model.globals.playground7);
+        {}, m_model.globals.tempo, m_model.globals.tempoMultiplier, m_model.globals.volume,
+        m_model.globals.prelistenVolume, m_model.globals.reverbRoomSize, m_model.globals.reverbColor,
+        m_model.globals.reverbPreDelay, m_model.globals.reverbChorus, m_model.globals.reverbReturn,
+        m_model.globals.reverbOnOff, m_model.globals.playground1, m_model.globals.playground2,
+        m_model.globals.playground3, m_model.globals.playground4, m_model.globals.playground5,
+        m_model.globals.playground6, m_model.globals.playground7);
 
     for(auto c = 0; c < NUM_CHANNELS; c++)
     {
@@ -318,7 +318,7 @@ namespace Core::Api
     static auto firstCompilation = std::chrono::system_clock::now();
 
     auto numFramesPerMinute = SAMPLERATE * 60.0f;
-    auto num16thPerMinute = source.globals.tempo * 4;
+    auto num16thPerMinute = source.globals.tempo * 4 * source.globals.tempoMultiplier;
 
     target->framesPer16th = numFramesPerMinute / num16thPerMinute;
     target->framesPerLoop = target->framesPer16th * NUM_STEPS;
@@ -367,7 +367,7 @@ namespace Core::Api
                              const DataModel::Channel::Tile &src) const
   {
     auto numFramesPerMinute = SAMPLERATE * 60.0f;
-    auto num16thPerMinute = dataModel.globals.tempo * 4;
+    auto num16thPerMinute = dataModel.globals.tempo * 4 * dataModel.globals.tempoMultiplier;
     auto framesPer16th = static_cast<Dsp::FramePos>(numFramesPerMinute / num16thPerMinute);
     auto framePerLoop = framesPer16th * 64;
 

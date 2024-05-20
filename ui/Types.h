@@ -182,12 +182,16 @@ namespace Ui
   enum class Color
   {
     None = -1,
-    Red = 0,
-    Blue = 1,
-    Green = 2,
-    Purple = 3,
-    White = 4,
-    Off = 5,
+    Yellow,
+    Orange,
+    Red,
+    Purple,
+    Blue,
+    LightBlue,
+    LightGreen,
+    Green,
+    White,
+    Off,
   };
 
   enum class ButtonEvent
@@ -202,16 +206,26 @@ namespace Ui
   {
     switch(c)
     {
+      case Color::None:
+        return "none";
+      case Color::Yellow:
+        return "yellow";
+      case Color::Orange:
+        return "orange";
       case Color::Red:
         return "red";
+      case Color::Purple:
+        return "purple";
       case Color::Blue:
         return "blue";
+      case Color::LightBlue:
+        return "lightblue";
+      case Color::LightGreen:
+        return "lightgreen";
       case Color::Green:
         return "green";
       case Color::White:
         return "white";
-      case Color::Purple:
-        return "purple";
       case Color::Off:
         return "off";
     }

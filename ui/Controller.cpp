@@ -53,9 +53,9 @@ namespace Ui
               m_colorAdjustmentComputations->add(
                   [this]
                   {
-                    for(auto button : { SoftButton::Right_SouthWest, SoftButton::Right_South, SoftButton::Right_SouthEast,
-                                        SoftButton::Right_West, SoftButton::Right_Center, SoftButton::Right_East,
-                                        SoftButton::Right_North, SoftButton::Right_NorthEast })
+                    for(auto button : { SoftButton::Right_SouthWest, SoftButton::Right_South,
+                                        SoftButton::Right_SouthEast, SoftButton::Right_West, SoftButton::Right_Center,
+                                        SoftButton::Right_East, SoftButton::Right_North, SoftButton::Right_NorthEast })
                     {
                       for(auto m : m_midiUi)
                         m->setLed(button, m_led_R, m_led_G, m_led_B);
@@ -673,7 +673,15 @@ namespace Ui
   {
     if(Description::id == id)
     {
-      target = Description::format(std::get<typename Description::Type>(core.getParameter(address, id)));
+      if constexpr(requires(Description) { Description::format(typename Description::Type {}); })
+      {
+        target = Description::format(std::get<typename Description::Type>(core.getParameter(address, id)));
+      }
+      else
+      {
+        target = "";
+      }
+
       return true;
     }
 
@@ -780,7 +788,7 @@ namespace Ui
 
   std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Led_R) const
   {
-    return std::to_string(m_led_R.get()*2);
+    return std::to_string(m_led_R.get() * 2);
   }
 
   template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::ColorAdjust>::Led_G>(int inc)
@@ -790,7 +798,7 @@ namespace Ui
 
   std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Led_G) const
   {
-    return std::to_string(m_led_G.get()*2);
+    return std::to_string(m_led_G.get() * 2);
   }
 
   template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::ColorAdjust>::Led_B>(int inc)
@@ -800,7 +808,7 @@ namespace Ui
 
   std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Led_B) const
   {
-    return std::to_string(m_led_B.get()*2);
+    return std::to_string(m_led_B.get() * 2);
   }
 
   template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::ColorAdjust>::Screen_R>(int inc)
@@ -865,5 +873,29 @@ namespace Ui
   {
     if(auto p = m_touchUi.get())
       p->getToolboxes().getFileBrowser().load();
+  }
+
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Global>::StartSlowDown>()
+  {
+    m_core.setParameter({}, Core::ParameterId::GlobalTempoMultiplier,
+                        Core::ParameterDescriptor<Core::ParameterId::GlobalTempoMultiplier>::min);
+  }
+
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Global>::StopSlowDown>()
+  {
+    m_core.setParameter({}, Core::ParameterId::GlobalTempoMultiplier,
+                        Core::ParameterDescriptor<Core::ParameterId::GlobalTempoMultiplier>::defaultValue);
+  }
+
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Global>::StartSpeedUp>()
+  {
+    m_core.setParameter({}, Core::ParameterId::GlobalTempoMultiplier,
+                        Core::ParameterDescriptor<Core::ParameterId::GlobalTempoMultiplier>::max);
+  }
+
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Global>::StopSpeedUp>()
+  {
+    m_core.setParameter({}, Core::ParameterId::GlobalTempoMultiplier,
+                        Core::ParameterDescriptor<Core::ParameterId::GlobalTempoMultiplier>::defaultValue);
   }
 }

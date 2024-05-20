@@ -77,6 +77,26 @@ namespace Ui
       constexpr static auto title = "Tap'n Sync";
     };
 
+    struct StartSlowDown
+    {
+      constexpr static auto title = "Slow Down";
+    };
+
+    struct StopSlowDown
+    {
+      constexpr static auto title = "Slow Down";
+    };
+
+    struct StartSpeedUp
+    {
+      constexpr static auto title = "Speed Up";
+    };
+
+    struct StopSpeedUp
+    {
+      constexpr static auto title = "Speed Up";
+    };
+
     using Minimized = Entries<MinimizedParameterEntry<Core::ParameterId::GlobalVolume>,
                               MinimizedParameterEntry<Core::ParameterId::GlobalTempo>>;
     using MaximizedParameters
@@ -90,7 +110,15 @@ namespace Ui
         MaximizedCustomEntry<PreviousToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke,
                              SoftButton::Left_NorthWest>,
         MaximizedCustomEntry<NextToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_North>,
-        MaximizedCustomEntry<TapNSync, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_Center>>;
+        MaximizedCustomEntry<TapNSync, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_Center>,
+        MaximizedCustomEntry<StartSlowDown, Color::Red, UiEvent::ButtonPress, UiAction::Invoke,
+                             SoftButton::Right_SouthWest>,
+        MaximizedCustomEntry<StopSlowDown, Color::Red, UiEvent::ButtonRelease, UiAction::Invoke,
+                             SoftButton::Right_SouthWest>,
+        MaximizedCustomEntry<StartSpeedUp, Color::Red, UiEvent::ButtonPress, UiAction::Invoke,
+                             SoftButton::Right_SouthEast>,
+        MaximizedCustomEntry<StopSpeedUp, Color::Red, UiEvent::ButtonRelease, UiAction::Invoke,
+                             SoftButton::Right_SouthEast>>;
   };
   /*
   template <> struct ToolboxDefinition<Toolbox::MainPlayground>
@@ -299,11 +327,13 @@ namespace Ui
     struct Scroll
     {
       static constexpr auto title = "Scroll";
+      constexpr static float acceleration = 10.f;
     };
 
     struct HitPoint
     {
       static constexpr auto title = "Hit Point";
+      constexpr static float acceleration = 10.f;
     };
 
     using MaximizedCustom = Entries<

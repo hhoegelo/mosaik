@@ -15,11 +15,16 @@
 
   background-color: rgb(10, 10, 10);
 
-  @color-red: red;
-  @color-blue: blue;
-  @color-green: green;
-  @color-white: white;
-  @color-purple: purple;
+  @color-yellow: rgb(255, 245, 20);
+  @color-orange: rgb(255, 152, 0);
+  @color-red: rgb(255, 70, 0);
+  @color-purple: rgb(248, 94, 210);
+  @color-blue: rgb(0, 80, 255);
+  @color-lightblue: rgb(20, 215, 255);
+  @color-lightgreen: rgb(100, 255, 200);
+  @color-green: rgb(90, 255, 80);
+  @color-white: rgb(255, 255, 255);
+
   @color-off: gray;
 
   .knobs, .buttons {
@@ -37,12 +42,32 @@
       margin: 2px;
     }
 
+    .yellow {
+      border-color: @color-yellow;
+    }
+
+    .orange {
+      border-color: @color-orange;
+    }
+
     .red {
       border-color: @color-red;
     }
 
+    .purple {
+      border-color: @color-purple;
+    }
+
     .blue {
       border-color: @color-blue;
+    }
+
+    .lightblue {
+      border-color: @color-lightblue;
+    }
+
+    .lightgreen {
+      border-color: @color-lightgreen;
     }
 
     .green {
@@ -53,9 +78,6 @@
       border-color: @color-white;
     }
 
-    .purple {
-      border-color: @color-purple;
-    }
 
     .off {
       border-color: @color-off;
@@ -92,13 +114,13 @@
     border: 2px solid rgb(50, 50, 50);
     margin: 1px;
     border-radius: 0;
-	background-color: rgb(50, 50, 50);
+    background-color: rgb(50, 50, 50);
     -gtkmm__CustomObject_Tile-size: @tile-width;
 
     @string-margin: 3px;
 
     .waveform {
-	  background-color: rgb(50, 50, 50);
+      background-color: rgb(50, 50, 50);
       color: orange;
     }
 
@@ -107,7 +129,7 @@
     }
 
     .waveform:active {
-	  color: rgb(170, 170, 170);
+      color: rgb(170, 170, 170);
     }
 
     .sample-file {
@@ -124,14 +146,14 @@
     }
 
     .step {
-	  border: 1px solid rgb(50, 50, 50);
-	  background-color: rgb(20, 20, 20);
+      border: 1px solid rgb(50, 50, 50);
+      background-color: rgb(20, 20, 20);
       padding: 0;
       margin: 0;
     }
 
     .step.selected {
-	  background-color: rgb(190, 190, 190);
+      background-color: rgb(190, 190, 190);
     }
   }
 

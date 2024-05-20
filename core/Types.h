@@ -26,6 +26,7 @@ namespace Core
   {
     // Globals
     GlobalTempo,
+    GlobalTempoMultiplier,
     GlobalVolume,
     GlobalPrelistenVolume,
 

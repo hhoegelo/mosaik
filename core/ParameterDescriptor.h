@@ -17,6 +17,16 @@ namespace Core
     constexpr static Type defaultValue = 120;
   };
 
+  template <> struct ParameterDescriptor<ParameterId::GlobalTempoMultiplier>
+  {
+    constexpr static ParameterId id = ParameterId::GlobalTempoMultiplier;
+    using Type = Float;
+    constexpr static Type min = 0.8f;
+    constexpr static Type max = 1.2f;
+    constexpr static Type coarse = 0.1f;
+    constexpr static Type defaultValue = 1.0f;
+  };
+
   template <> struct ParameterDescriptor<ParameterId::GlobalVolume>
   {
     constexpr static ParameterId id = ParameterId::GlobalVolume;
@@ -396,12 +406,12 @@ namespace Core
 
   template <template <ParameterId> typename Wrapper>
   using GlobalParameters
-      = Parameters<Wrapper, ParameterId::GlobalTempo, ParameterId::GlobalVolume, ParameterId::GlobalPrelistenVolume,
-                   ParameterId::GlobalReverbRoomSize, ParameterId::GlobalReverbColor, ParameterId::GlobalReverbPreDelay,
-                   ParameterId::GlobalReverbChorus, ParameterId::GlobalReverbReturn, ParameterId::GlobalReverbOnOff,
-                   ParameterId::MainPlayground1, ParameterId::MainPlayground2, ParameterId::MainPlayground3,
-                   ParameterId::MainPlayground4, ParameterId::MainPlayground5, ParameterId::MainPlayground6,
-                   ParameterId::MainPlayground7>;
+      = Parameters<Wrapper, ParameterId::GlobalTempo, ParameterId::GlobalTempoMultiplier, ParameterId::GlobalVolume,
+                   ParameterId::GlobalPrelistenVolume, ParameterId::GlobalReverbRoomSize,
+                   ParameterId::GlobalReverbColor, ParameterId::GlobalReverbPreDelay, ParameterId::GlobalReverbChorus,
+                   ParameterId::GlobalReverbReturn, ParameterId::GlobalReverbOnOff, ParameterId::MainPlayground1,
+                   ParameterId::MainPlayground2, ParameterId::MainPlayground3, ParameterId::MainPlayground4,
+                   ParameterId::MainPlayground5, ParameterId::MainPlayground6, ParameterId::MainPlayground7>;
 
   template <template <ParameterId> typename Wrapper>
   using ChannelParameters

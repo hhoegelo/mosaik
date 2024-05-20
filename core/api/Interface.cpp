@@ -47,8 +47,11 @@ namespace Core::Api
 
         auto loadParameter = [&](auto json, Address address, auto p)
         {
-          if(json.contains(p.name))
-            this->loadParameter(address, p.id, static_cast<typename decltype(p)::Type>(json[p.name]));
+          if constexpr(requires() { p.name; })
+          {
+            if(json.contains(p.name))
+              this->loadParameter(address, p.id, static_cast<typename decltype(p)::Type>(json[p.name]));
+          }
         };
 
         if(j.contains("globals"))
@@ -83,7 +86,12 @@ namespace Core::Api
     nlohmann::json j;
 
     auto saveParameter = [&](auto &json, Address id, auto p)
-    { json[p.name] = std::get<typename decltype(p)::Type>(getParameter(id, p.id)); };
+    {
+      if constexpr(requires() { p.name; })
+      {
+        json[p.name] = std::get<typename decltype(p)::Type>(getParameter(id, p.id));
+      }
+    };
 
     std::apply([&](auto... a) { (saveParameter(j["globals"], Address {}, a), ...); }, GlobalParameterDescriptors {});
 
@@ -119,7 +127,8 @@ namespace Core::Api
   Step Interface::loopPositionToStep(Dsp::FramePos pos) const
   {
     auto numFramesPerMinute = SAMPLERATE * 60.0;
-    auto num16thPerMinute = std::get<float>(getParameter({}, ParameterId::GlobalTempo)) * 4;
+    auto num16thPerMinute = std::get<float>(getParameter({}, ParameterId::GlobalTempo)) * 4
+        * std::get<float>(getParameter({}, ParameterId::GlobalTempoMultiplier));
     auto framesPer16th = numFramesPerMinute / num16thPerMinute;
     return static_cast<Step>(std::round(static_cast<double>(pos) / framesPer16th));
   }
