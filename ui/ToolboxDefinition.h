@@ -299,11 +299,13 @@ namespace Ui
     struct Scroll
     {
       static constexpr auto title = "Scroll";
+      constexpr static float acceleration = 10.f;
     };
 
     struct HitPoint
     {
       static constexpr auto title = "Hit Point";
+      constexpr static float acceleration = 10.f;
     };
 
     using MaximizedCustom = Entries<
