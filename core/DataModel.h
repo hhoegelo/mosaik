@@ -93,6 +93,9 @@ namespace Core
     struct Globals
     {
       Reactive<ParameterId::GlobalTempo> tempo { getDefaultValue<ParameterId::GlobalTempo>() };
+      Reactive<ParameterId::GlobalTempoMultiplier> tempoMultiplier {
+        getDefaultValue<ParameterId::GlobalTempoMultiplier>()
+      };
       Reactive<ParameterId::GlobalVolume> volume { getDefaultValue<ParameterId::GlobalVolume>() };
       Reactive<ParameterId::GlobalPrelistenVolume> prelistenVolume {
         getDefaultValue<ParameterId::GlobalPrelistenVolume>()
