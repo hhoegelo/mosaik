@@ -5,11 +5,14 @@
 #include "MIDIUSB.h"
 #include "Adafruit_NeoPixel.h"
 
+#define DEBUG 1
+
 // colors
+#define _WHT 0
 #define _RED 1
 #define _GRN 2
 #define _BLU 3
-#define _WHT 0
+#define N_COLORS 40 // see color table
 
 // gpios
 #define PIN_LED_HB 5
@@ -37,7 +40,7 @@
 // buttons
 #define BTN_PRESSED 0
 #define BTN_RELEASED 1
-#define BTN_DEADTIME_MS 20
+#define BTN_DEADTIME_MS 10
 
 // buttons
 typedef enum {
@@ -71,7 +74,6 @@ void spi_read(void);
 void spi_parse(void);
 void enc_check(void);
 void btn_check(void);
-void rgb_test(void);
 void process_midi_buf_rx_read(void);
 
 Adafruit_NeoPixel rgb = Adafruit_NeoPixel( N_RGB, PIN_RGB, NEO_GRB + NEO_KHZ800 );
@@ -85,7 +87,7 @@ uint8_t col_table[6][3] = {
 	{ 0, 0, 0}	// 5 off
 };
 
-#define N_COLORS 40 // see color table
+
 uint8_t col_table_new[N_COLORS][3] = {
 	// full brightness
 	{   0,   0,   0},	// off
@@ -161,7 +163,9 @@ void setup(void)
 
 	// init scheduler
 	coos_init();
-	coos_task_add( process_hb, 0, 500 );
+	#if DEBUG
+	coos_task_add( process_hb, 0, 500 ); //only for debugging
+	#endif
 	coos_task_add( spi_read, 0, 1 );
 	coos_task_add( spi_parse, 0, 1 );
 	coos_task_add( btn_check, 0, 1 );
@@ -179,11 +183,18 @@ void loop(void)
 	{
 		systick = false;
 		coos_update();
+
+		#if DEBUG
 		digitalWrite( PIN_SYSTICK, !digitalRead( PIN_SYSTICK ));
+		#endif
 	}
+	
 	coos_dispatch();
 	process_midi_buf_rx_read();
-	//digitalWrite( PIN_CPU_IDLE, !digitalRead( PIN_CPU_IDLE ));
+
+	#if DEBUG
+	digitalWrite( PIN_CPU_IDLE, !digitalRead( PIN_CPU_IDLE ));
+	#endif
 }
 
 
