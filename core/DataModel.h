@@ -28,15 +28,21 @@ namespace Core
     using Wrapped = Reactive<id>;
   };
 
+  template <ParameterId id> struct GetType
+  {
+    using Wrapped = ParameterDescriptor<id>::Type;
+  };
+
   struct DataModel
   {
+    DataModel(const DataModel &) = delete;
+    DataModel &operator=(const DataModel &) = delete;
+
     using Globals = GlobalParameters<MakeReactive>::Wrapped;
     using Tile = TileParameters<MakeReactive>::Wrapped;
+    using Tiles = std::array<Tile, NUM_TILES>;
 
-    DataModel()
-    {
-      init();
-    }
+    DataModel();
 
     template <ParameterId id> static auto &get(const Address &a, Tile &tile)
     {
@@ -60,7 +66,7 @@ namespace Core
 
     template <ParameterId id> auto &get()
     {
-      return get<id>(globals);
+      return get<id>({}, globals);
     }
 
     template <ParameterId id> auto get() const
@@ -68,16 +74,43 @@ namespace Core
       return GlobalParameters<NoWrap>::find<id>(globals).get();
     }
 
-    void init()
+    void init();
+    void saveSnapshot(int i);
+    void loadSnapshot(int i);
+
+    struct Snapshot
     {
-      get<ParameterId::Selected>({ 0 }) = true;
-    }
+      using Globals = GlobalParameters<GetType>::Wrapped;
+      using Tile = TileParameters<GetType>::Wrapped;
+      using Tiles = std::array<Tile, NUM_TILES>;
 
+      Globals globals;
+      Tiles tiles;
+
+      template <ParameterId id> auto &get()
+      {
+        return GlobalParameters<NoWrap>::find<id>(globals);
+      }
+
+      template <ParameterId id> auto &get(const Address &a)
+      {
+        return TileParameters<NoWrap>::find<id>(tiles[a.tile.value()]);
+      }
+    };
+
+    using Snapshots = std::array<std::optional<Snapshot>, NUM_SNAPSHOTS>;
+
+    // persistent
     Globals globals;
-    std::array<Tile, NUM_TILES> tiles;
+    Tiles tiles;
+    Snapshots snapshots;
 
+    // temporary
     Tools::ReactiveVar<Path> prelistenSample { "" };
     Tools::ReactiveVar<uint8_t> prelistenInteractionCounter { 0 };
     Tools::ReactiveVar<std::optional<std::chrono::system_clock::time_point>> tappedOne;
   };
+
+  void to_json(nlohmann::json &j, const DataModel &value);
+  void from_json(const nlohmann::json &j, DataModel &value);
 }

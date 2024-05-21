@@ -41,6 +41,7 @@ namespace Ui::Touch
     // box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Playground>(*this, controller)));
     // box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::MainPlayground>(*this, controller)));
     box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Reverb>(*this, controller)));
+    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Snapshots>(*this, controller)));
 
     auto colorAdjust = new GenericToolbox<Ui::Toolbox::ColorAdjust>(*this, controller);
     colorAdjust->get_style_context()->add_class("color-adjust");

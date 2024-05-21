@@ -37,6 +37,7 @@ add_compile_definitions(NUM_STEPS=64)
 add_compile_definitions(NUM_TILES_X=6)
 add_compile_definitions(NUM_TILES_Y=6)
 add_compile_definitions(NUM_TILES=36)
+add_compile_definitions(NUM_SNAPSHOTS=6)
 
 find_package(PkgConfig REQUIRED)
 set(Boost_USE_STATIC_LIBS ON)

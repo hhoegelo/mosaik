@@ -6,6 +6,70 @@
 #include <dsp/api/control/Interface.h>
 #include <dsp/api/realtime/Interface.h>
 
+TEST_CASE("serialize")
+{
+  Core::DataModel saved;
+  saved.get<Core::ParameterId::GlobalVolume>() = -12.f;
+  saved.get<Core::ParameterId::Gain>({ 0 }) = -16.f;
+  saved.get<Core::ParameterId::Gain>({ 1 }) = -24.f;
+  nlohmann::json foo = saved;
+
+  Core::DataModel loaded;
+  from_json(foo, loaded);
+  CHECK(loaded.get<Core::ParameterId::GlobalVolume>() == -12.f);
+  CHECK(loaded.get<Core::ParameterId::Gain>({ 0 }) == -16.f);
+  CHECK(loaded.get<Core::ParameterId::Gain>({ 1 }) == -24.f);
+
+  WHEN("model is loaded")
+  {
+    int counterGlobal = 0;
+    int counterTile = 0;
+    Core::DataModel loaded;
+    loaded.get<Core::ParameterId::GlobalVolume>() = -13.0f;
+    loaded.get<Core::ParameterId::Gain>({ 3 }) = -13.0f;
+
+    Tools::ImmediateComputations c;
+    c.add(
+        [&]
+        {
+          float v = loaded.get<Core::ParameterId::GlobalVolume>();
+          counterGlobal++;
+        });
+
+    c.add(
+        [&]
+        {
+          float v = loaded.get<Core::ParameterId::Gain>({ 3 });
+          counterTile++;
+        });
+
+    CHECK(counterGlobal == 1);
+    CHECK(counterTile == 1);
+    from_json(foo, loaded);
+
+    CHECK(loaded.get<Core::ParameterId::GlobalVolume>() == -12.f);
+
+    THEN("computations are triggered")
+    {
+      CHECK(counterGlobal == 2);
+      CHECK(counterTile == 2);
+    }
+  }
+}
+
+TEST_CASE("snapshot")
+{
+  Core::DataModel d;
+  d.get<Core::ParameterId::Gain>({ 1 }) = -24.f;
+  d.saveSnapshot(4);
+  d.get<Core::ParameterId::Gain>({ 1 }) = -12.f;
+
+  CHECK(d.get<Core::ParameterId::Gain>({ 1 }) == -12.f);
+
+  d.loadSnapshot(4);
+  CHECK(d.get<Core::ParameterId::Gain>({ 1 }) == -24.f);
+}
+
 TEST_CASE("translate core to dsp")
 {
   Dsp::Dsp dsp;

@@ -3,6 +3,11 @@
 #include <core/ParameterDescriptor.h>
 #include <cmath>
 
+#define JSON_ASSERT(x)
+#include <tools/json.h>
+#include <fstream>
+#include <iostream>
+
 using namespace std::chrono_literals;
 
 namespace Core::Api
@@ -451,6 +456,11 @@ namespace Core::Api
     for(auto c = 0; c < NUM_TILES; c++)
       ret.push_back(model.get<ParameterId::SampleFile>({ c }));
 
+    for(auto s = 0; s < NUM_SNAPSHOTS; s++)
+      for(auto c = 0; c < NUM_TILES; c++)
+        if(model.snapshots[s].has_value())
+          ret.push_back(model.snapshots[s].value().get<ParameterId::SampleFile>({ c }));
+
     return ret;
   }
 
@@ -479,5 +489,38 @@ namespace Core::Api
   void Mosaik::setOne()
   {
     m_model.tappedOne = std::chrono::system_clock::now();
+  }
+
+  void Mosaik::loadSnapshot(int id)
+  {
+    m_model.loadSnapshot(id);
+  }
+
+  void Mosaik::saveSnapshot(int id)
+  {
+    m_model.saveSnapshot(id);
+  }
+
+  void Mosaik::load(const Path &path)
+  {
+    if(exists(path))
+    {
+      try
+      {
+        nlohmann::json j;
+        std::ifstream(path) >> j;
+        from_json(j, m_model);
+      }
+      catch(...)
+      {
+        std::cerr << "Could not read initial setup file." << std::endl;
+      }
+    }
+  }
+
+  void Mosaik::save(const Path &path)
+  {
+    nlohmann::json j = m_model;
+    std::ofstream(path) << j;
   }
 }

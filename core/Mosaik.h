@@ -25,6 +25,12 @@ namespace Core::Api
     Mosaik(Glib::RefPtr<Glib::MainContext> ctx, DataModel &model, Dsp::Api::Control::Interface &dsp);
     ~Mosaik() override = default;
 
+    void load(const Path &path) override;
+    void save(const Path &path) override;
+
+    void saveSnapshot(int id) override;
+    void loadSnapshot(int id) override;
+
     void setParameter(Address address, ParameterId parameterId, const ParameterValue &v) override;
     void loadParameter(Address address, ParameterId parameterId, const ParameterValue &value) override;
     void incParameter(Address address, ParameterId parameterId, int steps) override;

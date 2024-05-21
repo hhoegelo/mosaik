@@ -9,6 +9,7 @@ add_library(${PROJECT_NAME} STATIC Types.h Core.cpp api/Interface.cpp
         Mosaik.cpp
         Mosaik.h
         ParameterDescriptor.h
+        DataModel.cpp
 )
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)

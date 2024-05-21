@@ -37,7 +37,11 @@ namespace Tools
 
   ReactiveVarBase::ReactiveVarBase() = default;
 
-  ReactiveVarBase::~ReactiveVarBase() = default;
+  ReactiveVarBase::~ReactiveVarBase()
+  {
+    //
+    //
+  }
 
   void ReactiveVarBase::registerCurrentComputation() const
   {
