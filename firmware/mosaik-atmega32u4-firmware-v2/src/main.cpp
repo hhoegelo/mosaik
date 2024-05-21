@@ -5,7 +5,7 @@
 #include "MIDIUSB.h"
 #include "Adafruit_NeoPixel.h"
 
-#define DEBUG 1
+#define DEBUG 0
 
 // colors
 #define _WHT 0
