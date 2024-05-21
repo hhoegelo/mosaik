@@ -45,17 +45,13 @@ namespace Core::Api
    private:
     const Mosaik::ParamAccess &findAccess(Address address, ParameterId parameterId) const;
 
-    template <typename Parameters, typename... Args> void bindParameters(Address address, Args &...target);
-    template <typename Parameters, typename Targets, size_t... idx>
-    void bindParameters(std::integer_sequence<size_t, idx...> int_seq, Address address, Targets targets);
-    template <typename Parameters, typename Targets, size_t idx> void bindParameter(Address address, Targets targets);
-    template <ParameterId id, typename T = ParameterDescriptor<id>::Type>
-    void bindParameter(Address address, Tools::ReactiveVar<T> &target);
+    template <typename Parameters, typename Tuple> void bindParameters(Address address, Tuple &target);
+    template <typename Description, typename Tuple> void bindParameter(Address address, Tuple &target);
 
     [[nodiscard]] Dsp::AudioKernel *newDspKernel(const DataModel &dataModel) const;
 
     void translateGlobals(Dsp::AudioKernel *target, const DataModel &source) const;
-    void translateTile(const DataModel &dataModel, Dsp::AudioKernel::Tile &tgt, const DataModel::Tile &src) const;
+    void translateTile(const DataModel &dataModel, Dsp::AudioKernel::Tile &tgt, const Address &src) const;
 
     DataModel &m_model;
     std::vector<std::chrono::system_clock::time_point> m_taps;
@@ -64,5 +60,7 @@ namespace Core::Api
     std::vector<Path> getAllSamples(DataModel &model) const;
 
     Tools::DeferredComputations m_sanitizeSamplePositions;
+    void sanitizeSamplePositions(const Address &a) const;
+    void updateAudioKernel();
   };
 }

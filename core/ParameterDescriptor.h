@@ -356,6 +356,29 @@ namespace Core
     {
       (cb(ParameterDescriptor<ids> {}), ...);
     }
+
+    template <ParameterId id, typename Tuple> static constexpr auto &find(Tuple &tuple)
+    {
+      return getMatchingItem<id, std::tuple_size_v<Tuple> - 1>(tuple);
+    }
+
+    template <ParameterId id, size_t idx, typename Tuple2> static constexpr auto &getMatchingItem(Tuple2 &r)
+    {
+      constexpr auto l = std::make_tuple(ids...);
+
+      if constexpr(idx == -1)
+      {
+        throw std::invalid_argument("parameter does not exist in this tuple");
+      }
+      else if constexpr(id == std::get<idx>(l))
+      {
+        return std::get<idx>(r);
+      }
+      else
+      {
+        return getMatchingItem<id, idx - 1>(r);
+      }
+    }
   };
 
   template <template <ParameterId> typename Wrapper>
