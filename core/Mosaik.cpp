@@ -66,15 +66,13 @@ namespace Core::Api
                  target = std::get<bool>(v);
                  if(target.get())
                  {
-                   for(uint8_t c = 0; c < NUM_CHANNELS; c++)
-                     for(uint8_t t = 0; t < NUM_TILES_PER_CHANNEL; t++)
+                   for(uint8_t t = 0; t < NUM_TILES; t++)
+                   {
+                     if((address.tile != t) && std::get<bool>(core.getParameter({ t }, ParameterId::Selected)))
                      {
-                       if((address.tile != t || address.channel != c)
-                          && std::get<bool>(core.getParameter({ c, t }, ParameterId::Selected)))
-                       {
-                         core.setParameter({ c, t }, ParameterId::Selected, false);
-                       }
+                       core.setParameter({ t }, ParameterId::Selected, false);
                      }
+                   }
                  }
                },
                .load = [&target](const auto &v) { target = std::get<bool>(v); },
@@ -230,37 +228,29 @@ namespace Core::Api
         m_model.globals.playground3, m_model.globals.playground4, m_model.globals.playground5,
         m_model.globals.playground6, m_model.globals.playground7);
 
-    for(auto c = 0; c < NUM_CHANNELS; c++)
+    for(auto t = 0; t < NUM_TILES; t++)
     {
-      auto &channelSrc = m_model.channels[c];
-      bindParameters<ChannelParameterDescriptors>({ c, {} }, channelSrc.onOff, channelSrc.volume,
-                                                  channelSrc.delayPrePost, channelSrc.delaySend,
-                                                  channelSrc.reverbPrePost, channelSrc.reverbSend);
+      auto &src = model.tiles[t];
+      bindParameters<TileParameterDescriptors>(
+          { t }, src.selected, src.sample, src.reverse, src.pattern, src.balance, src.gain, src.muted, src.speed,
+          src.reverbSend, src.envelopeFadeInPos, src.envelopeFadedInPos, src.envelopeFadeOutPos,
+          src.envelopeFadedOutPos, src.triggerFrame, src.shuffle, src.playground1, src.playground2, src.playground3,
+          src.playground4, src.playground5, src.playground6, src.playground7);
 
-      for(auto t = 0; t < NUM_TILES_PER_CHANNEL; t++)
-      {
-        auto &src = channelSrc.tiles[t];
-        bindParameters<TileParameterDescriptors>(
-            { c, t }, src.selected, src.sample, src.reverse, src.pattern, src.balance, src.gain, src.muted, src.speed,
-            src.envelopeFadeInPos, src.envelopeFadedInPos, src.envelopeFadeOutPos, src.envelopeFadedOutPos,
-            src.triggerFrame, src.shuffle, src.playground1, src.playground2, src.playground3, src.playground4,
-            src.playground5, src.playground6, src.playground7);
-
-        m_sanitizeSamplePositions.add(
-            [&src, &dsp]
+      m_sanitizeSamplePositions.add(
+          [&src, &dsp]
+          {
+            auto f = src.sample.get();
+            auto s = dsp.getSamples(f);
+            if(auto l = s->size())
             {
-              auto f = src.sample.get();
-              auto s = dsp.getSamples(f);
-              if(auto l = s->size())
-              {
-                src.envelopeFadeInPos = std::clamp<FramePos>(src.envelopeFadeInPos, 0, l);
-                src.envelopeFadedInPos = std::clamp<FramePos>(src.envelopeFadedInPos, 0, l);
-                src.envelopeFadeOutPos = std::clamp<FramePos>(src.envelopeFadeOutPos, 0, l);
-                src.envelopeFadedOutPos = std::clamp<FramePos>(src.envelopeFadedOutPos, 0, l);
-                src.triggerFrame = std::clamp<FramePos>(src.triggerFrame, 0, l);
-              }
-            });
-      }
+              src.envelopeFadeInPos = std::clamp<FramePos>(src.envelopeFadeInPos, 0, l);
+              src.envelopeFadedInPos = std::clamp<FramePos>(src.envelopeFadedInPos, 0, l);
+              src.envelopeFadeOutPos = std::clamp<FramePos>(src.envelopeFadeOutPos, 0, l);
+              src.envelopeFadedOutPos = std::clamp<FramePos>(src.envelopeFadedOutPos, 0, l);
+              src.triggerFrame = std::clamp<FramePos>(src.triggerFrame, 0, l);
+            }
+          });
     }
 
     m_kernelUpdate.add(
@@ -275,9 +265,6 @@ namespace Core::Api
   {
     if(Core::GlobalParameters<Core::NoWrap>::contains(parameterId))
       address = {};
-
-    if(Core::ChannelParameters<Core::NoWrap>::contains(parameterId))
-      address.tile = {};
 
     return m_access.find({ address, parameterId })->second;
   }
@@ -347,24 +334,7 @@ namespace Core::Api
     target->sequencerStartTime = one.has_value() ? one.value() : firstCompilation;
   }
 
-  void Mosaik::translateChannel(const DataModel &dataModel, Dsp::AudioKernel::Channel &tgt,
-                                const DataModel::Channel &src) const
-  {
-    tgt.volume_dB = src.volume;
-    tgt.muteFactor = src.onOff == OnOffValues::On ? 1.0f : 0.0f;
-    tgt.preReverbDb = src.reverbPrePost == PrePostValues::Pre ? src.reverbSend.get() : c_silenceDB;
-    tgt.postReverbDb = src.reverbPrePost == PrePostValues::Post ? src.reverbSend.get() : c_silenceDB;
-    tgt.preDelayDb = src.delayPrePost == PrePostValues::Pre ? src.reverbSend.get() : c_silenceDB;
-    tgt.postDelayDb = src.delayPrePost == PrePostValues::Post ? src.reverbSend.get() : c_silenceDB;
-
-    for(uint8_t t = 0; t < NUM_TILES_PER_CHANNEL; t++)
-    {
-      translateTile(dataModel, tgt.tiles[t], src.tiles[t]);
-    }
-  }
-
-  void Mosaik::translateTile(const DataModel &dataModel, Dsp::AudioKernel::Channel::Tile &tgt,
-                             const DataModel::Channel::Tile &src) const
+  void Mosaik::translateTile(const DataModel &dataModel, Dsp::AudioKernel::Tile &tgt, const DataModel::Tile &src) const
   {
     auto numFramesPerMinute = SAMPLERATE * 60.0f;
     auto num16thPerMinute = dataModel.globals.tempo * 4 * dataModel.globals.tempoMultiplier;
@@ -408,6 +378,7 @@ namespace Core::Api
     tgt.gain_dB = src.gain;
     tgt.playbackFrameIncrement = powf(2.0f, src.speed);
     tgt.reverse = src.reverse;
+    tgt.reverbSend_dB = src.reverbSend;
 
     tgt.playground1 = src.playground1;
     tgt.playground2 = src.playground2;
@@ -448,11 +419,11 @@ namespace Core::Api
     auto r = std::make_unique<Dsp::AudioKernel>();
     translateGlobals(r.get(), dataModel);
 
-    for(auto c = 0; c < NUM_CHANNELS; c++)
+    for(auto c = 0; c < NUM_TILES; c++)
     {
-      const auto &src = dataModel.channels[c];
-      auto &tgt = r->channels[c];
-      translateChannel(dataModel, tgt, src);
+      const auto &src = dataModel.tiles[c];
+      auto &tgt = r->tiles[c];
+      translateTile(dataModel, tgt, src);
     }
 
     return r.release();
@@ -462,9 +433,8 @@ namespace Core::Api
   {
     std::vector<Path> ret { model.prelistenSample };
 
-    for(const auto &c : model.channels)
-      for(const auto &t : c.tiles)
-        ret.push_back(t.sample);
+    for(const auto &t : model.tiles)
+      ret.push_back(t.sample);
 
     return ret;
   }

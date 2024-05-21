@@ -40,7 +40,6 @@ namespace Ui::Touch
 
     std::unique_ptr<Toolboxes> m_toolboxes;
     std::unique_ptr<Tiles> m_tiles;
-    std::unique_ptr<Mixer> m_mixer;
 
     Glib::RefPtr<Gtk::StyleContext> m_context;
     Glib::RefPtr<Gio::FileMonitor> m_cssMonitor;

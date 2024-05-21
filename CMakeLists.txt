@@ -34,8 +34,9 @@ endif ()
 add_compile_definitions(SAMPLERATE=48000)
 add_compile_definitions(NUM_STEPS=64)
 
-add_compile_definitions(NUM_CHANNELS=6)
-add_compile_definitions(NUM_TILES_PER_CHANNEL=6)
+add_compile_definitions(NUM_TILES_X=6)
+add_compile_definitions(NUM_TILES_Y=6)
+add_compile_definitions(NUM_TILES=36)
 
 find_package(PkgConfig REQUIRED)
 set(Boost_USE_STATIC_LIBS ON)

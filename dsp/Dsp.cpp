@@ -120,19 +120,9 @@ namespace Dsp
 
       std::tuple<float, float> Mosaik::getLevel(Core::Address address)
       {
-        if(address.channel.has_value())
-        {
-          if(address.tile.has_value())
-            return {
-              std::exchange(m_dsp.getUiInfo().channels[address.channel.value()].tiles[address.tile.value()].levelLeft,
-                            0.f),
-              std::exchange(m_dsp.getUiInfo().channels[address.channel.value()].tiles[address.tile.value()].levelRight,
-                            0.f)
-            };
-
-          return { std::exchange(m_dsp.getUiInfo().channels[address.channel.value()].levelLeft, 0.f),
-                   std::exchange(m_dsp.getUiInfo().channels[address.channel.value()].levelRight, 0.f) };
-        }
+        if(address.tile.has_value())
+          return { std::exchange(m_dsp.getUiInfo().tiles[address.tile.value()].levelLeft, 0.f),
+                   std::exchange(m_dsp.getUiInfo().tiles[address.tile.value()].levelRight, 0.f) };
 
         return {};
       }
@@ -144,7 +134,7 @@ namespace Dsp
 
       FramePos Mosaik::getPosition(Core::Address address)
       {
-        return m_dsp.getUiInfo().channels[address.channel.value()].tiles[address.tile.value()].frame;
+        return m_dsp.getUiInfo().tiles[address.tile.value()].frame;
       }
     }
 

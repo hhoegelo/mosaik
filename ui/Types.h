@@ -24,7 +24,6 @@ namespace Ui
     //Playground,
     //MainPlayground,
     Mute,
-    MixerChannel,
     Reverb,
     ColorAdjust,
 

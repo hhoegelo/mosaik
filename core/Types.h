@@ -37,14 +37,6 @@ namespace Core
     GlobalReverbReturn,
     GlobalReverbOnOff,
 
-    // Per Channel
-    ChannelVolume,
-    ChannelReverbPrePost,
-    ChannelReverbSend,
-    ChannelDelayPrePost,
-    ChannelDelaySend,
-    ChannelOnOff,
-
     // Per Tile
     Selected,
     SampleFile,
@@ -60,6 +52,7 @@ namespace Core
     EnvelopeFadedOutPos,
     TriggerFrame,
     Speed,
+    ReverbSend,
 
     // Per Tile Playground
     Playground1,
@@ -84,33 +77,29 @@ namespace Core
   using Pattern = std::array<bool, NUM_STEPS>;
   using Float = float;
   using Bool = bool;
-  using ChannelNumber = uint32_t;
   using TileNumber = uint32_t;
 
   struct Address
   {
-    std::optional<ChannelNumber> channel;
     std::optional<TileNumber> tile;
   };
 
   inline bool operator!=(const Address &lhs, const Address &rhs)
   {
-    return lhs.channel != rhs.channel || lhs.tile != rhs.tile;
+    return lhs.tile != rhs.tile;
   }
 
   inline bool operator==(const Address &lhs, const Address &rhs)
   {
-    return lhs.channel == rhs.channel && lhs.tile == rhs.tile;
+    return lhs.tile == rhs.tile;
   }
 
   inline bool operator<(const Address &lhs, const Address &rhs)
   {
-    auto lc = lhs.channel.value_or(-1);
     auto lt = lhs.tile.value_or(-1);
-    auto rc = rhs.channel.value_or(-1);
     auto rt = rhs.tile.value_or(-1);
 
-    return std::tie(lc, lt) < std::tie(rc, rt);
+    return std::tie(lt) < std::tie(rt);
   }
 
   using FramePos = int64_t;

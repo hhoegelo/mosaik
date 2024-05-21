@@ -250,12 +250,12 @@ namespace Ui
                                           UiAction::IncDec, Knob::Center>,
                   MaximizedParameterEntry<Core::ParameterId::Speed, Color::Purple, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::Rightmost>,
-                  MaximizedParameterEntry<Core::ParameterId::Speed, Color::Purple, UiEvent::KnobClick,
-                                          UiAction::Default, Knob::Rightmost>,
                   MaximizedParameterEntry<Core::ParameterId::Balance, Color::Purple, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::Leftmost>,
                   MaximizedParameterEntry<Core::ParameterId::Shuffle, Color::Purple, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::NorthEast>,
+                  MaximizedParameterEntry<Core::ParameterId::ReverbSend, Color::Purple, UiEvent::ReleasedKnobRotate,
+                                          UiAction::IncDec, Knob::SouthWest>,
                   MaximizedParameterEntry<Core::ParameterId::Reverse, Color::Purple, UiEvent::ButtonPress,
                                           UiAction::Toggle, SoftButton::Left_Center>,
                   MaximizedParameterEntry<Core::ParameterId::Mute, Color::Red, UiEvent::ButtonPress, UiAction::Toggle,
@@ -423,30 +423,6 @@ namespace Ui
         MaximizedCustomEntry<Slot5, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_South>,
         MaximizedCustomEntry<Slot6, Color::White, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthEast>,
 
-        MaximizedCustomEntry<PreviousToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke,
-                             SoftButton::Left_NorthWest>,
-        MaximizedCustomEntry<NextToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_North>>;
-  };
-
-  template <> struct ToolboxDefinition<Toolbox::MixerChannel>
-  {
-    constexpr static auto title = "Mixer Channel";
-    using Minimized = Entries<MinimizedParameterEntry<Core::ParameterId::ChannelOnOff>,
-                              MinimizedParameterEntry<Core::ParameterId::ChannelVolume>>;
-    using MaximizedParameters
-        = Entries<MaximizedParameterEntry<Core::ParameterId::ChannelOnOff, Color::Red, UiEvent::ButtonPress,
-                                          UiAction::Toggle, SoftButton::Right_South>,
-                  MaximizedParameterEntry<Core::ParameterId::ChannelVolume, Color::Red, UiEvent::ReleasedKnobRotate,
-                                          UiAction::IncDec, Knob::Center>,
-                  MaximizedParameterEntry<Core::ParameterId::ChannelDelaySend, Color::Blue, UiEvent::ReleasedKnobRotate,
-                                          UiAction::IncDec, Knob::NorthWest>,
-                  MaximizedParameterEntry<Core::ParameterId::ChannelReverbSend, Color::Green,
-                                          UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthEast>,
-                  MaximizedParameterEntry<Core::ParameterId::ChannelDelayPrePost, Color::Blue, UiEvent::ButtonPress,
-                                          UiAction::Toggle, SoftButton::Left_Center>,
-                  MaximizedParameterEntry<Core::ParameterId::ChannelReverbPrePost, Color::Green, UiEvent::ButtonPress,
-                                          UiAction::Toggle, SoftButton::Right_Center>>;
-    using MaximizedCustom = Entries<
         MaximizedCustomEntry<PreviousToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke,
                              SoftButton::Left_NorthWest>,
         MaximizedCustomEntry<NextToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_North>>;

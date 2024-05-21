@@ -1,7 +1,6 @@
 #include "Window.h"
 #include "ui/touch-ui/tiles/Tiles.h"
 #include "ui/touch-ui/toolboxes/Toolboxes.h"
-#include "ui/touch-ui/mixer/Mixer.h"
 #include "LessToCss.h"
 #include <gtkmm/grid.h>
 #include <iostream>
@@ -13,7 +12,6 @@ namespace Ui::Touch
   Window::Window(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, Ui::Controller& controller)
       : m_toolboxes(std::make_unique<Touch::Toolboxes>(*this, core, controller))
       , m_tiles(std::make_unique<Tiles>(*this, core, dsp, controller))
-      , m_mixer(std::make_unique<Mixer>(*this, core, dsp, controller))
   {
 #if 0
     set_title("Mosaik");
@@ -64,18 +62,11 @@ namespace Ui::Touch
     auto hBox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
     hBox->get_style_context()->add_class("root");
 
-    auto left = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL));
-    left->get_style_context()->add_class("left");
-
-    hBox->pack_start(*left, false, false);
-    hBox->pack_start(*m_toolboxes, true, false);
-
     auto fixedTiles = Gtk::manage(new Gtk::Fixed());
     fixedTiles->add(*m_tiles);
-    left->pack_start(*fixedTiles, false, false);
-    auto fixedMixer = Gtk::manage(new Gtk::Fixed());
-    fixedMixer->add(*m_mixer);
-    left->pack_start(*fixedMixer, false, false);
+
+    hBox->pack_start(*fixedTiles, false, false);
+    hBox->pack_start(*m_toolboxes, true, false);
 
     fixedBox->add(*hBox);
     add(*fixedBox);

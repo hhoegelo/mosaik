@@ -136,6 +136,18 @@ namespace Ui
     constexpr static float acceleration = 10.f;
   };
 
+  template <>
+  struct ParameterDescriptor<Core::ParameterId::ReverbSend> : Core::ParameterDescriptor<Core::ParameterId::ReverbSend>
+  {
+    static std::string format(Type t)
+    {
+      return Tools::format("%2.1f dB", t);
+    }
+
+    constexpr static auto title = "Reverb";
+    constexpr static float acceleration = 10.f;
+  };
+
   namespace detail
   {
     inline std::string formatFramePos(Core::FramePos p)
@@ -297,81 +309,6 @@ namespace Ui
       : ParameterDescriptionPlayground<Core::ParameterId::Playground7>
   {
     constexpr static auto title = "Playground 7";
-  };
-
-  template <>
-  struct ParameterDescriptor<Core::ParameterId::ChannelOnOff>
-      : Core::ParameterDescriptor<Core::ParameterId::ChannelOnOff>
-  {
-    static std::string format(Type t)
-    {
-      return t == Core::OnOffValues::On ? "On" : "Off";
-    }
-
-    constexpr static auto title = "On / Off";
-  };
-
-  template <>
-  struct ParameterDescriptor<Core::ParameterId::ChannelVolume>
-      : Core::ParameterDescriptor<Core::ParameterId::ChannelVolume>
-  {
-    static std::string format(Type t)
-    {
-      return Tools::format("%3.2f dB", t);
-    }
-
-    constexpr static auto title = "Volume";
-    constexpr static float acceleration = 5.f;
-  };
-
-  template <>
-  struct ParameterDescriptor<Core::ParameterId::ChannelDelayPrePost>
-      : Core::ParameterDescriptor<Core::ParameterId::ChannelDelayPrePost>
-  {
-    static std::string format(Type t)
-    {
-      return t == Core::PrePostValues::Pre ? "Pre" : "Post";
-    }
-
-    constexpr static auto title = "Delay Pre/Post";
-  };
-
-  template <>
-  struct ParameterDescriptor<Core::ParameterId::ChannelReverbPrePost>
-      : Core::ParameterDescriptor<Core::ParameterId::ChannelReverbPrePost>
-  {
-    static std::string format(Type t)
-    {
-      return t == Core::PrePostValues::Pre ? "Pre" : "Post";
-    }
-
-    constexpr static auto title = "Rev. Pre/Post";
-  };
-
-  template <>
-  struct ParameterDescriptor<Core::ParameterId::ChannelDelaySend>
-      : Core::ParameterDescriptor<Core::ParameterId::ChannelDelaySend>
-  {
-    static std::string format(Type t)
-    {
-      return Tools::format("%3.2f dB", t);
-    }
-
-    constexpr static auto title = "Delay Send";
-    constexpr static float acceleration = 5.f;
-  };
-
-  template <>
-  struct ParameterDescriptor<Core::ParameterId::ChannelReverbSend>
-      : Core::ParameterDescriptor<Core::ParameterId::ChannelReverbSend>
-  {
-    static std::string format(Type t)
-    {
-      return Tools::format("%3.2f dB", t);
-    }
-
-    constexpr static auto title = "Reverb Send";
-    constexpr static float acceleration = 5.f;
   };
 
   template <>

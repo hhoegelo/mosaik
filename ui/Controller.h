@@ -127,9 +127,8 @@ namespace Ui
     Tools::ReactiveVar<bool> m_wizardMirror { false };
 
     // Mute
-    using MuteStatePerChannel = std::array<bool, NUM_TILES_PER_CHANNEL>;
-    using MuteState = std::array<MuteStatePerChannel, NUM_CHANNELS>;
-    MuteState m_savedMute {};
+    using MuteState = std::array<bool, NUM_TILES>;
+    MuteState m_savedMute { false };
     Tools::ReactiveVar<bool> m_saveArmed { false };
     std::array<Tools::ReactiveVar<MuteState>, 6> m_savedMutes;
     void handleMuteSlot(int i);

@@ -41,13 +41,7 @@ namespace Midi
       auto c = e[1];
       auto v = e[2];
 
-      if(c < NUM_CHANNELS)
-      {
-        using T = Core::ParameterDescriptor<Core::ParameterId::ChannelVolume>;
-        auto r = v / 127.0f;
-        auto range = T::max - T::min;
-        m_core.setParameter({ c, {} }, Core::ParameterId::ChannelVolume, T::min + range * r);
-      }
+      // TODO
     }
   }
 

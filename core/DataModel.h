@@ -34,61 +34,45 @@ namespace Core
   {
     DataModel()
     {
-      channels[0].tiles[0].selected = true;
+      tiles[0].selected = true;
     }
 
-    struct Channel
+    struct Tile
     {
-      struct Tile
-      {
-        Reactive<ParameterId::SampleFile> sample { getDefaultValue<ParameterId::SampleFile>() };
-        Reactive<ParameterId::Pattern> pattern { getDefaultValue<ParameterId::Pattern>() };
-        Reactive<ParameterId::Gain> gain { getDefaultValue<ParameterId::Gain>() };
-        Reactive<ParameterId::Balance> balance { getDefaultValue<ParameterId::Balance>() };
-        Reactive<ParameterId::Shuffle> shuffle { getDefaultValue<ParameterId::Shuffle>() };
-        Reactive<ParameterId::Mute> muted { getDefaultValue<ParameterId::Mute>() };
-        Reactive<ParameterId::Reverse> reverse { getDefaultValue<ParameterId::Reverse>() };
-        Reactive<ParameterId::Selected> selected { getDefaultValue<ParameterId::Selected>() };
+      Reactive<ParameterId::SampleFile> sample { getDefaultValue<ParameterId::SampleFile>() };
+      Reactive<ParameterId::Pattern> pattern { getDefaultValue<ParameterId::Pattern>() };
+      Reactive<ParameterId::Gain> gain { getDefaultValue<ParameterId::Gain>() };
+      Reactive<ParameterId::Balance> balance { getDefaultValue<ParameterId::Balance>() };
+      Reactive<ParameterId::Shuffle> shuffle { getDefaultValue<ParameterId::Shuffle>() };
+      Reactive<ParameterId::Mute> muted { getDefaultValue<ParameterId::Mute>() };
+      Reactive<ParameterId::Reverse> reverse { getDefaultValue<ParameterId::Reverse>() };
+      Reactive<ParameterId::Selected> selected { getDefaultValue<ParameterId::Selected>() };
 
-        Reactive<ParameterId::EnvelopeFadeInPos> envelopeFadeInPos {
-          getDefaultValue<ParameterId::EnvelopeFadeInPos>()
-        };
-        Reactive<ParameterId::EnvelopeFadedInPos> envelopeFadedInPos {
-          getDefaultValue<ParameterId::EnvelopeFadedInPos>()
-        };
-        Reactive<ParameterId::EnvelopeFadeOutPos> envelopeFadeOutPos {
-          getDefaultValue<ParameterId::EnvelopeFadeOutPos>()
-        };
-        Reactive<ParameterId::EnvelopeFadedOutPos> envelopeFadedOutPos {
-          getDefaultValue<ParameterId::EnvelopeFadedOutPos>()
-        };
-        Reactive<ParameterId::TriggerFrame> triggerFrame { getDefaultValue<ParameterId::TriggerFrame>() };
-
-        Reactive<ParameterId::Speed> speed { getDefaultValue<ParameterId::Speed>() };
-
-        Reactive<ParameterId::Playground1> playground1 { getDefaultValue<ParameterId::Playground1>() };
-        Reactive<ParameterId::Playground2> playground2 { getDefaultValue<ParameterId::Playground2>() };
-        Reactive<ParameterId::Playground3> playground3 { getDefaultValue<ParameterId::Playground3>() };
-        Reactive<ParameterId::Playground4> playground4 { getDefaultValue<ParameterId::Playground4>() };
-        Reactive<ParameterId::Playground5> playground5 { getDefaultValue<ParameterId::Playground5>() };
-        Reactive<ParameterId::Playground6> playground6 { getDefaultValue<ParameterId::Playground6>() };
-        Reactive<ParameterId::Playground7> playground7 { getDefaultValue<ParameterId::Playground7>() };
+      Reactive<ParameterId::EnvelopeFadeInPos> envelopeFadeInPos { getDefaultValue<ParameterId::EnvelopeFadeInPos>() };
+      Reactive<ParameterId::EnvelopeFadedInPos> envelopeFadedInPos {
+        getDefaultValue<ParameterId::EnvelopeFadedInPos>()
       };
-
-      Reactive<ParameterId::ChannelVolume> volume { getDefaultValue<ParameterId::ChannelVolume>() };
-      Reactive<ParameterId::ChannelDelayPrePost> delayPrePost { getDefaultValue<ParameterId::ChannelDelayPrePost>() };
-      Reactive<ParameterId::ChannelDelaySend> delaySend { getDefaultValue<ParameterId::ChannelDelaySend>() };
-      Reactive<ParameterId::ChannelReverbPrePost> reverbPrePost {
-        getDefaultValue<ParameterId::ChannelReverbPrePost>()
+      Reactive<ParameterId::EnvelopeFadeOutPos> envelopeFadeOutPos {
+        getDefaultValue<ParameterId::EnvelopeFadeOutPos>()
       };
-      Reactive<ParameterId::ChannelReverbSend> reverbSend { getDefaultValue<ParameterId::ChannelReverbSend>() };
+      Reactive<ParameterId::EnvelopeFadedOutPos> envelopeFadedOutPos {
+        getDefaultValue<ParameterId::EnvelopeFadedOutPos>()
+      };
+      Reactive<ParameterId::TriggerFrame> triggerFrame { getDefaultValue<ParameterId::TriggerFrame>() };
 
-      Reactive<ParameterId::ChannelOnOff> onOff { getDefaultValue<ParameterId::ChannelOnOff>() };
+      Reactive<ParameterId::Speed> speed { getDefaultValue<ParameterId::Speed>() };
+      Reactive<ParameterId::ReverbSend> reverbSend { getDefaultValue<ParameterId::ReverbSend>() };
 
-      std::array<Tile, NUM_TILES_PER_CHANNEL> tiles;
+      Reactive<ParameterId::Playground1> playground1 { getDefaultValue<ParameterId::Playground1>() };
+      Reactive<ParameterId::Playground2> playground2 { getDefaultValue<ParameterId::Playground2>() };
+      Reactive<ParameterId::Playground3> playground3 { getDefaultValue<ParameterId::Playground3>() };
+      Reactive<ParameterId::Playground4> playground4 { getDefaultValue<ParameterId::Playground4>() };
+      Reactive<ParameterId::Playground5> playground5 { getDefaultValue<ParameterId::Playground5>() };
+      Reactive<ParameterId::Playground6> playground6 { getDefaultValue<ParameterId::Playground6>() };
+      Reactive<ParameterId::Playground7> playground7 { getDefaultValue<ParameterId::Playground7>() };
     };
 
-    std::array<Channel, NUM_CHANNELS> channels;
+    std::array<Tile, NUM_TILES> tiles;
 
     struct Globals
     {

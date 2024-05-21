@@ -55,10 +55,7 @@ namespace Core::Api
     [[nodiscard]] Dsp::AudioKernel *newDspKernel(const DataModel &dataModel) const;
 
     void translateGlobals(Dsp::AudioKernel *target, const DataModel &source) const;
-    void translateChannel(const DataModel &dataModel, Dsp::AudioKernel::Channel &tgt,
-                          const DataModel::Channel &src) const;
-    void translateTile(const DataModel &dataModel, Dsp::AudioKernel::Channel::Tile &tgt,
-                       const DataModel::Channel::Tile &src) const;
+    void translateTile(const DataModel &dataModel, Dsp::AudioKernel::Tile &tgt, const DataModel::Tile &src) const;
 
     DataModel &m_model;
     std::vector<std::chrono::system_clock::time_point> m_taps;

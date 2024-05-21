@@ -43,8 +43,8 @@ namespace Dsp
 
     Busses busses;
 
-    for(auto c = 0; c < NUM_CHANNELS; c++)
-      m_channels[c].doAudio(busses, kernel->channels[c], m_toUi.channels[c], currentLoopPosition);
+    for(auto c = 0; c < NUM_TILES; c++)
+      m_tiles[c].doAudio(busses, kernel->tiles[c], m_toUi.tiles[c], currentLoopPosition);
 
     m_volume += std::clamp(::Tools::dBToFactor<c_silenceDB, c_maxDB>(kernel->volume_dB) - m_volume, -c_maxVolStep,
                            c_maxVolStep);

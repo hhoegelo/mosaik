@@ -25,7 +25,6 @@ add_library(mosaik-touchui STATIC
         toolboxes/SoftButtonGrid.h
         toolboxes/KnobGrid.cpp
         toolboxes/KnobGrid.h
-        mixer/Mixer.cpp
         LessToCss.cpp
         LessToCss.h
         tiles/WaveformThumb.cpp
@@ -34,8 +33,6 @@ add_library(mosaik-touchui STATIC
         toolboxes/Toolbox.cpp
         toolboxes/Toolbox.h
         tools/WidgetTools.cpp
-        mixer/Channel.cpp
-        mixer/Channel.h
 )
 
 target_compile_options(mosaik-touchui PRIVATE)

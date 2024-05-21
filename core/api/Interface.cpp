@@ -20,19 +20,12 @@ namespace Core::Api
     };
 
     GlobalParameters<NoWrap>::forEach([this, &i](auto desc) { i({}, desc); });
-    ChannelParameters<NoWrap>::forEach(
-        [this, &i](auto desc)
-        {
-          for(auto c = 0; c < NUM_CHANNELS; c++)
-            i({ c, {} }, desc);
-        });
 
     TileParameters<NoWrap>::forEach(
         [this, &i](auto desc)
         {
-          for(auto c = 0; c < NUM_CHANNELS; c++)
-            for(auto t = 0; t < NUM_TILES_PER_CHANNEL; t++)
-              i({ c, t }, desc);
+          for(auto t = 0; t < NUM_TILES; t++)
+            i({ t }, desc);
         });
   }
 
@@ -57,21 +50,10 @@ namespace Core::Api
         if(j.contains("globals"))
           std::apply([&](auto... a) { (loadParameter(j["globals"], {}, a), ...); }, GlobalParameterDescriptors {});
 
-        if(j.contains("channels"))
+        for(uint8_t t = 0; t < NUM_TILES; t++)
         {
-          for(uint8_t c = 0; c < NUM_CHANNELS; c++)
-          {
-            const auto &channelJson = j["channels"][c];
-            std::apply([&](auto... a) { (loadParameter(channelJson, Address { c, {} }, a), ...); },
-                       ChannelParameterDescriptors {});
-
-            for(uint8_t t = 0; t < NUM_TILES_PER_CHANNEL; t++)
-            {
-              const auto &tileJson = channelJson["tiles"][t];
-              std::apply([&](auto... a) { (loadParameter(tileJson, Address { c, t }, a), ...); },
-                         TileParameterDescriptors {});
-            }
-          }
+          const auto &tileJson = j["tiles"][t];
+          std::apply([&](auto... a) { (loadParameter(tileJson, Address { t }, a), ...); }, TileParameterDescriptors {});
         }
       }
       catch(...)
@@ -95,18 +77,10 @@ namespace Core::Api
 
     std::apply([&](auto... a) { (saveParameter(j["globals"], Address {}, a), ...); }, GlobalParameterDescriptors {});
 
-    for(uint8_t c = 0; c < NUM_CHANNELS; c++)
+    for(uint8_t t = 0; t < NUM_TILES; t++)
     {
-      auto &channelJson = j["channels"][c];
-      std::apply([&](auto... a) { (saveParameter(channelJson, Address { c, {} }, a), ...); },
-                 ChannelParameterDescriptors {});
-
-      for(uint8_t t = 0; t < NUM_TILES_PER_CHANNEL; t++)
-      {
-        auto &tileJson = channelJson["tiles"][t];
-        std::apply([&](auto... a) { (saveParameter(tileJson, Address { c, t }, a), ...); },
-                   TileParameterDescriptors {});
-      }
+      auto &tileJson = j["tiles"][t];
+      std::apply([&](auto... a) { (saveParameter(tileJson, Address { t }, a), ...); }, TileParameterDescriptors {});
     }
 
     std::ofstream(path) << j;
@@ -135,12 +109,10 @@ namespace Core::Api
 
   Address Interface::getSelectedTile() const
   {
-    for(auto c = 0; c < NUM_CHANNELS; c++)
-      for(auto t = 0; t < NUM_TILES_PER_CHANNEL; t++)
-        if(get<bool>(getParameter({ c, t }, ParameterId::Selected)))
-          return { c, t };
+    for(auto t = 0; t < NUM_TILES; t++)
+      if(get<bool>(getParameter({ t }, ParameterId::Selected)))
+        return { t };
 
-    return { 0, 0 };
+    return { 0 };
   }
-
 }

@@ -16,10 +16,10 @@ namespace Dsp
       FramePos frame { 0 };
     };
 
-    StereoFrame doAudio(const AudioKernel::Channel::Tile &kernel, ToUi &ui, FramePos currentLoopPosition);
+    void doAudio(Busses &busses, const AudioKernel::Tile &kernel, ToUi &ui, FramePos currentLoopPosition);
 
    private:
-    float doEnvelope(const AudioKernel::Channel::Tile &kernel, FramePos iFramePos) const;
+    float doEnvelope(const AudioKernel::Tile &kernel, FramePos iFramePos) const;
     StereoFrame doPlayground(const StereoFrame &input, float playgroundParam1, float playgroundParam2,
                              float playgroundParam3, float playgroundParam4, float playgroundParam5,
                              float playgroundParam6, float playgroundParam7);
@@ -30,6 +30,8 @@ namespace Dsp
     float m_gainLeft { 1.0f };
     float m_gainRight { 1.0f };
     float m_framePosition = c_invalidFramePosF32;
+
+    float m_reverbSend { 0.0f };
 
     // playground dsp state goes here
     float m_smoothedPlaygroundSomething { 0.0f };

@@ -5,7 +5,7 @@
 
 namespace Dsp
 {
-  StereoFrame Tile::doAudio(const AudioKernel::Channel::Tile &kernel, ToUi &ui, FramePos currentLoopPosition)
+  void Tile::doAudio(Busses &busses, const AudioKernel::Tile &kernel, ToUi &ui, FramePos currentLoopPosition)
   {
     const auto &audio = *kernel.audio;
 
@@ -45,10 +45,13 @@ namespace Dsp
     ui.levelRight = std::max({ ui.levelRight, std::abs(result.right) });
     ui.frame = m_framePosition;
 
-    return result;
+    m_reverbSend += std::clamp(::Tools::dBToFactor<c_silenceDB, c_maxDB>(kernel.reverbSend_dB) - m_reverbSend,
+                               -c_maxVolStep, c_maxVolStep);
+    busses.reverb += result * m_reverbSend;
+    busses.main += result;
   }
 
-  float Tile::doEnvelope(const AudioKernel::Channel::Tile &kernel, FramePos iFramePos) const
+  float Tile::doEnvelope(const AudioKernel::Tile &kernel, FramePos iFramePos) const
   {
     if(iFramePos != c_invalidFramePosU64)
       for(auto &section : kernel.envelope)

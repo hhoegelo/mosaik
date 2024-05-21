@@ -17,8 +17,6 @@ add_library(${PROJECT_NAME} STATIC
         Mosaik.h
         Tile.cpp
         Tile.h
-        Channel.cpp
-        Channel.h
         Reverb.cpp
         Reverb.h
 )
