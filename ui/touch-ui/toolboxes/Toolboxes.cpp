@@ -19,7 +19,6 @@ namespace Ui::Touch
 
   Toolboxes::Toolboxes(Touch::Interface &touch, Core::Api::Interface &core, Ui::Controller &controller)
       : Glib::ObjectBase("Toolboxes")
-      , SectionWrapper(touch)
       , m_height(*this, "height", 50)
   {
     get_style_context()->add_class("toolboxes");

@@ -6,7 +6,6 @@ namespace Ui::Touch
 {
   Mixer::Mixer(Touch::Interface& touch, Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp,
                Ui::Controller& controller)
-      : SectionWrapper(touch)
   {
     get_style_context()->add_class("mixer");
 

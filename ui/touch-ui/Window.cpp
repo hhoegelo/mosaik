@@ -1,7 +1,7 @@
 #include "Window.h"
-#include "ui/touch-ui/sections/tiles/Tiles.h"
-#include "ui/touch-ui/sections/toolboxes/Toolboxes.h"
-#include "ui/touch-ui/sections/mixer/Mixer.h"
+#include "ui/touch-ui/tiles/Tiles.h"
+#include "ui/touch-ui/toolboxes/Toolboxes.h"
+#include "ui/touch-ui/mixer/Mixer.h"
 #include "LessToCss.h"
 #include <gtkmm/grid.h>
 #include <iostream>
@@ -157,16 +157,6 @@ namespace Ui::Touch
   ToolboxesInterface& Window::getToolboxes() const
   {
     return *m_toolboxes;
-  }
-
-  Section Window::getCurrentSection() const
-  {
-    return m_section;
-  }
-
-  void Window::selectSection(Section s)
-  {
-    m_section = s;
   }
 
   void Window::setColorAdjustmentColor(int r, int g, int b)

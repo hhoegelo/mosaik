@@ -165,56 +165,55 @@
     min-height: 2cm;
   }
 
-  .section {
-    .toolbox {
+
+  .toolbox {
+    .header {
+      color: white;
+      font-size: large;
+    }
+
+    .waveform {
+      color: lightgray; // color of faded out audio frames
+    }
+
+    .waveform:active {
+      color: orange; // color of faded in audio frames
+    }
+
+    .waveform:checked {
+      color: white; // color of envelope stripes
+    }
+
+    .waveform:focus {
+      color: red; // color of hit point indicator
+    }
+
+    .minimized {
+      padding-bottom: 10px;
+
       .header {
-        color: white;
-        font-size: large;
+        font-weight: normal;
       }
 
-      .waveform {
-        color: lightgray; // color of faded out audio frames
-      }
-
-      .waveform:active {
-        color: orange; // color of faded in audio frames
-      }
-
-      .waveform:checked {
-        color: white; // color of envelope stripes
-      }
-
-      .waveform:focus {
-        color: red; // color of hit point indicator
-      }
-
-      .minimized {
-        padding-bottom: 10px;
-
-        .header {
-          font-weight: normal;
-        }
-
-        .parameter {
-          padding-left: 15px;
-          padding-right: 0px;
-          margin: 0px;
-        }
-      }
-
-      .maximized {
-        .header {
-          background: orange;
-          font-weight: bold;
-        }
-
-        border: 3px solid orange;
+      .parameter {
+        padding-left: 15px;
+        padding-right: 0px;
+        margin: 0px;
       }
     }
 
+    .maximized {
+      .header {
+        background: orange;
+        font-weight: bold;
+      }
+
+      border: 3px solid orange;
+    }
   }
 
-  .section.mixer {
+
+  .mixer {
     .channel {
       -gtkmm__CustomObject_Channel-size: @tile-width;
       border: 3px solid gray;
@@ -228,7 +227,7 @@
     }
   }
 
-  .section.toolboxes {
+  .toolboxes {
     -gtkmm__CustomObject_Toolboxes-height: @tile-height * @num-tile-rows;
   }
 

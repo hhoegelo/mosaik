@@ -31,13 +31,6 @@ namespace Ui
     NUM_TOOLBOXES
   };
 
-  enum class Section
-  {
-    Tiles,
-    Toolboxes,
-    Mixer
-  };
-
   enum class SoftButton
   {
     // Left hand side buttons

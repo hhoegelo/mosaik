@@ -1,5 +1,5 @@
 #include "WaveformThumb.h"
-#include <dsp/api/display/Interface.h>
+#include "dsp/api/display/Interface.h"
 #include <gtkmm/stylecontext.h>
 #include <gtkmm/cssprovider.h>
 #include <glibmm/main.h>

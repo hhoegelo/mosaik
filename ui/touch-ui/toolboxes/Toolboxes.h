@@ -3,7 +3,6 @@
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/box.h>
 #include <gtkmm/styleproperty.h>
-#include "ui/touch-ui/sections/SectionWrapper.h"
 #include "ui/Types.h"
 #include "ui/touch-ui/Interface.h"
 
@@ -24,7 +23,7 @@ namespace Ui::Touch
   class TileTools;
   class Steps;
 
-  class Toolboxes : public SectionWrapper<Section::Toolboxes, Gtk::Box>, public ToolboxesInterface
+  class Toolboxes : public Gtk::Box, public ToolboxesInterface
   {
    public:
     Toolboxes(Touch::Interface &touch, Core::Api::Interface &core, Ui::Controller &controller);

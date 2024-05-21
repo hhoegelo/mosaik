@@ -31,8 +31,6 @@ namespace Ui::Touch
     ~Window() override;
 
     ToolboxesInterface &getToolboxes() const override;
-    Section getCurrentSection() const;
-    void selectSection(Section s);
 
     void setColorAdjustmentColor(int r, int g, int b) override;
 
@@ -40,9 +38,6 @@ namespace Ui::Touch
     void loadCss();
     bool loadAndMonitor(const char *file);
 
-    Tools::ReactiveVar<Section> m_section { Section::Tiles };
-
-    // Sections
     std::unique_ptr<Toolboxes> m_toolboxes;
     std::unique_ptr<Tiles> m_tiles;
     std::unique_ptr<Mixer> m_mixer;

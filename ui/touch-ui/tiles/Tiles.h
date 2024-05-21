@@ -2,9 +2,8 @@
 
 #include "ui/Types.h"
 #include "core/Types.h"
-#include <ui/touch-ui/sections/SectionWrapper.h>
+#include "tools/ReactiveVar.h"
 #include <gtkmm/grid.h>
-#include <glibmm/property.h>
 
 namespace Core::Api
 {
@@ -19,11 +18,16 @@ namespace Dsp::Api::Display
 namespace Ui
 {
   class Controller;
+
+  namespace Touch
+  {
+    class Interface;
+  }
 }
 
 namespace Ui::Touch
 {
-  class Tiles : public SectionWrapper<Section::Tiles, Gtk::Grid>
+  class Tiles : public Gtk::Grid
   {
    public:
     Tiles(Touch::Interface& touch, Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp,

@@ -1,8 +1,8 @@
 #include "Channel.h"
-#include "ui/touch-ui/sections/LevelMeter.h"
+#include "ui/touch-ui/LevelMeter.h"
 #include "ui/ParameterDescriptor.h"
-#include <core/api/Interface.h>
-#include <dsp/api/display/Interface.h>
+#include "core/api/Interface.h"
+#include "dsp/api/display/Interface.h"
 #include <gtkmm/label.h>
 
 namespace Ui::Touch

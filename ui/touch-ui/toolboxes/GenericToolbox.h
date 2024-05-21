@@ -3,9 +3,9 @@
 #include "Toolbox.h"
 #include "KnobGrid.h"
 #include "SoftButtonGrid.h"
-#include <ui/ParameterDescriptor.h>
-#include <ui/ToolboxDefinition.h>
-#include <ui/Controller.h>
+#include "ui/ParameterDescriptor.h"
+#include "ui/ToolboxDefinition.h"
+#include "ui/Controller.h"
 #include <gtkmm/label.h>
 
 namespace Ui

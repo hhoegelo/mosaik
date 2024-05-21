@@ -7,36 +7,35 @@ pkg_check_modules(LIBS REQUIRED IMPORTED_TARGET gtkmm-3.0)
 CPMAddPackage("gh:BramvdKroef/clessc#4176967fdfcb9ed571fbad659f8bec77e06a9d12")
 
 add_library(mosaik-touchui STATIC
-        sections/tiles/Tiles.cpp
-        sections/tiles/Tiles.h
-        sections/tiles/Tile.cpp
-        sections/toolboxes/Toolboxes.h
-        sections/toolboxes/Toolboxes.cpp
+        tiles/Tiles.cpp
+        tiles/Tiles.h
+        tiles/Tile.cpp
+        toolboxes/Toolboxes.h
+        toolboxes/Toolboxes.cpp
         Application.cpp
         Window.cpp
         Window.h
-        sections/toolboxes/TileTools.cpp
-        sections/toolboxes/TileTools.h
-        sections/toolboxes/Waveform.cpp
-        sections/toolboxes/Waveform.h
+        toolboxes/TileTools.cpp
+        toolboxes/TileTools.h
+        toolboxes/Waveform.cpp
+        toolboxes/Waveform.h
         Interface.h
         Types.h
-        sections/toolboxes/SoftButtonGrid.cpp
-        sections/toolboxes/SoftButtonGrid.h
-        sections/toolboxes/KnobGrid.cpp
-        sections/toolboxes/KnobGrid.h
-        sections/SectionWrapper.h
-        sections/mixer/Mixer.cpp
+        toolboxes/SoftButtonGrid.cpp
+        toolboxes/SoftButtonGrid.h
+        toolboxes/KnobGrid.cpp
+        toolboxes/KnobGrid.h
+        mixer/Mixer.cpp
         LessToCss.cpp
         LessToCss.h
-        sections/tiles/WaveformThumb.cpp
-        sections/LevelMeter.cpp
-        sections/LevelMeter.h
-        sections/toolboxes/Toolbox.cpp
-        sections/toolboxes/Toolbox.h
+        tiles/WaveformThumb.cpp
+        LevelMeter.cpp
+        LevelMeter.h
+        toolboxes/Toolbox.cpp
+        toolboxes/Toolbox.h
         tools/WidgetTools.cpp
-        sections/mixer/Channel.cpp
-        sections/mixer/Channel.h
+        mixer/Channel.cpp
+        mixer/Channel.h
 )
 
 target_compile_options(mosaik-touchui PRIVATE)

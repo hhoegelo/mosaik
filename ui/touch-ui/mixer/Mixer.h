@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ui/Types.h"
-#include <ui/touch-ui/sections/SectionWrapper.h>
 #include <gtkmm/grid.h>
 
 namespace Core::Api
@@ -17,11 +16,16 @@ namespace Dsp::Api::Display
 namespace Ui
 {
   class Controller;
+
+  namespace Touch
+  {
+    class Interface;
+  }
 }
 
 namespace Ui::Touch
 {
-  class Mixer : public SectionWrapper<Section::Mixer, Gtk::Grid>
+  class Mixer : public Gtk::Grid
   {
    public:
     Mixer(Touch::Interface& touch, Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp,

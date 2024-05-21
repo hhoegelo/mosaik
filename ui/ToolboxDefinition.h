@@ -336,9 +336,16 @@ namespace Ui
       constexpr static float acceleration = 10.f;
     };
 
+    struct Move
+    {
+      static constexpr auto title = "Move";
+      constexpr static float acceleration = 10.f;
+    };
+
     using MaximizedCustom = Entries<
         MaximizedCustomEntry<Zoom, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Leftmost>,
         MaximizedCustomEntry<Scroll, Color::Blue, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Rightmost>,
+        //MaximizedCustomEntry<Move, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, Knob::SouthEast>,
         MaximizedCustomEntry<HitPoint, Color::Green, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Center>,
 
         MaximizedCustomEntry<PreviousToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke,

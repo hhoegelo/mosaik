@@ -1,11 +1,11 @@
 #include "Tile.h"
-#include <core/api/Interface.h>
-#include <core/ParameterDescriptor.h>
-#include <dsp/api/display/Interface.h>
-#include <ui/Controller.h>
+#include "core/api/Interface.h"
+#include "core/ParameterDescriptor.h"
+#include "dsp/api/display/Interface.h"
+#include "ui/Controller.h"
 
 #include "WaveformThumb.h"
-#include "ui/touch-ui/sections/LevelMeter.h"
+#include "ui/touch-ui/LevelMeter.h"
 
 #include <gtkmm/label.h>
 
