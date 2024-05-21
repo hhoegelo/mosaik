@@ -131,9 +131,9 @@ namespace Ui::Midi
 
         for(auto &a : m_inputDevices)
         {
-          a.second->send({ 0x91, l, static_cast<uint8_t>(ledColor.r / 2) });
-          a.second->send({ 0x92, l, static_cast<uint8_t>(ledColor.g / 2) });
-          a.second->send({ 0x93, l, static_cast<uint8_t>(ledColor.b / 2) });
+          a.second->send({ 0x91, l, static_cast<uint8_t>(ledColor.r / 20) });
+          a.second->send({ 0x92, l, static_cast<uint8_t>(ledColor.g / 20) });
+          a.second->send({ 0x93, l, static_cast<uint8_t>(ledColor.b / 20) });
         }
       }
     }
@@ -165,9 +165,9 @@ namespace Ui::Midi
 
     for(auto &a : m_inputDevices)
     {
-      a.second->send({ 0x91, led, static_cast<uint8_t>(r / 2) });
-      a.second->send({ 0x92, led, static_cast<uint8_t>(g / 2) });
-      a.second->send({ 0x93, led, static_cast<uint8_t>(b / 2) });
+      a.second->send({ 0x91, led, static_cast<uint8_t>(r / 5) });
+      a.second->send({ 0x92, led, static_cast<uint8_t>(g / 5) });
+      a.second->send({ 0x93, led, static_cast<uint8_t>(b / 5) });
     }
 
     scheduleLedUpdate();
