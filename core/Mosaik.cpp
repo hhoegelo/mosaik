@@ -3,6 +3,11 @@
 #include <core/ParameterDescriptor.h>
 #include <cmath>
 
+#define JSON_ASSERT(x)
+#include <tools/json.h>
+#include <fstream>
+#include <iostream>
+
 using namespace std::chrono_literals;
 
 namespace Core::Api
@@ -220,45 +225,54 @@ namespace Core::Api
       , m_kernelUpdate(std::move(ctx), 0)
       , m_sanitizeSamplePositions(Glib::MainContext::get_default(), 1)
   {
-    bindParameters<GlobalParameterDescriptors>(
-        {}, m_model.globals.tempo, m_model.globals.tempoMultiplier, m_model.globals.volume,
-        m_model.globals.prelistenVolume, m_model.globals.reverbRoomSize, m_model.globals.reverbColor,
-        m_model.globals.reverbPreDelay, m_model.globals.reverbChorus, m_model.globals.reverbReturn,
-        m_model.globals.reverbOnOff, m_model.globals.playground1, m_model.globals.playground2,
-        m_model.globals.playground3, m_model.globals.playground4, m_model.globals.playground5,
-        m_model.globals.playground6, m_model.globals.playground7);
+    bindParameters<GlobalParameterDescriptors>({}, m_model.globals);
 
     for(auto t = 0; t < NUM_TILES; t++)
     {
-      auto &src = model.tiles[t];
-      bindParameters<TileParameterDescriptors>(
-          { t }, src.selected, src.sample, src.reverse, src.pattern, src.balance, src.gain, src.muted, src.speed,
-          src.reverbSend, src.envelopeFadeInPos, src.envelopeFadedInPos, src.envelopeFadeOutPos,
-          src.envelopeFadedOutPos, src.triggerFrame, src.shuffle, src.playground1, src.playground2, src.playground3,
-          src.playground4, src.playground5, src.playground6, src.playground7);
-
-      m_sanitizeSamplePositions.add(
-          [&src, &dsp]
-          {
-            auto f = src.sample.get();
-            auto s = dsp.getSamples(f);
-            if(auto l = s->size())
-            {
-              src.envelopeFadeInPos = std::clamp<FramePos>(src.envelopeFadeInPos, 0, l);
-              src.envelopeFadedInPos = std::clamp<FramePos>(src.envelopeFadedInPos, 0, l);
-              src.envelopeFadeOutPos = std::clamp<FramePos>(src.envelopeFadeOutPos, 0, l);
-              src.envelopeFadedOutPos = std::clamp<FramePos>(src.envelopeFadedOutPos, 0, l);
-              src.triggerFrame = std::clamp<FramePos>(src.triggerFrame, 0, l);
-            }
-          });
+      Address a { t };
+      bindParameters<TileParameterDescriptors>(a, model.tiles[t]);
+      m_sanitizeSamplePositions.add([this, a] { sanitizeSamplePositions(a); });
     }
 
-    m_kernelUpdate.add(
-        [this]
-        {
-          m_dsp.takeAudioKernel(newDspKernel(m_model));
-          m_dsp.cleanupCache(getAllSamples(m_model));
-        });
+    init();
+    m_kernelUpdate.add([this] { updateAudioKernel(); });
+  }
+
+  template <typename Description, typename Tuple> void Mosaik::bindParameter(Address address, Tuple &target)
+  {
+    m_access[{ address, Description::id }] = Binder<Description::id, typename Description::Type>::bind(
+        *this, m_dsp, address, DataModel::get<Description::id>(address, target));
+  }
+
+  template <typename Parameters, typename Tuple> void Mosaik::bindParameters(Address address, Tuple &target)
+  {
+    std::apply([&](auto... a) { (bindParameter<decltype(a)>(address, target), ...); }, Parameters {});
+  }
+
+  void Mosaik::updateAudioKernel()
+  {
+    m_dsp.takeAudioKernel(newDspKernel(m_model));
+    m_dsp.cleanupCache(getAllSamples(m_model));
+  }
+
+  void Mosaik::sanitizeSamplePositions(const Address &a) const
+  {
+    auto f = m_model.get<ParameterId::SampleFile>(a);
+    auto s = m_dsp.getSamples(f);
+    if(auto l = s->size())
+    {
+      auto &fadeIn = m_model.get<ParameterId::EnvelopeFadeInPos>(a);
+      auto &fadedIn = m_model.get<ParameterId::EnvelopeFadedInPos>(a);
+      auto &fadeOut = m_model.get<ParameterId::EnvelopeFadeOutPos>(a);
+      auto &fadedOut = m_model.get<ParameterId::EnvelopeFadedOutPos>(a);
+      auto &triggerFrame = m_model.get<ParameterId::TriggerFrame>(a);
+
+      fadeIn = std::clamp<FramePos>(fadeIn, 0, l);
+      fadedIn = std::clamp<FramePos>(fadedIn, 0, l);
+      fadeOut = std::clamp<FramePos>(fadeOut, 0, l);
+      fadedOut = std::clamp<FramePos>(fadedOut, 0, l);
+      triggerFrame = std::clamp<FramePos>(triggerFrame, 0, l);
+    }
   }
 
   const Mosaik::ParamAccess &Mosaik::findAccess(Address address, ParameterId parameterId) const
@@ -305,59 +319,64 @@ namespace Core::Api
     static auto firstCompilation = std::chrono::system_clock::now();
 
     auto numFramesPerMinute = SAMPLERATE * 60.0f;
-    auto num16thPerMinute = source.globals.tempo * 4 * source.globals.tempoMultiplier;
+    auto num16thPerMinute
+        = source.get<ParameterId::GlobalTempo>() * 4 * source.get<ParameterId::GlobalTempoMultiplier>();
 
     target->framesPer16th = numFramesPerMinute / num16thPerMinute;
     target->framesPerLoop = target->framesPer16th * NUM_STEPS;
-    target->volume_dB = source.globals.volume;
-    target->prelistenVolume_dB = source.globals.prelistenVolume;
+    target->volume_dB = source.get<ParameterId::GlobalVolume>();
+    target->prelistenVolume_dB = source.get<ParameterId::GlobalPrelistenVolume>();
 
     target->prelistenSample = m_dsp.getSamples(source.prelistenSample);
     target->prelistenInteractionCounter = source.prelistenInteractionCounter;
 
-    target->reverbRoomSize = source.globals.reverbRoomSize;
-    target->reverbColor = source.globals.reverbColor;
-    target->reverbPreDelay = source.globals.reverbPreDelay;
-    target->reverbChorus = source.globals.reverbChorus;
-    target->reverbReturn = source.globals.reverbReturn;
-    target->reverbOnOff = source.globals.reverbOnOff == OnOffValues::On ? 1.0f : 0.0f;
+    target->reverbRoomSize = source.get<ParameterId::GlobalReverbRoomSize>();
+    target->reverbColor = source.get<ParameterId::GlobalReverbColor>();
 
-    target->mainPlayground1 = source.globals.playground1;
+    target->reverbPreDelay = source.get<ParameterId::GlobalReverbPreDelay>();
+    target->reverbChorus = source.get<ParameterId::GlobalReverbChorus>();
+    target->reverbReturn = source.get<ParameterId::GlobalReverbReturn>();
+    target->reverbOnOff = source.get<ParameterId::GlobalReverbOnOff>() == OnOffValues::On ? 1.0f : 0.0f;
+
+    /* target->mainPlayground1 = source.globals.playground1;
     target->mainPlayground2 = source.globals.playground2;
     target->mainPlayground3 = source.globals.playground3;
     target->mainPlayground4 = source.globals.playground4;
     target->mainPlayground5 = source.globals.playground5;
     target->mainPlayground6 = source.globals.playground6;
-    target->mainPlayground7 = source.globals.playground7;
+    target->mainPlayground7 = source.globals.playground7;*/
 
     auto one = source.tappedOne.get();
     target->sequencerStartTime = one.has_value() ? one.value() : firstCompilation;
   }
 
-  void Mosaik::translateTile(const DataModel &dataModel, Dsp::AudioKernel::Tile &tgt, const DataModel::Tile &src) const
+  void Mosaik::translateTile(const DataModel &dataModel, Dsp::AudioKernel::Tile &tgt, const Address &src) const
   {
     auto numFramesPerMinute = SAMPLERATE * 60.0f;
-    auto num16thPerMinute = dataModel.globals.tempo * 4 * dataModel.globals.tempoMultiplier;
+    auto num16thPerMinute
+        = dataModel.get<ParameterId::GlobalTempo>() * 4 * dataModel.get<ParameterId::GlobalTempoMultiplier>();
     auto framesPer16th = static_cast<Dsp::FramePos>(numFramesPerMinute / num16thPerMinute);
     auto framePerLoop = framesPer16th * 64;
 
     Dsp::FramePos pos = 0;
 
-    tgt.audio = m_dsp.getSamples(src.sample);
+    tgt.audio = m_dsp.getSamples(dataModel.get<ParameterId::SampleFile>(src));
 
-    for(auto s : src.pattern.get())
+    for(auto s : dataModel.get<ParameterId::Pattern>(src))
     {
       if(s)
       {
         auto step = pos / framesPer16th;
-        int64_t shuffle
-            = (step % 2) ? shuffle = static_cast<int64_t>(0.5 * static_cast<double>(framesPer16th) * src.shuffle) : 0;
+        int64_t shuffle = (step % 2) ? shuffle
+            = static_cast<int64_t>(0.5 * static_cast<double>(framesPer16th) * dataModel.get<ParameterId::Shuffle>(src))
+                                     : 0;
 
         auto audioLen = tgt.audio->size();
 
-        auto hitPoint = static_cast<FramePos>(src.triggerFrame / std::pow(2, src.speed));
+        auto hitPoint = static_cast<FramePos>(dataModel.get<ParameterId::TriggerFrame>(src)
+                                              / std::pow(2, dataModel.get<ParameterId::Speed>(src)));
 
-        if(src.reverse.get())
+        if(dataModel.get<ParameterId::Reverse>(src))
           hitPoint = audioLen - hitPoint;
 
         auto finalPos = pos + shuffle - hitPoint;
@@ -373,20 +392,20 @@ namespace Core::Api
       pos += framesPer16th;
     }
 
-    tgt.mute = src.muted;
-    tgt.balance = src.balance;
-    tgt.gain_dB = src.gain;
-    tgt.playbackFrameIncrement = powf(2.0f, src.speed);
-    tgt.reverse = src.reverse;
-    tgt.reverbSend_dB = src.reverbSend;
+    tgt.mute = dataModel.get<ParameterId::Mute>(src);
+    tgt.balance = dataModel.get<ParameterId::Balance>(src);
+    tgt.gain_dB = dataModel.get<ParameterId::Gain>(src);
+    tgt.playbackFrameIncrement = powf(2.0f, dataModel.get<ParameterId::Speed>(src));
+    tgt.reverse = dataModel.get<ParameterId::Reverse>(src);
+    tgt.reverbSend_dB = dataModel.get<ParameterId::ReverbSend>(src);
 
-    tgt.playground1 = src.playground1;
+    /*tgt.playground1 = src.playground1;
     tgt.playground2 = src.playground2;
     tgt.playground3 = src.playground3;
     tgt.playground4 = src.playground4;
     tgt.playground5 = src.playground5;
     tgt.playground6 = src.playground6;
-    tgt.playground7 = src.playground7;
+    tgt.playground7 = src.playground7;*/
 
     auto calcM
         = [](float startY, float endY, FramePos l) { return l ? (endY - startY) / static_cast<float>(l) : 0.0f; };
@@ -399,17 +418,19 @@ namespace Core::Api
     auto &fadeInSection = tgt.envelope[3];
     auto &preFadeInSection = tgt.envelope[4];
 
-    fadedOutSection = { src.envelopeFadedOutPos, c_zeroDB, c_silenceDB };
+    fadedOutSection = { dataModel.get<ParameterId::EnvelopeFadedOutPos>(src), c_zeroDB, c_silenceDB };
 
-    const auto fadeOutLen = src.envelopeFadedOutPos - src.envelopeFadeOutPos;
-    fadeOutSection = { src.envelopeFadeOutPos, calcM(c_zeroDB, c_silenceDB, fadeOutLen),
-                       calcB(c_zeroDB, c_silenceDB, src.envelopeFadeOutPos, fadeOutLen) };
+    const auto fadeOutLen
+        = dataModel.get<ParameterId::EnvelopeFadedOutPos>(src) - dataModel.get<ParameterId::EnvelopeFadeOutPos>(src);
+    fadeOutSection = { dataModel.get<ParameterId::EnvelopeFadeOutPos>(src), calcM(c_zeroDB, c_silenceDB, fadeOutLen),
+                       calcB(c_zeroDB, c_silenceDB, dataModel.get<ParameterId::EnvelopeFadeOutPos>(src), fadeOutLen) };
 
-    fadedInSection = { src.envelopeFadedInPos, 0.0f, c_zeroDB };
+    fadedInSection = { dataModel.get<ParameterId::EnvelopeFadedInPos>(src), 0.0f, c_zeroDB };
 
-    const auto fadeInLen = src.envelopeFadedInPos - src.envelopeFadeInPos;
-    fadeInSection = { src.envelopeFadeInPos, calcM(c_silenceDB, c_zeroDB, fadeInLen),
-                      calcB(c_silenceDB, c_zeroDB, src.envelopeFadeInPos, fadeInLen) };
+    const auto fadeInLen
+        = dataModel.get<ParameterId::EnvelopeFadedInPos>(src) - dataModel.get<ParameterId::EnvelopeFadeInPos>(src);
+    fadeInSection = { dataModel.get<ParameterId::EnvelopeFadeInPos>(src), calcM(c_silenceDB, c_zeroDB, fadeInLen),
+                      calcB(c_silenceDB, c_zeroDB, dataModel.get<ParameterId::EnvelopeFadeInPos>(src), fadeInLen) };
 
     preFadeInSection = { 0, 0, c_silenceDB };
   }
@@ -421,9 +442,8 @@ namespace Core::Api
 
     for(auto c = 0; c < NUM_TILES; c++)
     {
-      const auto &src = dataModel.tiles[c];
       auto &tgt = r->tiles[c];
-      translateTile(dataModel, tgt, src);
+      translateTile(dataModel, tgt, Address { c });
     }
 
     return r.release();
@@ -433,8 +453,13 @@ namespace Core::Api
   {
     std::vector<Path> ret { model.prelistenSample };
 
-    for(const auto &t : model.tiles)
-      ret.push_back(t.sample);
+    for(auto c = 0; c < NUM_TILES; c++)
+      ret.push_back(model.get<ParameterId::SampleFile>({ c }));
+
+    for(auto s = 0; s < NUM_SNAPSHOTS; s++)
+      for(auto c = 0; c < NUM_TILES; c++)
+        if(model.snapshots[s].has_value())
+          ret.push_back(model.snapshots[s].value().get<ParameterId::SampleFile>({ c }));
 
     return ret;
   }
@@ -466,27 +491,36 @@ namespace Core::Api
     m_model.tappedOne = std::chrono::system_clock::now();
   }
 
-  template <typename Parameters, typename Targets, size_t idx>
-  void Mosaik::bindParameter(Address address, Targets targets)
+  void Mosaik::loadSnapshot(int id)
   {
-    using D = typename std::tuple_element_t<idx, Parameters>;
-    bindParameter<D::id>(address, std::get<idx>(targets));
+    m_model.loadSnapshot(id);
   }
 
-  template <ParameterId id, typename T> void Mosaik::bindParameter(Address address, Tools::ReactiveVar<T> &target)
+  void Mosaik::saveSnapshot(int id)
   {
-    m_access[{ address, id }] = Binder<id, T>::bind(*this, m_dsp, address, target);
+    m_model.saveSnapshot(id);
   }
 
-  template <typename Parameters, typename Targets, size_t... idx>
-  void Mosaik::bindParameters(std::integer_sequence<size_t, idx...> int_seq, Address address, Targets targets)
+  void Mosaik::load(const Path &path)
   {
-    (bindParameter<Parameters, Targets, idx>(address, targets), ...);
+    if(exists(path))
+    {
+      try
+      {
+        nlohmann::json j;
+        std::ifstream(path) >> j;
+        from_json(j, m_model);
+      }
+      catch(...)
+      {
+        std::cerr << "Could not read initial setup file." << std::endl;
+      }
+    }
   }
 
-  template <typename Parameters, typename... Args> void Mosaik::bindParameters(Address address, Args &...target)
+  void Mosaik::save(const Path &path)
   {
-    using Indizes = std::make_index_sequence<std::tuple_size_v<Parameters>>;
-    bindParameters<Parameters>(Indizes {}, address, std::make_tuple(std::ref(target)...));
+    nlohmann::json j = m_model;
+    std::ofstream(path) << j;
   }
 }

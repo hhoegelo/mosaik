@@ -452,6 +452,68 @@ namespace Ui
         MaximizedCustomEntry<NextToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_North>>;
   };
 
+  template <> struct ToolboxDefinition<Toolbox::Snapshots>
+  {
+    constexpr static auto title = "Snapshots";
+    using Minimized = Entries<>;
+    using MaximizedParameters = Entries<>;
+
+    struct SaveArmed
+    {
+      static constexpr auto title = "Save";
+    };
+
+    struct SaveUnarmed
+    {
+      static constexpr auto title = "Save";
+    };
+
+    struct Slot1
+    {
+      static constexpr auto title = "Slot 1";
+    };
+
+    struct Slot2
+    {
+      static constexpr auto title = "Slot 2";
+    };
+
+    struct Slot3
+    {
+      static constexpr auto title = "Slot 3";
+    };
+
+    struct Slot4
+    {
+      static constexpr auto title = "Slot 4";
+    };
+
+    struct Slot5
+    {
+      static constexpr auto title = "Slot 5";
+    };
+
+    struct Slot6
+    {
+      static constexpr auto title = "Slot 6";
+    };
+
+    using MaximizedCustom = Entries<
+        MaximizedCustomEntry<SaveArmed, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_North>,
+        MaximizedCustomEntry<SaveUnarmed, Color::Red, UiEvent::ButtonRelease, UiAction::Invoke,
+                             SoftButton::Right_North>,
+        MaximizedCustomEntry<Slot1, Color::White, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_West>,
+        MaximizedCustomEntry<Slot2, Color::Blue, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_Center>,
+        MaximizedCustomEntry<Slot3, Color::Green, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_East>,
+        MaximizedCustomEntry<Slot4, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthWest>,
+        MaximizedCustomEntry<Slot5, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_South>,
+        MaximizedCustomEntry<Slot6, Color::White, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthEast>,
+
+        MaximizedCustomEntry<PreviousToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke,
+                             SoftButton::Left_NorthWest>,
+        MaximizedCustomEntry<NextToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_North>>;
+  };
+
   template <> struct ToolboxDefinition<Toolbox::ColorAdjust>
   {
     struct Led_R

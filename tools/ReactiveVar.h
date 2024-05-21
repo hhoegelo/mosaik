@@ -10,6 +10,8 @@
 #include <functional>
 #include <vector>
 
+#include "json.h"
+
 namespace Tools
 {
   class Computations
@@ -102,5 +104,15 @@ namespace Tools
    private:
     T m_value;
   };
+
+  template <typename T> void to_json(nlohmann::json& j, const ReactiveVar<T>& value)
+  {
+    j = value.get();
+  }
+
+  template <typename T> void from_json(const nlohmann::json& j, ReactiveVar<T>& value)
+  {
+    value = static_cast<T>(j);
+  }
 
 }

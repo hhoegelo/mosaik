@@ -887,4 +887,57 @@ namespace Ui
     m_core.setParameter({}, Core::ParameterId::GlobalTempoMultiplier,
                         Core::ParameterDescriptor<Core::ParameterId::GlobalTempoMultiplier>::defaultValue);
   }
+
+  // Snapshots
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Snapshots>::SaveArmed>()
+  {
+    m_snapshotSaveArmed = true;
+  }
+
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Snapshots>::SaveUnarmed>()
+  {
+    m_snapshotSaveArmed = false;
+  }
+
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Snapshots>::Slot1>()
+  {
+    handleSnapshotSlot(0);
+  }
+
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Snapshots>::Slot2>()
+  {
+    handleSnapshotSlot(1);
+  }
+
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Snapshots>::Slot3>()
+  {
+    handleSnapshotSlot(2);
+  }
+
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Snapshots>::Slot4>()
+  {
+    handleSnapshotSlot(3);
+  }
+
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Snapshots>::Slot5>()
+  {
+    handleSnapshotSlot(4);
+  }
+
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Snapshots>::Slot6>()
+  {
+    handleSnapshotSlot(5);
+  }
+
+  void Controller::handleSnapshotSlot(int slot)
+  {
+    if(m_snapshotSaveArmed.get())
+    {
+      m_core.saveSnapshot(slot);
+    }
+    else
+    {
+      m_core.loadSnapshot(slot);
+    }
+  }
 }

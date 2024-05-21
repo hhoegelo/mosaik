@@ -14,13 +14,16 @@ namespace Core::Api
 
     virtual void init();
 
-    virtual void load(const Path &path);
-    virtual void save(const Path &path);
+    virtual void load(const Path &path) = 0;
+    virtual void save(const Path &path) = 0;
 
     virtual void setParameter(Address address, ParameterId parameterId, const ParameterValue &value) = 0;
     virtual void loadParameter(Address address, ParameterId parameterId, const ParameterValue &value) = 0;
     virtual void incParameter(Address address, ParameterId parameterId, int steps) = 0;
     virtual void setPrelistenSample(const Path &path) = 0;
+
+    virtual void saveSnapshot(int id) = 0;
+    virtual void loadSnapshot(int id) = 0;
 
     [[nodiscard]] virtual ParameterValue getParameter(Address address, ParameterId parameterId) const = 0;
     [[nodiscard]] virtual Dsp::SharedSampleBuffer getSamples(Address address) const = 0;

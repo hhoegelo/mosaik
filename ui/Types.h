@@ -25,6 +25,7 @@ namespace Ui
     //MainPlayground,
     Mute,
     Reverb,
+    Snapshots,
     ColorAdjust,
 
     NUM_TOOLBOXES

@@ -133,6 +133,10 @@ namespace Ui
     std::array<Tools::ReactiveVar<MuteState>, 6> m_savedMutes;
     void handleMuteSlot(int i);
 
+    // Snapshots
+    Tools::ReactiveVar<bool> m_snapshotSaveArmed { false };
+    void handleSnapshotSlot(int slot);
+
     // Color Adjustment
     std::unique_ptr<Tools::DeferredComputations> m_colorAdjustmentComputations;
     Tools::ReactiveVar<int> m_led_R;
