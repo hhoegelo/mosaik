@@ -175,16 +175,17 @@ namespace Ui
   enum class Color
   {
     None = -1,
+    Red = 0,
+    Blue = 1,
+    Green = 2,
+    Purple = 3,
+    White = 4,
+    Off = 5,
     Yellow,
     Orange,
-    Red,
-    Purple,
-    Blue,
     LightBlue,
     LightGreen,
-    Green,
-    White,
-    Off,
+
   };
 
   enum class ButtonEvent
