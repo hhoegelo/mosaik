@@ -817,10 +817,8 @@ namespace Ui
     if(auto t = m_touchUi.get())
     {
       auto s = static_cast<int>(t->getToolboxes().getSelectedToolbox());
-      if(s == 0)
-        s = static_cast<int>(Ui::Toolbox::NUM_TOOLBOXES) - 1;
-      else
-        s = s - 1;
+      if(s != 0)
+        s--;
 
       t->getToolboxes().selectToolbox(static_cast<Ui::Toolbox>(s));
     }
@@ -831,11 +829,9 @@ namespace Ui
     if(auto t = m_touchUi.get())
     {
       auto s = static_cast<int>(t->getToolboxes().getSelectedToolbox());
-      if(s == static_cast<int>(Ui::Toolbox::NUM_TOOLBOXES) - 1)
-        s = 0;
-      else
-        s = s + 1;
-
+      if(s != static_cast<int>(Ui::Toolbox::NUM_TOOLBOXES) - 1)
+        s++;
+      
       t->getToolboxes().selectToolbox(static_cast<Ui::Toolbox>(s));
     }
   }
