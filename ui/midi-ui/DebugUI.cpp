@@ -23,8 +23,8 @@ namespace Ui::Midi
       background: white;
     }
 
-    .color-purple {
-      background: purple;
+    .color-magenta {
+      background: magenta;
     }
 
     button.current-step {
@@ -220,7 +220,7 @@ namespace Ui::Midi
     }
   }
 
-  void DebugUI::setLed(Knob l, Color c)
+  void DebugUI::setLed(Knob l, Color c, Brightness bright)
   {
     if(auto k = findChild(Tools::format("Knob-%d", static_cast<int>(l))))
     {
@@ -228,7 +228,7 @@ namespace Ui::Midi
     }
   }
 
-  void DebugUI::setLed(SoftButton l, Color c)
+  void DebugUI::setLed(SoftButton l, Color c, Brightness bright)
   {
     if(auto sb = findChild(Tools::format("SoftButton-%d", static_cast<int>(l))))
     {
@@ -236,7 +236,7 @@ namespace Ui::Midi
     }
   }
 
-  void DebugUI::setLed(Step l, Color c)
+  void DebugUI::setLed(Step l, Color c, Brightness bright)
   {
     if(l <= static_cast<Step>(Led::Step_63))
     {

@@ -40,9 +40,9 @@ namespace Ui
          ::Ui::Touch::Interface &touchUi, ::Ui::Controller &controller);
       ~Ui() override;
 
-      void setLed(Knob k, Color c) override;
-      void setLed(SoftButton s, Color c) override;
-      void setLed(Step s, Color c) override;
+      void setLed(Knob k, Color c, Brightness b) override;
+      void setLed(SoftButton s, Color c, Brightness b) override;
+      void setLed(Step s, Color c, Brightness b) override;
       void setLed(SoftButton s, uint8_t r, uint8_t g, uint8_t b) override;
 
      private:

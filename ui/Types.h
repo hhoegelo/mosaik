@@ -175,17 +175,25 @@ namespace Ui
   enum class Color
   {
     None = -1,
-    Red = 0,
-    Blue = 1,
-    Green = 2,
-    Purple = 3,
-    White = 4,
-    Off = 5,
+    Off,
+    White,
     Yellow,
     Orange,
+    Red,
+    Magenta,
+    Blue,
     LightBlue,
     LightGreen,
+    Green,
+    NUM_COLORS
+  };
 
+  enum class Brightness
+  {
+    Full = 0,
+    Half = 1,
+    Third = 2,
+    Quarter = 3
   };
 
   enum class ButtonEvent
@@ -208,8 +216,8 @@ namespace Ui
         return "orange";
       case Color::Red:
         return "red";
-      case Color::Purple:
-        return "purple";
+      case Color::Magenta:
+        return "magenta";
       case Color::Blue:
         return "blue";
       case Color::LightBlue:
