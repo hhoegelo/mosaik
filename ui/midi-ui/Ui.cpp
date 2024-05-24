@@ -37,7 +37,6 @@ namespace Ui::Midi
         case Color::White:
           return { 255, 255, 255 };
         case Color::Off:
-        case Color::None:
         default:
           return {};
       }
@@ -132,11 +131,7 @@ namespace Ui::Midi
       for(uint8_t b = 0; b < numLedsPerKnob; b++)
       {
         auto l = static_cast<uint8_t>(led + b);
-
-        for(auto &a : m_inputDevices)
-        {
-          a.second->send({ 0x94, l, getMidiValueforColorAndBrightness(c, bright) });
-        }
+        a.second->send({ 0x94, l, getMidiValueforColorAndBrightness(c, bright) });
       }
     }
 
