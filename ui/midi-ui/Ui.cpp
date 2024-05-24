@@ -147,11 +147,12 @@ namespace Ui::Midi
 
   void Ui::setLed(SoftButton k, Color c, Brightness bright)
   {
-
     for(auto &a : m_inputDevices)
     {
       a.second->send({ 0x94, static_cast<guint8>(k), getMidiValueforColorAndBrightness(c, bright) });
     }
+
+    scheduleLedUpdate();
   }
 
   void Ui::setLed(Step k, Color c, Brightness bright)
