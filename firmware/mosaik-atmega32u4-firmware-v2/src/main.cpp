@@ -12,7 +12,7 @@
 #define _RED 1
 #define _GRN 2
 #define _BLU 3
-#define N_COLORS 40 // see color table
+#define N_COLORS 50 // see color table
 
 // gpios
 #define PIN_LED_HB 5
@@ -132,7 +132,18 @@ uint8_t col_table_new[N_COLORS][3] = {
 	{   0,   0,  64},	// blue
 	{   0,  64,  64},	// light blue
 	{   0,  64,  30},	// light green
-	{   0,  64,   0}	// green
+	{   0,  64,   0},	// green
+	// 10/th brightness
+	{  0,  0,  0},	// off
+	{ 25, 25, 25},	// white 
+	{ 25, 25,  0}, 	// yellow
+	{ 25,  8,  0},	// orange
+	{ 25,  0,  0},	// red
+	{ 25,  0,  7},	// magenta
+	{  0,  0, 25},	// blue
+	{  0, 25, 25},	// light blue
+	{  0, 25, 12},	// light green
+	{  0, 25,  0}	// green
 };
 
 void setup(void) 
