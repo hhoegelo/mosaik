@@ -23,29 +23,27 @@ namespace Ui::Touch
   {
     get_style_context()->add_class("toolboxes");
 
-    auto scroll = Gtk::manage(new Gtk::ScrolledWindow());
+    auto scroll = Gtk::make_managed<Gtk::ScrolledWindow>();
     scroll->set_propagate_natural_width();
     scroll->set_policy(Gtk::PolicyType::POLICY_NEVER, Gtk::PolicyType::POLICY_AUTOMATIC);
 
     signal_style_updated().connect([this] { set_size_request(-1, m_height); });
 
-    auto box = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL));
+    auto box = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_VERTICAL);
 
-    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Global>(*this, controller)));
-    box->pack_start(
-        *Gtk::manage(new GenericToolbox<Ui::Toolbox::Tile>(*this, controller, new TileTools(*this, core, controller))));
-    box->pack_start(*Gtk::manage(
-        new GenericToolbox<Ui::Toolbox::Waveform>(*this, controller, new WaveformToolbox(core, controller))));
-    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Steps>(*this, controller)));
-    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Mute>(*this, controller)));
-    // box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Playground>(*this, controller)));
-    // box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::MainPlayground>(*this, controller)));
-    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Reverb>(*this, controller)));
-    box->pack_start(*Gtk::manage(new GenericToolbox<Ui::Toolbox::Snapshots>(*this, controller)));
+    box->pack_start(*Gtk::make_managed<GenericToolbox<Ui::Toolbox::Global>>(*this, controller));
+    box->pack_start(*Gtk::make_managed<GenericToolbox<Ui::Toolbox::Tile>>(*this, controller,
+                                                                          new TileTools(*this, core, controller)));
+    box->pack_start(*Gtk::make_managed<GenericToolbox<Ui::Toolbox::Waveform>>(*this, controller,
+                                                                              new WaveformToolbox(core, controller)));
+    box->pack_start(*Gtk::make_managed<GenericToolbox<Ui::Toolbox::Steps>>(*this, controller));
+    box->pack_start(*Gtk::make_managed<GenericToolbox<Ui::Toolbox::Mute>>(*this, controller));
+    box->pack_start(*Gtk::make_managed<GenericToolbox<Ui::Toolbox::Reverb>>(*this, controller));
+    box->pack_start(*Gtk::make_managed<GenericToolbox<Ui::Toolbox::Snapshots>>(*this, controller));
 
-    auto colorAdjust = new GenericToolbox<Ui::Toolbox::ColorAdjust>(*this, controller);
-    colorAdjust->get_style_context()->add_class("color-adjust");
-    box->pack_start(*Gtk::manage(colorAdjust));
+    //auto colorAdjust = Gtk::make_managed<GenericToolbox<Ui::Toolbox::ColorAdjust>>(*this, controller);
+    //colorAdjust->get_style_context()->add_class("color-adjust");
+    //box->pack_start(*colorAdjust);
 
     scroll->add(*box);
     add(*scroll);

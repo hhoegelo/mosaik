@@ -72,7 +72,7 @@ namespace Ui::Midi
           return { 90, 255, 80 };
         case Color::White:
           return { 255, 255, 255 };
-          
+
         case Color::Off:
         case Color::None:
         default:
@@ -131,9 +131,7 @@ namespace Ui::Midi
 
         for(auto &a : m_inputDevices)
         {
-          a.second->send({ 0x91, l, static_cast<uint8_t>(ledColor.r / 20) });
-          a.second->send({ 0x92, l, static_cast<uint8_t>(ledColor.g / 20) });
-          a.second->send({ 0x93, l, static_cast<uint8_t>(ledColor.b / 20) });
+          a.second->send({ 0x94, l, static_cast<uint8_t>(c) });
         }
       }
     }
@@ -179,9 +177,7 @@ namespace Ui::Midi
 
     for(auto &a : m_inputDevices)
     {
-      a.second->send({ 0x91, k, static_cast<uint8_t>(ledColor.r / 2) });
-      a.second->send({ 0x92, k, static_cast<uint8_t>(ledColor.g / 2) });
-      a.second->send({ 0x93, k, static_cast<uint8_t>(ledColor.b / 2) });
+      a.second->send({ 0x94, k, static_cast<uint8_t>(c) });
     }
 
     scheduleLedUpdate();

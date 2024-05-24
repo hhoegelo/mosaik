@@ -6,6 +6,7 @@
 #include "dsp/api/display/Interface.h"
 #include "ui/touch-ui/Interface.h"
 #include "ToolboxDefinition.h"
+#include <ui/StepWizard.h>
 #include <cinttypes>
 #include <cmath>
 
@@ -46,7 +47,7 @@ namespace Ui
           {
             auto toolbox = p->getToolboxes().getSelectedToolbox();
             m_inputMapping = createMapping(toolbox);
-
+            /*
             if(toolbox == Ui::Toolbox::ColorAdjust)
             {
               m_colorAdjustmentComputations = std::make_unique<Tools::DeferredComputations>();
@@ -69,6 +70,7 @@ namespace Ui
             {
               m_colorAdjustmentComputations.reset();
             }
+            */
           }
         });
 
@@ -415,30 +417,11 @@ namespace Ui
 
   template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::Steps>::OneFitsAll>(int inc)
   {
-    m_oneFitsAllStepWizard = std::clamp(m_oneFitsAllStepWizard + inc, 0, 255);
+    static auto s_patterns = buildPatterns();
+    m_oneFitsAllStepWizard = std::clamp<int>(m_oneFitsAllStepWizard + inc, 0, s_patterns.size() - 1);
 
     auto sel = m_core.getSelectedTile();
-    Core::Pattern pattern {};
-
-    int64_t w = std::abs(m_oneFitsAllStepWizard);
-
-    if(w <= 0x0F)
-      w = w | w << 4;
-
-    if(w <= 0xFF)
-      w = w | w << 8;
-
-    if(w <= 0xFFFF)
-      w = w | w << 16;
-
-    if(w <= 0xFFFFFFFF)
-      w = w | w << 32;
-
-    uint64_t m = 1;
-
-    for(size_t i = 0; i < NUM_STEPS; i++)
-      pattern[i] = w & (m << i);
-
+    auto pattern = s_patterns[m_oneFitsAllStepWizard];
     if(m_wizardRotation > 0)
       std::rotate(pattern.rbegin(), pattern.rbegin() + std::abs(m_wizardRotation) % NUM_STEPS, pattern.rend());
     else if(m_wizardRotation < 0)
@@ -769,6 +752,7 @@ namespace Ui
     return m_saveArmed.get() ? "Armed" : "";
   }
 
+  /*
   // Color Adjustment
   template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::ColorAdjust>::Led_R>(int inc)
   {
@@ -829,16 +813,14 @@ namespace Ui
   {
     return std::to_string(m_screen_B.get());
   }
-
+*/
   template <> void Controller::invokeButtonAction<PreviousToolbox>()
   {
     if(auto t = m_touchUi.get())
     {
       auto s = static_cast<int>(t->getToolboxes().getSelectedToolbox());
-      if(s == 0)
-        s = static_cast<int>(Ui::Toolbox::NUM_TOOLBOXES) - 1;
-      else
-        s = s - 1;
+      if(s != 0)
+        s--;
 
       t->getToolboxes().selectToolbox(static_cast<Ui::Toolbox>(s));
     }
@@ -849,10 +831,8 @@ namespace Ui
     if(auto t = m_touchUi.get())
     {
       auto s = static_cast<int>(t->getToolboxes().getSelectedToolbox());
-      if(s == static_cast<int>(Ui::Toolbox::NUM_TOOLBOXES) - 1)
-        s = 0;
-      else
-        s = s + 1;
+      if(s != static_cast<int>(Ui::Toolbox::NUM_TOOLBOXES) - 1)
+        s++;
 
       t->getToolboxes().selectToolbox(static_cast<Ui::Toolbox>(s));
     }

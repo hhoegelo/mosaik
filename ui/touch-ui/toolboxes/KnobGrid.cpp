@@ -6,10 +6,10 @@
 namespace Ui::Touch
 {
   constexpr std::array c_positions
-      = { std::pair { Knob::Leftmost, std::pair { 0, 0 } },  std::pair { Knob::Rightmost, std::pair { 4, 0 } },
-          std::pair { Knob::NorthWest, std::pair { 1, 1 } }, std::pair { Knob::NorthEast, std::pair { 3, 1 } },
-          std::pair { Knob::Center, std::pair { 2, 2 } },    std::pair { Knob::SouthWest, std::pair { 1, 3 } },
-          std::pair { Knob::SouthEast, std::pair { 3, 3 } } };
+      = { std::pair { Knob::Leftmost, std::pair { 0, 0 } },  std::pair { Knob::Rightmost, std::pair { 8, 0 } },
+          std::pair { Knob::NorthWest, std::pair { 2, 1 } }, std::pair { Knob::NorthEast, std::pair { 6, 1 } },
+          std::pair { Knob::Center, std::pair { 4, 2 } },    std::pair { Knob::SouthWest, std::pair { 2, 3 } },
+          std::pair { Knob::SouthEast, std::pair { 6, 3 } } };
 
   KnobGrid::KnobGrid()
   {
@@ -29,7 +29,7 @@ namespace Ui::Touch
 
       label->get_style_context()->add_class("label");
       level->get_style_context()->add_class("level");
-      attach(*box, c.second.first, c.second.second, 1, 1);
+      attach(*box, c.second.first, c.second.second, 2, 2);
     }
   }
 
@@ -51,7 +51,7 @@ namespace Ui::Touch
         if(auto child = get_child_at(c.second.first, c.second.second))
           remove(*child);
 
-        attach(*box, c.second.first, c.second.second, 1, 1);
+        attach(*box, c.second.first, c.second.second, 2, 2);
         break;
       }
   }

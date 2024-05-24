@@ -8,11 +8,6 @@ namespace Ui
 
   template <Toolbox t> struct ToolboxDefinition;
 
-  template <Core::ParameterId ID> struct MinimizedParameterEntry
-  {
-    constexpr static auto id = ID;
-  };
-
   enum class UiEvent
   {
     ReleasedKnobRotate,
@@ -97,8 +92,6 @@ namespace Ui
       constexpr static auto title = "Speed Up";
     };
 
-    using Minimized = Entries<MinimizedParameterEntry<Core::ParameterId::GlobalVolume>,
-                              MinimizedParameterEntry<Core::ParameterId::GlobalTempo>>;
     using MaximizedParameters
         = Entries<MaximizedParameterEntry<Core::ParameterId::GlobalVolume, Color::Green, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::Center>,
@@ -239,11 +232,6 @@ namespace Ui
   template <> struct ToolboxDefinition<Toolbox::Tile>
   {
     constexpr static auto title = "Tile";
-
-    using Minimized
-        = Entries<MinimizedParameterEntry<Core::ParameterId::Gain>, MinimizedParameterEntry<Core::ParameterId::Mute>,
-                  MinimizedParameterEntry<Core::ParameterId::Balance>,
-                  MinimizedParameterEntry<Core::ParameterId::Speed>>;
 
     using MaximizedParameters
         = Entries<MaximizedParameterEntry<Core::ParameterId::Gain, Color::Green, UiEvent::ReleasedKnobRotate,
@@ -431,8 +419,7 @@ namespace Ui
   template <> struct ToolboxDefinition<Toolbox::Reverb>
   {
     constexpr static auto title = "Reverb";
-    using Minimized = Entries<MinimizedParameterEntry<Core::ParameterId::GlobalReverbRoomSize>,
-                              MinimizedParameterEntry<Core::ParameterId::GlobalReverbColor>>;
+    
     using MaximizedParameters
         = Entries<MaximizedParameterEntry<Core::ParameterId::GlobalReverbRoomSize, Color::Blue,
                                           UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::SouthWest>,
@@ -513,7 +500,7 @@ namespace Ui
                              SoftButton::Left_NorthWest>,
         MaximizedCustomEntry<NextToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_North>>;
   };
-
+  /*
   template <> struct ToolboxDefinition<Toolbox::ColorAdjust>
   {
     struct Led_R
@@ -567,5 +554,5 @@ namespace Ui
         MaximizedCustomEntry<PreviousToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke,
                              SoftButton::Left_NorthWest>,
         MaximizedCustomEntry<NextToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_North>>;
-  };
+  };*/
 }

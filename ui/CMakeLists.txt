@@ -11,6 +11,8 @@ add_library(${PROJECT_NAME} STATIC
         Types.h
         ParameterDescriptor.h
         ToolboxDefinition.h
+        StepWizard.h
+        StepWizard.cpp
 )
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR} ${LIBS_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} ${LIBS_LIBRARIES})

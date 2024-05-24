@@ -42,6 +42,10 @@
       margin: 2px;
     }
 
+    .knob {
+      border-radius: 20px;
+    }
+
     .yellow {
       border-color: @color-yellow;
     }
@@ -114,13 +118,13 @@
     border: 2px solid rgb(20, 20, 20);
     margin: 1px;
     border-radius: 0;
-	background-color: rgb(20, 20, 20);
+    background-color: rgb(20, 20, 20);
     -gtkmm__CustomObject_Tile-size: @tile-width;
 
     @string-margin: 3px;
 
     .waveform {
-	  background-color: rgb(20, 20, 20);
+      background-color: rgb(20, 20, 20);
       color: orange;
     }
 
@@ -146,14 +150,14 @@
     }
 
     .step {
-	  border: 1px solid rgb(20, 20, 20);
-	  background-color: rgb(10, 10, 10);
+      border: 1px solid rgb(20, 20, 20);
+      background-color: rgb(10, 10, 10);
       padding: 0;
       margin: 0;
     }
 
     .step.selected {
-	  background-color: rgb(190, 190, 190);
+      background-color: rgb(190, 190, 190);
     }
   }
 
@@ -202,7 +206,9 @@
       }
     }
 
-    .maximized {
+    border: 3px solid gray;
+
+    &.selected {
       .header {
         background: orange;
         font-weight: bold;
