@@ -31,9 +31,9 @@ namespace Ui::Touch
         [this](Gtk::PanDirection dir, double f)
         {
           if(dir == Gtk::PanDirection::PAN_DIRECTION_LEFT)
-            m_scrollPos = m_scrollPosAtGestureStart - f * getFramesPerPixel();
-          else if(dir == Gtk::PanDirection::PAN_DIRECTION_RIGHT)
             m_scrollPos = m_scrollPosAtGestureStart + f * getFramesPerPixel();
+          else if(dir == Gtk::PanDirection::PAN_DIRECTION_RIGHT)
+            m_scrollPos = m_scrollPosAtGestureStart - f * getFramesPerPixel();
         });
 
     m_zoomGesture = Gtk::GestureZoom::create(*this);
