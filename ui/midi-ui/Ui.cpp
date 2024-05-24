@@ -37,7 +37,6 @@ namespace Ui::Midi
         case Color::White:
           return { 255, 255, 255 };
         case Color::Off:
-        case Color::None:
         default:
           return {};
       }
