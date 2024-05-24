@@ -192,7 +192,8 @@ namespace Ui
     Full = 0,
     Half = 1,
     Third = 2,
-    Quarter = 3
+    Quarter = 3,
+    Tenth = 4
   };
 
   enum class ButtonEvent
