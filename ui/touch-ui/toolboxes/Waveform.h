@@ -4,6 +4,8 @@
 #include "core/Types.h"
 #include "tools/ReactiveVar.h"
 #include "ui/touch-ui/Interface.h"
+#include <gtkmm/gesturepan.h>
+#include <gtkmm/gesturezoom.h>
 
 namespace Tools
 {
@@ -42,6 +44,12 @@ namespace Ui
 
       Tools::ReactiveVar<Core::FramePos> m_scrollPos;
       Tools::ReactiveVar<double> m_zoom { 1.0 };
+
+      Glib::RefPtr<Gtk::GesturePan> m_panGesture;
+      Glib::RefPtr<Gtk::GestureZoom> m_zoomGesture;
+
+      Core::FramePos m_scrollPosAtGestureStart {};
+      double m_zoomAtGestureStart {};
     };
   }
 }

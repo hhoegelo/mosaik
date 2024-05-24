@@ -33,9 +33,9 @@ namespace Ui
 
      private:
       void build();
-      void setLed(Knob l, Color c) override;
-      void setLed(SoftButton s, Color c) override;
-      void setLed(Step s, Color c) override;
+      void setLed(Knob l, Color c, Brightness bright) override;
+      void setLed(SoftButton s, Color c, Brightness bright) override;
+      void setLed(Step s, Color c, Brightness bright) override;
       void setLed(SoftButton s, uint8_t r, uint8_t g, uint8_t b) override;
 
       void setColor(const std::string &widgetName, Color c);

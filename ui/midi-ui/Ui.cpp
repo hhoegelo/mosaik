@@ -24,7 +24,7 @@ namespace Ui::Midi
           return { 255, 80, 0 };
         case Color::Red:
           return { 255, 0, 0 };
-        case Color::Purple:
+        case Color::Magenta:
           return { 248, 0, 70 };
         case Color::Blue:
           return { 0, 0, 255 };
@@ -60,7 +60,7 @@ namespace Ui::Midi
           return { 255, 152, 0 };
         case Color::Red:
           return { 255, 70, 0 };
-        case Color::Purple:
+        case Color::Magenta:
           return { 248, 94, 210 };
         case Color::Blue:
           return { 0, 80, 255 };
@@ -115,7 +115,13 @@ namespace Ui::Midi
     m_ledUpdater.disconnect();
   }
 
-  void Ui::setLed(Knob k, Color c)
+  static uint8_t getMidiValueforColorAndBrightness(Color c, Brightness bright)
+  {
+    return static_cast<uint8_t>(static_cast<uint8_t>(c)
+                                + static_cast<int>(Color::NUM_COLORS) * static_cast<int>(bright));
+  }
+
+  void Ui::setLed(Knob k, Color c, Brightness bright)
   {
     uint8_t firstLed = static_cast<uint8_t>(Led::FirstCenterKnob);
     uint8_t numKnob = static_cast<uint8_t>(k);
@@ -131,7 +137,7 @@ namespace Ui::Midi
 
         for(auto &a : m_inputDevices)
         {
-          a.second->send({ 0x94, l, static_cast<uint8_t>(c) });
+          a.second->send({ 0x94, l, getMidiValueforColorAndBrightness(c, bright) });
         }
       }
     }
@@ -139,10 +145,24 @@ namespace Ui::Midi
     scheduleLedUpdate();
   }
 
-  void Ui::setLed(SoftButton k, Color c)
+  void Ui::setLed(SoftButton k, Color c, Brightness bright)
   {
-    auto ledColor = LedColor::from(c);
-    setLed(k, ledColor.r, ledColor.g, ledColor.b);
+    for(auto &a : m_inputDevices)
+    {
+      a.second->send({ 0x94, static_cast<guint8>(k), getMidiValueforColorAndBrightness(c, bright) });
+    }
+
+    scheduleLedUpdate();
+  }
+
+  void Ui::setLed(Step k, Color c, Brightness bright)
+  {
+    for(auto &a : m_inputDevices)
+    {
+      a.second->send({ 0x94, k, getMidiValueforColorAndBrightness(c, bright) });
+    }
+
+    scheduleLedUpdate();
   }
 
   void Ui::setLed(SoftButton k, uint8_t r, uint8_t g, uint8_t b)
@@ -166,18 +186,6 @@ namespace Ui::Midi
       a.second->send({ 0x91, led, static_cast<uint8_t>(r / 5) });
       a.second->send({ 0x92, led, static_cast<uint8_t>(g / 5) });
       a.second->send({ 0x93, led, static_cast<uint8_t>(b / 5) });
-    }
-
-    scheduleLedUpdate();
-  }
-
-  void Ui::setLed(Step k, Color c)
-  {
-    auto ledColor = LedColor::from(c);
-
-    for(auto &a : m_inputDevices)
-    {
-      a.second->send({ 0x94, k, static_cast<uint8_t>(c) });
     }
 
     scheduleLedUpdate();

@@ -607,7 +607,7 @@ namespace Ui
     if(std::exchange(m_knobsLedLatch[idx], color) != color)
     {
       for(auto a : m_midiUi)
-        a->setLed(knob, color);
+        a->setLed(knob, color, Brightness::Quarter);
     }
   }
 
@@ -618,7 +618,7 @@ namespace Ui
     if(std::exchange(m_softButtonLedLatch[idx], color) != color)
     {
       for(auto a : m_midiUi)
-        a->setLed(s, color);
+        a->setLed(s, color, Brightness::Quarter);
     }
   }
 
@@ -629,7 +629,7 @@ namespace Ui
     if(std::exchange(m_stepsLedLatch[idx], color) != color)
     {
       for(auto a : m_midiUi)
-        a->setLed(s, color);
+        a->setLed(s, color, Brightness::Quarter);
     }
   }
 

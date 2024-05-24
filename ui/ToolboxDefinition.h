@@ -289,7 +289,7 @@ namespace Ui
                                           UiEvent::ReleasedKnobRotate, UiAction::IncDecZoomed, Knob::NorthWest>,
                   MaximizedParameterEntry<Core::ParameterId::EnvelopeFadeOutPos, Color::Green,
                                           UiEvent::ReleasedKnobRotate, UiAction::IncDecZoomed, Knob::NorthEast>,
-                  MaximizedParameterEntry<Core::ParameterId::EnvelopeFadedOutPos, Color::Purple,
+                  MaximizedParameterEntry<Core::ParameterId::EnvelopeFadedOutPos, Color::Magenta,
                                           UiEvent::ReleasedKnobRotate, UiAction::IncDecZoomed, Knob::SouthEast>>;
 
     struct Zoom
@@ -386,14 +386,15 @@ namespace Ui
         MaximizedCustomEntry<UnmuteAll, Color::Blue, UiEvent::ButtonPress, UiAction::Invoke,
                              SoftButton::Left_SouthWest>,
         MaximizedCustomEntry<LastMute, Color::Green, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_South>,
-        MaximizedCustomEntry<SaveArmed, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_North>,
+        MaximizedCustomEntry<SaveArmed, Color::Magenta, UiEvent::ButtonPress, UiAction::Invoke,
+                             SoftButton::Right_North>,
         MaximizedCustomEntry<SaveUnarmed, Color::Red, UiEvent::ButtonRelease, UiAction::Invoke,
                              SoftButton::Right_North>,
         MaximizedCustomEntry<Slot1, Color::White, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_West>,
         MaximizedCustomEntry<Slot2, Color::Blue, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_Center>,
         MaximizedCustomEntry<Slot3, Color::Green, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_East>,
         MaximizedCustomEntry<Slot4, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthWest>,
-        MaximizedCustomEntry<Slot5, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_South>,
+        MaximizedCustomEntry<Slot5, Color::Magenta, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_South>,
         MaximizedCustomEntry<Slot6, Color::White, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthEast>,
 
         MaximizedCustomEntry<PreviousToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke,
@@ -404,13 +405,13 @@ namespace Ui
   template <> struct ToolboxDefinition<Toolbox::Reverb>
   {
     constexpr static auto title = "Reverb";
-    
+
     using MaximizedParameters
         = Entries<MaximizedParameterEntry<Core::ParameterId::GlobalReverbRoomSize, Color::Blue,
                                           UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::SouthWest>,
                   MaximizedParameterEntry<Core::ParameterId::GlobalReverbPreDelay, Color::Green,
                                           UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthWest>,
-                  MaximizedParameterEntry<Core::ParameterId::GlobalReverbColor, Color::Purple,
+                  MaximizedParameterEntry<Core::ParameterId::GlobalReverbColor, Color::Magenta,
                                           UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::SouthEast>,
                   MaximizedParameterEntry<Core::ParameterId::GlobalReverbChorus, Color::Red,
                                           UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthEast>,
@@ -471,14 +472,15 @@ namespace Ui
     };
 
     using MaximizedCustom = Entries<
-        MaximizedCustomEntry<SaveArmed, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_North>,
+        MaximizedCustomEntry<SaveArmed, Color::Magenta, UiEvent::ButtonPress, UiAction::Invoke,
+                             SoftButton::Right_North>,
         MaximizedCustomEntry<SaveUnarmed, Color::Red, UiEvent::ButtonRelease, UiAction::Invoke,
                              SoftButton::Right_North>,
         MaximizedCustomEntry<Slot1, Color::White, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_West>,
         MaximizedCustomEntry<Slot2, Color::Blue, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_Center>,
         MaximizedCustomEntry<Slot3, Color::Green, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_East>,
         MaximizedCustomEntry<Slot4, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthWest>,
-        MaximizedCustomEntry<Slot5, Color::Purple, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_South>,
+        MaximizedCustomEntry<Slot5, Color::Magenta, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_South>,
         MaximizedCustomEntry<Slot6, Color::White, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthEast>,
 
         MaximizedCustomEntry<PreviousToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke,
