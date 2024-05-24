@@ -49,7 +49,7 @@ namespace Ui::Touch
         [this](double v)
         {
           printf("Zoom change: %f\n", v);
-          m_zoom = m_zoomAtGestureStart + v;
+          m_zoom = m_zoomAtGestureStart * v;
         });
   }
 
