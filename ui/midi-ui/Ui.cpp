@@ -140,9 +140,23 @@ namespace Ui::Midi
 
   void Ui::setLed(SoftButton k, Color c, Brightness bright)
   {
+    uint8_t led = 0;
+
+    if((k >= SoftButton::FirstLeftButton && k <= SoftButton::LastLeftButton))
+    {
+      uint8_t offset = static_cast<uint8_t>(k) - static_cast<uint8_t>(SoftButton::FirstLeftButton);
+      led = static_cast<uint8_t>(Led::FirstLeftButton) + offset;
+    }
+
+    if((k >= SoftButton::FirstRightButton && k <= SoftButton::LastRightButton))
+    {
+      uint8_t offset = static_cast<uint8_t>(k) - static_cast<uint8_t>(SoftButton::FirstRightButton);
+      led = static_cast<uint8_t>(Led::FirstRightButton) + offset;
+    }
+
     for(auto &a : m_inputDevices)
     {
-      a.second->send({ 0x94, static_cast<guint8>(k), getMidiValueforColorAndBrightness(c, bright) });
+      a.second->send({ 0x94, static_cast<guint8>(led), getMidiValueforColorAndBrightness(c, bright) });
     }
 
     scheduleLedUpdate();
