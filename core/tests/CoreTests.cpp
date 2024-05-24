@@ -6,6 +6,60 @@
 #include <dsp/api/control/Interface.h>
 #include <dsp/api/realtime/Interface.h>
 
+TEST_CASE("step wizard")
+{
+  using T = uint8_t;
+  std::vector<T> result;
+
+  auto isInResult = [&](T u)
+  {
+    for(int r = 0; r < sizeof(u) * 8; r++)
+      if(std::count(result.begin(), result.end(), std::rotr(u, r)) > 0)
+        return true;
+
+    return false;
+  };
+
+  for(T i = 0; i < std::numeric_limits<T>::max(); i++)
+  {
+    if(!isInResult(i))
+      result.push_back(i);
+  }
+  result.push_back(std::numeric_limits<T>::max());
+
+  std::sort(result.begin(), result.end(),
+            [](auto l, auto r)
+            {
+              auto pl = std::popcount(l);
+              auto pr = std::popcount(r);
+              if(pl != pr)
+                return pl < pr;
+              return l < r;
+            });
+
+  for(auto n : result)
+  {
+    int l = sizeof(n) * 8;
+    for(int i = l - 1; i >= 0; i--)
+    {
+      printf("%x", (n & (1 << i)) >> i);
+    }
+    printf("\n");
+  }
+
+  for(auto r = result.rbegin(); r != result.rend(); r++)
+  {
+    T n = (*r * 0x0202020202ULL & 0x010884422010ULL) % 1023;
+
+    int l = sizeof(n) * 8;
+    for(int i = l - 1; i >= 0; i--)
+    {
+      printf("%x", (n & (1 << i)) >> i);
+    }
+    printf("\n");
+  }
+}
+
 TEST_CASE("serialize")
 {
   Core::DataModel saved;

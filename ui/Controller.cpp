@@ -6,6 +6,7 @@
 #include "dsp/api/display/Interface.h"
 #include "ui/touch-ui/Interface.h"
 #include "ToolboxDefinition.h"
+#include <ui/StepWizard.h>
 #include <cinttypes>
 #include <cmath>
 
@@ -415,30 +416,11 @@ namespace Ui
 
   template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::Steps>::OneFitsAll>(int inc)
   {
-    m_oneFitsAllStepWizard = std::clamp(m_oneFitsAllStepWizard + inc, 0, 255);
+    static auto s_patterns = buildPatterns();
+    m_oneFitsAllStepWizard = std::clamp<int>(m_oneFitsAllStepWizard + inc, 0, s_patterns.size() - 1);
 
     auto sel = m_core.getSelectedTile();
-    Core::Pattern pattern {};
-
-    int64_t w = std::abs(m_oneFitsAllStepWizard);
-
-    if(w <= 0x0F)
-      w = w | w << 4;
-
-    if(w <= 0xFF)
-      w = w | w << 8;
-
-    if(w <= 0xFFFF)
-      w = w | w << 16;
-
-    if(w <= 0xFFFFFFFF)
-      w = w | w << 32;
-
-    uint64_t m = 1;
-
-    for(size_t i = 0; i < NUM_STEPS; i++)
-      pattern[i] = w & (m << i);
-
+    auto pattern = s_patterns[m_oneFitsAllStepWizard];
     if(m_wizardRotation > 0)
       std::rotate(pattern.rbegin(), pattern.rbegin() + std::abs(m_wizardRotation) % NUM_STEPS, pattern.rend());
     else if(m_wizardRotation < 0)

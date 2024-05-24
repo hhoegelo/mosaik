@@ -33,6 +33,8 @@ add_library(mosaik-touchui STATIC
         toolboxes/Toolbox.cpp
         toolboxes/Toolbox.h
         tools/WidgetTools.cpp
+        ../StepWizard.cpp
+        ../StepWizard.h
 )
 
 target_compile_options(mosaik-touchui PRIVATE)
