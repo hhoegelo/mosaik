@@ -104,7 +104,7 @@ uint8_t col_table_new[N_COLORS][3] = {
 	{   0,   0,   0},	// off
 	{ 127, 127, 127},	// white 
 	{ 127, 127,   0}, 	// yellow
-	{ 127,  80,   0},	// orange
+	{ 127,  40,   0},	// orange
 	{ 127,   0,   0},	// red
 	{ 124,   0,  35},	// magenta
 	{   0,   0, 127},	// blue
@@ -126,7 +126,7 @@ uint8_t col_table_new[N_COLORS][3] = {
 	{   0,   0,   0},	// off
 	{  64,  64,  64},	// white 
 	{  64,  64,   0}, 	// yellow
-	{  64,  80,   0},	// orange
+	{  64,  20,   0},	// orange
 	{  64,   0,   0},	// red
 	{  62,   0,  18},	// magenta
 	{   0,   0,  64},	// blue
@@ -137,9 +137,9 @@ uint8_t col_table_new[N_COLORS][3] = {
 	{   0,   0,   0},	// off
 	{  42,  42,  42},	// white 
 	{  42,  42,   0}, 	// yellow
-	{  42,  80,   0},	// orange
+	{  42,  13,   0},	// orange
 	{  50,   0,   0},	// red
-	{  41,   0,  70},	// magenta
+	{  41,   0,  12},	// magenta
 	{   0,   0,  60},	// blue
 	{   0,  42,  42},	// light blue
 	{   0,  42,  42},	// light green
