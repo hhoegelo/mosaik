@@ -133,6 +133,18 @@ uint8_t col_table_new[N_COLORS][3] = {
 	{   0,  64,  64},	// light blue
 	{   0,  64,  30},	// light green
 	{   0,  64,   0},	// green
+	// 1/6 brightness
+	{   0,   0,   0},	// off
+	{  42,  42,  42},	// white 
+	{  42,  42,   0}, 	// yellow
+	{  42,  80,   0},	// orange
+	{  50,   0,   0},	// red
+	{  41,   0,  70},	// magenta
+	{   0,   0,  60},	// blue
+	{   0,  42,  42},	// light blue
+	{   0,  42,  42},	// light green
+	{   0,  42,   0}	// green
+	/*
 	// 10/th brightness
 	{  0,  0,  0},	// off
 	{ 25, 25, 25},	// white 
@@ -144,6 +156,7 @@ uint8_t col_table_new[N_COLORS][3] = {
 	{  0, 25, 25},	// light blue
 	{  0, 25, 12},	// light green
 	{  0, 25,  0}	// green
+	*/
 };
 
 void setup(void) 
