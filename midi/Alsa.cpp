@@ -77,7 +77,6 @@ namespace Midi
 
   void Alsa::send(const Alsa::MidiEvent &event)
   {
-    printf("Event: %d %d %d\n", event[0], event[1], event[2]);
     if(m_output)
       snd_rawmidi_write(m_output, event.data(), event.size());
   }
