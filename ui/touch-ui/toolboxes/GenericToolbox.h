@@ -15,52 +15,6 @@ namespace Ui
 
 namespace Ui::Touch
 {
-  template <Core::ParameterId ID> class GenericMinimizedParameter : public Gtk::Box
-  {
-   public:
-    GenericMinimizedParameter(Ui::Controller &controller)
-        : Gtk::Box(Gtk::ORIENTATION_VERTICAL)
-    {
-      get_style_context()->add_class("parameter");
-
-      auto name = Gtk::manage(new Gtk::Label(ParameterDescriptor<ID>::title));
-      name->get_style_context()->add_class("name");
-      pack_start(*name);
-
-      auto value = Gtk::manage(new Gtk::Label());
-      value->get_style_context()->add_class("value");
-      pack_start(*value);
-
-      m_computations.add([&controller, value] { value->set_label(controller.getDisplayValue(ID)); });
-    }
-
-   private:
-    Tools::DeferredComputations m_computations;
-  };
-
-  template <Ui::Toolbox T> class GenericMinimized : public Gtk::Box
-  {
-   public:
-    GenericMinimized(Ui::Controller &controller)
-        : Gtk::Box(Gtk::ORIENTATION_HORIZONTAL)
-    {
-      get_style_context()->add_class("minimized");
-      auto headline = Gtk::manage(new Gtk::Label(ToolboxDefinition<T>::title));
-      headline->get_style_context()->add_class("header");
-      headline->set_halign(Gtk::Align::ALIGN_START);
-      pack_start(*headline);
-
-      auto minis = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
-      pack_start(*minis);
-      Ui::ToolboxDefinition<T>::Minimized::forEach(
-          [&](auto a)
-          {
-            minis->set_halign(Gtk::Align::ALIGN_END);
-            minis->pack_start(*Gtk::manage(new GenericMinimizedParameter<decltype(a)::id>(controller)), false, false);
-          });
-    }
-  };
-
   template <Ui::Toolbox T> class GenericMaximized : public Gtk::Box
   {
    public:
@@ -172,14 +126,9 @@ namespace Ui::Touch
 
    public:
     GenericToolbox(ToolboxesInterface &toolboxes, Ui::Controller &controller, Gtk::Widget *maximized = nullptr)
-        : Toolbox(toolboxes, T, buildMinimized(controller), maximized ? maximized : buildMaximized(controller))
+        : Toolbox(toolboxes, T, maximized ? maximized : buildMaximized(controller))
     {
       get_style_context()->add_class("generic toolbox");
-    }
-
-    static Gtk::Widget *buildMinimized(Ui::Controller &controller)
-    {
-      return new GenericMinimized<T>(controller);
     }
 
     static Gtk::Widget *buildMaximized(Ui::Controller &controller)

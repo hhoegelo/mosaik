@@ -8,7 +8,7 @@
 namespace Ui::Touch
 {
 
-  Toolbox::Toolbox(ToolboxesInterface &toolboxes, Ui::Toolbox tool, Gtk::Widget *, Gtk::Widget *maximized)
+  Toolbox::Toolbox(ToolboxesInterface &toolboxes, Ui::Toolbox tool, Gtk::Widget *maximized)
   {
     set_orientation(Gtk::ORIENTATION_VERTICAL);
 
@@ -16,7 +16,7 @@ namespace Ui::Touch
 
     set_size_request(540, -1);
 
-    auto eventBox = Gtk::manage(new Gtk::EventBox());
+    /* auto eventBox = Gtk::manage(new Gtk::EventBox());
     eventBox->add(*maximized);
 
     eventBox->signal_button_press_event().connect(
@@ -24,9 +24,9 @@ namespace Ui::Touch
         {
           toolboxes.selectToolbox(tool);
           return true;
-        });
+        });*/
 
-    pack_start(*eventBox, Gtk::PACK_EXPAND_WIDGET);
+    pack_start(*maximized, Gtk::PACK_EXPAND_WIDGET);
 
     m_computations.add(
         [this, &toolboxes, tool]
