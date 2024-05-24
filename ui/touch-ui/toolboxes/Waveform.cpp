@@ -23,6 +23,12 @@ namespace Ui::Touch
         });
 
     signal_draw().connect([this](const Cairo::RefPtr<Cairo::Context>& ctx) { return drawWave(ctx); });
+
+    m_panGesture = Gtk::GesturePan::create(*this, Gtk::ORIENTATION_HORIZONTAL);
+    m_panGesture->signal_pan().connect([this](auto, double f) { m_scrollPos = f * getFramesPerPixel(); });
+
+    m_zoomGesture = Gtk::GestureZoom::create(*this);
+    m_zoomGesture->signal_scale_changed().connect([this](double v) { m_zoom = v; });
   }
 
   bool Waveform::drawWave(const Cairo::RefPtr<Cairo::Context>& ctx)
