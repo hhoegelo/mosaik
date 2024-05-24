@@ -47,6 +47,9 @@ namespace Ui
 
       Glib::RefPtr<Gtk::GesturePan> m_panGesture;
       Glib::RefPtr<Gtk::GestureZoom> m_zoomGesture;
+
+      Core::FramePos m_scrollPosAtGestureStart {};
+      double m_zoomAtGestureStart {};
     };
   }
 }
