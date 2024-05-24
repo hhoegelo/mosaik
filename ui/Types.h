@@ -174,7 +174,6 @@ namespace Ui
 
   enum class Color
   {
-    None = -1,
     Off,
     White,
     Yellow,
@@ -208,8 +207,6 @@ namespace Ui
   {
     switch(c)
     {
-      case Color::None:
-        return "none";
       case Color::Yellow:
         return "yellow";
       case Color::Orange:

@@ -93,17 +93,25 @@ namespace Ui
     };
 
     using MaximizedParameters
-        = Entries<MaximizedParameterEntry<Core::ParameterId::GlobalVolume, Color::Green, UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::Center>,
-                  MaximizedParameterEntry<Core::ParameterId::GlobalPrelistenVolume, Color::Green, UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthEast>,
-                  MaximizedParameterEntry<Core::ParameterId::GlobalTempo, Color::Blue, UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::Rightmost>>;
+        = Entries<MaximizedParameterEntry<Core::ParameterId::GlobalVolume, Color::Green, UiEvent::ReleasedKnobRotate,
+                                          UiAction::IncDec, Knob::Center>,
+                  MaximizedParameterEntry<Core::ParameterId::GlobalPrelistenVolume, Color::Green,
+                                          UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthEast>,
+                  MaximizedParameterEntry<Core::ParameterId::GlobalTempo, Color::Blue, UiEvent::ReleasedKnobRotate,
+                                          UiAction::IncDec, Knob::Rightmost>>;
     using MaximizedCustom = Entries<
-        MaximizedCustomEntry<PreviousToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_NorthWest>,
+        MaximizedCustomEntry<PreviousToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke,
+                             SoftButton::Left_NorthWest>,
         MaximizedCustomEntry<NextToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_North>,
         MaximizedCustomEntry<TapNSync, Color::Blue, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_Center>,
-        MaximizedCustomEntry<StartSlowDown, Color::Blue, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_North>,
-        MaximizedCustomEntry<StopSlowDown, Color::Blue, UiEvent::ButtonRelease, UiAction::Invoke, SoftButton::Right_North>,
-        MaximizedCustomEntry<StartSpeedUp, Color::Blue, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_NorthEast>,
-        MaximizedCustomEntry<StopSpeedUp, Color::Blue, UiEvent::ButtonRelease, UiAction::Invoke, SoftButton::Right_NorthEast>>;
+        MaximizedCustomEntry<StartSlowDown, Color::Blue, UiEvent::ButtonPress, UiAction::Invoke,
+                             SoftButton::Right_North>,
+        MaximizedCustomEntry<StopSlowDown, Color::Blue, UiEvent::ButtonRelease, UiAction::Invoke,
+                             SoftButton::Right_North>,
+        MaximizedCustomEntry<StartSpeedUp, Color::Blue, UiEvent::ButtonPress, UiAction::Invoke,
+                             SoftButton::Right_NorthEast>,
+        MaximizedCustomEntry<StopSpeedUp, Color::Blue, UiEvent::ButtonRelease, UiAction::Invoke,
+                             SoftButton::Right_NorthEast>>;
   };
   /*
   template <> struct ToolboxDefinition<Toolbox::MainPlayground>
@@ -119,7 +127,7 @@ namespace Ui
                                           UiAction::IncDec, Knob::Rightmost>,
                   MaximizedParameterEntry<Core::ParameterId::MainPlayground3, Color::Green, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::NorthWest>,
-                  MaximizedParameterEntry<Core::ParameterId::MainPlayground4, Color::Purple,
+                  MaximizedParameterEntry<Core::ParameterId::MainPlayground4, Color::Magenta,
                                           UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthEast>,
                   MaximizedParameterEntry<Core::ParameterId::MainPlayground5, Color::White, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::Center>,
@@ -146,7 +154,7 @@ namespace Ui
                                           UiAction::IncDec, Knob::Rightmost>,
                   MaximizedParameterEntry<Core::ParameterId::Playground3, Color::Green, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::NorthWest>,
-                  MaximizedParameterEntry<Core::ParameterId::Playground4, Color::Purple, UiEvent::ReleasedKnobRotate,
+                  MaximizedParameterEntry<Core::ParameterId::Playground4, Color::Magenta, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::NorthEast>,
                   MaximizedParameterEntry<Core::ParameterId::Playground5, Color::White, UiEvent::ReleasedKnobRotate,
                                           UiAction::IncDec, Knob::Center>,
@@ -210,7 +218,7 @@ namespace Ui
         MaximizedCustomEntry<OneFitsAll, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Leftmost>,
         MaximizedCustomEntry<Rotate, Color::Blue, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Center>,
         MaximizedCustomEntry<Steps, Color::Green, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::SouthWest>,
-        MaximizedCustomEntry<Gaps, Color::Purple, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::SouthEast>,
+        MaximizedCustomEntry<Gaps, Color::Magenta, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::SouthEast>,
         MaximizedCustomEntry<All, Color::White, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_NorthEast>,
         MaximizedCustomEntry<None, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_North>,
         MaximizedCustomEntry<Invert, Color::Blue, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthEast>,
@@ -226,14 +234,22 @@ namespace Ui
     constexpr static auto title = "Tile";
 
     using MaximizedParameters
-        = Entries<MaximizedParameterEntry<Core::ParameterId::Gain, Color::Green, UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::Center>,
-                  MaximizedParameterEntry<Core::ParameterId::Speed, Color::Purple, UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::SouthEast>,
-                  MaximizedParameterEntry<Core::ParameterId::Balance, Color::Purple, UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::Leftmost>,
-                  MaximizedParameterEntry<Core::ParameterId::Shuffle, Color::Purple, UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthWest>,
-                  MaximizedParameterEntry<Core::ParameterId::ReverbSend, Color::Purple, UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::SouthWest>,
-                  MaximizedParameterEntry<Core::ParameterId::Reverse, Color::Purple, UiEvent::ButtonPress, UiAction::Toggle, SoftButton::Left_Center>,
-                  MaximizedParameterEntry<Core::ParameterId::GlobalPrelistenVolume, Color::Green, UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthEast>,
-                  MaximizedParameterEntry<Core::ParameterId::Mute, Color::Red, UiEvent::ButtonPress, UiAction::Toggle, SoftButton::Left_South>>;
+        = Entries<MaximizedParameterEntry<Core::ParameterId::Gain, Color::Green, UiEvent::ReleasedKnobRotate,
+                                          UiAction::IncDec, Knob::Center>,
+                  MaximizedParameterEntry<Core::ParameterId::Speed, Color::Magenta, UiEvent::ReleasedKnobRotate,
+                                          UiAction::IncDec, Knob::SouthEast>,
+                  MaximizedParameterEntry<Core::ParameterId::Balance, Color::Magenta, UiEvent::ReleasedKnobRotate,
+                                          UiAction::IncDec, Knob::Leftmost>,
+                  MaximizedParameterEntry<Core::ParameterId::Shuffle, Color::Magenta, UiEvent::ReleasedKnobRotate,
+                                          UiAction::IncDec, Knob::NorthWest>,
+                  MaximizedParameterEntry<Core::ParameterId::ReverbSend, Color::Magenta, UiEvent::ReleasedKnobRotate,
+                                          UiAction::IncDec, Knob::SouthWest>,
+                  MaximizedParameterEntry<Core::ParameterId::Reverse, Color::Magenta, UiEvent::ButtonPress,
+                                          UiAction::Toggle, SoftButton::Left_Center>,
+                  MaximizedParameterEntry<Core::ParameterId::GlobalPrelistenVolume, Color::Green,
+                                          UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthEast>,
+                  MaximizedParameterEntry<Core::ParameterId::Mute, Color::Red, UiEvent::ButtonPress, UiAction::Toggle,
+                                          SoftButton::Left_South>>;
 
     struct Up
     {
@@ -272,7 +288,8 @@ namespace Ui
         MaximizedCustomEntry<Enter, Color::Blue, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthEast>,
         MaximizedCustomEntry<Load, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_North>,
 
-        MaximizedCustomEntry<PreviousToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_NorthWest>,
+        MaximizedCustomEntry<PreviousToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke,
+                             SoftButton::Left_NorthWest>,
         MaximizedCustomEntry<NextToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_North>,
         MaximizedCustomEntry<IncDec, Color::Blue, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Rightmost>,
         MaximizedCustomEntry<Load, Color::Blue, UiEvent::KnobClick, UiAction::Invoke, Knob::Rightmost>>;
