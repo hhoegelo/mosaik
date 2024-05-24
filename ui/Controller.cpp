@@ -47,7 +47,7 @@ namespace Ui
           {
             auto toolbox = p->getToolboxes().getSelectedToolbox();
             m_inputMapping = createMapping(toolbox);
-
+            /*
             if(toolbox == Ui::Toolbox::ColorAdjust)
             {
               m_colorAdjustmentComputations = std::make_unique<Tools::DeferredComputations>();
@@ -70,6 +70,7 @@ namespace Ui
             {
               m_colorAdjustmentComputations.reset();
             }
+            */
           }
         });
 
@@ -751,6 +752,7 @@ namespace Ui
     return m_saveArmed.get() ? "Armed" : "";
   }
 
+  /*
   // Color Adjustment
   template <> void Controller::invokeKnobAction<ToolboxDefinition<Toolbox::ColorAdjust>::Led_R>(int inc)
   {
@@ -811,7 +813,7 @@ namespace Ui
   {
     return std::to_string(m_screen_B.get());
   }
-
+*/
   template <> void Controller::invokeButtonAction<PreviousToolbox>()
   {
     if(auto t = m_touchUi.get())
@@ -831,7 +833,7 @@ namespace Ui
       auto s = static_cast<int>(t->getToolboxes().getSelectedToolbox());
       if(s != static_cast<int>(Ui::Toolbox::NUM_TOOLBOXES) - 1)
         s++;
-      
+
       t->getToolboxes().selectToolbox(static_cast<Ui::Toolbox>(s));
     }
   }

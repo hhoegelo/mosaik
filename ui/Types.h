@@ -26,7 +26,7 @@ namespace Ui
     Mute,
     Reverb,
     Snapshots,
-    ColorAdjust,
+    //ColorAdjust,
 
     NUM_TOOLBOXES
   };

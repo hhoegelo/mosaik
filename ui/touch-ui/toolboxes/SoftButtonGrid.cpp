@@ -46,8 +46,13 @@ namespace Ui::Touch
     }
   }
 
-  void SoftButtonGrid::set(Ui::SoftButton btn, const char *title, Ui::Color color, std::function<std::string()> cb)
+  bool SoftButtonGrid::set(Ui::SoftButton btn, const char *title, Ui::Color color, std::function<std::string()> cb)
   {
+    auto positions = m_where == Where::Left ? c_leftPositions : c_rightPositions;
+
+    if(std::count_if(positions.begin(), positions.end(), [&](const auto &item) { return item.first == btn; }) == 0)
+      return false;
+
     auto box = Gtk::manage(new Gtk::Box(Gtk::Orientation::ORIENTATION_VERTICAL));
     box->get_style_context()->add_class("button");
     box->get_style_context()->add_class(getColorName(color));
@@ -58,7 +63,7 @@ namespace Ui::Touch
     box->add(*level);
     m_computations.add([level, cb] { level->set_label(cb()); });
 
-    for(auto c : m_where == Where::Left ? c_leftPositions : c_rightPositions)
+    for(auto c : positions)
       if(c.first == btn)
       {
         if(auto child = get_child_at(c.second.first, c.second.second))
@@ -67,6 +72,8 @@ namespace Ui::Touch
         attach(*box, c.second.first, c.second.second, 1, 1);
         break;
       }
+
+    return true;
   }
 
 }

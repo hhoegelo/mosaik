@@ -62,12 +62,15 @@ namespace Ui
     std::string getDisplayValue(ToolboxDefinition<Toolbox::Steps>::Mirror) const;
     std::string getDisplayValue(ToolboxDefinition<Toolbox::Mute>::SaveArmed) const;
     std::string getDisplayValue(ToolboxDefinition<Toolbox::Mute>::SaveUnarmed) const;
-    std::string getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Led_R) const;
+
+    /*
+  std::string getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Led_R) const;
     std::string getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Led_G) const;
     std::string getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Led_B) const;
     std::string getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Screen_R) const;
     std::string getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Screen_G) const;
-    std::string getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Screen_B) const;
+     std::string getDisplayValue(ToolboxDefinition<Toolbox::ColorAdjust>::Screen_B) const;
+    */
 
    private:
     void setLed(Step step, Color color);

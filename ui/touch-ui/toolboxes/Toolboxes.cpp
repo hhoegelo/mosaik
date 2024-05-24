@@ -41,9 +41,9 @@ namespace Ui::Touch
     box->pack_start(*Gtk::make_managed<GenericToolbox<Ui::Toolbox::Reverb>>(*this, controller));
     box->pack_start(*Gtk::make_managed<GenericToolbox<Ui::Toolbox::Snapshots>>(*this, controller));
 
-    auto colorAdjust = Gtk::make_managed<GenericToolbox<Ui::Toolbox::ColorAdjust>>(*this, controller);
-    colorAdjust->get_style_context()->add_class("color-adjust");
-    box->pack_start(*colorAdjust);
+    //auto colorAdjust = Gtk::make_managed<GenericToolbox<Ui::Toolbox::ColorAdjust>>(*this, controller);
+    //colorAdjust->get_style_context()->add_class("color-adjust");
+    //box->pack_start(*colorAdjust);
 
     scroll->add(*box);
     add(*scroll);
