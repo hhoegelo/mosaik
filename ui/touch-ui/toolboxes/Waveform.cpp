@@ -25,18 +25,11 @@ namespace Ui::Touch
     signal_draw().connect([this](const Cairo::RefPtr<Cairo::Context>& ctx) { return drawWave(ctx); });
 
     m_panGesture = Gtk::GesturePan::create(*this, Gtk::ORIENTATION_HORIZONTAL);
-    m_panGesture->signal_begin().connect(
-        [this](auto)
-        {
-          //
-          m_scrollPosAtGestureStart = m_scrollPos;
-        });
+    m_panGesture->signal_begin().connect([this](auto) { m_scrollPosAtGestureStart = getSanitizedScroll(); });
 
     m_panGesture->signal_pan().connect(
         [this](Gtk::PanDirection dir, double f)
         {
-          printf("Pan dir: %d  %f\n", (int) dir, f);
-
           if(dir == Gtk::PanDirection::PAN_DIRECTION_LEFT)
             m_scrollPos = m_scrollPosAtGestureStart - f * getFramesPerPixel();
           else if(dir == Gtk::PanDirection::PAN_DIRECTION_RIGHT)
@@ -45,12 +38,7 @@ namespace Ui::Touch
 
     m_zoomGesture = Gtk::GestureZoom::create(*this);
     m_zoomGesture->signal_begin().connect([this](auto) { m_zoomAtGestureStart = getSanitizedZoom(); });
-    m_zoomGesture->signal_scale_changed().connect(
-        [this](double v)
-        {
-          printf("Zoom change: %f\n", v);
-          m_zoom = m_zoomAtGestureStart * v;
-        });
+    m_zoomGesture->signal_scale_changed().connect([this](double v) { m_zoom = m_zoomAtGestureStart * v; });
   }
 
   bool Waveform::drawWave(const Cairo::RefPtr<Cairo::Context>& ctx)
