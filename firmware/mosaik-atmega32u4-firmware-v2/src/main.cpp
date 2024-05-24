@@ -252,8 +252,8 @@ void process_midi_buf_rx_read(void)
 			{
 				if( rx.byte3 < N_COLORS )
 				{
-					//rgb.setPixelColor( id, rgb.Color( col_table[col_tab_pos][0], col_table[col_tab_pos][1], col_table[col_tab_pos][2] ));
-					rgb.setPixelColor( id, rgb.Color( col_table_new[col_tab_pos][0], col_table_new[col_tab_pos][1], col_table_new[col_tab_pos][2] ));
+					rgb.setPixelColor( id, rgb.Color( col_table[col_tab_pos][0], col_table[col_tab_pos][1], col_table[col_tab_pos][2] ));
+					//rgb.setPixelColor( id, rgb.Color( col_table_new[col_tab_pos][0], col_table_new[col_tab_pos][1], col_table_new[col_tab_pos][2] ));
 				}
 				break;
 			}
@@ -262,7 +262,7 @@ void process_midi_buf_rx_read(void)
 				rgb.show();
 				break;
 			}
-			case 7: // 96: all leds off
+			case 7: // 97: all leds off
 			{
 				for( uint8_t i = 0; i < N_RGB; i++ )
 				{
