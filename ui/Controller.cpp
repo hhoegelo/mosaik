@@ -173,6 +173,56 @@ namespace Ui
     }
   }
 
+
+  template <> void Controller::invokeButtonAction<GotoToolboxGlobal>()
+  {
+    if(auto t = m_touchUi.get())
+    {
+      t->getToolboxes().selectToolbox(Ui::Toolbox::Global);
+    }
+  }
+
+  template <> void Controller::invokeButtonAction<GotoToolboxWaveform>()
+  {
+    if(auto t = m_touchUi.get())
+    {
+      t->getToolboxes().selectToolbox(Ui::Toolbox::Waveform);
+    }
+  }
+
+  template <> void Controller::invokeButtonAction<GotoToolboxTile>()
+  {
+    if(auto t = m_touchUi.get())
+    {
+      t->getToolboxes().selectToolbox(Ui::Toolbox::Tile);
+    }
+  }
+
+  template <> void Controller::invokeButtonAction<GotoToolboxMute>()
+  {
+    if(auto t = m_touchUi.get())
+    {
+      t->getToolboxes().selectToolbox(Ui::Toolbox::Mute);
+    }
+  }
+
+  template <> void Controller::invokeButtonAction<GotoToolboxSteps>()
+  {
+    if(auto t = m_touchUi.get())
+    {
+      t->getToolboxes().selectToolbox(Ui::Toolbox::Steps);
+    }
+  }
+
+  template <> void Controller::invokeButtonAction<GotoToolboxSnapshots>()
+  {
+    if(auto t = m_touchUi.get())
+    {
+      t->getToolboxes().selectToolbox(Ui::Toolbox::Snapshots);
+    }
+  }
+
+
   template <Ui::Toolbox T> Controller::Mapping Controller::buildMapping(Ui::Toolbox t)
   {
     if(t == T)
