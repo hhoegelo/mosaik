@@ -192,9 +192,9 @@ namespace Ui
         MaximizedParameterEntry<Core::ParameterId::Balance, Color::Magenta, UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::Leftmost>,
         MaximizedParameterEntry<Core::ParameterId::Shuffle, Color::Magenta, UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthWest>,
         MaximizedParameterEntry<Core::ParameterId::ReverbSend, Color::Magenta, UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::SouthWest>,
-        MaximizedParameterEntry<Core::ParameterId::Reverse, Color::Magenta, UiEvent::ButtonPress, UiAction::Toggle, SoftButton::Left_Center>,
+        MaximizedParameterEntry<Core::ParameterId::Reverse, Color::Magenta, UiEvent::ButtonPress, UiAction::Toggle, SoftButton::Right_West>,
         MaximizedParameterEntry<Core::ParameterId::GlobalPrelistenVolume, Color::Green, UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthEast>,
-        MaximizedParameterEntry<Core::ParameterId::Mute, Color::Red, UiEvent::ButtonPress, UiAction::Toggle, SoftButton::Left_South>
+        //MaximizedParameterEntry<Core::ParameterId::Mute, Color::Red, UiEvent::ButtonPress, UiAction::Toggle, SoftButton::Left_South>
     >;
 
     using MaximizedCustom = Entries<
