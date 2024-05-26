@@ -268,7 +268,7 @@ namespace Ui
     struct LastMute { static constexpr auto title = "Last Mute"; };
 
     using MaximizedCustom = Entries<
-        MaximizedCustomEntry<UnmuteAll, Color::Blue, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_NorthWest>,
+        MaximizedCustomEntry<UnmuteAll, Color::Blue, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_NorthEast>,
         MaximizedCustomEntry<LastMute, Color::Green, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_East>,
         MaximizedCustomEntry<SaveArmed, Color::Magenta, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_North>,
         MaximizedCustomEntry<SaveUnarmed, Color::Red, UiEvent::ButtonRelease, UiAction::Invoke, SoftButton::Right_North>,
