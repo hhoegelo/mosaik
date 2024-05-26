@@ -214,6 +214,26 @@ namespace Ui
       static constexpr auto title = "Invert";
     };
 
+    struct ArmSkipStep
+    {
+      static constexpr auto title = "Skip";
+    };
+
+    struct DisarmSkipStep
+    {
+      static constexpr auto title = "Skip";
+    };
+
+    struct ArmTriplet
+    {
+      static constexpr auto title = "Triplet";
+    };
+
+    struct DisarmTriplet
+    {
+      static constexpr auto title = "Triplet";
+    };
+
     using MaximizedCustom = Entries<
         MaximizedCustomEntry<OneFitsAll, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Leftmost>,
         MaximizedCustomEntry<Rotate, Color::Blue, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Center>,
@@ -226,7 +246,18 @@ namespace Ui
 
         MaximizedCustomEntry<PreviousToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke,
                              SoftButton::Left_NorthWest>,
-        MaximizedCustomEntry<NextToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_North>>;
+        MaximizedCustomEntry<NextToolbox, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Left_North>,
+
+        MaximizedCustomEntry<ArmSkipStep, Color::Red, UiEvent::ButtonPress, UiAction::Invoke,
+                             SoftButton::Left_SouthEast>,
+        MaximizedCustomEntry<DisarmSkipStep, Color::Red, UiEvent::ButtonRelease, UiAction::Invoke,
+                             SoftButton::Left_SouthEast>,
+        MaximizedCustomEntry<ArmTriplet, Color::Red, UiEvent::ButtonPress, UiAction::Invoke,
+                             SoftButton::Left_SouthWest>,
+        MaximizedCustomEntry<DisarmTriplet, Color::Red, UiEvent::ButtonRelease, UiAction::Invoke,
+                             SoftButton::Left_SouthWest>
+
+        >;
   };
 
   template <> struct ToolboxDefinition<Toolbox::Tile>

@@ -55,7 +55,7 @@ namespace Ui
 
       for(size_t i = 0; i < 8; i++)
       {
-        auto s = p & (m << i);
+        auto s = (p & (m << i)) ? Core::StepType::Trigger : Core::StepType::Empty;
         r[i] = r[i + 8] = r[i + 16] = r[i + 24] = r[i + 32] = r[i + 40] = r[i + 48] = r[i + 56] = s;
       }
       ret.push_back(r);

@@ -129,7 +129,7 @@ TEST_CASE("translate core to dsp")
   Dsp::Dsp dsp;
 
   auto bd = SOURCE_DIR "/core/tests/bd.flac";
-  Core::Pattern pattern { false };
+  Core::Pattern pattern { Core::StepType::Empty };
   Core::Core core(dsp.getControlApi(), Glib::MainContext::get_default(), std::make_unique<Core::DataModel>());
   core.getApi().setParameter({ 0 }, Core::ParameterId::SampleFile, bd);
   auto unprocessedSamples = dsp.getControlApi().getSamples(bd);
@@ -155,7 +155,7 @@ TEST_CASE("translate core to dsp")
 
   WHEN("pattern has first step programmed")
   {
-    pattern[0] = true;
+    pattern[0] = Core::StepType::Trigger;
     core.getApi().setParameter({ 0 }, Core::ParameterId::Pattern, pattern);
     Tools::DeferredComputations::waitForAllScheduledComputationsDone();
 

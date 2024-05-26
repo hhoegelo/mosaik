@@ -362,9 +362,12 @@ namespace Core::Api
 
     tgt.audio = m_dsp.getSamples(dataModel.get<ParameterId::SampleFile>(src));
 
-    for(auto s : dataModel.get<ParameterId::Pattern>(src))
+    auto pattern = dataModel.get<ParameterId::Pattern>(src);
+    for(uint8_t i = 0; i < NUM_STEPS; i++)
     {
-      if(s)
+      auto s = pattern[i];
+
+      if(s == Core::StepType::Trigger)
       {
         auto step = pos / framesPer16th;
         int64_t shuffle = (step % 2) ? shuffle
@@ -389,7 +392,19 @@ namespace Core::Api
 
       std::sort(tgt.triggers.begin(), tgt.triggers.end());
 
-      pos += framesPer16th;
+      auto nextTripletStep = (i / 4) * 4 + 3;
+
+      if(s == Core::StepType::Triplet)
+      {
+      }
+      else if(pattern[nextTripletStep] == Core::StepType::Triplet)
+      {
+        pos += framesPer16th * (4.0f / 3.0f);
+      }
+      else if(s != Core::StepType::Triplet)
+      {
+        pos += framesPer16th;
+      }
     }
 
     tgt.mute = dataModel.get<ParameterId::Mute>(src);

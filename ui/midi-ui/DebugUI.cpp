@@ -7,30 +7,42 @@
 namespace Ui::Midi
 {
   auto css = R"(
-    .color-red {
-      background: red;
-    }
-
-    .color-blue {
-      background: blue;
-    }
-
-    .color-green {
-      background: green;
-    }
 
     .color-white {
       background: white;
+    }
+
+    .color-yellow {
+      background: yellow;
+    }
+
+    .color-orange {
+      background: orange;
+    }
+
+    .color-red {
+      background: red;
     }
 
     .color-magenta {
       background: magenta;
     }
 
-    button.current-step {
-      background: orange;
+    .color-blue {
+      background: blue;
     }
 
+    .color-lightblue {
+      background: lightblue;
+    }
+
+    .color-lightgreen {
+      background: lightgreen;
+    }
+
+    .color-green {
+      background: green;
+    }
   )";
 
   DebugUI::DebugUI(Core::Api::Interface& core, Dsp::Api::Display::Interface& dsp, ::Ui::Touch::Interface& touchUi,

@@ -91,7 +91,7 @@ namespace Ui::Touch
 
           for(size_t i = 0; i < 64; i++)
           {
-            if(pattern[i])
+            if(pattern[i] == Core::StepType::Trigger)
               steps[i]->get_style_context()->add_class("selected");
             else
               steps[i]->get_style_context()->remove_class("selected");

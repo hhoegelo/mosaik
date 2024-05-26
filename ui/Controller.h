@@ -104,6 +104,8 @@ namespace Ui
     template <typename D> void invokeKnobClickAction();
 
     void processStepsGapsWizard();
+    void invert(Core::Pattern &pattern) const;
+    Core::StepType invert(uint8_t pos, Core::StepType &a) const;
 
     Core::Api::Interface &m_core;
     Tools::ReactiveVar<Ui::Touch::Interface *> m_touchUi { nullptr };
@@ -121,13 +123,18 @@ namespace Ui
     std::array<bool, static_cast<size_t>(SoftButton::LastButton) + 1> m_buttonState {};
     std::array<bool, static_cast<size_t>(Knob::LastKnob) + 1> m_turnWhilePressed {};
 
-    // Wizard
+    // Steps
+    bool isTripletStep(uint8_t i) const;
+    
     Tools::ReactiveVar<int> m_oneFitsAllStepWizard { 0 };
     Tools::ReactiveVar<int> m_wizardSteps { 0 };
     Tools::ReactiveVar<int> m_wizardGaps { 0 };
     Tools::ReactiveVar<int> m_wizardRotation { 0 };
     Tools::ReactiveVar<bool> m_wizardInvert { false };
     Tools::ReactiveVar<bool> m_wizardMirror { false };
+
+    Tools::ReactiveVar<bool> m_skipStepArmed { false };
+    Tools::ReactiveVar<bool> m_tripletArmed { false };
 
     // Mute
     using MuteState = std::array<bool, NUM_TILES>;

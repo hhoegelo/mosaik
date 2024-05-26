@@ -73,8 +73,16 @@ namespace Core
     MainPlayground7,
   };
 
+  enum class StepType : uint8_t
+  {
+    Empty,
+    Trigger,
+    Triplet,
+    Skip
+  };
+
   using Path = std::filesystem::path;
-  using Pattern = std::array<bool, NUM_STEPS>;
+  using Pattern = std::array<StepType, NUM_STEPS>;
   using Float = float;
   using Bool = bool;
   using TileNumber = uint32_t;

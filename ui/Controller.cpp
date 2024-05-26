@@ -89,17 +89,39 @@ namespace Ui
       m_inputMapping = createMapping(p->getToolboxes().getSelectedToolbox());
   }
 
+  static Color stepTypeToColor(Core::StepType s)
+  {
+    switch(s)
+    {
+      case Core::StepType::Empty:
+        return Color::Off;
+      case Core::StepType::Trigger:
+        return Color::Green;
+      case Core::StepType::Triplet:
+        return Color::Yellow;
+      case Core::StepType::Skip:
+        return Color::Red;
+    }
+    return Color::Off;
+  }
+
   void Controller::showPattern()
   {
     auto tile = m_core.getSelectedTile();
     auto pattern = std::get<Core::Pattern>(m_core.getParameter(tile, Core::ParameterId::Pattern));
 
-    for(size_t i = 0; i < 64; i++)
+    for(uint8_t i = 0; i < NUM_STEPS; i++)
     {
       auto isCurrentStep = m_currentStep == i;
-      auto isProgrammed = pattern[i];
-      setLed(i, isCurrentStep ? Color::White : isProgrammed ? Color::Green : Color::Off);
+      auto isTriplet = m_tripletArmed.get() && isTripletStep(i);
+      auto c = (isTriplet && pattern[i] != Core::StepType::Triplet) ? Color::LightBlue : stepTypeToColor(pattern[i]);
+      setLed(i, isCurrentStep ? Color::White : c);
     }
+  }
+
+  bool Controller::isTripletStep(uint8_t i) const
+  {
+    return ((i + 1) % 4 == 0);
   }
 
   void Controller::onErpInc(Knob k, int inc)
@@ -470,7 +492,7 @@ namespace Ui
         for(int x = 0; x < m_wizardSteps; x++)
         {
           if(i < NUM_STEPS)
-            pattern[i] = true;
+            pattern[i] = Core::StepType::Trigger;
 
           i++;
         }
@@ -484,26 +506,40 @@ namespace Ui
         std::rotate(pattern.begin(), pattern.begin() + std::abs(m_wizardRotation) % NUM_STEPS, pattern.end());
 
       if(m_wizardInvert.get())
-      {
-        for(auto &a : pattern)
-          a = !a;
-      }
+        invert(pattern);
 
       m_core.setParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern, pattern);
     }
   }
 
+  void Controller::invert(Core::Pattern &pattern) const
+  {
+    for(auto i = 0; i < NUM_STEPS; i++)
+      pattern[i] = invert(i, pattern[i]);
+  }
+
+  Core::StepType Controller::invert(uint8_t pos, Core::StepType &a) const
+  {
+    if(a == Core::StepType::Trigger)
+      return Core::StepType::Empty;
+    else if(a == Core::StepType::Triplet)
+      return Core::StepType::Empty;
+    else if(a == Core::StepType::Empty)
+      return (isTripletStep(pos) && m_tripletArmed.get()) ? Core::StepType::Triplet : Core::StepType::Trigger;
+    return a;
+  }
+
   template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Steps>::All>()
   {
-    Core::Pattern pattern = {};
-    pattern.fill(true);
+    auto pattern = std::get<Core::Pattern>(m_core.getParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern));
+    std::replace(pattern.begin(), pattern.end(), Core::StepType::Empty, Core::StepType::Trigger);
     m_core.setParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern, pattern);
   }
 
   template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Steps>::None>()
   {
-    Core::Pattern pattern = {};
-    pattern.fill(false);
+    auto pattern = std::get<Core::Pattern>(m_core.getParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern));
+    std::replace(pattern.begin(), pattern.end(), Core::StepType::Trigger, Core::StepType::Empty);
     m_core.setParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern, pattern);
   }
 
@@ -511,8 +547,7 @@ namespace Ui
   {
     m_wizardInvert = !m_wizardInvert.get();
     auto pattern = std::get<Core::Pattern>(m_core.getParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern));
-    for(auto &a : pattern)
-      a = !a;
+    invert(pattern);
     m_core.setParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern, pattern);
   }
 
@@ -584,7 +619,7 @@ namespace Ui
     {
       auto pattern = std::get<Core::Pattern>(m_core.getParameter(m_core.getSelectedTile(), Core::ParameterId::Pattern));
       auto state = pattern[b];
-      auto newState = !state;
+      auto newState = invert(b, state);
       auto idx = b;
       pattern[idx] = newState;
 
@@ -650,13 +685,9 @@ namespace Ui
     if(Description::id == id)
     {
       if constexpr(requires(Description) { Description::format(typename Description::Type {}); })
-      {
         target = Description::format(std::get<typename Description::Type>(core.getParameter(address, id)));
-      }
       else
-      {
         target = "";
-      }
 
       return true;
     }
@@ -740,6 +771,26 @@ namespace Ui
   std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::Steps>::Mirror) const
   {
     return m_wizardMirror.get() ? "On" : "Off";
+  }
+
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Steps>::ArmSkipStep>()
+  {
+    m_skipStepArmed = !m_skipStepArmed.get();
+  }
+
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Steps>::DisarmSkipStep>()
+  {
+    //m_skipStepArmed = false;
+  }
+
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Steps>::ArmTriplet>()
+  {
+    m_tripletArmed = !m_tripletArmed.get();
+  }
+
+  template <> void Controller::invokeButtonAction<ToolboxDefinition<Toolbox::Steps>::DisarmTriplet>()
+  {
+    //  m_tripletArmed = false;
   }
 
   std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::Mute>::SaveArmed) const
