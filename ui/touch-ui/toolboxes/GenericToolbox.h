@@ -97,8 +97,14 @@ namespace Ui::Touch
               using B = decltype(a);
               if(std::holds_alternative<SoftButton>(B::position))
               {
-                if constexpr(std::is_same_v<typename B::ID, PreviousToolbox>
-                             || std::is_same_v<typename B::ID, NextToolbox>)
+                if constexpr(  std::is_same_v<typename B::ID, PreviousToolbox>
+                            || std::is_same_v<typename B::ID, NextToolbox>
+                            || std::is_same_v<typename B::ID, GotoToolboxTile>
+                            || std::is_same_v<typename B::ID, GotoToolboxWaveform>
+                            || std::is_same_v<typename B::ID, GotoToolboxGlobal>
+                            || std::is_same_v<typename B::ID, GotoToolboxMute>
+                            || std::is_same_v<typename B::ID, GotoToolboxSteps>
+                            || std::is_same_v<typename B::ID, GotoToolboxSnapshots> )
                   return;
 
                 addedLButton |= lButtons->set(std::get<SoftButton>(B::position), B::ID::title, B::color,
