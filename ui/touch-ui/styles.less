@@ -111,7 +111,7 @@
   }
 
   .level-meter.gain {
-    color: white;
+    color: rgb(0,0,0);
   }
 
   .tile {
@@ -125,28 +125,29 @@
 
     .waveform {
       background-color: rgb(20, 20, 20);
-      color: orange;
+	  color: white;
     }
 
     .waveform:visited {
-      color: orange;
+	  color: rgb(120, 120, 120);
     }
 
     .waveform:active {
-      color: rgb(170, 170, 170);
+	  color: white;
     }
 
     .sample-file {
       color: white;
       margin-left: @string-margin;
       margin-right: @string-margin;
-      font-size: 10px;
+	  font-size: 11px;
     }
 
     .seconds {
       color: white;
       margin-left: @string-margin;
       margin-right: @string-margin;
+	  font-size: 11px;
     }
 
     .step {
@@ -162,7 +163,8 @@
   }
 
   .tile.selected {
-    border-color: orange;
+    border-color: white;
+	border: 2.5px solid;
   }
 
   .tile .volume {
@@ -172,20 +174,23 @@
 
   .toolbox {
     .header {
-      color: white;
+	  color: white;
       font-size: large;
+	  padding-left: 3px;
+	  padding-top: 3px;
+	  font-weight: bold;
     }
 
     .waveform {
-      color: lightgray; // color of faded out audio frames
+	  color: rgb(50, 50, 50); // color of faded out audio frames
     }
 
     .waveform:active {
-      color: orange; // color of faded in audio frames
+	  color: white; // color of faded in audio frames
     }
 
     .waveform:checked {
-      color: white; // color of envelope stripes
+	  color: lightblue; // color of envelope stripes
     }
 
     .waveform:focus {
@@ -196,25 +201,26 @@
       padding-bottom: 10px;
 
       .header {
-        font-weight: normal;
+	    font-weight: bold;
       }
 
       .parameter {
-        padding-left: 15px;
+	    padding-left: 15px;
         padding-right: 0px;
         margin: 0px;
       }
     }
 
-    border: 3px solid gray;
+    border: 4px solid rgb(40,40,40);
 
     &.selected {
       .header {
-        background: orange;
+	    background: lightblue;
         font-weight: bold;
+		color: black;
       }
-
-      border: 3px solid orange;
+	  border: 2px solid lightblue;
+	  color: blue;
     }
   }
 
