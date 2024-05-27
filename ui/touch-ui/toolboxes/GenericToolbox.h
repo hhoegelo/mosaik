@@ -33,14 +33,14 @@ namespace Ui::Touch
       bool hasKnobs = false;
       bool hasButtons = false;
 
-      Ui::ToolboxDefinition<T>::MaximizedParameters::forEach(
+      /*Ui::ToolboxDefinition<T>::MaximizedParameters::forEach(
           [&](auto a)
           {
             hasKnobs |= std::holds_alternative<Knob>(decltype(a)::position);
             hasButtons |= std::holds_alternative<SoftButton>(decltype(a)::position);
-          });
+          });*/
 
-      Ui::ToolboxDefinition<T>::MaximizedCustom::forEach(
+      Ui::ToolboxDefinition<T>::Entires::forEach(
           [&](auto a)
           {
             hasKnobs |= std::holds_alternative<Knob>(decltype(a)::position);
@@ -50,22 +50,20 @@ namespace Ui::Touch
       if(hasKnobs)
       {
         auto knobs = Gtk::manage(new KnobGrid());
-        Ui::ToolboxDefinition<T>::MaximizedParameters::forEach(
-            [&](auto a)
-            {
-              using B = decltype(a);
-              if(std::holds_alternative<Knob>(B::position))
-                knobs->set(std::get<Knob>(B::position), ParameterDescriptor<B::id>::title, B::color,
-                           [&] { return controller.getDisplayValue(B::id); });
-            });
 
-        Ui::ToolboxDefinition<T>::MaximizedCustom::forEach(
+        Ui::ToolboxDefinition<T>::Entires::forEach(
             [&](auto a)
             {
               using B = decltype(a);
               if(std::holds_alternative<Knob>(B::position))
                 knobs->set(std::get<Knob>(B::position), B::ID::title, B::color,
-                           [&] { return controller.getDisplayValue(typename B::ID {}); });
+                           [&]
+                           {
+                             if constexpr(requires() { controller.getDisplayValue(B::ID::id); })
+                               return controller.getDisplayValue(B::ID::id);
+
+                             return controller.getDisplayValue(typename B::ID {});
+                           });
             });
 
         pack_start(*knobs);
@@ -78,7 +76,7 @@ namespace Ui::Touch
         auto lButtons = Gtk::manage(new SoftButtonGrid(SoftButtonGrid::Where::Left));
         auto rButtons = Gtk::manage(new SoftButtonGrid(SoftButtonGrid::Where::Right));
 
-        Ui::ToolboxDefinition<T>::MaximizedParameters::forEach(
+        /* Ui::ToolboxDefinition<T>::MaximizedParameters::forEach(
             [&](auto a)
             {
               using B = decltype(a);
@@ -89,23 +87,23 @@ namespace Ui::Touch
                 addedRButton |= rButtons->set(std::get<SoftButton>(B::position), ParameterDescriptor<B::id>::title,
                                               B::color, [&] { return controller.getDisplayValue(B::id); });
               }
-            });
+            });*/
 
-        Ui::ToolboxDefinition<T>::MaximizedCustom::forEach(
+        Ui::ToolboxDefinition<T>::Entires::forEach(
             [&](auto a)
             {
               using B = decltype(a);
               if(std::holds_alternative<SoftButton>(B::position))
               {
-                if constexpr(  std::is_same_v<typename B::ID, PreviousToolbox>
-                            || std::is_same_v<typename B::ID, NextToolbox>
-                            || std::is_same_v<typename B::ID, GotoToolboxTile>
-                            || std::is_same_v<typename B::ID, GotoToolboxWaveform>
-                            || std::is_same_v<typename B::ID, GotoToolboxGlobal>
-                            || std::is_same_v<typename B::ID, GotoToolboxMute>
-                            || std::is_same_v<typename B::ID, GotoToolboxSteps>
-                            || std::is_same_v<typename B::ID, GotoToolboxReverb>
-                            || std::is_same_v<typename B::ID, GotoToolboxSnapshots> )
+                if constexpr(std::is_same_v<typename B::ID, PreviousToolbox>
+                             || std::is_same_v<typename B::ID, NextToolbox>
+                             || std::is_same_v<typename B::ID, GotoToolboxTile>
+                             || std::is_same_v<typename B::ID, GotoToolboxWaveform>
+                             || std::is_same_v<typename B::ID, GotoToolboxGlobal>
+                             || std::is_same_v<typename B::ID, GotoToolboxMute>
+                             || std::is_same_v<typename B::ID, GotoToolboxSteps>
+                             || std::is_same_v<typename B::ID, GotoToolboxReverb>
+                             || std::is_same_v<typename B::ID, GotoToolboxSnapshots>)
                   return;
 
                 addedLButton |= lButtons->set(std::get<SoftButton>(B::position), B::ID::title, B::color,
