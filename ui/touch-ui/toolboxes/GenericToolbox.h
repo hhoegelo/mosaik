@@ -104,6 +104,7 @@ namespace Ui::Touch
                             || std::is_same_v<typename B::ID, GotoToolboxGlobal>
                             || std::is_same_v<typename B::ID, GotoToolboxMute>
                             || std::is_same_v<typename B::ID, GotoToolboxSteps>
+                            || std::is_same_v<typename B::ID, GotoToolboxReverb>
                             || std::is_same_v<typename B::ID, GotoToolboxSnapshots> )
                   return;
 

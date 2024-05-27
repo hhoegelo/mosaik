@@ -222,6 +222,13 @@ namespace Ui
     }
   }
 
+  template <> void Controller::invokeButtonAction<GotoToolboxReverb>()
+  {
+    if(auto t = m_touchUi.get())
+    {
+      t->getToolboxes().selectToolbox(Ui::Toolbox::Reverb);
+    }
+  }
 
   template <Ui::Toolbox T> Controller::Mapping Controller::buildMapping(Ui::Toolbox t)
   {
