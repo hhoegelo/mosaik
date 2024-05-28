@@ -92,13 +92,6 @@ namespace Ui
     template <Ui::Toolbox T> Mapping buildMapping(Ui::Toolbox t);
     template <Ui::Toolbox T> Mapping buildMapping();
 
-    template <typename D> std::pair<Knob, std::function<void(int)>> bindKnobUiParameterAction(float factor = 1.0f);
-    template <typename D> std::pair<SoftButton, std::function<void()>> bindButtonUiParameterAction();
-    template <typename D> std::pair<SoftButton, std::function<void()>> bindButtonUiInvokeAction();
-    template <typename D> std::pair<Knob, std::function<void(int)>> bindKnobUiInvokeAction(float factor = 1.0f);
-    template <typename D> std::pair<Knob, std::function<void()>> bindKnobUiClickAction();
-    template <typename D> std::pair<Knob, std::function<void()>> bindKnobUiDefaultClickAction();
-
     template <typename D> void invokeButtonAction();
     template <typename D> void invokeKnobAction(int incs);
     template <typename D> void invokeKnobClickAction();
@@ -125,7 +118,7 @@ namespace Ui
 
     // Steps
     bool isTripletStep(uint8_t i) const;
-    
+
     Tools::ReactiveVar<int> m_oneFitsAllStepWizard { 0 };
     Tools::ReactiveVar<int> m_wizardSteps { 0 };
     Tools::ReactiveVar<int> m_wizardGaps { 0 };

@@ -198,10 +198,11 @@ namespace Ui
     };
 
     using Entires
-        = Entries<Entry<OneFitsAll, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Leftmost>,
-                  Entry<Rotate, Color::Blue, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Center>,
+        = Entries<Entry<OneFitsAll, Color::Green, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Leftmost>,
+                  Entry<Rotate, Color::Green, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Center>,
                   Entry<Steps, Color::Green, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::SouthWest>,
-                  Entry<Gaps, Color::Magenta, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::SouthEast>,
+                  Entry<Gaps, Color::Green, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::SouthEast>,
+
                   Entry<All, Color::White, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_NorthEast>,
                   Entry<None, Color::Red, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_North>,
                   Entry<Invert, Color::Blue, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthEast>,
@@ -243,29 +244,29 @@ namespace Ui
     };
 
     using Entires = Entries<
-        Entry<ParameterDescriptor<ParameterId::Gain>, Color::Green, UiEvent::ReleasedKnobRotate, UiAction::IncDec,
+        Entry<ParameterDescriptor<Core::ParameterId::Gain>, Color::Green, UiEvent::ReleasedKnobRotate, UiAction::IncDec,
               Knob::Center>,
-        Entry<ParameterDescriptor<ParameterId::Speed>, Color::Magenta, UiEvent::ReleasedKnobRotate, UiAction::IncDec,
+        Entry<ParameterDescriptor<Core::ParameterId::Speed>, Color::Blue, UiEvent::ReleasedKnobRotate, UiAction::IncDec,
               Knob::SouthEast>,
-        Entry<ParameterDescriptor<ParameterId::Balance>, Color::Magenta, UiEvent::ReleasedKnobRotate, UiAction::IncDec,
-              Knob::Leftmost>,
-        Entry<ParameterDescriptor<ParameterId::Shuffle>, Color::Magenta, UiEvent::ReleasedKnobRotate, UiAction::IncDec,
-              Knob::NorthWest>,
-        Entry<ParameterDescriptor<ParameterId::ReverbSend>, Color::Magenta, UiEvent::ReleasedKnobRotate,
+        Entry<ParameterDescriptor<Core::ParameterId::Balance>, Color::Green, UiEvent::ReleasedKnobRotate,
+              UiAction::IncDec, Knob::Leftmost>,
+        Entry<ParameterDescriptor<Core::ParameterId::Shuffle>, Color::Blue, UiEvent::ReleasedKnobRotate,
               UiAction::IncDec, Knob::SouthWest>,
-        Entry<ParameterDescriptor<ParameterId::Reverse>, Color::LightGreen, UiEvent::ButtonPress, UiAction::Toggle,
+        Entry<ParameterDescriptor<Core::ParameterId::ReverbSend>, Color::Green, UiEvent::ReleasedKnobRotate,
+              UiAction::IncDec, Knob::NorthWest>,
+        Entry<ParameterDescriptor<Core::ParameterId::Reverse>, Color::Blue, UiEvent::ButtonPress, UiAction::Toggle,
               SoftButton::Right_West>,
-        Entry<ParameterDescriptor<ParameterId::GlobalPrelistenVolume>, Color::Green, UiEvent::ReleasedKnobRotate,
+        Entry<ParameterDescriptor<Core::ParameterId::GlobalPrelistenVolume>, Color::Green, UiEvent::ReleasedKnobRotate,
               UiAction::IncDec, Knob::NorthEast>,
-        Entry<ParameterDescriptor<ParameterId::Mute>, Color::Red, UiEvent::ButtonPress, UiAction::Toggle,
+        Entry<ParameterDescriptor<Core::ParameterId::Mute>, Color::Red, UiEvent::ButtonPress, UiAction::Toggle,
               SoftButton::Right_East>,
-        Entry<Up, Color::Yellow, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_Center>,
-        Entry<Down, Color::Yellow, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_South>,
-        Entry<Leave, Color::Yellow, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthWest>,
-        Entry<Enter, Color::Yellow, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthEast>,
+        Entry<Up, Color::Orange, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_Center>,
+        Entry<Down, Color::Orange, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_South>,
+        Entry<Leave, Color::Orange, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthWest>,
+        Entry<Enter, Color::Orange, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_SouthEast>,
         Entry<Load, Color::White, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_North>,
         Entry<IncDec, Color::Yellow, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Rightmost>,
-        Entry<Load, Color::Yellow, UiEvent::KnobClick, UiAction::Invoke, Knob::Rightmost>>::Add<ToolboxNavigation>;
+        Entry<Load, Color::White, UiEvent::KnobClick, UiAction::Invoke, Knob::Rightmost>>::Add<ToolboxNavigation>;
   };
 
   template <> struct ToolboxDefinition<Toolbox::Waveform>
@@ -287,19 +288,20 @@ namespace Ui
       constexpr static float acceleration = 10.f;
     };
 
-    using Entires = Entries<Entry<ParameterDescriptor<ParameterId::EnvelopeFadeInPos>, Color::Red,
+    using Entires = Entries<Entry<ParameterDescriptor<Core::ParameterId::EnvelopeFadeInPos>, Color::LightBlue,
                                   UiEvent::ReleasedKnobRotate, UiAction::IncDecZoomed, Knob::SouthWest>,
-                            Entry<ParameterDescriptor<ParameterId::EnvelopeFadedInPos>, Color::Blue,
+                            Entry<ParameterDescriptor<Core::ParameterId::EnvelopeFadedInPos>, Color::LightBlue,
                                   UiEvent::ReleasedKnobRotate, UiAction::IncDecZoomed, Knob::NorthWest>,
-                            Entry<ParameterDescriptor<ParameterId::EnvelopeFadeOutPos>, Color::Green,
+                            Entry<ParameterDescriptor<Core::ParameterId::EnvelopeFadeOutPos>, Color::LightBlue,
                                   UiEvent::ReleasedKnobRotate, UiAction::IncDecZoomed, Knob::NorthEast>,
-                            Entry<ParameterDescriptor<ParameterId::EnvelopeFadedOutPos>, Color::Magenta,
+                            Entry<ParameterDescriptor<Core::ParameterId::EnvelopeFadedOutPos>, Color::LightBlue,
                                   UiEvent::ReleasedKnobRotate, UiAction::IncDecZoomed, Knob::SouthEast>,
-                            Entry<ParameterDescriptor<ParameterId::Gain>, Color::Green, UiEvent::ReleasedKnobRotate,
-                                  UiAction::IncDec, Knob::Center>,
+                            Entry<ParameterDescriptor<Core::ParameterId::Gain>, Color::Green,
+                                  UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::Rightmost>,
                             Entry<Zoom, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke, Knob::Leftmost>,
-                            Entry<HitPoint, Color::Green, UiEvent::ReleasedKnobRotate, UiAction::Invoke,
-                                  Knob::Rightmost>>::Add<ToolboxNavigation>;
+                            Entry<HitPoint, Color::Red, UiEvent::ReleasedKnobRotate, UiAction::Invoke,
+                                  Knob::Center>>::Add<ToolboxNavigation>;
+    ;
   };
 
   template <> struct ToolboxDefinition<Toolbox::Mute>
@@ -365,18 +367,19 @@ namespace Ui
   {
     constexpr static auto title = "Reverb";
 
-    using Entires = Entries<Entry<ParameterDescriptor<ParameterId::GlobalReverbRoomSize>, Color::Blue,
-                                  UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::SouthWest>,
-                            Entry<ParameterDescriptor<ParameterId::GlobalReverbPreDelay>, Color::Green,
-                                  UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthWest>,
-                            Entry<ParameterDescriptor<ParameterId::GlobalReverbColor>, Color::Magenta,
-                                  UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::SouthEast>,
-                            Entry<ParameterDescriptor<ParameterId::GlobalReverbChorus>, Color::Red,
-                                  UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthEast>,
-                            Entry<ParameterDescriptor<ParameterId::GlobalReverbReturn>, Color::White,
-                                  UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::Center>,
-                            Entry<ParameterDescriptor<ParameterId::GlobalReverbOnOff>, Color::Red, UiEvent::ButtonPress,
-                                  UiAction::Toggle, SoftButton::Right_Center>>::Add<ToolboxNavigation>;
+    using Entires
+        = Entries<Entry<ParameterDescriptor<Core::ParameterId::GlobalReverbRoomSize>, Color::Yellow,
+                        UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::SouthWest>,
+                  Entry<ParameterDescriptor<Core::ParameterId::GlobalReverbPreDelay>, Color::Yellow,
+                        UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthWest>,
+                  Entry<ParameterDescriptor<Core::ParameterId::GlobalReverbColor>, Color::Yellow,
+                        UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::SouthEast>,
+                  Entry<ParameterDescriptor<Core::ParameterId::GlobalReverbChorus>, Color::Yellow,
+                        UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::NorthEast>,
+                  Entry<ParameterDescriptor<Core::ParameterId::GlobalReverbReturn>, Color::Green,
+                        UiEvent::ReleasedKnobRotate, UiAction::IncDec, Knob::Center>,
+                  Entry<ParameterDescriptor<Core::ParameterId::GlobalReverbOnOff>, Color::Red, UiEvent::ButtonPress,
+                        UiAction::Toggle, SoftButton::Right_Center>>::Add<ToolboxNavigation>;
   };
 
   template <> struct ToolboxDefinition<Toolbox::Snapshots>
@@ -418,7 +421,7 @@ namespace Ui
 
     using Entires
         = Entries<Entry<SaveArmed, Color::Magenta, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_North>,
-                  Entry<SaveUnarmed, Color::Red, UiEvent::ButtonRelease, UiAction::Invoke, SoftButton::Right_North>,
+                  Entry<SaveUnarmed, Color::White, UiEvent::ButtonRelease, UiAction::Invoke, SoftButton::Right_North>,
                   Entry<Slot1, Color::Magenta, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_West>,
                   Entry<Slot2, Color::Magenta, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_Center>,
                   Entry<Slot3, Color::Magenta, UiEvent::ButtonPress, UiAction::Invoke, SoftButton::Right_East>,

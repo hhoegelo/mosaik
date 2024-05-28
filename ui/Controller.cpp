@@ -247,82 +247,12 @@ namespace Ui
     return buildMapping<static_cast<Ui::Toolbox>(0)>(t);
   }
 
-  template <typename D> std::pair<Knob, std::function<void(int)>> Controller::bindKnobUiParameterAction(float factor)
+  template <typename T> constexpr bool isParameter()
   {
-    constexpr bool isGlobal = Core::GlobalParameters<Core::NoWrap>::contains(D::ID::id);
-    if constexpr(D::action == UiAction::IncDec)
-      return std::make_pair(std::get<Knob>(D::position),
-                            [this, factor](int inc)
-                            {
-                              auto tile = isGlobal ? Core::Address {} : m_core.getSelectedTile();
-                              m_core.incParameter(tile, D::ID::id, factor * inc);
-                            });
-    else if constexpr(D::action == UiAction::IncDecZoomed)
-      return std::make_pair(std::get<Knob>(D::position),
-                            [this, factor](int inc)
-                            {
-                              if(auto p = m_touchUi.get())
-                              {
-                                auto tile = isGlobal ? Core::Address {} : m_core.getSelectedTile();
-                                auto fpp = p->getToolboxes().getWaveform().getFramesPerPixel();
-                                m_core.incParameter(tile, D::ID::id, factor * fpp * inc);
-                              }
-                            });
+    if constexpr(requires { std::is_same_v<ParameterDescriptor<T::ID::id>, typename T::ID>; })
+      return std::is_same_v<ParameterDescriptor<T::ID::id>, typename T::ID>;
     else
-      UNSUPPORTED_BRANCH();
-  }
-
-  template <typename D> std::pair<SoftButton, std::function<void()>> Controller::bindButtonUiParameterAction()
-  {
-    if constexpr(D::action == UiAction::Toggle)
-      return std::make_pair(std::get<SoftButton>(D::position),
-                            [this]() { m_core.toggleSelectedTilesParameter(D::ID::id); });
-    else if constexpr(D::action == UiAction::Invoke)
-      return bindButtonUiInvokeAction<D>();
-    else
-      UNSUPPORTED_BRANCH();
-  }
-
-  template <typename D> std::pair<Knob, std::function<void()>> Controller::bindKnobUiClickAction()
-  {
-    if constexpr(D::action == UiAction::Default)
-      return bindKnobUiDefaultClickAction<D>();
-    else if constexpr(D::action == UiAction::Invoke)
-      return std::make_pair(std::get<Knob>(D::position), [this]() { this->invokeKnobClickAction<typename D::ID>(); });
-    else
-      UNSUPPORTED_BRANCH();
-  }
-
-  template <typename D> std::pair<Knob, std::function<void()>> Controller::bindKnobUiDefaultClickAction()
-  {
-    constexpr bool isGlobal = Core::GlobalParameters<Core::NoWrap>::contains(D::ID::id);
-    auto tile = isGlobal ? Core::Address {} : m_core.getSelectedTile();
-    return std::make_pair(std::get<Knob>(D::position),
-                          [this, tile]() { m_core.setParameter(tile, D::ID::id, D::ID::defaultValue); });
-  }
-
-  template <typename D> std::pair<SoftButton, std::function<void()>> Controller::bindButtonUiInvokeAction()
-  {
-    if constexpr(D::action == UiAction::Invoke)
-      return std::make_pair(std::get<SoftButton>(D::position),
-                            [this]() { this->invokeButtonAction<typename D::ID>(); });
-    else
-      UNSUPPORTED_BRANCH();
-  }
-
-  template <typename D> std::pair<Knob, std::function<void(int)>> Controller::bindKnobUiInvokeAction(float factor)
-  {
-    if constexpr(D::action == UiAction::Invoke)
-      return std::make_pair(std::get<Knob>(D::position),
-                            [this, factor](int i) { this->invokeKnobAction<typename D::ID>(factor * i); });
-    else if constexpr(requires() {
-                        D::action == UiAction::IncDec;
-                        D::ID::id;
-                      })
-      return std::make_pair(std::get<Knob>(D::position),
-                            [this, factor](int i) { this->bindKnobUiParameterAction<D>(factor); });
-    else
-      UNSUPPORTED_BRANCH();
+      return false;
   }
 
   template <Toolbox T> Controller::Mapping Controller::buildMapping()
@@ -340,62 +270,114 @@ namespace Ui
         {
           using D = decltype(a);
 
-          if constexpr(D::event == UiEvent::ButtonPress)
+          if constexpr(isParameter<D>())
           {
-            if constexpr(requires { std::is_same_v<ParameterDescriptor<D::ID::id>, typename D::ID>; })
-              mapping.buttonPressed.insert(bindButtonUiParameterAction<D>());
-            else
-              mapping.buttonPressed.insert(bindButtonUiInvokeAction<D>());
-
-            setLed(std::get<SoftButton>(D::position), D::color);
-          }
-          else if constexpr(D::event == UiEvent::ButtonRelease)
-          {
-            mapping.buttonReleased.insert(bindButtonUiInvokeAction<D>());
-            setLed(std::get<SoftButton>(D::position), D::color);
-          }
-          else if constexpr(D::event == UiEvent::ReleasedKnobRotate)
-          {
-            if constexpr(requires { std::is_same_v<ParameterDescriptor<D::ID::id>, typename D::ID>; })
+            if constexpr(D::action == UiAction::Invoke)
             {
-              mapping.knobIncDecReleased.insert(bindKnobUiParameterAction<D>());
-
-              using P = D;
-
-              if constexpr(requires(P) { P::defaultValue; })
+              if constexpr(D::event == UiEvent::ReleasedKnobRotate)
               {
-                mapping.knobClick.insert(bindKnobUiDefaultClickAction<D>());
+                mapping.knobIncDecReleased[std::get<Knob>(D::position)]
+                    = [this](int inc) { invokeKnobAction<D::ID>(inc); };
+
+                if constexpr(requires { D::ID::acceleration; })
+                {
+                  mapping.knobIncDecPressed[std::get<Knob>(D::position)]
+                      = [this](int inc) { invokeKnobAction<D::ID>(D::ID::acceleration * inc); };
+                }
+                setLed(std::get<Knob>(D::position), D::color);
+              }
+              else if constexpr(D::event == UiEvent::ButtonPress)
+              {
+                mapping.buttonPressed[std::get<SoftButton>(D::position)]
+                    = [this](int inc) { this->invokeButtonAction<D::ID>(); };
+                setLed(std::get<SoftButton>(D::position), D::color);
+              }
+              else if constexpr(D::event == UiEvent::ButtonRelease)
+              {
+                mapping.buttonReleased[std::get<SoftButton>(D::position)]
+                    = [this](int inc) { this->invokeButtonAction<D::ID>(); };
+                setLed(std::get<SoftButton>(D::position), D::color);
+              }
+              else
+              {
+                UNSUPPORTED_BRANCH();
+              }
+            }
+            else if constexpr(D::event == UiEvent::ButtonPress && D::action == UiAction::Toggle)
+            {
+              mapping.buttonPressed[std::get<SoftButton>(D::position)]
+                  = [this] { m_core.toggleSelectedTilesParameter(D::ID::id); };
+              setLed(std::get<SoftButton>(D::position), D::color);
+            }
+            else if constexpr(D::event == UiEvent::ReleasedKnobRotate && D::action == UiAction::IncDec)
+            {
+              mapping.knobIncDecReleased[std::get<Knob>(D::position)]
+                  = [this](int inc) { m_core.incParameter(m_core.getSelectedTile(), D::ID::id, inc); };
+
+              if constexpr(requires { D::ID::defaultValue; })
+              {
+                mapping.knobClick[std::get<Knob>(D::position)]
+                    = [this] { m_core.setParameter(m_core.getSelectedTile(), D::ID::id, D::ID::defaultValue); };
               }
 
-              if constexpr(requires(P) { P::acceleration; })
+              if constexpr(requires { D::ID::acceleration; })
               {
-                mapping.knobIncDecPressed.insert(bindKnobUiParameterAction<D>(P::acceleration));
+                mapping.knobIncDecPressed[std::get<Knob>(D::position)] = [this](int inc)
+                { m_core.incParameter(m_core.getSelectedTile(), D::ID::id, D::ID::acceleration * inc); };
               }
+              setLed(std::get<Knob>(D::position), D::color);
+            }
+            else if constexpr(D::event == UiEvent::ReleasedKnobRotate && D::action == UiAction::IncDecZoomed)
+            {
+              mapping.knobIncDecReleased[std::get<Knob>(D::position)] = [this](int inc)
+              {
+                m_core.incParameter(m_core.getSelectedTile(), D::ID::id,
+                                    m_touchUi.get()->getToolboxes().getWaveform().getFramesPerPixel() * inc);
+              };
+              setLed(std::get<Knob>(D::position), D::color);
             }
             else
             {
-              mapping.knobIncDecReleased.insert(bindKnobUiInvokeAction<D>());
-
-              if constexpr(requires(D::ID) { D::ID::acceleration; })
-              {
-                mapping.knobIncDecPressed.insert(bindKnobUiInvokeAction<D>(D::ID::acceleration));
-              }
+              UNSUPPORTED_BRANCH();
             }
-
-            setLed(std::get<Knob>(D::position), D::color);
-          }
-          else if constexpr(D::event == UiEvent::PressedKnobRotate)
-          {
-            mapping.knobIncDecPressed.insert(bindKnobUiInvokeAction<D>());
-            setLed(std::get<Knob>(D::position), D::color);
-          }
-          else if constexpr(D::event == UiEvent::KnobClick)
-          {
-            mapping.knobClick.insert(bindKnobUiClickAction<D>());
-            setLed(std::get<Knob>(D::position), D::color);
           }
           else
-            UNSUPPORTED_BRANCH();
+          {
+            if constexpr(D::action == UiAction::Invoke)
+            {
+              if constexpr(D::event == UiEvent::KnobClick)
+              {
+                mapping.knobClick[std::get<Knob>(D::position)] = [this] { invokeButtonAction<typename D::ID>(); };
+                setLed(std::get<Knob>(D::position), D::color);
+              }
+              else if constexpr(D::event == UiEvent::ReleasedKnobRotate)
+              {
+                mapping.knobIncDecReleased[std::get<Knob>(D::position)]
+                    = [this](int inc) { this->invokeKnobAction<typename D::ID>(inc); };
+                setLed(std::get<Knob>(D::position), D::color);
+              }
+              else if constexpr(D::event == UiEvent::ButtonPress)
+              {
+                mapping.buttonPressed[std::get<SoftButton>(D::position)]
+                    = [this] { invokeButtonAction<typename D::ID>(); };
+                setLed(std::get<SoftButton>(D::position), D::color);
+              }
+              else if constexpr(D::event == UiEvent::ButtonRelease)
+              {
+                mapping.buttonReleased[std::get<SoftButton>(D::position)]
+                    = [this] { invokeButtonAction<typename D::ID>(); };
+                setLed(std::get<SoftButton>(D::position), D::color);
+              }
+              else
+              {
+                UNSUPPORTED_BRANCH();
+              }
+            }
+            else
+            {
+              UNSUPPORTED_BRANCH();
+            }
+          }
         });
 
     return mapping;
