@@ -86,7 +86,7 @@ namespace Ui
       return Tools::format("%s", t ? "<<<" : ">>>");
     }
 
-    constexpr static auto title = "Reverse";
+    constexpr static auto title = "Rev.";
   };
 
   template <> struct ParameterDescriptor<Core::ParameterId::Mute> : Core::ParameterDescriptor<Core::ParameterId::Mute>

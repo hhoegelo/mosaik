@@ -33,13 +33,6 @@ namespace Ui::Touch
       bool hasKnobs = false;
       bool hasButtons = false;
 
-      /*Ui::ToolboxDefinition<T>::MaximizedParameters::forEach(
-          [&](auto a)
-          {
-            hasKnobs |= std::holds_alternative<Knob>(decltype(a)::position);
-            hasButtons |= std::holds_alternative<SoftButton>(decltype(a)::position);
-          });*/
-
       Ui::ToolboxDefinition<T>::Entires::forEach(
           [&](auto a)
           {
@@ -47,9 +40,11 @@ namespace Ui::Touch
             hasButtons |= std::holds_alternative<SoftButton>(decltype(a)::position);
           });
 
+      KnobGrid *knobs = nullptr;
+
       if(hasKnobs)
       {
-        auto knobs = Gtk::manage(new KnobGrid());
+        knobs = Gtk::manage(new KnobGrid());
 
         Ui::ToolboxDefinition<T>::Entires::forEach(
             [&](auto a)
@@ -65,29 +60,13 @@ namespace Ui::Touch
                              return controller.getDisplayValue(typename B::ID {});
                            });
             });
-
-        pack_start(*knobs);
       }
+
+      SoftButtonGrid *buttons = nullptr;
 
       if(hasButtons)
       {
-        bool addedLButton = false;
-        bool addedRButton = false;
-        auto lButtons = Gtk::manage(new SoftButtonGrid(SoftButtonGrid::Where::Left));
-        auto rButtons = Gtk::manage(new SoftButtonGrid(SoftButtonGrid::Where::Right));
-
-        /* Ui::ToolboxDefinition<T>::MaximizedParameters::forEach(
-            [&](auto a)
-            {
-              using B = decltype(a);
-              if(std::holds_alternative<SoftButton>(B::position))
-              {
-                addedLButton |= lButtons->set(std::get<SoftButton>(B::position), ParameterDescriptor<B::id>::title,
-                                              B::color, [&] { return controller.getDisplayValue(B::id); });
-                addedRButton |= rButtons->set(std::get<SoftButton>(B::position), ParameterDescriptor<B::id>::title,
-                                              B::color, [&] { return controller.getDisplayValue(B::id); });
-              }
-            });*/
+        buttons = Gtk::manage(new SoftButtonGrid(SoftButtonGrid::Where::Right));
 
         Ui::ToolboxDefinition<T>::Entires::forEach(
             [&](auto a)
@@ -106,23 +85,20 @@ namespace Ui::Touch
                              || std::is_same_v<typename B::ID, GotoToolboxSnapshots>)
                   return;
 
-                addedLButton |= lButtons->set(std::get<SoftButton>(B::position), B::ID::title, B::color,
-                                              [&] { return controller.getDisplayValue(typename B::ID {}); });
-                addedRButton |= rButtons->set(std::get<SoftButton>(B::position), B::ID::title, B::color,
-                                              [&] { return controller.getDisplayValue(typename B::ID {}); });
+                buttons->set(std::get<SoftButton>(B::position), B::ID::title, B::color,
+                             [&] { return controller.getDisplayValue(typename B::ID {}); });
               }
             });
-
-        auto box = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
-        box->set_homogeneous(true);
-
-        if(addedLButton || addedRButton)
-        {
-          box->pack_start(*lButtons);
-          box->pack_start(*rButtons);
-          pack_start(*box);
-        }
       }
+      auto box = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
+
+      if(hasKnobs)
+        box->pack_start(*knobs);
+
+      if(hasButtons)
+        box->pack_start(*buttons);
+
+      pack_start(*box);
     }
   };
 
