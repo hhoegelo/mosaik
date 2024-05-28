@@ -352,7 +352,14 @@ namespace Ui
               else if constexpr(D::event == UiEvent::ReleasedKnobRotate)
               {
                 mapping.knobIncDecReleased[std::get<Knob>(D::position)]
-                    = [this](int inc) { this->invokeKnobAction<typename D::ID>(inc); };
+                    = [this](int inc) { invokeKnobAction<typename D::ID>(inc); };
+
+                if constexpr(requires { D::ID::acceleration; })
+                {
+                  mapping.knobIncDecPressed[std::get<Knob>(D::position)]
+                      = [this](int inc) { invokeKnobAction<typename D::ID>(D::ID::acceleration * inc); };
+                }
+
                 setLed(std::get<Knob>(D::position), D::color);
               }
               else if constexpr(D::event == UiEvent::ButtonPress)
