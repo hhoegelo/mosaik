@@ -98,13 +98,12 @@ namespace Ui::Touch
           }
         });
 
-    Glib::signal_timeout().connect(
-        [&dsp, address, this]
+    add_tick_callback(
+        [&dsp, address, this](const Glib::RefPtr<Gdk::FrameClock>&)
         {
           m_levels = dsp.getLevel(address);
           return true;
-        },
-        20);
+        });
   }
 
   std::string Tile::formatTime(long ms) const

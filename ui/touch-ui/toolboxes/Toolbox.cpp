@@ -5,6 +5,8 @@
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/adjustment.h>
 
+using namespace std::chrono_literals;
+
 namespace Ui::Touch
 {
 
@@ -16,20 +18,30 @@ namespace Ui::Touch
 
     set_size_request(540, -1);
 
-    /* auto eventBox = Gtk::manage(new Gtk::EventBox());
-    eventBox->add(*maximized);
-
-    eventBox->signal_button_press_event().connect(
-        [tool, &toolboxes](GdkEventButton *)
-        {
-          toolboxes.selectToolbox(tool);
-          return true;
-        });*/
-
     pack_start(*maximized, Gtk::PACK_EXPAND_WIDGET);
 
+    auto animate = [this](auto w, auto t)
+    {
+      auto startTime = std::chrono::system_clock::now();
+      auto startPos = w->get_vadjustment()->get_value();
+
+      add_tick_callback(
+          [this, w, t, startTime, startPos](const Glib::RefPtr<Gdk::FrameClock> &clock)
+          {
+            constexpr auto scrollTime = 500000000ns;
+            auto now = std::chrono::system_clock::now();
+            auto diff = now - startTime;
+            auto ratio = std::min<double>(1.0, static_cast<double>(diff.count()) / scrollTime.count());
+            double eased_progress = -0.5 * (std::cos(M_PI * ratio) - 1);
+            auto vadjustment = w->get_vadjustment();
+            vadjustment->set_value(startPos + eased_progress * (t - startPos));
+            w->set_vadjustment(vadjustment);
+            return ratio < 1;
+          });
+    };
+
     m_computations.add(
-        [this, &toolboxes, tool]
+        [this, &toolboxes, tool, animate]
         {
           if(toolboxes.getSelectedToolbox() == tool)
           {
@@ -38,29 +50,13 @@ namespace Ui::Touch
             Gtk::Container *parent = get_parent();
 
             while(parent && !dynamic_cast<Gtk::ScrolledWindow *>(parent))
-            {
               parent = parent->get_parent();
-            }
 
             if(auto w = dynamic_cast<Gtk::ScrolledWindow *>(parent))
             {
               auto vadjustment = w->get_vadjustment();
               auto rect = get_allocation();
-              auto min = vadjustment->get_value();
-              auto max = min + vadjustment->get_page_size();
-
-              if(rect.get_y() < min)
-              {
-                vadjustment->set_value(rect.get_y());
-                w->set_vadjustment(vadjustment);
-              }
-
-              if(rect.get_y() + rect.get_height() > max)
-              {
-                auto spaceAbove = (vadjustment->get_page_size() - rect.get_height());
-                vadjustment->set_value(rect.get_y() - spaceAbove);
-                w->set_vadjustment(vadjustment);
-              }
+              animate(w, rect.get_y() - (vadjustment->get_page_size() - rect.get_height()) / 2);
             }
           }
           else

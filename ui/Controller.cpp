@@ -39,7 +39,6 @@ namespace Ui
 
   void Controller::run()
   {
-
     m_computations.add(
         [this]
         {

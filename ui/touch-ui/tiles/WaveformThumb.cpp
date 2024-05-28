@@ -11,13 +11,12 @@ namespace Ui::Touch
   {
     get_style_context()->add_class("waveform");
 
-    Glib::MainContext::get_default()->signal_timeout().connect(
-        [this]
+    add_tick_callback(
+        [this](const Glib::RefPtr<Gdk::FrameClock>&)
         {
           queue_draw();
           return true;
-        },
-        10);
+        });
 
     signal_draw().connect(
         [this, address, &core, &dsp](const Cairo::RefPtr<Cairo::Context>& ctx)

@@ -1,6 +1,13 @@
 
 .root {
+  * {
+    transition: border-color 500ms ease-in-out;
+    transition: background-color 500ms ease-in-out;
+  }
+
   font-size: 12px;
+  font-weight: bold;
+
   @screen-width: 1280;
   @screen-height: 720;
 
@@ -31,60 +38,18 @@
     color: white;
 
     font-size: 11px;
-    font-weight: bold;
 
     border: 1px solid black;
     padding: 2mm;
 
     .knob, .button {
-      border: 3px solid rgba(0, 0, 0, 0.2);
+      border: 3px solid darken(@color-off, 40%);
       padding: 1px;
-	  margin: 2px;
+      margin: 2px;
     }
 
     .knob {
       border-radius: 20px;
-    }
-
-    .yellow {
-      border-color: @color-yellow;
-    }
-
-    .orange {
-      border-color: @color-orange;
-    }
-
-    .red {
-      border-color: @color-red;
-    }
-
-    .magenta {
-      border-color: @color-magenta;
-    }
-
-    .blue {
-      border-color: @color-blue;
-    }
-
-    .lightblue {
-      border-color: @color-lightblue;
-    }
-
-    .lightgreen {
-      border-color: @color-lightgreen;
-    }
-
-    .green {
-      border-color: @color-green;
-    }
-
-    .white {
-      border-color: @color-white;
-    }
-
-
-    .off {
-      border-color: @color-off;
     }
   }
 
@@ -92,7 +57,7 @@
     background: rgb(150, 0, 0);
 
     .waveform {
-	  background: rgb(150, 0, 0);
+      background: rgb(150, 0, 0);
     }
   }
 
@@ -111,7 +76,7 @@
   }
 
   .level-meter.gain {
-    color: rgb(0,0,0);
+    color: rgb(0, 0, 0);
   }
 
   .tile {
@@ -125,29 +90,29 @@
 
     .waveform {
       background-color: rgb(20, 20, 20);
-	  color: white;
+      color: white;
     }
 
     .waveform:visited {
-	  color: rgb(120, 120, 120);
+      color: rgb(120, 120, 120);
     }
 
     .waveform:active {
-	  color: white;
+      color: white;
     }
 
     .sample-file {
       color: white;
       margin-left: @string-margin;
       margin-right: @string-margin;
-	  font-size: 11px;
+      font-size: 11px;
     }
 
     .seconds {
       color: white;
       margin-left: @string-margin;
       margin-right: @string-margin;
-	  font-size: 11px;
+      font-size: 11px;
     }
 
     .step {
@@ -164,7 +129,7 @@
 
   .tile.selected {
     border-color: rgb(190, 190, 190);
-	border: 2.5px solid;
+    border: 2.5px solid;
   }
 
   .tile .volume {
@@ -174,49 +139,77 @@
 
   .toolbox {
     .header {
-	  color: rgb(190, 190, 190);
+      color: rgb(190, 190, 190);
       font-size: large;
-	  padding-left: 3px;
-	  padding-top: 3px;
-	  font-weight: bold;
+      padding-left: 3px;
+      padding-top: 3px;
+      font-weight: bold;
     }
 
     .waveform {
-	  color: rgb(40, 40, 40); // color of faded out audio frames
+      color: rgb(40, 40, 40); // color of faded out audio frames
     }
 
     .waveform:active {
-	  color: white; // color of faded in audio frames
+      color: white; // color of faded in audio frames
     }
 
     .waveform:checked {
-	  color: lightblue; // color of envelope stripes
+      color: lightblue; // color of envelope stripes
     }
 
     .waveform:focus {
       color: red; // color of hit point indicator
     }
 
-    .minimized {
-      padding-bottom: 10px;
-
-      .header {
-	    font-weight: bold;
-      }
-
-      .parameter {
-	    padding-left: 15px;
-        padding-right: 0px;
-        margin: 0px;
-      }
-    }
-
-    border: 4px solid rgb(40,40,40);
+    border: 3px solid rgb(40, 40, 40);
 
     &.selected {
-	  .header {
+      .header {
       }
-	  border: 3px solid rgb(190, 190, 190);
+
+      border: 3px solid rgb(190, 190, 190);
+      background-color: rgb(50, 50, 50);
+
+      .yellow {
+        border-color: @color-yellow;
+      }
+
+      .orange {
+        border-color: @color-orange;
+      }
+
+      .red {
+        border-color: @color-red;
+      }
+
+      .magenta {
+        border-color: @color-magenta;
+      }
+
+      .blue {
+        border-color: @color-blue;
+      }
+
+      .lightblue {
+        border-color: @color-lightblue;
+      }
+
+      .lightgreen {
+        border-color: @color-lightgreen;
+      }
+
+      .green {
+        border-color: @color-green;
+      }
+
+      .white {
+        border-color: @color-white;
+      }
+
+      .off {
+        border-color: @color-off;
+      }
     }
   }
 
@@ -227,4 +220,9 @@
   .root .lower {
     background-color: white;
   }
+}
+
+// file browser
+treeview {
+  background-color: black;
 }

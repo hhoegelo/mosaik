@@ -3,6 +3,7 @@
 #include <gtkmm/filechooserwidget.h>
 #include <gtkmm/treepath.h>
 #include <gtkmm/treeview.h>
+#include <gtkmm/treeviewcolumn.h>
 
 using namespace std::chrono_literals;
 
