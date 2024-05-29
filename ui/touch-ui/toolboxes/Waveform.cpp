@@ -78,13 +78,14 @@ namespace Ui::Touch
             triggerPos = samples.size() - triggerPos;
           }
 
-          auto fadeInPos = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadeInPos));
-          auto fadedInPos
-              = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadedInPos));
-          auto fadeOutPos
-              = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadeOutPos));
-          auto fadedOutPos
-              = std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadedOutPos));
+          auto fadeInPos = std::min<Core::FramePos>(
+              numFrames, std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadeInPos)));
+          auto fadedInPos = std::min<Core::FramePos>(
+              numFrames, std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadedInPos)));
+          auto fadeOutPos = std::min<Core::FramePos>(
+              numFrames, std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadeOutPos)));
+          auto fadedOutPos = std::min<Core::FramePos>(
+              numFrames, std::get<Core::FramePos>(m_core.getParameter(tileId, Core::ParameterId::EnvelopeFadedOutPos)));
 
           auto waveFadedOutColor = get_style_context()->get_color(Gtk::StateFlags::STATE_FLAG_NORMAL);
           auto waveFadedInColor = get_style_context()->get_color(Gtk::StateFlags::STATE_FLAG_ACTIVE);

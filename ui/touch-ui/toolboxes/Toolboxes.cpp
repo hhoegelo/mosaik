@@ -31,6 +31,11 @@ namespace Ui::Touch
 
     auto box = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_VERTICAL);
 
+    auto upperLogo = Gtk::make_managed<Gtk::Label>("MOSAIK");
+    upperLogo->get_style_context()->add_class("logo");
+    upperLogo->get_style_context()->add_class("upper");
+    box->pack_start(*upperLogo);
+
     box->pack_start(*Gtk::make_managed<GenericToolbox<Ui::Toolbox::Global>>(*this, controller));
     box->pack_start(*Gtk::make_managed<GenericToolbox<Ui::Toolbox::Tile>>(*this, controller,
                                                                           new TileTools(*this, core, controller)));
@@ -44,6 +49,11 @@ namespace Ui::Touch
     //auto colorAdjust = Gtk::make_managed<GenericToolbox<Ui::Toolbox::ColorAdjust>>(*this, controller);
     //colorAdjust->get_style_context()->add_class("color-adjust");
     //box->pack_start(*colorAdjust);
+
+    auto lowerLogo = Gtk::make_managed<Gtk::Label>("MOSAIK");
+    lowerLogo->get_style_context()->add_class("logo");
+    lowerLogo->get_style_context()->add_class("lower");
+    box->pack_start(*lowerLogo);
 
     scroll->add(*box);
     add(*scroll);

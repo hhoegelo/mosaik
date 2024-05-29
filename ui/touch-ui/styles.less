@@ -38,16 +38,8 @@
     color: white;
 
     font-size: 11px;
-
     border: 1px solid black;
     padding: 2mm;
-
-    .headline {
-      font-size: 20px;
-      border-radius: 5px;
-      background-color: rgb(50, 50, 50);
-      border: rgb(100, 100, 100) 1px solid;
-    }
 
     .knob, .button {
       border: 3px solid darken(@color-off, 40%);
@@ -143,16 +135,7 @@
     min-height: 2cm;
   }
 
-
   .toolbox {
-    .header {
-      color: rgb(190, 190, 190);
-      font-size: large;
-      padding-left: 3px;
-      padding-top: 3px;
-      font-weight: bold;
-    }
-
     .waveform {
       color: rgb(40, 40, 40); // color of faded out audio frames
     }
@@ -170,20 +153,25 @@
     }
 
     border: 3px solid rgb(40, 40, 40);
+    @selection-color: rgb(190, 190, 190);
+    @selected-background: rgb(50, 50, 50);
+
+    .headline {
+      font-size: 40px;
+      background-color: rgb(0, 0, 0);
+      color: @selection-color;
+      font-variant: small-caps;
+    }
 
     &.selected {
-      .header {
-      }
-
       .headline {
-        font-size: 20px;
-        background-color: orange;
-        border: white 1px solid;
-        border-radius: 5px;
+        background-color: @selected-background;
+        color: @selection-color;
+        border: 3px @selection-color solid;
       }
 
-      border: 3px solid rgb(190, 190, 190);
-      background-color: rgb(50, 50, 50);
+      border: 3px solid @selection-color;
+      background-color: @selected-background;
 
       .yellow {
         border-color: @color-yellow;
@@ -229,6 +217,13 @@
 
   .toolboxes {
     -gtkmm__CustomObject_Toolboxes-height: @tile-height * @num-tile-rows;
+
+    .logo {
+      color: white;
+      font-size: 100px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+    }
   }
 
   .root .lower {
