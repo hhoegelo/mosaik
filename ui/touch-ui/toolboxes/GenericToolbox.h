@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Toolbox.h"
-#include "KnobGrid.h"
 #include "SoftButtonGrid.h"
 #include "ui/ParameterDescriptor.h"
 #include "ui/ToolboxDefinition.h"
 #include "ui/Controller.h"
+#include "CombinedGrid.h"
 #include <gtkmm/label.h>
 
 namespace Ui
@@ -22,83 +22,54 @@ namespace Ui::Touch
         : Gtk::Box(Gtk::ORIENTATION_VERTICAL)
     {
       get_style_context()->add_class("maximized");
-      auto headline = Gtk::manage(new Gtk::Label(ToolboxDefinition<T>::title));
-      auto headlineBox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
-      headlineBox->get_style_context()->add_class("header");
-      headline->set_halign(Gtk::Align::ALIGN_FILL);
-      headline->set_justify(Gtk::JUSTIFY_LEFT);
-      headlineBox->add(*headline);
-      pack_start(*headlineBox);
+      //auto headline = Gtk::manage(new Gtk::Label(ToolboxDefinition<T>::title));
+      //auto headlineBox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
+      //headlineBox->get_style_context()->add_class("header");
+      //headline->set_halign(Gtk::Align::ALIGN_FILL);
+      //headline->set_justify(Gtk::JUSTIFY_LEFT);
+      //headlineBox->add(*headline);
+      //pack_start(*headlineBox);
 
-      bool hasKnobs = false;
-      bool hasButtons = false;
+      auto grid = Gtk::manage(new CombinedGrid(ToolboxDefinition<T>::title));
 
       Ui::ToolboxDefinition<T>::Entires::forEach(
           [&](auto a)
           {
-            hasKnobs |= std::holds_alternative<Knob>(decltype(a)::position);
-            hasButtons |= std::holds_alternative<SoftButton>(decltype(a)::position);
+            using B = decltype(a);
+            if(std::holds_alternative<Knob>(B::position))
+              grid->set(std::get<Knob>(B::position), B::ID::title, B::color,
+                        [&]
+                        {
+                          if constexpr(requires() { controller.getDisplayValue(B::ID::id); })
+                            return controller.getDisplayValue(B::ID::id);
+
+                          return controller.getDisplayValue(typename B::ID {});
+                        });
           });
 
-      KnobGrid *knobs = nullptr;
-
-      if(hasKnobs)
-      {
-        knobs = Gtk::manage(new KnobGrid());
-
-        Ui::ToolboxDefinition<T>::Entires::forEach(
-            [&](auto a)
+      Ui::ToolboxDefinition<T>::Entires::forEach(
+          [&](auto a)
+          {
+            using B = decltype(a);
+            if(std::holds_alternative<SoftButton>(B::position))
             {
-              using B = decltype(a);
-              if(std::holds_alternative<Knob>(B::position))
-                knobs->set(std::get<Knob>(B::position), B::ID::title, B::color,
-                           [&]
-                           {
-                             if constexpr(requires() { controller.getDisplayValue(B::ID::id); })
-                               return controller.getDisplayValue(B::ID::id);
+              if constexpr(std::is_same_v<typename B::ID, PreviousToolbox>
+                           || std::is_same_v<typename B::ID, NextToolbox>
+                           || std::is_same_v<typename B::ID, GotoToolboxTile>
+                           || std::is_same_v<typename B::ID, GotoToolboxWaveform>
+                           || std::is_same_v<typename B::ID, GotoToolboxGlobal>
+                           || std::is_same_v<typename B::ID, GotoToolboxMute>
+                           || std::is_same_v<typename B::ID, GotoToolboxSteps>
+                           || std::is_same_v<typename B::ID, GotoToolboxReverb>
+                           || std::is_same_v<typename B::ID, GotoToolboxSnapshots>)
+                return;
 
-                             return controller.getDisplayValue(typename B::ID {});
-                           });
-            });
-      }
+              grid->set(std::get<SoftButton>(B::position), B::ID::title, B::color,
+                        [&] { return controller.getDisplayValue(typename B::ID {}); });
+            }
+          });
 
-      SoftButtonGrid *buttons = nullptr;
-
-      if(hasButtons)
-      {
-        buttons = Gtk::manage(new SoftButtonGrid(SoftButtonGrid::Where::Right));
-
-        Ui::ToolboxDefinition<T>::Entires::forEach(
-            [&](auto a)
-            {
-              using B = decltype(a);
-              if(std::holds_alternative<SoftButton>(B::position))
-              {
-                if constexpr(std::is_same_v<typename B::ID, PreviousToolbox>
-                             || std::is_same_v<typename B::ID, NextToolbox>
-                             || std::is_same_v<typename B::ID, GotoToolboxTile>
-                             || std::is_same_v<typename B::ID, GotoToolboxWaveform>
-                             || std::is_same_v<typename B::ID, GotoToolboxGlobal>
-                             || std::is_same_v<typename B::ID, GotoToolboxMute>
-                             || std::is_same_v<typename B::ID, GotoToolboxSteps>
-                             || std::is_same_v<typename B::ID, GotoToolboxReverb>
-                             || std::is_same_v<typename B::ID, GotoToolboxSnapshots>)
-                  return;
-
-                buttons->set(std::get<SoftButton>(B::position), B::ID::title, B::color,
-                             [&] { return controller.getDisplayValue(typename B::ID {}); });
-              }
-            });
-      }
-      auto box = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
-
-      if(hasKnobs)
-        box->pack_start(*knobs);
-
-      if(hasButtons)
-        box->pack_start(*buttons);
-
-      pack_start(*box);
+      pack_start(*grid);
     }
   };
 

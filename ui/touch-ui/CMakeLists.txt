@@ -25,6 +25,8 @@ add_library(mosaik-touchui STATIC
         toolboxes/SoftButtonGrid.h
         toolboxes/KnobGrid.cpp
         toolboxes/KnobGrid.h
+        toolboxes/CombinedGrid.cpp
+        toolboxes/CombinedGrid.h
         LessToCss.cpp
         LessToCss.h
         tiles/WaveformThumb.cpp

@@ -42,6 +42,13 @@
     border: 1px solid black;
     padding: 2mm;
 
+    .headline {
+      font-size: 20px;
+      border-radius: 5px;
+      background-color: rgb(50, 50, 50);
+      border: rgb(100, 100, 100) 1px solid;
+    }
+
     .knob, .button {
       border: 3px solid darken(@color-off, 40%);
       padding: 1px;
@@ -166,6 +173,13 @@
 
     &.selected {
       .header {
+      }
+
+      .headline {
+        font-size: 20px;
+        background-color: orange;
+        border: white 1px solid;
+        border-radius: 5px;
       }
 
       border: 3px solid rgb(190, 190, 190);

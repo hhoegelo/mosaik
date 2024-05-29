@@ -765,14 +765,14 @@ namespace Ui
   std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::Waveform>::Scroll) const
   {
     if(auto p = m_touchUi.get())
-      return Tools::format("%" PRId64 " frames", p->getToolboxes().getWaveform().getScroll());
+      return Tools::format("%" PRId64 " frms", p->getToolboxes().getWaveform().getScroll());
     return "";
   }
 
   std::string Controller::getDisplayValue(ToolboxDefinition<Toolbox::Waveform>::HitPoint) const
   {
     return Tools::format(
-        "%" PRId64 " frames",
+        "%" PRId64 " frms",
         std::get<Core::FramePos>(m_core.getParameter(m_core.getSelectedTile(), Core::ParameterId::TriggerFrame)));
   }
 
