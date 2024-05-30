@@ -3,22 +3,36 @@
 #include <gtkmm/box.h>
 #include <gtkmm/label.h>
 
+constexpr int knobGroupXoffset = 0;
+constexpr int knobGroupYoffset = 20;
+constexpr int buttonGroupXOffset = 0;
+constexpr int buttonGroupYOffset = 10;
+
+constexpr int buttonSizeX = 10;
+constexpr int buttonSizeY = 20;
+
+constexpr int knobSizeX = 10;
+constexpr int knobSizeY = 20;
+
 namespace Ui::Touch
 {
   constexpr std::array c_knobPositions
-      = { std::pair { Knob::Leftmost, std::pair { 0, 0 } },  std::pair { Knob::Rightmost, std::pair { 8, 0 } },
-          std::pair { Knob::NorthWest, std::pair { 2, 1 } }, std::pair { Knob::NorthEast, std::pair { 6, 1 } },
-          std::pair { Knob::Center, std::pair { 4, 2 } },    std::pair { Knob::SouthWest, std::pair { 2, 3 } },
-          std::pair { Knob::SouthEast, std::pair { 6, 3 } } };
+      = { std::pair { Knob::Leftmost,  std::pair {  0+knobGroupXoffset,  0+knobGroupYoffset } },
+          std::pair { Knob::Rightmost, std::pair { 40+knobGroupXoffset,  0+knobGroupYoffset } },
+          std::pair { Knob::NorthWest, std::pair { 10+knobGroupXoffset, 10+knobGroupYoffset } },
+          std::pair { Knob::NorthEast, std::pair { 30+knobGroupXoffset, 10+knobGroupYoffset } },
+          std::pair { Knob::Center,    std::pair { 20+knobGroupXoffset, 30+knobGroupYoffset } },
+          std::pair { Knob::SouthWest, std::pair { 10+knobGroupXoffset, 50+knobGroupYoffset } },
+          std::pair { Knob::SouthEast, std::pair { 30+knobGroupXoffset, 50+knobGroupYoffset } } };
 
-  constexpr std::array c_buttonPositions = { std::pair { SoftButton::Right_North, std::pair { 9, 4 } },
-                                             std::pair { SoftButton::Right_NorthEast, std::pair { 11, 4 } },
-                                             std::pair { SoftButton::Right_West, std::pair { 7, 6 } },
-                                             std::pair { SoftButton::Right_Center, std::pair { 9, 6 } },
-                                             std::pair { SoftButton::Right_East, std::pair { 11, 6 } },
-                                             std::pair { SoftButton::Right_SouthWest, std::pair { 7, 8 } },
-                                             std::pair { SoftButton::Right_South, std::pair { 9, 8 } },
-                                             std::pair { SoftButton::Right_SouthEast, std::pair { 11, 8 } } };
+  constexpr std::array c_buttonPositions = { std::pair { SoftButton::Right_North,       std::pair {  90+buttonGroupXOffset, 20+buttonGroupYOffset } },
+                                             std::pair { SoftButton::Right_NorthEast,   std::pair { 110+buttonGroupXOffset, 20+buttonGroupYOffset } },
+                                             std::pair { SoftButton::Right_West,        std::pair {  80+buttonGroupXOffset, 40+buttonGroupYOffset } },
+                                             std::pair { SoftButton::Right_Center,      std::pair {  90+buttonGroupXOffset, 40+buttonGroupYOffset } },
+                                             std::pair { SoftButton::Right_East,        std::pair { 110+buttonGroupXOffset, 40+buttonGroupYOffset } },
+                                             std::pair { SoftButton::Right_SouthWest,   std::pair {  80+buttonGroupXOffset, 60+buttonGroupYOffset } },
+                                             std::pair { SoftButton::Right_South,       std::pair {  90+buttonGroupXOffset, 60+buttonGroupYOffset } },
+                                             std::pair { SoftButton::Right_SouthEast,   std::pair { 110+buttonGroupXOffset, 60+buttonGroupYOffset } } };
 
   CombinedGrid::CombinedGrid(const char* title)
   {
@@ -28,7 +42,7 @@ namespace Ui::Touch
     get_style_context()->add_class("buttons");
 
     auto headline = Gtk::make_managed<Gtk::Label>(title);
-    attach(*headline, 0, 6, 6, 4);
+    attach(*headline, 0, 0, 50, 10);
     headline->get_style_context()->add_class("headline");
 
     for(auto c : c_knobPositions)
@@ -43,7 +57,7 @@ namespace Ui::Touch
 
       label->get_style_context()->add_class("label");
       level->get_style_context()->add_class("level");
-      attach(*box, c.second.first, c.second.second, 2, 2);
+      attach(*box, c.second.first, c.second.second, knobSizeX, knobSizeY);
     }
 
     for(auto c : c_buttonPositions)
@@ -58,7 +72,7 @@ namespace Ui::Touch
 
       label->get_style_context()->add_class("label");
       level->get_style_context()->add_class("level");
-      attach(*box, c.second.first, c.second.second, 2, 2);
+      attach(*box, c.second.first, c.second.second, buttonSizeX, buttonSizeY);
     }
   }
 
@@ -80,7 +94,7 @@ namespace Ui::Touch
         if(auto child = get_child_at(c.second.first, c.second.second))
           remove(*child);
 
-        attach(*box, c.second.first, c.second.second, 2, 2);
+        attach(*box, c.second.first, c.second.second, knobSizeX, knobSizeY);
         break;
       }
   }
@@ -103,7 +117,7 @@ namespace Ui::Touch
         if(auto child = get_child_at(c.second.first, c.second.second))
           remove(*child);
 
-        attach(*box, c.second.first, c.second.second, 2, 2);
+        attach(*box, c.second.first, c.second.second, buttonSizeX, buttonSizeY);
         break;
       }
   }
